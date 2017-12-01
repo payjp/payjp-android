@@ -1,0 +1,56 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    ext.kotlin_version = '1.2.0'
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+plugins {
+    id "com.diffplug.gradle.spotless" version "3.6.0"
+}
+
+subprojects {
+    apply plugin: 'com.diffplug.gradle.spotless'
+    spotless {
+        kotlin {
+            target "**/*.kt"
+            ktlint("0.13.0")
+            licenseHeaderFile project.rootProject.file('spotless/Copyright.kt')
+        }
+    }
+}
+
+ext {
+
+    versionCode = 1
+    versionName = "1.0.0"
+
+    minSdkVersion = 14
+    targetSdkVersion = 27
+
+    supportLib = "27.0.1"
+    okHttp = "3.9.0"
+    moshi = "1.5.0"
+    retrofit = "2.3.0"
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
