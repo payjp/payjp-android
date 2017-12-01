@@ -23,6 +23,7 @@
  */
 package jp.pay.android.model
 
+import com.squareup.moshi.Json
 import java.util.Date
 
 /**
@@ -35,8 +36,8 @@ data class Card(
         val name: String?,
         val last4: String,
         val brand: CardBrand,
-        val exp_month: Int,
-        val exp_year: Int,
+        @Json(name = "exp_month") val expirationMonth: Int,
+        @Json(name = "exp_year") val expirationYear: Int,
         val fingerprint: String,
         val livemode: Boolean,
         val created: Date) {
