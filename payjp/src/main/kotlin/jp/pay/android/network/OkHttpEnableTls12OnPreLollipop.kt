@@ -21,22 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package jp.pay.android.network
 
 import android.os.Build
 import android.util.Log
 import jp.pay.android.BuildConfig
+import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
+import okhttp3.TlsVersion
 import java.security.KeyStore
-import java.util.*
+import java.util.Arrays
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
-import okhttp3.ConnectionSpec
-import okhttp3.TlsVersion
-
-
 
 /**
  * Enable Tls ON Pre-Lollipop
@@ -72,11 +69,10 @@ fun OkHttpClient.Builder.enableTls12OnPreLollipop(): OkHttpClient.Builder {
             if (BuildConfig.DEBUG) {
                 Log.v("payjp-android", "apply TLSv1.2 for pre-Lollipop")
             }
-
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) {
                 Log.e("payjp-android", "error while setting TLS 1.2", e)
             }
         }
-    } ?:this
+    } ?: this
 }

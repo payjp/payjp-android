@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package jp.pay.android.network
 
 import com.squareup.moshi.Moshi
@@ -54,7 +53,7 @@ internal class ResultCall<T>(private val moshi: Moshi,
     override fun run(): T = execute().body()!!
 
     override fun enqueue(callback: Task.Callback<T>) {
-        enqueue(object: Callback<T> {
+        enqueue(object : Callback<T> {
             override fun onResponse(call: Call<T>, response: Response<T>) {
                 callback.onSuccess(response.body()!!)
             }

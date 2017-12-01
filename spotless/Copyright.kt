@@ -21,11 +21,3 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.model
-
-/**
- * Error
- *
- * cf. https://pay.jp/docs/api/#error
- */
-data class ApiError(val message: String)

@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package jp.pay.android
 
 import android.os.Handler
@@ -149,8 +148,8 @@ class PayjpToken(private val configuration: PayjpTokenConfiguration) {
         }
     }
 
-    private fun createAuthorization(publicKey: String)
-            = "$publicKey:".toByteArray(Charset.forName("UTF-8"))
+    private fun createAuthorization(publicKey: String) =
+            "$publicKey:".toByteArray(Charset.forName("UTF-8"))
             .let { data -> Base64.encodeToString(data, Base64.NO_WRAP) }
             .let { credential -> "Basic $credential" }
 }

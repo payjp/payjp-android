@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package jp.pay.android.network
 
 import okhttp3.Interceptor
@@ -43,5 +42,4 @@ class UaRequestInterceptor : Interceptor {
 
         return chain.proceed(newRequest)
     }
-
 }

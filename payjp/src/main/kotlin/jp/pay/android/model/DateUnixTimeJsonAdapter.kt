@@ -21,17 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package jp.pay.android.model
 
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.ToJson
-import java.util.*
+import java.util.Date
 
 /**
  * UnixTime <-> Date
  */
-class DateUnixTimeJsonAdapter  {
+class DateUnixTimeJsonAdapter {
 
     @FromJson fun fromJson(date: Long): Date = Date(date * 1000)
 

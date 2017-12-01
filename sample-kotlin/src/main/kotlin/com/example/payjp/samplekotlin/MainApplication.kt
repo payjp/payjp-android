@@ -21,13 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package com.example.payjp.samplekotlin
 
 import android.app.Application
 import jp.pay.android.PayjpToken
 import jp.pay.android.PayjpTokenConfiguration
-
 
 class MainApplication : Application() {
 

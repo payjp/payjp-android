@@ -21,18 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package jp.pay.android.network
 
 import com.squareup.moshi.Moshi
-import retrofit2.CallAdapter
-import retrofit2.Retrofit
-import java.lang.reflect.Type
 import com.squareup.moshi.Types.getRawType
 import retrofit2.Call
+import retrofit2.CallAdapter
+import retrofit2.Retrofit
 import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
 import java.util.concurrent.Executor
-
 
 /**
  * ResultCallAdapterFactory
@@ -58,9 +56,8 @@ class ResultCallAdapterFactory(private val moshi: Moshi,
             override fun responseType(): Type = responseType
 
             override fun adapt(call: Call<Any>): Call<Any> {
-                return  ResultCall(moshi, callbackExecutor, call)
+                return ResultCall(moshi, callbackExecutor, call)
             }
         }
     }
-
 }

@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package com.example.payjp.samplekotlin
 
 import android.os.Bundle
@@ -32,7 +31,6 @@ import jp.pay.android.PayjpToken
 import jp.pay.android.Task
 import jp.pay.android.model.Token
 import kotlinx.android.synthetic.main.activity_main.*
-
 
 class MainActivity : AppCompatActivity() {
 
