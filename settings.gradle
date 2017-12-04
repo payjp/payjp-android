@@ -1,1 +1,1 @@
-include ':payjp', ':sample-kotlin'
+include ':payjp', ':sample-kotlin', ':sample-java'

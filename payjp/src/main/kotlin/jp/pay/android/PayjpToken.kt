@@ -53,8 +53,6 @@ class PayjpToken(private val configuration: PayjpTokenConfiguration) {
     constructor(publicKey: String) : this(PayjpTokenConfiguration.Builder(publicKey).build())
 
     companion object {
-        private const val API_ENDPOINT = "https://api.pay.jp/v1/"
-
         private val factory = PayjpTokenFactory()
 
         /**
@@ -68,6 +66,7 @@ class PayjpToken(private val configuration: PayjpTokenConfiguration) {
          * PayjpToken(PayjpTokenConfiguration)
          * ```
          */
+        @JvmStatic
         fun getInstance(): PayjpToken = factory.get()
 
         /**
@@ -75,6 +74,7 @@ class PayjpToken(private val configuration: PayjpTokenConfiguration) {
          *
          * @param publicKey public API Key
          */
+        @JvmStatic
         fun init(publicKey: String): PayjpToken {
             return init(PayjpTokenConfiguration.Builder(publicKey).build())
         }
@@ -84,6 +84,7 @@ class PayjpToken(private val configuration: PayjpTokenConfiguration) {
          *
          * @param configuration configuration for [PayjpToken]
          */
+        @JvmStatic
         fun init(configuration: PayjpTokenConfiguration): PayjpToken {
             return factory.init(configuration)
         }
@@ -113,7 +114,7 @@ class PayjpToken(private val configuration: PayjpTokenConfiguration) {
                 .add(DateUnixTimeJsonAdapter())
                 .build()
         tokenApi = Retrofit.Builder()
-                .baseUrl(API_ENDPOINT)
+                .baseUrl(PayjpConstants.API_ENDPOINT)
                 .client(okHttpClient)
                 .addCallAdapterFactory(ResultCallAdapterFactory(moshi, MainThreadExecutor()))
                 .addConverterFactory(MoshiConverterFactory.create(moshi))

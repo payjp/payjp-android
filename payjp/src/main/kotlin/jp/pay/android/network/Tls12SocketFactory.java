@@ -41,7 +41,7 @@ import javax.net.ssl.SSLSocketFactory;
  * @link https://github.com/square/okhttp/issues/2372
  * @see SSLSocketFactory
  */
-public class Tls12SocketFactory extends SSLSocketFactory {
+class Tls12SocketFactory extends SSLSocketFactory {
     private static final String[] TLS_V12_ONLY = {"TLSv1.2"};
 
     private final SSLSocketFactory delegate;

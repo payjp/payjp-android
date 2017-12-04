@@ -35,8 +35,8 @@ import java.util.concurrent.Executor
 /**
  * ResultCallAdapterFactory
  */
-class ResultCallAdapterFactory(private val moshi: Moshi,
-                                private val callbackExecutor: Executor) : CallAdapter.Factory() {
+internal class ResultCallAdapterFactory(private val moshi: Moshi,
+                                        private val callbackExecutor: Executor) : CallAdapter.Factory() {
 
     private fun getResultResponseType(returnType: Type): Type {
         if (returnType !is ParameterizedType) {
