@@ -31,7 +31,7 @@ class MainApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        PayjpToken.init(PayjpTokenConfiguration.Builder("sk_test_c62fade9d045b54cd76d7036")
+        PayjpToken.init(PayjpTokenConfiguration.Builder("pk_test_0383a1b8f91e8a6e3ea0e2a9")
                 .setDebugEnabled(BuildConfig.DEBUG)
                 .build())
     }

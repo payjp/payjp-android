@@ -35,7 +35,7 @@ public class MainApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        PayjpToken.init(new PayjpTokenConfiguration.Builder("sk_test_c62fade9d045b54cd76d7036")
+        PayjpToken.init(new PayjpTokenConfiguration.Builder("pk_test_0383a1b8f91e8a6e3ea0e2a9")
                 .setDebugEnabled(BuildConfig.DEBUG)
                 .build());
     }
