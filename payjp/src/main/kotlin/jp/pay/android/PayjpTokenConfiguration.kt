@@ -42,7 +42,9 @@ class PayjpTokenConfiguration private constructor(val publicKey: String,
          * debug enabled or not
          * (usually `BuildConfig.DEBUG` is. )
          */
-        var debugEnabled: Boolean = false
+        private var debugEnabled: Boolean = false
+
+        fun setDebugEnabled(enabled: Boolean): Builder = apply { debugEnabled = enabled }
 
         fun build(): PayjpTokenConfiguration = PayjpTokenConfiguration(publicKey, debugEnabled)
     }

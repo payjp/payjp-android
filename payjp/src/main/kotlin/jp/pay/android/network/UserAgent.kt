@@ -29,7 +29,7 @@ import jp.pay.android.BuildConfig
 /**
  * UserAgent
  */
-object UserAgent {
+internal object UserAgent {
 
     fun create(): String {
         return "jp.pay.android/${BuildConfig.VERSION_NAME}; " +

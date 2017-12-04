@@ -32,9 +32,7 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         PayjpToken.init(PayjpTokenConfiguration.Builder("sk_test_c62fade9d045b54cd76d7036")
-                .apply {
-                    debugEnabled = BuildConfig.DEBUG
-                }
+                .setDebugEnabled(BuildConfig.DEBUG)
                 .build())
     }
 }

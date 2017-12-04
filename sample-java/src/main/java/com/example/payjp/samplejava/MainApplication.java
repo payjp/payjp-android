@@ -21,25 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.network
 
-import okhttp3.Interceptor
-import okhttp3.Response
+package com.example.payjp.samplejava;
 
-/**
- * Request interceptor
- */
-internal class UaRequestInterceptor : Interceptor {
 
-    private val userAgent = UserAgent.create()
+import android.app.Application;
 
-    override fun intercept(chain: Interceptor.Chain?): Response {
-        val newRequest = chain!!.request().newBuilder()
-                .header("user-agent", userAgent)
-                .build()
+import jp.pay.android.PayjpToken;
+import jp.pay.android.PayjpTokenConfiguration;
 
-        // TODO http cache?
+public class MainApplication extends Application {
 
-        return chain.proceed(newRequest)
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        PayjpToken.init(new PayjpTokenConfiguration.Builder("sk_test_c62fade9d045b54cd76d7036")
+                .setDebugEnabled(BuildConfig.DEBUG)
+                .build());
     }
 }

@@ -21,25 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.network
 
-import okhttp3.Interceptor
-import okhttp3.Response
+apply plugin: 'com.android.application'
 
-/**
- * Request interceptor
- */
-internal class UaRequestInterceptor : Interceptor {
+android {
+    compileSdkVersion 27
 
-    private val userAgent = UserAgent.create()
-
-    override fun intercept(chain: Interceptor.Chain?): Response {
-        val newRequest = chain!!.request().newBuilder()
-                .header("user-agent", userAgent)
-                .build()
-
-        // TODO http cache?
-
-        return chain.proceed(newRequest)
+    defaultConfig {
+        applicationId "com.example.payjp.samplejava"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0.0"
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation project(':payjp')
+
+    implementation "com.android.support:appcompat-v7:$supportLib"
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 }

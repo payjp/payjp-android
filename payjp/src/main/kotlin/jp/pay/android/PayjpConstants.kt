@@ -21,25 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.network
 
-import okhttp3.Interceptor
-import okhttp3.Response
+package jp.pay.android
 
-/**
- * Request interceptor
- */
-internal class UaRequestInterceptor : Interceptor {
 
-    private val userAgent = UserAgent.create()
-
-    override fun intercept(chain: Interceptor.Chain?): Response {
-        val newRequest = chain!!.request().newBuilder()
-                .header("user-agent", userAgent)
-                .build()
-
-        // TODO http cache?
-
-        return chain.proceed(newRequest)
-    }
+internal object PayjpConstants {
+    const val API_ENDPOINT = "https://api.pay.jp/v1/"
 }
