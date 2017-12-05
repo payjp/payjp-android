@@ -38,8 +38,6 @@ internal class UaRequestInterceptor : Interceptor {
                 .header("user-agent", userAgent)
                 .build()
 
-        // TODO http cache?
-
         return chain.proceed(newRequest)
     }
 }
