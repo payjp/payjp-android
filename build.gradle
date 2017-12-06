@@ -9,9 +9,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.15"
     }
 }
 
@@ -32,9 +30,6 @@ subprojects {
 
 ext {
 
-    versionCode = 1
-    versionName = "1.0.0"
-
     minSdkVersion = 14
     targetSdkVersion = 27
 
@@ -48,9 +43,17 @@ allprojects {
     repositories {
         google()
         jcenter()
+        //maven { url "https://oss.sonatype.org/content/groups/public/" }
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+apply plugin: 'org.jetbrains.dokka'
+
+dokka {
+    outputFormat = 'html'
+    outputDirectory = "$buildDir/javadoc"
 }

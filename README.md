@@ -1,4 +1,6 @@
 # PAY.JP Android SDK
+[![Build Status](https://travis-ci.org/payjp/payjp-android.svg?branch=master)](https://travis-ci.org/payjp/payjp-android)
+[![Maven Central](https://img.shields.io/maven-central/v/jp.pay/payjp-android.svg)](https://oss.sonatype.org/content/groups/public/jp/pay/payjp-android/)
 
 オンライン決済サービス「[PAY.JP](https://pay.jp/)」のAndroidアプリ組込み用のSDKです。
 
@@ -76,7 +78,11 @@ fun getTokenById(tokenId: String) {
 
 ## インストール
 
-TBD
+`build.gradle` の`dependencies`に下記を追加します。バージョンは最新のものにします。
+
+```build.gradle
+implementation 'jp.pay:payjp-android:$latest_version'
+```
 
 ## License
 
