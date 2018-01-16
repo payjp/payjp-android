@@ -21,17 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.model
+package jp.pay.android
 
 /**
- * Error
- *
- * cf. https://pay.jp/docs/api/#error
- *
- * @param code error code e.g. `invalid_number`
- * @param message system message (should not show to end user)
- * @param type error type e.g. `card_error`
+ * Singleton factory
  */
-data class ApiError(val code: String?,
-                    val message: String,
-                    val type: String)
+internal class SingletonFactory<T> {
+    @Volatile private var instance: T? = null
+
+    fun init(initializer: () -> T): T {
+        if (instance == null) {
+            synchronized(this) {
+                if (instance == null) {
+                    instance = initializer()
+                }
+            }
+        }
+        @Suppress("UNCHECKED_CAST")
+        return instance as T
+    }
+
+    fun get(): T {
+        if (instance == null) {
+            synchronized(this) {
+                check(instance != null) { "instance is not initialized." }
+            }
+        }
+        @Suppress("UNCHECKED_CAST")
+        return instance as T
+    }
+}

@@ -24,19 +24,17 @@
 
 package com.example.payjp.samplejava;
 
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.jetbrains.annotations.NotNull;
-
 import jp.pay.android.PayjpToken;
 import jp.pay.android.Task;
-import jp.pay.android.model.CardBrand;
 import jp.pay.android.model.Token;
 
 public class MainActivity extends AppCompatActivity {
@@ -72,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onError(@NotNull Throwable throwable) {
+                public void onError(@NonNull Throwable throwable) {
                     Log.e("MainActivity", "failure creating token", throwable);
                     progressBar.setVisibility(View.GONE);
                     textTokenContent.setVisibility(View.VISIBLE);
@@ -96,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onError(@NotNull Throwable throwable) {
+                public void onError(@NonNull Throwable throwable) {
                     Log.e("MainActivity", "failure creating token", throwable);
                     progressBar.setVisibility(View.GONE);
                     textTokenContent.setVisibility(View.VISIBLE);

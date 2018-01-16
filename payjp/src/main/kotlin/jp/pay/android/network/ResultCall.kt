@@ -30,11 +30,13 @@ import jp.pay.android.model.ErrorEnvelope
 import okhttp3.Request
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.HttpException
 import retrofit2.Response
 import java.io.IOException
 import java.util.concurrent.Executor
 
 /**
+ * Custom call for wrapping response.
  *
  * @param T success type
  * @param delegate delegate call
@@ -44,10 +46,15 @@ internal class ResultCall<T>(private val moshi: Moshi,
                              private val delegate: Call<T>) : Call<T>, Task<T> {
 
     private fun generateHttpError(response: Response<*>): Exception {
-        return response.errorBody()?.source()
-                ?.let { source -> moshi.adapter(ErrorEnvelope::class.java).fromJson(source) }
-                ?.let { PayjpApiException(it.error.message, response.code(), it.error) }
-                ?: IOException("unknown response $response")
+        return response.errorBody()?.string()
+                ?.let { source ->
+                    moshi.adapter(ErrorEnvelope::class.java).fromJson(source)
+                            ?.let {
+                                PayjpApiException(it.error.message, HttpException(response),
+                                        response.code(), it.error, source)
+                            }
+                }
+                ?: IOException("unknown response", HttpException(response))
     }
 
     override fun run(): T = execute().body()!!
