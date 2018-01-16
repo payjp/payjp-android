@@ -26,20 +26,8 @@ package jp.pay.android
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
-import com.squareup.moshi.KotlinJsonAdapterFactory
-import com.squareup.moshi.Moshi
-import jp.pay.android.model.CardBrand
-import jp.pay.android.model.DateUnixTimeJsonAdapter
 import jp.pay.android.model.Token
-import jp.pay.android.network.NetworkExecutorFactory
-import jp.pay.android.network.ResultCallAdapterFactory
-import jp.pay.android.network.UaRequestInterceptor
-import jp.pay.android.network.enableTls12OnPreLollipop
-import okhttp3.Dispatcher
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import jp.pay.android.network.createApiClient
 import java.nio.charset.Charset
 import java.util.concurrent.Executor
 
@@ -48,7 +36,14 @@ import java.util.concurrent.Executor
  *
  * We recommend use as singleton instance.
  */
-class PayjpToken(private val configuration: PayjpTokenConfiguration) {
+class PayjpToken internal constructor(private val configuration: PayjpTokenConfiguration,
+                                      private val tokenApi: TokenApi) {
+
+    constructor(configuration: PayjpTokenConfiguration) : this(configuration = configuration,
+            tokenApi = createApiClient(
+                    baseUrl = PayjpConstants.API_ENDPOINT,
+                    debuggable = configuration.debugEnabled,
+                    callbackExecutor = MainThreadExecutor()))
 
     constructor(publicKey: String) : this(PayjpTokenConfiguration.Builder(publicKey).build())
 
@@ -90,36 +85,10 @@ class PayjpToken(private val configuration: PayjpTokenConfiguration) {
         }
     }
 
-    private val tokenApi: TokenApi
     private val authorization: String
-    private val debugEnabled: Boolean
 
     init {
         authorization = createAuthorization(configuration.publicKey)
-        debugEnabled = configuration.debugEnabled
-        val okHttpClient = OkHttpClient.Builder()
-                .addInterceptor(UaRequestInterceptor())
-                .apply {
-                    if (configuration.debugEnabled) {
-                        addNetworkInterceptor(HttpLoggingInterceptor()
-                                .apply { this.level = HttpLoggingInterceptor.Level.HEADERS })
-                    }
-                }
-                .enableTls12OnPreLollipop()
-                .dispatcher(Dispatcher(NetworkExecutorFactory.create()))
-                .build()
-        val moshi = Moshi.Builder()
-                .add(KotlinJsonAdapterFactory())
-                .add(CardBrand.JsonAdapter())
-                .add(DateUnixTimeJsonAdapter())
-                .build()
-        tokenApi = Retrofit.Builder()
-                .baseUrl(PayjpConstants.API_ENDPOINT)
-                .client(okHttpClient)
-                .addCallAdapterFactory(ResultCallAdapterFactory(moshi, MainThreadExecutor()))
-                .addConverterFactory(MoshiConverterFactory.create(moshi))
-                .build()
-                .create(TokenApi::class.java)
     }
 
     /**
