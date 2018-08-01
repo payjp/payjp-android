@@ -22,7 +22,6 @@
  */
 package jp.pay.android.network
 
-import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import jp.pay.android.TokenApi
 import jp.pay.android.model.CardBrand
@@ -52,7 +51,6 @@ internal fun createOkHttp(debuggable: Boolean = false) =
 
 internal fun createMoshi() =
         Moshi.Builder()
-                .add(KotlinJsonAdapterFactory())
                 .add(CardBrand.JsonAdapter())
                 .add(DateUnixTimeJsonAdapter())
                 .build()

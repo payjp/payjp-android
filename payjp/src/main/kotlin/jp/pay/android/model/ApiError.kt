@@ -22,6 +22,8 @@
  */
 package jp.pay.android.model
 
+import com.squareup.moshi.JsonClass
+
 /**
  * Error
  *
@@ -31,6 +33,7 @@ package jp.pay.android.model
  * @param message system message (should not show to end user)
  * @param type error type e.g. `card_error`
  */
+@JsonClass(generateAdapter = true)
 data class ApiError(val code: String?,
                     val message: String,
                     val type: String)

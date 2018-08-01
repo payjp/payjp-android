@@ -7,9 +7,11 @@
     @com.squareup.moshi.* <methods>;
 }
 -keep @com.squareup.moshi.JsonQualifier interface *
--keepclassmembers class kotlin.Metadata {
-    public <methods>;
+-keep class **JsonAdapter {
+    <init>(...);
+    <fields>;
 }
+-keepnames @com.squareup.moshi.JsonClass class *
 
 -dontnote retrofit2.Platform
 -dontwarn retrofit2.Platform$Java8

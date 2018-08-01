@@ -22,6 +22,7 @@
  */
 package jp.pay.android.model
 
+import com.squareup.moshi.JsonClass
 import java.util.Date
 
 /**
@@ -29,6 +30,7 @@ import java.util.Date
  *
  * https://pay.jp/docs/api/#token-トークン
  */
+@JsonClass(generateAdapter = true)
 data class Token(
         val card: Card,
         val created: Date,

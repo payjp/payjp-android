@@ -22,9 +22,12 @@
  */
 package jp.pay.android.model
 
+import com.squareup.moshi.JsonClass
+
 /**
  * Error
  *
  * cf. https://pay.jp/docs/api/#error
  */
+@JsonClass(generateAdapter = true)
 internal data class ErrorEnvelope(val error: ApiError)
