@@ -4,6 +4,7 @@ local.properties
 .idea/*.xml
 .idea/.*
 .idea/*/*.xml
+.idea/caches
 !.idea/copyright/*.xml
 !.idea/dictionaries/*.xml
 !.idea/codeStyleSettings.xml
