@@ -24,6 +24,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'org.jetbrains.dokka-android'
 
 android {
     compileSdkVersion 27
@@ -59,16 +60,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     testImplementation "org.robolectric:robolectric:3.8"
     testImplementation "com.squareup.okhttp3:mockwebserver:$okHttp"
-}
-
-task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
-    outputFormat = "javadoc"
-    outputDirectory = "$buildDir/dokkaJavadoc"
-}
-
-task androidJavadocsJar(type: Jar, dependsOn: dokkaJavadoc) {
-    classifier = 'javadoc'
-    from "$buildDir/dokkaJavadoc"
 }
 
 apply from: 'gradle-mvn-push.gradle'
