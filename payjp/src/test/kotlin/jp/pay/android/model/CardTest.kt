@@ -22,14 +22,14 @@
  */
 package jp.pay.android.model
 
-import com.squareup.moshi.KotlinJsonAdapterFactory
+import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Moshi
+import jp.pay.android.network.createMoshi
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import java.lang.reflect.InvocationTargetException
 import java.util.Date
 
 /**
@@ -39,11 +39,7 @@ import java.util.Date
 class CardTest {
 
     private val moshi: Moshi by lazy {
-        Moshi.Builder()
-                .add(KotlinJsonAdapterFactory())
-                .add(CardBrand.JsonAdapter())
-                .add(DateUnixTimeJsonAdapter())
-                .build()
+        createMoshi()
     }
 
     @Test
@@ -64,7 +60,7 @@ class CardTest {
                 } ?: fail("card is null")
     }
 
-    @Test(expected = InvocationTargetException::class)
+    @Test(expected = JsonDataException::class)
     fun if_id_null_throw_exception() {
         moshi.adapter(Card::class.java)
                 .fromJson(CARD_ID_NULL)

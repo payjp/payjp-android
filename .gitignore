@@ -4,16 +4,13 @@ local.properties
 .idea/*.xml
 .idea/.*
 .idea/*/*.xml
+.idea/caches
 !.idea/copyright/*.xml
 !.idea/dictionaries/*.xml
 !.idea/codeStyleSettings.xml
 *.iml
 .DS_Store
 /build/*
-processor/build/*
-library/build/*
-annotations/build/*
-example/build/*
 captures/
 .gradletasknamecache
 .externalNativeBuild

@@ -22,8 +22,8 @@
  */
 package jp.pay.android.model
 
-import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
+import jp.pay.android.network.createMoshi
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
 import org.junit.Test
@@ -38,11 +38,7 @@ import java.util.Date
 class TokenTest {
 
     private val moshi: Moshi by lazy {
-        Moshi.Builder()
-                .add(KotlinJsonAdapterFactory())
-                .add(CardBrand.JsonAdapter())
-                .add(DateUnixTimeJsonAdapter())
-                .build()
+        createMoshi()
     }
 
     @Test
