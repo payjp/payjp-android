@@ -45,7 +45,8 @@ internal interface TokenApi {
         @Field("card[number]") number: String,
         @Field("card[cvc]") cvc: String,
         @Field("card[exp_month]") expMonth: String,
-        @Field("card[exp_year]") expYear: String
+        @Field("card[exp_year]") expYear: String,
+        @Field("card[name]") name: String?
     ): ResultCall<Token>
 
     @GET("tokens/{id}")

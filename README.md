@@ -32,7 +32,7 @@ class SampleApplication: Application() {
 
 ```kotlin
 fun startCreateToken() {
-  PayjpToken.getInstance().createToken("4242424242424242", "123", "02", "2020")
+  PayjpToken.getInstance().createToken("4242424242424242", "123", "02", "2020", "TARO YAMADA")
       .enqueue(object : Task.Callback<Token> {
           override fun onSuccess(data: Token) {
               // you can charge with `Token#id`

@@ -29,7 +29,16 @@ import android.view.View
 import jp.pay.android.PayjpToken
 import jp.pay.android.Task
 import jp.pay.android.model.Token
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.button_get_token
+import kotlinx.android.synthetic.main.activity_main.button_create_token
+import kotlinx.android.synthetic.main.activity_main.progress_bar
+import kotlinx.android.synthetic.main.activity_main.text_card_exp_month
+import kotlinx.android.synthetic.main.activity_main.text_card_exp_year
+import kotlinx.android.synthetic.main.activity_main.text_card_cvc
+import kotlinx.android.synthetic.main.activity_main.text_card_number
+import kotlinx.android.synthetic.main.activity_main.text_card_name
+import kotlinx.android.synthetic.main.activity_main.text_token_id
+import kotlinx.android.synthetic.main.activity_main.text_token_content
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,12 +53,19 @@ class MainActivity : AppCompatActivity() {
             progress_bar.visibility = View.VISIBLE
             text_token_content.visibility = View.INVISIBLE
             // create token
-            createToken = PayjpToken.getInstance().createToken("4242424242424242",
-                    "123", "02", "2020")
+            val number = text_card_number.text.toString()
+            val cvc = text_card_cvc.text.toString()
+            val expMonth = text_card_exp_month.text.toString()
+            val expYear = text_card_exp_year.text.toString()
+            val name = text_card_name.text.toString()
+
+            createToken = PayjpToken.getInstance().createToken(number = number, cvc = cvc,
+                    expMonth = expMonth, expYear = expYear, name = name)
             createToken?.enqueue(object : Task.Callback<Token> {
                 override fun onSuccess(data: Token) {
                     Log.i("MainActivity", "token => $data")
                     text_token_id.setText(data.id)
+                    text_token_content.text = "The token has created."
                     progress_bar.visibility = View.GONE
                     text_token_content.visibility = View.VISIBLE
                 }

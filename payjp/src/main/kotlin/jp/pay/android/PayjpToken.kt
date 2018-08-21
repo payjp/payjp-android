@@ -99,13 +99,15 @@ class PayjpToken internal constructor(
      * Create token from card.
      *
      */
+    @JvmOverloads
     fun createToken(
         number: String,
         cvc: String,
         expMonth: String,
-        expYear: String
+        expYear: String,
+        name: String? = null
     ): Task<Token> {
-        return tokenApi.createToken(authorization, number, cvc, expMonth, expYear)
+        return tokenApi.createToken(authorization, number, cvc, expMonth, expYear, name)
     }
 
     /**
