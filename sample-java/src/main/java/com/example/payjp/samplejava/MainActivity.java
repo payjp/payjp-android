@@ -44,6 +44,11 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private TextView textTokenId;
     private TextView textTokenContent;
+    private TextView textCardNumber;
+    private TextView textCardCvc;
+    private TextView textCardExpMonth;
+    private TextView textCardExpYear;
+    private TextView textCardName;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,13 +57,23 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progress_bar);
         textTokenId = findViewById(R.id.text_token_id);
         textTokenContent = findViewById(R.id.text_token_content);
+        textCardNumber = findViewById(R.id.text_card_number);
+        textCardCvc = findViewById(R.id.text_card_cvc);
+        textCardExpMonth = findViewById(R.id.text_card_exp_month);
+        textCardExpYear = findViewById(R.id.text_card_exp_year);
+        textCardName = findViewById(R.id.text_card_name);
 
         findViewById(R.id.button_create_token).setOnClickListener(view -> {
             progressBar.setVisibility(View.VISIBLE);
             textTokenContent.setVisibility(View.INVISIBLE);
 
-            createToken = PayjpToken.getInstance().createToken("4242424242424242",
-                    "123", "02", "2020");
+            final String number = textCardNumber.getText().toString();
+            final String cvc = textCardCvc.getText().toString();
+            final String expMonth = textCardExpMonth.getText().toString();
+            final String expYear = textCardExpYear.getText().toString();
+            final String name = textCardName.getText().toString();
+
+            createToken = PayjpToken.getInstance().createToken(number, cvc, expMonth, expYear, name);
             createToken.enqueue(new Task.Callback<Token>() {
                 @Override
                 public void onSuccess(Token data) {
