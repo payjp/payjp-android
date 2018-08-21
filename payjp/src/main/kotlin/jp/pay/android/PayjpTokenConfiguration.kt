@@ -27,8 +27,10 @@ package jp.pay.android
  *
  * use `Configuration.Builder`
  */
-class PayjpTokenConfiguration private constructor(val publicKey: String,
-                                                  val debugEnabled: Boolean) {
+class PayjpTokenConfiguration private constructor(
+    val publicKey: String,
+    val debugEnabled: Boolean
+) {
 
     /**
      * Builder

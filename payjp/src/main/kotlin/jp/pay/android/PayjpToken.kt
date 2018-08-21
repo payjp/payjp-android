@@ -35,8 +35,10 @@ import java.util.concurrent.Executor
  *
  * We recommend use as singleton instance.
  */
-class PayjpToken internal constructor(private val configuration: PayjpTokenConfiguration,
-                                      private val tokenApi: TokenApi) {
+class PayjpToken internal constructor(
+    private val configuration: PayjpTokenConfiguration,
+    private val tokenApi: TokenApi
+) {
 
     constructor(configuration: PayjpTokenConfiguration) : this(configuration = configuration,
             tokenApi = createApiClient(
@@ -94,10 +96,12 @@ class PayjpToken internal constructor(private val configuration: PayjpTokenConfi
      * Create token from card.
      *
      */
-    fun createToken(number: String,
-                    cvc: String,
-                    expMonth: String,
-                    expYear: String): Task<Token> {
+    fun createToken(
+        number: String,
+        cvc: String,
+        expMonth: String,
+        expYear: String
+    ): Task<Token> {
         return tokenApi.createToken(authorization, number, cvc, expMonth, expYear)
     }
 

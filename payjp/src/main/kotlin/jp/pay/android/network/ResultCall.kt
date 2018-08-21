@@ -40,9 +40,11 @@ import java.util.concurrent.Executor
  * @param T success type
  * @param delegate delegate call
  */
-internal class ResultCall<T>(private val moshi: Moshi,
-                             private val callbackExecutor: Executor,
-                             private val delegate: Call<T>) : Call<T>, Task<T> {
+internal class ResultCall<T>(
+    private val moshi: Moshi,
+    private val callbackExecutor: Executor,
+    private val delegate: Call<T>
+) : Call<T>, Task<T> {
 
     private fun generateHttpError(response: Response<*>): Exception {
         return response.errorBody()?.string()
