@@ -39,8 +39,8 @@ import javax.net.ssl.X509TrustManager
  * @link https://github.com/square/okhttp/issues/2372
  */
 internal fun OkHttpClient.Builder.enableTls12OnPreLollipop(): OkHttpClient.Builder {
-    return takeIf { Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
-            && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1 }?.apply {
+    return takeIf { Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN &&
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1 }?.apply {
         try {
             val trustManagerFactory = TrustManagerFactory.getInstance(
                     TrustManagerFactory.getDefaultAlgorithm())

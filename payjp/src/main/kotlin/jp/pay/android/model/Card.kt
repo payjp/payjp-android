@@ -33,15 +33,16 @@ import java.util.Date
  */
 @JsonClass(generateAdapter = true)
 data class Card(
-        val id: String,
-        val name: String?,
-        val last4: String,
-        val brand: CardBrand,
-        @Json(name = "exp_month") val expirationMonth: Int,
-        @Json(name = "exp_year") val expirationYear: Int,
-        val fingerprint: String,
-        val livemode: Boolean,
-        val created: Date) {
+    val id: String,
+    val name: String?,
+    val last4: String,
+    val brand: CardBrand,
+    @Json(name = "exp_month") val expirationMonth: Int,
+    @Json(name = "exp_year") val expirationYear: Int,
+    val fingerprint: String,
+    val livemode: Boolean,
+    val created: Date
+) {
 
     override fun hashCode(): Int = id.hashCode()
 

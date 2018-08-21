@@ -32,11 +32,12 @@ import java.util.Date
  */
 @JsonClass(generateAdapter = true)
 data class Token(
-        val card: Card,
-        val created: Date,
-        val id: String,
-        val livemode: Boolean,
-        val used: Boolean) {
+    val card: Card,
+    val created: Date,
+    val id: String,
+    val livemode: Boolean,
+    val used: Boolean
+) {
 
     override fun hashCode(): Int = id.hashCode()
 

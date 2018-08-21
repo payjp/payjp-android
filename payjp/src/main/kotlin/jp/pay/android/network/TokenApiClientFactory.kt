@@ -55,9 +55,11 @@ internal fun createMoshi() =
                 .add(DateUnixTimeJsonAdapter())
                 .build()
 
-internal fun createApiClient(baseUrl: String,
-                             debuggable: Boolean = false,
-                             callbackExecutor: Executor): TokenApi =
+internal fun createApiClient(
+    baseUrl: String,
+    debuggable: Boolean = false,
+    callbackExecutor: Executor
+): TokenApi =
         createMoshi().let { moshi ->
             Retrofit.Builder()
                     .baseUrl(baseUrl)

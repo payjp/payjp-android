@@ -40,13 +40,17 @@ internal interface TokenApi {
 
     @POST("tokens")
     @FormUrlEncoded
-    fun createToken(@Header("Authorization") authorization: String,
-                    @Field("card[number]") number: String,
-                    @Field("card[cvc]") cvc: String,
-                    @Field("card[exp_month]") expMonth: String,
-                    @Field("card[exp_year]") expYear: String): ResultCall<Token>
+    fun createToken(
+        @Header("Authorization") authorization: String,
+        @Field("card[number]") number: String,
+        @Field("card[cvc]") cvc: String,
+        @Field("card[exp_month]") expMonth: String,
+        @Field("card[exp_year]") expYear: String
+    ): ResultCall<Token>
 
     @GET("tokens/{id}")
-    fun getToken(@Header("Authorization") authorization: String,
-                 @Path("id") id: String): ResultCall<Token>
+    fun getToken(
+        @Header("Authorization") authorization: String,
+        @Path("id") id: String
+    ): ResultCall<Token>
 }

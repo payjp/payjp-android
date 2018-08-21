@@ -34,6 +34,8 @@ import com.squareup.moshi.JsonClass
  * @param type error type e.g. `card_error`
  */
 @JsonClass(generateAdapter = true)
-data class ApiError(val code: String?,
-                    val message: String,
-                    val type: String)
+data class ApiError(
+    val code: String?,
+    val message: String,
+    val type: String
+)

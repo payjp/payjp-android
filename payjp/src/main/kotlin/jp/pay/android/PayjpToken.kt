@@ -35,14 +35,19 @@ import java.util.concurrent.Executor
  *
  * We recommend use as singleton instance.
  */
-class PayjpToken internal constructor(private val configuration: PayjpTokenConfiguration,
-                                      private val tokenApi: TokenApi) {
+class PayjpToken internal constructor(
+    private val configuration: PayjpTokenConfiguration,
+    private val tokenApi: TokenApi
+) {
 
-    constructor(configuration: PayjpTokenConfiguration) : this(configuration = configuration,
-            tokenApi = createApiClient(
-                    baseUrl = PayjpConstants.API_ENDPOINT,
-                    debuggable = configuration.debugEnabled,
-                    callbackExecutor = MainThreadExecutor()))
+    constructor(configuration: PayjpTokenConfiguration) : this(
+        configuration = configuration,
+        tokenApi = createApiClient(
+            baseUrl = PayjpConstants.API_ENDPOINT,
+            debuggable = configuration.debugEnabled,
+            callbackExecutor = MainThreadExecutor()
+        )
+    )
 
     constructor(publicKey: String) : this(PayjpTokenConfiguration.Builder(publicKey).build())
 
@@ -94,10 +99,12 @@ class PayjpToken internal constructor(private val configuration: PayjpTokenConfi
      * Create token from card.
      *
      */
-    fun createToken(number: String,
-                    cvc: String,
-                    expMonth: String,
-                    expYear: String): Task<Token> {
+    fun createToken(
+        number: String,
+        cvc: String,
+        expMonth: String,
+        expYear: String
+    ): Task<Token> {
         return tokenApi.createToken(authorization, number, cvc, expMonth, expYear)
     }
 
@@ -118,7 +125,7 @@ class PayjpToken internal constructor(private val configuration: PayjpTokenConfi
     }
 
     private fun createAuthorization(publicKey: String) =
-            "$publicKey:".toByteArray(Charset.forName("UTF-8"))
+        "$publicKey:".toByteArray(Charset.forName("UTF-8"))
             .let { data -> Base64.encodeToString(data, Base64.NO_WRAP) }
             .let { credential -> "Basic $credential" }
 }
