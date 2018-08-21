@@ -40,11 +40,14 @@ class PayjpToken internal constructor(
     private val tokenApi: TokenApi
 ) {
 
-    constructor(configuration: PayjpTokenConfiguration) : this(configuration = configuration,
-            tokenApi = createApiClient(
-                    baseUrl = PayjpConstants.API_ENDPOINT,
-                    debuggable = configuration.debugEnabled,
-                    callbackExecutor = MainThreadExecutor()))
+    constructor(configuration: PayjpTokenConfiguration) : this(
+        configuration = configuration,
+        tokenApi = createApiClient(
+            baseUrl = PayjpConstants.API_ENDPOINT,
+            debuggable = configuration.debugEnabled,
+            callbackExecutor = MainThreadExecutor()
+        )
+    )
 
     constructor(publicKey: String) : this(PayjpTokenConfiguration.Builder(publicKey).build())
 
@@ -122,7 +125,7 @@ class PayjpToken internal constructor(
     }
 
     private fun createAuthorization(publicKey: String) =
-            "$publicKey:".toByteArray(Charset.forName("UTF-8"))
+        "$publicKey:".toByteArray(Charset.forName("UTF-8"))
             .let { data -> Base64.encodeToString(data, Base64.NO_WRAP) }
             .let { credential -> "Basic $credential" }
 }
