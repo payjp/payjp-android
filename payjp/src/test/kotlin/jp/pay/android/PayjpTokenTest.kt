@@ -73,7 +73,8 @@ class PayjpTokenTest {
         PayjpToken(configuration = configuration,
                 tokenApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
                         callbackExecutor = CurrentThreadExecutor()))
-                .createToken(number = "4242424242424242", cvc = "123", expMonth = "02", expYear = "2020")
+                .createToken(number = "4242424242424242",
+                        cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA")
                 .run()
                 .let { token ->
                     assertEquals("tok_5ca06b51685e001723a2c3b4aeb4", token.id)
@@ -89,9 +90,28 @@ class PayjpTokenTest {
                     assertEquals("card%5Bnumber%5D=4242424242424242" +
                             "&card%5Bcvc%5D=123" +
                             "&card%5Bexp_month%5D=02" +
-                            "&card%5Bexp_year%5D=2020",
+                            "&card%5Bexp_year%5D=2020" +
+                            "&card%5Bname%5D=TARO%20YAMADA",
                             request.body.readString(Charset.forName("utf-8")))
                 }
+    }
+
+    @Test
+    fun createToken_ok_without_name() {
+        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
+
+        PayjpToken(configuration = configuration,
+                tokenApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
+                        callbackExecutor = CurrentThreadExecutor()))
+                .createToken(number = "4242424242424242",
+                        cvc = "123", expMonth = "02", expYear = "2020")
+                .run()
+
+        assertEquals("card%5Bnumber%5D=4242424242424242" +
+                "&card%5Bcvc%5D=123" +
+                "&card%5Bexp_month%5D=02" +
+                "&card%5Bexp_year%5D=2020",
+                mockWebServer.takeRequest().body.readString(Charset.forName("utf-8")))
     }
 
     @Test
@@ -101,7 +121,8 @@ class PayjpTokenTest {
         val task = PayjpToken(configuration = configuration,
                 tokenApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
                         callbackExecutor = CurrentThreadExecutor()))
-                .createToken(number = "4242424242424242", cvc = "123", expMonth = "02", expYear = "2020")
+                .createToken(number = "4242424242424242",
+                        cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA")
 
         try {
             task.run()
@@ -123,7 +144,8 @@ class PayjpTokenTest {
         val task = PayjpToken(configuration = configuration,
                 tokenApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
                         callbackExecutor = CurrentThreadExecutor()))
-                .createToken(number = "4000000000000002", cvc = "123", expMonth = "02", expYear = "2020")
+                .createToken(number = "4242424242424242",
+                        cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA")
 
         try {
             task.run()
@@ -145,7 +167,8 @@ class PayjpTokenTest {
         val task = PayjpToken(configuration = configuration,
                 tokenApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
                         callbackExecutor = CurrentThreadExecutor()))
-                .createToken(number = "4242424242424242", cvc = "123", expMonth = "02", expYear = "2020")
+                .createToken(number = "4242424242424242",
+                        cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA")
 
         try {
             task.run()
