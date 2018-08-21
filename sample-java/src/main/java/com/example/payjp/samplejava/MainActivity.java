@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("MainActivity", "token => " + data);
                     textTokenId.setText(data.getId());
                     progressBar.setVisibility(View.GONE);
+                    textTokenContent.setText("The token has created.");
                     textTokenContent.setVisibility(View.VISIBLE);
                 }
 

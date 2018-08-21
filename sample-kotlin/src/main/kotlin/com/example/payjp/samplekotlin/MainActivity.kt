@@ -65,6 +65,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onSuccess(data: Token) {
                     Log.i("MainActivity", "token => $data")
                     text_token_id.setText(data.id)
+                    text_token_content.text = "The token has created."
                     progress_bar.visibility = View.GONE
                     text_token_content.visibility = View.VISIBLE
                 }
