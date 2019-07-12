@@ -67,6 +67,13 @@ class PayjpTokenTest {
             PayjpTokenConfiguration.Builder(publicKey = "pk_test_0383a1b8f91e8a6e3ea0e2a9").build()
 
     @Test
+    fun init_callTwice() {
+        val target1 = PayjpToken.init(configuration)
+        val target2 = PayjpToken.init(configuration)
+        assertEquals(target1, target2)
+    }
+
+    @Test
     fun createToken_ok() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
 

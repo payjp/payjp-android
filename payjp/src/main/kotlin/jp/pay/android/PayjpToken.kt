@@ -52,7 +52,7 @@ class PayjpToken internal constructor(
     constructor(publicKey: String) : this(PayjpTokenConfiguration.Builder(publicKey).build())
 
     companion object {
-        private val factory = PayjpTokenFactory()
+        private val factory = SingletonFactory<PayjpToken>()
 
         /**
          * Get singleton instance.
@@ -85,7 +85,7 @@ class PayjpToken internal constructor(
          */
         @JvmStatic
         fun init(configuration: PayjpTokenConfiguration): PayjpToken {
-            return factory.init(configuration)
+            return factory.init { PayjpToken(configuration) }
         }
     }
 
