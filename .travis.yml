@@ -15,6 +15,7 @@ android:
 
 before_install:
   - export TERM=dumb
+  - bundle install --path=vendor/bundle --clean
   - mkdir "$ANDROID_HOME/licenses" || true
   - cp ./.android-sdk-license "$ANDROID_HOME/licenses/android-sdk-license"
   - ./gradlew androidDependencies
@@ -23,6 +24,7 @@ before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
   - rm -rf .gradle/
+  - rm -rf vendor/bundle
 
 cache:
   directories:
@@ -30,6 +32,7 @@ cache:
     - $HOME/.gradle/wrapper/
     - $HOME/.android/build-cache
     - .gradle
+    - vendor/bundle
 
 script:
-    - ./gradlew check
+    - bundle exec fastlane android check
