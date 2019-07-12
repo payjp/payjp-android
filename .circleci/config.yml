@@ -1,0 +1,86 @@
+version: 2
+
+docker_env:
+  - &defaults
+    docker:
+      - image: circleci/android:api-28-alpha
+        environment:
+          JAVA_OPTS: '-Xmx2048m -XX:MaxMetaspaceSize=512m'
+          GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError" -Dkotlin.incremental=false'
+    working_directory: ~/code
+
+cache_step:
+  - gradle_cache:
+      primary: &primary_cache_key_gradle gradle-v1-{{ checksum "/tmp/checksum.txt" }}
+      keys: &all_cache_keys_gradle
+        - *primary_cache_key_gradle
+        - gradle-v1-
+  - gem_cache:
+      primary: &primary_cache_key_gem gem-v1-{{ checksum "Gemfile.lock" }}
+      keys: &all_cache_keys_gem
+        - *primary_cache_key_gem
+        - gem-v1-
+  - restore_cache: &restore_cache_gradle
+      keys: *all_cache_keys_gradle
+  - save_cache: &save_cache_gradle
+      paths:
+        - ~/.android
+        - ~/.gradle
+        - .gradle
+      key: *primary_cache_key_gradle
+  - restore_cache: &restore_cache_gem
+      keys: *all_cache_keys_gem
+  - save_cache: &save_cache_gem
+      paths:
+        - vendor/bundle
+      key: *primary_cache_key_gem
+
+shared_build_steps:
+  - run: &update_sdk
+      name: Update Android SDK
+      command: |
+        mkdir "$ANDROID_HOME/licenses" || true
+        cp ./.android-sdk-license "$ANDROID_HOME/licenses/android-sdk-license"
+  - run: &bundle_install
+      name: bundle install for fastlane
+      command: bundle install --path=vendor/bundle --clean
+  - run: &generate_cache_key
+      name: Generate cache key
+      command: scripts/checksum.sh /tmp/checksum.txt
+jobs:
+  build:
+    resource_class: xlarge
+    <<: *defaults
+    steps:
+      - checkout
+      - run: *update_sdk
+      - run: *generate_cache_key
+      - restore_cache: *restore_cache_gem
+      - run: *bundle_install
+      - save_cache: *save_cache_gem
+      - restore_cache: *restore_cache_gradle
+      - run: ./gradlew androidDependencies
+      - run: bundle exec fastlane android check
+      - save_cache: *save_cache_gradle
+      - store_artifacts:
+          path: payjp/build/outputs
+  create_pr_to_public:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache: *restore_cache_gem
+      - run: *bundle_install
+      - save_cache: *save_cache_gem
+      - run: bundle exec fastlane android create_pr_to_public
+
+workflows:
+  version: 2
+  default_flow:
+    jobs:
+      - build
+      - create_pr_to_public:
+          requires:
+            - build
+          filters:
+              branches:
+                only: master
