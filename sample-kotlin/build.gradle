@@ -64,5 +64,5 @@ dependencies {
     //implementation "jp.pay:payjp-android:0.1.0"
 
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "com.android.support:appcompat-v7:$supportLib"
+    implementation 'androidx.appcompat:appcompat:1.0.2'
 }
