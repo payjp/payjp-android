@@ -23,8 +23,6 @@ before_install:
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
-  - rm -rf .gradle/
-  - rm -rf vendor/bundle
 
 cache:
   directories:
