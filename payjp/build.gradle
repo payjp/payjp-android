@@ -27,13 +27,13 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'org.jetbrains.dokka-android'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion rootProject.sdkVersion
 
     defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
+        minSdkVersion rootProject.minSdkVersion
 
         consumerProguardFiles 'consumer-proguard-rules.pro'
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     sourceSets.all {
@@ -47,8 +47,6 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-
-    implementation "com.android.support:appcompat-v7:$supportLib"
 
     implementation "com.squareup.okhttp3:okhttp:$okHttp"
     implementation "com.squareup.okhttp3:logging-interceptor:$okHttp"
