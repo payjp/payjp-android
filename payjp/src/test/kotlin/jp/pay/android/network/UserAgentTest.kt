@@ -20,34 +20,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android
+package jp.pay.android.network
 
-/**
- * PayjpTokenFactory
- *
- */
-internal class PayjpTokenFactory {
-    @Volatile private var instance: PayjpToken? = null
+import org.hamcrest.Matchers.not
+import org.hamcrest.Matchers.startsWith
+import org.junit.Assert.assertThat
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
-    fun init(configuration: PayjpTokenConfiguration): PayjpToken {
-        synchronized(this) {
-            if (instance != null) {
-                throw IllegalStateException("PayjpToken is already instantiated!")
-            }
-            instance = PayjpToken(configuration)
-            return instance as PayjpToken
-        }
+@RunWith(JUnit4::class)
+class UserAgentTest {
+
+    @Test
+    fun startWithId() {
+        assertThat(UserAgent.create(), startsWith("jp.pay.android/"))
     }
 
-    fun get(): PayjpToken {
-        if (instance == null) {
-            synchronized(this) {
-                if (instance == null) {
-                    throw IllegalStateException("PayjpToken is not initialized. " +
-                            "Please call `PayjpToken#with(publicKey)` before using.")
-                }
-            }
-        }
-        return instance as PayjpToken
+    @Test
+    fun versionIsNotEmpty() {
+        assertThat(UserAgent.create(), not(startsWith("jp.pay.android/;")))
     }
 }
