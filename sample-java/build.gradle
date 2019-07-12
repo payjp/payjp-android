@@ -24,12 +24,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion rootProject.sdkVersion
 
     defaultConfig {
         applicationId "com.example.payjp.samplejava"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.sdkVersion
         versionCode 1
         versionName "1.0.0"
     }

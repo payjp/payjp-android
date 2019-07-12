@@ -54,7 +54,7 @@ subprojects {
 ext {
 
     minSdkVersion = 14
-    targetSdkVersion = 27
+    sdkVersion = 28
 
     supportLib = "27.1.1"
     okHttp = "3.9.0"
