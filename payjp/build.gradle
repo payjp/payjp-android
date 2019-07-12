@@ -31,6 +31,7 @@ android {
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
+        versionName VERSION_NAME
 
         consumerProguardFiles 'consumer-proguard-rules.pro'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
