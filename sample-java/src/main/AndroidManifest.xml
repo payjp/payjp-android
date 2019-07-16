@@ -27,7 +27,7 @@
     package="com.example.payjp.samplejava">
 
     <application
-        android:name=".MainApplication"
+        android:name=".SampleApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
