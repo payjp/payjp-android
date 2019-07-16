@@ -32,13 +32,9 @@ import jp.pay.android.model.Token
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_get_token
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.progress_bar
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_card_exp_month
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_card_exp_year
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_card_cvc
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_card_number
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_card_name
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_id
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_content
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.*
 
 class CardFormViewSampleActivity : AppCompatActivity() {
 
@@ -47,17 +43,17 @@ class CardFormViewSampleActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_generate_token_sample)
+        setContentView(R.layout.activity_card_form_view_sample)
 
         button_create_token.setOnClickListener {
             progress_bar.visibility = View.VISIBLE
             text_token_content.visibility = View.INVISIBLE
             // create token
-            val number = text_card_number.text.toString()
-            val cvc = text_card_cvc.text.toString()
-            val expMonth = text_card_exp_month.text.toString()
-            val expYear = text_card_exp_year.text.toString()
-            val name = text_card_name.text.toString()
+            val number = card_form_view.numberEditText.text.toString()
+            val cvc = card_form_view.cvcEditText.text.toString()
+            val expMonth = card_form_view.expirationEditText.text.toString().split("/")[0]
+            val expYear = card_form_view.expirationEditText.text.toString().split("/")[1]
+            val name = card_form_view.holderNameEditText.text.toString()
 
             createToken = PayjpToken.getInstance().createToken(number = number, cvc = cvc,
                 expMonth = expMonth, expYear = expYear, name = name)
