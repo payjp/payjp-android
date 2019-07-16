@@ -29,7 +29,7 @@ import android.app.Application;
 import jp.pay.android.PayjpToken;
 import jp.pay.android.PayjpTokenConfiguration;
 
-public class MainApplication extends Application {
+public class SampleApplication extends Application {
 
     @Override
     public void onCreate() {
