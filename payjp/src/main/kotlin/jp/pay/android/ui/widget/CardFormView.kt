@@ -44,7 +44,7 @@ class CardFormView @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr), TokenCreatableView {
 
     private val numberEditText: TextInputEditText
-    private val expirationEditText: TextInputEditText
+    private val expirationEditText: CardExpirationEditText
     private val cvcEditText: TextInputEditText
     private val holderNameEditText: TextInputEditText
     private var onValidateInputListener: TokenCreatableView.OnValidateInputListener? = null
