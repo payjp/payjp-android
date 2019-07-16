@@ -26,7 +26,7 @@ import android.app.Application
 import jp.pay.android.PayjpToken
 import jp.pay.android.PayjpTokenConfiguration
 
-class MainApplication : Application() {
+class SampleApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
