@@ -38,7 +38,7 @@ import java.util.concurrent.Executor
 class PayjpToken internal constructor(
     private val configuration: PayjpTokenConfiguration,
     private val tokenApi: TokenApi
-): PayjpTokenService {
+) : PayjpTokenService {
 
     constructor(configuration: PayjpTokenConfiguration) : this(
         configuration = configuration,
