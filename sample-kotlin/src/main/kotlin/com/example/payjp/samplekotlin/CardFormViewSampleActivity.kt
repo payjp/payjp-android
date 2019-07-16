@@ -34,7 +34,7 @@ import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_crea
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.progress_bar
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_id
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_content
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.*
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.card_form_view
 
 class CardFormViewSampleActivity : AppCompatActivity() {
 
@@ -45,18 +45,14 @@ class CardFormViewSampleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card_form_view_sample)
 
+        card_form_view.setOnValidateInputListener { _, isValid ->
+            button_create_token.isEnabled = isValid
+        }
         button_create_token.setOnClickListener {
             progress_bar.visibility = View.VISIBLE
             text_token_content.visibility = View.INVISIBLE
             // create token
-            val number = card_form_view.numberEditText.text.toString()
-            val cvc = card_form_view.cvcEditText.text.toString()
-            val expMonth = card_form_view.expirationEditText.text.toString().split("/")[0]
-            val expYear = card_form_view.expirationEditText.text.toString().split("/")[1]
-            val name = card_form_view.holderNameEditText.text.toString()
-
-            createToken = PayjpToken.getInstance().createToken(number = number, cvc = cvc,
-                expMonth = expMonth, expYear = expYear, name = name)
+            createToken = card_form_view.createToken()
             createToken?.enqueue(object : Task.Callback<Token> {
                 override fun onSuccess(data: Token) {
                     Log.i("CardFormViewSample", "token => $data")

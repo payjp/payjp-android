@@ -27,8 +27,13 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
+import androidx.annotation.VisibleForTesting
 import com.google.android.material.textfield.TextInputEditText
+import jp.pay.android.PayjpToken
+import jp.pay.android.PayjpTokenService
 import jp.pay.android.R
+import jp.pay.android.Task
+import jp.pay.android.model.Token
 
 /**
  * CardForm Widget
@@ -37,13 +42,15 @@ class CardFormView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : LinearLayout(context, attrs, defStyleAttr) {
+) : LinearLayout(context, attrs, defStyleAttr), TokenCreatableView {
 
-    // TODO make private
-    val numberEditText: TextInputEditText
-    val expirationEditText: TextInputEditText
-    val cvcEditText: TextInputEditText
-    val holderNameEditText: TextInputEditText
+    private val numberEditText: TextInputEditText
+    private val expirationEditText: TextInputEditText
+    private val cvcEditText: TextInputEditText
+    private val holderNameEditText: TextInputEditText
+    private var onValidateInputListener: TokenCreatableView.OnValidateInputListener? = null
+    @VisibleForTesting
+    internal var tokenService: PayjpTokenService
 
     init {
         orientation = VERTICAL
@@ -52,5 +59,29 @@ class CardFormView @JvmOverloads constructor(
         expirationEditText = findViewById(R.id.input_edit_expiration)
         cvcEditText = findViewById(R.id.input_edit_cvc)
         holderNameEditText = findViewById(R.id.input_edit_holder_name)
+        // TODO: format input
+        // request
+        tokenService = PayjpToken.getInstance()
+    }
+
+    override fun isValid(): Boolean {
+        // TODO validation
+        return true
+    }
+
+    override fun setOnValidateInputListener(listener: TokenCreatableView.OnValidateInputListener?) {
+        this.onValidateInputListener = listener
+    }
+
+    override fun createToken(): Task<Token> {
+        // TODO validate
+        // TODO いい感じにする
+        return tokenService.createToken(
+            number = numberEditText.text.toString(),
+            expMonth = expirationEditText.text.toString().split("/")[0],
+            expYear = expirationEditText.text.toString().split("/")[1],
+            cvc = cvcEditText.text.toString(),
+            name = holderNameEditText.text.toString()
+        )
     }
 }
