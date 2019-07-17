@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?><!--
   ~
-  ~ Copyright (c) 2018 PAY, Inc.
+  ~ Copyright (c) 2019 PAY, Inc.
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -33,50 +33,10 @@
             android:padding="16dp"
             tools:ignore="HardcodedText">
 
-        <EditText
-                android:id="@+id/text_card_number"
+        <jp.pay.android.ui.widget.CardFormView
+                android:id="@+id/card_form_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="card number"
-                android:inputType="number"
-                android:text="4242424242424242"
-                android:textSize="14sp" />
-
-        <EditText
-                android:id="@+id/text_card_cvc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="card cvc"
-                android:inputType="number"
-                android:text="123"
-                android:textSize="14sp" />
-
-        <EditText
-                android:id="@+id/text_card_exp_month"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="card exp month"
-                android:inputType="number"
-                android:text="12"
-                android:textSize="14sp" />
-
-        <EditText
-                android:id="@+id/text_card_exp_year"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="card exp year"
-                android:inputType="number"
-                android:text="2020"
-                android:textSize="14sp" />
-
-        <EditText
-                android:id="@+id/text_card_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="card name"
-                android:inputType="text"
-                android:text="TARO YAMADA"
-                android:textSize="14sp" />
+                android:layout_height="wrap_content"/>
 
         <LinearLayout
                 android:layout_width="match_parent"

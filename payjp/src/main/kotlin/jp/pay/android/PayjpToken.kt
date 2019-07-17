@@ -38,7 +38,7 @@ import java.util.concurrent.Executor
 class PayjpToken internal constructor(
     private val configuration: PayjpTokenConfiguration,
     private val tokenApi: TokenApi
-) {
+) : PayjpTokenService {
 
     constructor(configuration: PayjpTokenConfiguration) : this(
         configuration = configuration,
@@ -99,13 +99,12 @@ class PayjpToken internal constructor(
      * Create token from card.
      *
      */
-    @JvmOverloads
-    fun createToken(
+    override fun createToken(
         number: String,
         cvc: String,
         expMonth: String,
         expYear: String,
-        name: String? = null
+        name: String?
     ): Task<Token> {
         return tokenApi.createToken(authorization, number, cvc, expMonth, expYear, name)
     }
@@ -114,7 +113,7 @@ class PayjpToken internal constructor(
      * Obtain token from token id.
      *
      */
-    fun getToken(id: String): Task<Token> {
+    override fun getToken(id: String): Task<Token> {
         return tokenApi.getToken(authorization, id)
     }
 
