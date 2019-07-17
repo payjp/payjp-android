@@ -22,29 +22,36 @@
  */
 package jp.pay.android.model
 
-import com.squareup.moshi.FromJson
-import com.squareup.moshi.JsonDataException
-import com.squareup.moshi.ToJson
+import org.hamcrest.Matchers.`is`
+import org.junit.Assert.assertThat
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.ParameterizedRobolectricTestRunner
 
-/**
- * CardBrand
- */
-enum class CardBrand(val rawValue: String) {
-    VISA("Visa"),
-    MASTER_CARD("MasterCard"),
-    JCB("JCB"),
-    AMEX("American Express"),
-    DINERS_CLUB("Diners Club"),
-    DISCOVER("Discover"),
-    UNKNOWN("Unknown");
+@RunWith(ParameterizedRobolectricTestRunner::class)
+class CardBrandDetectorTest(
+    private val digits: String,
+    private val brand: CardBrand
+) {
 
-    class JsonAdapter {
-
-        @ToJson fun toJson(brand: CardBrand): String = brand.rawValue
-
-        @FromJson fun fromJson(brand: String): CardBrand {
-            return values().filter { it != UNKNOWN }.firstOrNull { it.rawValue == brand }
-                    ?: throw JsonDataException("unknown brand: $brand")
+    companion object {
+        @JvmStatic
+        @ParameterizedRobolectricTestRunner.Parameters
+        fun data(): List<Array<out Any?>> {
+            return listOf(
+                arrayOf("4242424242424242", CardBrand.VISA),
+                arrayOf("0", CardBrand.UNKNOWN),
+                arrayOf("9999", CardBrand.UNKNOWN),
+                arrayOf("77", CardBrand.UNKNOWN),
+                arrayOf("1234", CardBrand.UNKNOWN),
+                arrayOf("111122223333444455556666", CardBrand.UNKNOWN),
+                arrayOf("99999999999999999999999999999999999999999999999999", CardBrand.UNKNOWN)
+            )
         }
+    }
+
+    @Test
+    fun detectBrand() {
+        assertThat(CardBrandDetector.detectWithDigits(digits), `is`(brand))
     }
 }

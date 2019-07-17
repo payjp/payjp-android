@@ -22,29 +22,15 @@
  */
 package jp.pay.android.model
 
-import com.squareup.moshi.FromJson
-import com.squareup.moshi.JsonDataException
-import com.squareup.moshi.ToJson
+internal data class CardNumberInput(
+    val input: String?,
+    val brandDetector: CardBrandDetectable = CardBrandDetector
+) {
 
-/**
- * CardBrand
- */
-enum class CardBrand(val rawValue: String) {
-    VISA("Visa"),
-    MASTER_CARD("MasterCard"),
-    JCB("JCB"),
-    AMEX("American Express"),
-    DINERS_CLUB("Diners Club"),
-    DISCOVER("Discover"),
-    UNKNOWN("Unknown");
+    val brand: CardBrand = input?.let { CardBrandDetector.detectWithDigits(it) } ?: CardBrand.UNKNOWN
+    val value: String?
 
-    class JsonAdapter {
-
-        @ToJson fun toJson(brand: CardBrand): String = brand.rawValue
-
-        @FromJson fun fromJson(brand: String): CardBrand {
-            return values().filter { it != UNKNOWN }.firstOrNull { it.rawValue == brand }
-                    ?: throw JsonDataException("unknown brand: $brand")
-        }
+    init {
+        value = input?.filter(Character::isDigit) // TODO validation
     }
 }

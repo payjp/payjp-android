@@ -28,10 +28,12 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.VisibleForTesting
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import jp.pay.android.PayjpToken
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.R
 import jp.pay.android.Task
+import jp.pay.android.model.CardNumberInput
 import jp.pay.android.model.Token
 
 /**
@@ -43,7 +45,8 @@ class CardFormView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr), TokenCreatableView {
 
-    private val numberEditText: TextInputEditText
+    private val numberLayout: TextInputLayout
+    private val numberEditText: CardNumberEditText
     private val expirationEditText: CardExpirationEditText
     private val cvcEditText: TextInputEditText
     private val holderNameEditText: TextInputEditText
@@ -54,11 +57,13 @@ class CardFormView @JvmOverloads constructor(
     init {
         orientation = VERTICAL
         View.inflate(context, R.layout.card_form_view, this)
+        numberLayout = findViewById(R.id.input_layout_number)
         numberEditText = findViewById(R.id.input_edit_number)
         expirationEditText = findViewById(R.id.input_edit_expiration)
         cvcEditText = findViewById(R.id.input_edit_cvc)
         holderNameEditText = findViewById(R.id.input_edit_holder_name)
         // TODO: format input
+        watchInputUpdate()
         // request
         tokenService = PayjpToken.getInstance()
     }
@@ -82,5 +87,15 @@ class CardFormView @JvmOverloads constructor(
             cvc = cvcEditText.text.toString(),
             name = holderNameEditText.text.toString()
         )
+    }
+
+    private fun watchInputUpdate() {
+        numberEditText.onChangeCardNumberInput = object : CardNumberEditText.OnChangeCardNumberInputListener {
+            override fun onChangeCardNumberInput(cardNumberInput: CardNumberInput) {
+                // TODO validation
+                // TODO ブランドロゴの表示
+                numberLayout.helperText = "brand = ${cardNumberInput.brand}"
+            }
+        }
     }
 }
