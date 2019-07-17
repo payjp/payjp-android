@@ -46,10 +46,14 @@ class CardExpirationEditText @JvmOverloads constructor(
 
     private fun addTextChangedListenerForFormat() {
         addTextChangedListener(object : TextWatcher {
+            var ignoreChanges: Boolean = false
             var latestChangeStart: Int = 0
             var latestInsertionSize: Int = 0
 
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+                if (ignoreChanges) {
+                    return
+                }
                 latestChangeStart = start
                 latestInsertionSize = after
             }
@@ -58,17 +62,25 @@ class CardExpirationEditText @JvmOverloads constructor(
             }
 
             override fun afterTextChanged(s: Editable) {
+                if (ignoreChanges) {
+                    return
+                }
                 if (!isInputCorrect(s)) {
+                    ignoreChanges = true
                     s.replace(0, s.length, buildCorrectString(createDigitArray(s)))
+                    ignoreChanges = false
                 }
             }
 
             private fun isInputCorrect(s: Editable): Boolean = when {
+                // too long
                 s.length > TOTAL_MAX_SYMBOLS -> false
-                // NOTE: When we delete 1 character from `11/`, input should be `11`.
-                // But on the other hand, we expect `11/` when we input `11`.
-                // So we allow two digit without `/` only after deletion.
-                s.length == DELIMITER_INDEX -> latestChangeStart == 2 && latestInsertionSize == 0
+                // When we add `1` from `1`, input should be `11/`.
+                s.length == 2 && latestInsertionSize > 0 -> false
+                // When we delete 1 character from `11/`, input should be `1`.
+                s.length == 2 && latestChangeStart == 2 && latestInsertionSize == 0 -> false
+                // When we delete 1 character from `12/1`, input should be `12`.
+                s.length == 3 && latestChangeStart == 3 && latestInsertionSize == 0 -> false
                 else -> (0 until s.length).all { i ->
                     val c = s[i]
                     when (i) {
@@ -92,10 +104,13 @@ class CardExpirationEditText @JvmOverloads constructor(
                     }
                     if (Character.isDigit(c)) {
                         formatted.append(c)
-                        if (index < digits.size - 1 && index + 1 == DELIMITER_INDEX) {
+                        if (index < digits.size - 1 && index + 1 == DELIMITER_INDEX && latestInsertionSize > 0) {
                             formatted.append(DELIMITER_CHAR)
                         }
                     }
+                }
+                if (formatted.length == 2 && latestChangeStart == 2 && latestInsertionSize == 0) {
+                    formatted.delete(formatted.length - 1, formatted.length)
                 }
 
                 return formatted.toString()
