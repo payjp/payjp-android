@@ -66,13 +66,14 @@
                 android:layout_marginRight="8dp"
                 app:layout_constraintEnd_toStartOf="@+id/input_layout_cvc">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <jp.pay.android.ui.widget.CardExpirationEditText
                     android:id="@+id/input_edit_expiration"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
+                    android:inputType="date"
                     android:imeOptions="actionNext"
-                    tools:text="2020/12"/>
+                    tools:text="12/20"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
