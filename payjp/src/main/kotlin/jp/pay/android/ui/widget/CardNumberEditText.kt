@@ -23,44 +23,17 @@
 package jp.pay.android.ui.widget
 
 import android.content.Context
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.AttributeSet
-import com.google.android.material.textfield.TextInputEditText
 import jp.pay.android.model.CardNumberInput
 
 internal class CardNumberEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : TextInputEditText(context, attrs) {
-
-    interface OnChangeCardNumberInputListener {
-        fun onChangeCardNumberInput(cardNumberInput: CardNumberInput)
-    }
-
-    var onChangeCardNumberInput: OnChangeCardNumberInputListener? = null
-    var cardNumberInput: CardNumberInput? = null
-        set(value) {
-            field = value
-            if (value != null) {
-                onChangeCardNumberInput?.onChangeCardNumberInput(value)
-            }
-        }
+) : CardComponentInputEditText<CardNumberInput>(context, attrs) {
 
     init {
-        addTextChangedListenerForValue()
         // TODO format
     }
 
-    private fun addTextChangedListenerForValue() {
-        addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {}
-
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                cardNumberInput = CardNumberInput(s.toString())
-            }
-        })
-    }
+    override fun mapInput(input: String?): CardNumberInput = CardNumberInput(input)
 }

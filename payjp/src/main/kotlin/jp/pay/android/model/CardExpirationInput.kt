@@ -22,15 +22,27 @@
  */
 package jp.pay.android.model
 
-internal data class CardNumberInput(
+import android.text.TextUtils
+
+/**
+ * Card expiration input
+ *
+ * @param input input string e.g. `01/20`
+ * @param delimiter e.g. `/` in `01/20`
+ */
+internal data class CardExpirationInput(
     val input: String?,
-    val brandDetector: CardBrandDetectable = CardBrandDetector
-) : CardComponentInput<String> {
+    val delimiter: Char
+) : CardComponentInput<CardExpiration> {
 
-    val brand: CardBrand = input?.let { CardBrandDetector.detectWithDigits(it) } ?: CardBrand.UNKNOWN
-    override val value: String? = validate()
+    override val value: CardExpiration? = validate()
 
-    private fun validate(): String? {
-        return input?.filter(Character::isDigit) // TODO validation
+    private fun validate(): CardExpiration? = input?.split(delimiter)?.takeIf {
+        // TODO validation
+        it.size == 2 && it.all { part -> part.length == 2 && TextUtils.isDigitsOnly(part) }
+    }?.let {
+        val month = it[0]
+        val year = "20" + it[1]
+        CardExpiration(month, year)
     }
 }

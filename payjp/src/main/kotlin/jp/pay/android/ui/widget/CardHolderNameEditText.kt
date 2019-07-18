@@ -20,17 +20,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.model
+package jp.pay.android.ui.widget
 
-internal data class CardNumberInput(
-    val input: String?,
-    val brandDetector: CardBrandDetectable = CardBrandDetector
-) : CardComponentInput<String> {
+import android.content.Context
+import android.util.AttributeSet
+import jp.pay.android.model.CardHolderNameInput
 
-    val brand: CardBrand = input?.let { CardBrandDetector.detectWithDigits(it) } ?: CardBrand.UNKNOWN
-    override val value: String? = validate()
+internal class CardHolderNameEditText @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null
+) : CardComponentInputEditText<CardHolderNameInput>(context, attrs) {
 
-    private fun validate(): String? {
-        return input?.filter(Character::isDigit) // TODO validation
-    }
+    override fun mapInput(input: String?): CardHolderNameInput = CardHolderNameInput(input)
 }

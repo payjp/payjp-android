@@ -22,15 +22,11 @@
  */
 package jp.pay.android.model
 
-internal data class CardNumberInput(
-    val input: String?,
-    val brandDetector: CardBrandDetectable = CardBrandDetector
+internal data class CardHolderNameInput(
+    val input: String?
 ) : CardComponentInput<String> {
 
-    val brand: CardBrand = input?.let { CardBrandDetector.detectWithDigits(it) } ?: CardBrand.UNKNOWN
     override val value: String? = validate()
 
-    private fun validate(): String? {
-        return input?.filter(Character::isDigit) // TODO validation
-    }
+    private fun validate() = input?.takeIf { it.isNotEmpty() }
 }

@@ -20,17 +20,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.model
+package jp.pay.android.ui.widget
 
-internal data class CardNumberInput(
-    val input: String?,
-    val brandDetector: CardBrandDetectable = CardBrandDetector
-) : CardComponentInput<String> {
+import jp.pay.android.model.CardComponentInput
 
-    val brand: CardBrand = input?.let { CardBrandDetector.detectWithDigits(it) } ?: CardBrand.UNKNOWN
-    override val value: String? = validate()
+/**
+ * CardComponentInputView
+ *
+ * UI Widget respond to [CardComponentInput].
+ * It will notify of the change in own input.
+ */
+internal interface CardComponentInputView<T : CardComponentInput<*>> {
 
-    private fun validate(): String? {
-        return input?.filter(Character::isDigit) // TODO validation
+    var onChangeInputListener: OnChangeInputListener<T>?
+
+    fun currentValue(): T?
+
+    /**
+     * Validate input immediately.
+     */
+    fun validate()
+
+    interface OnChangeInputListener<T> {
+        fun onChangeInput(input: T)
     }
 }

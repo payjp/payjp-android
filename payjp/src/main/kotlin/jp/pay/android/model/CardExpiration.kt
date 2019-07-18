@@ -22,15 +22,10 @@
  */
 package jp.pay.android.model
 
-internal data class CardNumberInput(
-    val input: String?,
-    val brandDetector: CardBrandDetectable = CardBrandDetector
-) : CardComponentInput<String> {
-
-    val brand: CardBrand = input?.let { CardBrandDetector.detectWithDigits(it) } ?: CardBrand.UNKNOWN
-    override val value: String? = validate()
-
-    private fun validate(): String? {
-        return input?.filter(Character::isDigit) // TODO validation
-    }
-}
+/**
+ * Card Expiration data
+ *
+ * @param month month e.g. `12`, `05`
+ * @param year year e.g. `2020`
+ */
+data class CardExpiration(val month: String, val year: String)

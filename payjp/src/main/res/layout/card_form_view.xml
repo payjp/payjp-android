@@ -42,6 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
+                android:inputType="phone"
                 android:maxLines="1"
                 android:autofillHints="creditCardNumber"
                 tools:text="1234 1234 1234 1234"
@@ -90,7 +91,7 @@
                 app:layout_constraintStart_toEndOf="@+id/input_layout_expiration"
                 app:layout_constraintHorizontal_bias="0.5">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <jp.pay.android.ui.widget.CardCvcEditText
                     android:id="@+id/input_edit_cvc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -113,10 +114,11 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <jp.pay.android.ui.widget.CardHolderNameEditText
                 android:id="@+id/input_edit_holder_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="textCapCharacters"
                 android:maxLines="1"
                 tools:text="TARO YAMADA"/>
 

@@ -53,7 +53,7 @@ class CardExpirationEditTextTest(
         }
     }
 
-    lateinit var editText: CardExpirationEditText
+    private lateinit var editText: CardExpirationEditText
 
     @Before
     fun setUp() {
