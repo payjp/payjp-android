@@ -20,25 +20,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.network
+package jp.pay.android
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.hamcrest.Matchers.not
-import org.hamcrest.Matchers.startsWith
-import org.junit.Assert.assertThat
-import org.junit.Test
-import org.junit.runner.RunWith
+import jp.pay.android.ui.widget.CardFormView
 
-@RunWith(AndroidJUnit4::class)
-class UserAgentTest {
+data class CardRobot(
+    val number: String = "4242424242424242",
+    val exp: String = "12/30",
+    val cvc: String = "123",
+    val name: String = "TARO YAMADA"
+) {
 
-    @Test
-    fun startWithId() {
-        assertThat(UserAgent.create(), startsWith("jp.pay.android/"))
-    }
-
-    @Test
-    fun versionIsNotEmpty() {
-        assertThat(UserAgent.create(), not(startsWith("jp.pay.android/;")))
+    fun input(cardFormView: CardFormView) {
+        cardFormView.apply {
+            numberEditText.setText(number)
+            expirationEditText.setText(exp)
+            cvcEditText.setText(cvc)
+            holderNameEditText.setText(name)
+        }
     }
 }
