@@ -30,6 +30,7 @@ import jp.pay.android.PayjpToken
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.R
 import jp.pay.android.TestStubs
+import jp.pay.android.exception.PayjpInvalidCardFormException
 import jp.pay.android.util.Tasks
 import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertThat
@@ -80,6 +81,17 @@ class CardFormViewTest {
     }
 
     @Test
+    fun validateCardForm_false_without_input() {
+        assertThat(cardFormView.validateCardForm(), `is`(false))
+    }
+
+    @Test
+    fun validateCardForm_true_with_correct_input() {
+        CardRobot().input(cardFormView)
+        assertThat(cardFormView.validateCardForm(), `is`(true))
+    }
+
+    @Test
     fun onValidateInput_update() {
         // 1. set listener (call immediately)
         cardFormView.setOnValidateInputListener(mockValidateInputListener)
@@ -101,7 +113,7 @@ class CardFormViewTest {
         verify(mockValidateInputListener).onValidateInput(cardFormView, false)
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test(expected = PayjpInvalidCardFormException::class)
     fun createToken_skip_if_not_valid() {
         cardFormView.createToken().run()
     }

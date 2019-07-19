@@ -24,6 +24,8 @@
 package jp.pay.android.ui.widget;
 
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import jp.pay.android.Task;
 import jp.pay.android.model.Token;
 
@@ -34,16 +36,32 @@ public interface TokenCreatableView {
 
     /**
      * Check current card input.
+     *
+     * @return true if the card input is valid.
      */
     boolean isValid();
 
-    void setOnValidateInputListener(OnValidateInputListener listener);
+    /**
+     * Validate input and force update form.
+     *
+     * @return true if the card input is valid.
+     */
+    boolean validateCardForm();
+
+    /**
+     *
+     * @param listener listener
+     */
+    void setOnValidateInputListener(@Nullable OnValidateInputListener listener);
 
     /**
      * Create token.
+     *
+     *
      * @see [jp.pay.android.PayjpTokenService.createToken]
      * @return task
      */
+    @NonNull
     Task<Token> createToken();
 
     /**
@@ -55,6 +73,6 @@ public interface TokenCreatableView {
          * @param view    view
          * @param isValid if true card input is ready to create token.
          */
-        void onValidateInput(TokenCreatableView view, boolean isValid);
+        void onValidateInput(@NonNull TokenCreatableView view, boolean isValid);
     }
 }

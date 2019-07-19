@@ -32,6 +32,7 @@ import jp.pay.android.PayjpToken
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.R
 import jp.pay.android.Task
+import jp.pay.android.exception.PayjpInvalidCardFormException
 import jp.pay.android.model.CardCvcInput
 import jp.pay.android.model.CardExpirationInput
 import jp.pay.android.model.CardHolderNameInput
@@ -106,14 +107,18 @@ class CardFormView @JvmOverloads constructor(
             (cardHolderNameInput?.valid ?: false)
     }
 
+    override fun validateCardForm(): Boolean {
+        forceValidate()
+        updateErrorUI()
+        return isValid
+    }
+
     override fun setOnValidateInputListener(listener: TokenCreatableView.OnValidateInputListener?) {
         this.onValidateInputListener = listener
         onValidateInputListener?.onValidateInput(this, isValid)
     }
 
     override fun createToken(): Task<Token> {
-        forceValidate()
-        updateErrorUI()
         return if (isValid) {
             // TODO いい感じにする
             tokenService.createToken(
@@ -125,7 +130,7 @@ class CardFormView @JvmOverloads constructor(
             )
         } else {
             Tasks.failure(
-                IllegalStateException("The inputs are not valid. Please check `isValid()` before call `createToken()`")
+                PayjpInvalidCardFormException("Card form is not valid")
             )
         }
     }
