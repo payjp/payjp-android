@@ -1,0 +1,85 @@
+/*
+ *
+ * Copyright (c) 2019 PAY, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+package jp.pay.android.validator
+
+import androidx.annotation.VisibleForTesting
+
+internal object CardValidator {
+
+    /**
+     * validate card number. It does not check brand.
+     *
+     * @param cardNumber card number
+     * @return valid if true
+     */
+    fun isValidCardNumber(cardNumber: String): Boolean {
+        return isCardNumberLengthValid(cardNumber) && isLuhnValid(cardNumber)
+    }
+
+    /**
+     * Card number length check
+     *
+     * Strictly speaking, The length depends on the brand. (e.g. american express)
+     * But in client sdk, it's enough to check the range.
+     *
+     * @param cardNumber card number
+     */
+    @VisibleForTesting
+    fun isCardNumberLengthValid(cardNumber: String): Boolean {
+        return cardNumber.length in 14..16
+    }
+
+    /**
+     * Check Luhn algorithm
+     *
+     * @param cardNumber card number
+     * @return valid if true
+     */
+    @VisibleForTesting
+    fun isLuhnValid(cardNumber: String): Boolean {
+        var isOdd = true
+        var sum = 0
+
+        for (index in cardNumber.length - 1 downTo 0) {
+            val c = cardNumber[index]
+            if (!Character.isDigit(c)) {
+                return false
+            }
+
+            var digit = Character.getNumericValue(c)
+            isOdd = !isOdd
+
+            if (isOdd) {
+                digit *= 2
+            }
+
+            if (digit > 9) {
+                digit -= 9
+            }
+
+            sum += digit
+        }
+
+        return sum % 10 == 0
+    }
+}
