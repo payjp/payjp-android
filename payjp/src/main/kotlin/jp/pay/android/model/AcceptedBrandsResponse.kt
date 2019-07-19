@@ -20,32 +20,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android
+package jp.pay.android.model
 
-import jp.pay.android.model.AcceptedBrandsResponse
-import jp.pay.android.model.Token
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
- * interface for retrieve and create token.
+ * Accepted brands response
+ *
+ * @param brands brand list accepted
+ * @param livemode livemode if true
  */
-interface PayjpTokenService {
-
-    fun createToken(
-        number: String,
-        cvc: String,
-        expMonth: String,
-        expYear: String
-    ): Task<Token> = createToken(number, cvc, expMonth, expYear, null)
-
-    fun createToken(
-        number: String,
-        cvc: String,
-        expMonth: String,
-        expYear: String,
-        name: String?
-    ): Task<Token>
-
-    fun getToken(id: String): Task<Token>
-
-    fun getAcceptedBrands(): Task<AcceptedBrandsResponse>
-}
+@JsonClass(generateAdapter = true)
+data class AcceptedBrandsResponse(
+    @Json(name = "card_types_supported") val brands: List<CardBrand>,
+    val livemode: Boolean
+)
