@@ -26,7 +26,6 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.CardRobot
-import jp.pay.android.PayjpToken
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.R
 import jp.pay.android.TestStubs
@@ -59,12 +58,7 @@ class CardFormViewTest {
         val context: Context = ApplicationProvider.getApplicationContext()
         // require appcompat to
         context.setTheme(R.style.Theme_AppCompat)
-        // Set up because it called from inside of CardFormView.
-        // It will be replaced with mock.
-        PayjpToken.init("")
-        cardFormView = CardFormView(context).apply {
-            tokenService = mockTokenService
-        }
+        cardFormView = CardFormView(context).apply { inject(mockTokenService) }
         `when`(mockTokenService.createToken(anyString(), anyString(), anyString(), anyString(), anyString()))
             .thenReturn(Tasks.success(TestStubs.newToken()))
     }

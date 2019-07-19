@@ -27,12 +27,16 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import com.google.android.material.textfield.TextInputLayout
-import jp.pay.android.PayjpToken
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.R
 import jp.pay.android.Task
 import jp.pay.android.exception.PayjpInvalidCardFormException
+import jp.pay.android.model.AcceptedBrandsResponse
+import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardCvcInput
 import jp.pay.android.model.CardExpirationInput
 import jp.pay.android.model.CardHolderNameInput
@@ -48,7 +52,7 @@ class CardFormView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : LinearLayout(context, attrs, defStyleAttr), TokenCreatableView {
+) : LinearLayout(context, attrs, defStyleAttr), TokenCreatableView, LifecycleObserver {
 
     // view
     private val numberLayout: TextInputLayout
@@ -64,7 +68,9 @@ class CardFormView @JvmOverloads constructor(
     private var onValidateInputListener: TokenCreatableView.OnValidateInputListener? = null
     // service
     @VisibleForTesting
-    internal var tokenService: PayjpTokenService
+    private lateinit var tokenService: PayjpTokenService
+    private var task: Task<AcceptedBrandsResponse>? = null
+
     // input value
     private var cardNumberInput: CardNumberInput? = null
         set(value) {
@@ -86,6 +92,12 @@ class CardFormView @JvmOverloads constructor(
             field = value
             onUpdateInput()
         }
+    // result
+    private var brands: List<CardBrand>? = null
+        set(value) {
+            field = value
+            onUpdateBrands()
+        }
 
     init {
         orientation = VERTICAL
@@ -96,8 +108,34 @@ class CardFormView @JvmOverloads constructor(
         cvcEditText = findViewById(R.id.input_edit_cvc)
         holderNameEditText = findViewById(R.id.input_edit_holder_name)
         watchInputUpdate()
-        // request
-        tokenService = PayjpToken.getInstance()
+    }
+
+    // TODO improve
+    fun registerLifecycle(lifecycle: Lifecycle) {
+        lifecycle.addObserver(this)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun startFetchingAcceptedBrands() {
+        if (brands == null) {
+            task = tokenService.getAcceptedBrands()
+            task?.enqueue(object : Task.Callback<AcceptedBrandsResponse> {
+                override fun onSuccess(data: AcceptedBrandsResponse) {
+                    brands = data.brands
+                }
+
+                override fun onError(throwable: Throwable) {}
+            })
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    fun stopFetchingAcceptedBrands() {
+        task?.cancel()
+    }
+
+    override fun inject(tokenService: PayjpTokenService) {
+        this.tokenService = tokenService
     }
 
     override fun isValid(): Boolean {
@@ -143,6 +181,10 @@ class CardFormView @JvmOverloads constructor(
         val valid = isValid
         updateErrorUI()
         onValidateInputListener?.onValidateInput(this, valid)
+    }
+
+    private fun onUpdateBrands() {
+        numberEditText.acceptedBrands = brands
     }
 
     private fun forceValidate() {

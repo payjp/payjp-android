@@ -26,6 +26,9 @@ package jp.pay.android.ui.widget;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
+import jp.pay.android.PayjpTokenService;
 import jp.pay.android.Task;
 import jp.pay.android.model.Token;
 
@@ -33,6 +36,14 @@ import jp.pay.android.model.Token;
  * Interface of view create token.
  */
 public interface TokenCreatableView {
+
+    /**
+     * Inject PayjpTokenService to generate token in server.
+     *
+     *
+     * @param service usually pass `PayjpToken.getInstance()`
+     */
+    void inject(@NonNull PayjpTokenService service);
 
     /**
      * Check current card input.

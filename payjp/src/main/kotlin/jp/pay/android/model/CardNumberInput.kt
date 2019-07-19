@@ -35,8 +35,8 @@ internal data class CardNumberInput(
     val brand: CardBrand = input?.let { brandDetector.detectWithDigits(it) } ?: CardBrand.UNKNOWN
     override val value: String? = input?.filter(Character::isDigit)
         ?.takeIf {
-            cardValidator.isValidCardNumber(it)
-                && brand != CardBrand.UNKNOWN
-                && acceptedBrands?.contains(brand) != false
+            cardValidator.isValidCardNumber(it) &&
+                brand != CardBrand.UNKNOWN &&
+                acceptedBrands?.contains(brand) != false
         }
 }

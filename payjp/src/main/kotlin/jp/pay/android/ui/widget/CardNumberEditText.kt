@@ -25,8 +25,6 @@ package jp.pay.android.ui.widget
 import android.content.Context
 import android.util.AttributeSet
 import jp.pay.android.model.CardBrand
-import jp.pay.android.model.CardBrandDetectable
-import jp.pay.android.model.CardBrandDetector
 import jp.pay.android.model.CardNumberInput
 
 internal class CardNumberEditText @JvmOverloads constructor(
