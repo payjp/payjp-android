@@ -26,6 +26,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Base64
 import jp.pay.android.model.AcceptedBrandsResponse
+import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.network.createApiClient
 import java.nio.charset.Charset
@@ -119,12 +120,22 @@ class PayjpToken internal constructor(
     }
 
     /**
-     * Get accepted brands.
+     * Get accepted brands
      *
      * @return task of accepted brands
      */
     override fun getAcceptedBrands(): Task<AcceptedBrandsResponse> {
-        return payjpApi.getAcceptedBrands(authorization)
+        return getAcceptedBrands(tenantId = null)
+    }
+
+    /**
+     * Get accepted brands with tenant id (for platform)
+     *
+     * @param tenantId tenant id (only for platformer)
+     * @return task of accepted brands
+     */
+    override fun getAcceptedBrands(tenantId: TenantId?): Task<AcceptedBrandsResponse> {
+        return payjpApi.getAcceptedBrands(authorization, tenantId?.id)
     }
 
     private class MainThreadExecutor : Executor {

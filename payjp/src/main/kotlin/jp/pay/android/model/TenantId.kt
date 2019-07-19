@@ -20,35 +20,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android
-
-import jp.pay.android.model.AcceptedBrandsResponse
-import jp.pay.android.model.TenantId
-import jp.pay.android.model.Token
+package jp.pay.android.model
 
 /**
- * interface for retrieve and create token.
+ * Tenant id
+ *
+ * @param id
  */
-interface PayjpTokenService {
-
-    fun createToken(
-        number: String,
-        cvc: String,
-        expMonth: String,
-        expYear: String
-    ): Task<Token> = createToken(number, cvc, expMonth, expYear, null)
-
-    fun createToken(
-        number: String,
-        cvc: String,
-        expMonth: String,
-        expYear: String,
-        name: String?
-    ): Task<Token>
-
-    fun getToken(id: String): Task<Token>
-
-    fun getAcceptedBrands(): Task<AcceptedBrandsResponse>
-
-    fun getAcceptedBrands(tenantId: TenantId?): Task<AcceptedBrandsResponse>
-}
+data class TenantId(val id: String)

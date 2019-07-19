@@ -30,6 +30,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import jp.pay.android.PayjpTokenService;
 import jp.pay.android.Task;
+import jp.pay.android.model.TenantId;
 import jp.pay.android.model.Token;
 
 /**
@@ -44,6 +45,16 @@ public interface TokenCreatableView {
      * @param service usually pass `PayjpToken.getInstance()`
      */
     void inject(@NonNull PayjpTokenService service);
+
+    /**
+     * Inject PayjpTokenService with tenant id.
+     *
+     * Tenant Id
+     *
+     * @param service usually pass `PayjpToken.getInstance()`
+     * @param tenantId tenant id (only for platformer).
+     */
+    void inject(@NonNull PayjpTokenService service, @Nullable TenantId tenantId);
 
     /**
      * Check current card input.

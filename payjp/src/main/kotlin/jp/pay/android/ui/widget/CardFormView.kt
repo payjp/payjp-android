@@ -41,6 +41,7 @@ import jp.pay.android.model.CardCvcInput
 import jp.pay.android.model.CardExpirationInput
 import jp.pay.android.model.CardHolderNameInput
 import jp.pay.android.model.CardNumberInput
+import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.ui.widget.CardComponentInputView.OnChangeInputListener
 import jp.pay.android.util.Tasks
@@ -69,6 +70,7 @@ class CardFormView @JvmOverloads constructor(
     // service
     @VisibleForTesting
     private lateinit var tokenService: PayjpTokenService
+    private var tenantId: TenantId? = null
     private var task: Task<AcceptedBrandsResponse>? = null
 
     // input value
@@ -118,7 +120,7 @@ class CardFormView @JvmOverloads constructor(
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun startFetchingAcceptedBrands() {
         if (brands == null) {
-            task = tokenService.getAcceptedBrands()
+            task = tokenService.getAcceptedBrands(tenantId)
             task?.enqueue(object : Task.Callback<AcceptedBrandsResponse> {
                 override fun onSuccess(data: AcceptedBrandsResponse) {
                     brands = data.brands
@@ -134,8 +136,13 @@ class CardFormView @JvmOverloads constructor(
         task?.cancel()
     }
 
-    override fun inject(tokenService: PayjpTokenService) {
-        this.tokenService = tokenService
+    override fun inject(service: PayjpTokenService) {
+        inject(service, null)
+    }
+
+    override fun inject(service: PayjpTokenService, tenantId: TenantId?) {
+        this.tokenService = service
+        this.tenantId = tenantId
     }
 
     override fun isValid(): Boolean {

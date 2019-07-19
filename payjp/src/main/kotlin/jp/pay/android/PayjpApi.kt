@@ -31,6 +31,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 /**
  * PAYJP Token API
@@ -58,6 +59,7 @@ internal interface PayjpApi {
 
     @GET("accounts/brands")
     fun getAcceptedBrands(
-        @Header("Authorization") authorization: String
+        @Header("Authorization") authorization: String,
+        @Query("tenant") tenant: String?
     ): ResultCall<AcceptedBrandsResponse>
 }

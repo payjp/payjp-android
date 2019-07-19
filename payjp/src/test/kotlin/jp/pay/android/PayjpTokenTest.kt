@@ -31,6 +31,7 @@ import jp.pay.android.fixtures.ERROR_CARD_DECLINED
 import jp.pay.android.fixtures.ERROR_INVALID_ID
 import jp.pay.android.fixtures.TOKEN_OK
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.TenantId
 import jp.pay.android.network.createApiClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -319,6 +320,30 @@ class PayjpTokenTest {
             .let { request ->
                 assertEquals("GET", request.method)
                 assertEquals("/accounts/brands", request.path)
+                assertEquals("Basic cGtfdGVzdF8wMzgzYTFiOGY5MWU4YTZlM2VhMGUyYTk6",
+                    request.getHeader("Authorization"))
+            }
+    }
+
+    @Test
+    fun getAcceptedBrands_tenant() {
+        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(ACCEPTED_BRANDS_FULL))
+
+        PayjpToken(configuration = configuration,
+            payjpApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
+                callbackExecutor = CurrentThreadExecutor()))
+            .getAcceptedBrands(TenantId("foobar"))
+            .run()
+            .let { response ->
+                assertEquals(true, response.livemode)
+                assertThat(response.brands, contains(CardBrand.VISA, CardBrand.MASTER_CARD, CardBrand.JCB,
+                    CardBrand.AMEX, CardBrand.DINERS_CLUB, CardBrand.DISCOVER))
+            }
+
+        mockWebServer.takeRequest()
+            .let { request ->
+                assertEquals("GET", request.method)
+                assertEquals("/accounts/brands?tenant=foobar", request.path)
                 assertEquals("Basic cGtfdGVzdF8wMzgzYTFiOGY5MWU4YTZlM2VhMGUyYTk6",
                     request.getHeader("Authorization"))
             }
