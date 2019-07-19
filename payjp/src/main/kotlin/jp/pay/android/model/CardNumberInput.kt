@@ -20,25 +20,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.network
+package jp.pay.android.model
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.hamcrest.Matchers.not
-import org.hamcrest.Matchers.startsWith
-import org.junit.Assert.assertThat
-import org.junit.Test
-import org.junit.runner.RunWith
+internal data class CardNumberInput(
+    val input: String?,
+    val brandDetector: CardBrandDetectable = CardBrandDetector
+) : CardComponentInput<String> {
 
-@RunWith(AndroidJUnit4::class)
-class UserAgentTest {
+    val brand: CardBrand = input?.let { CardBrandDetector.detectWithDigits(it) } ?: CardBrand.UNKNOWN
+    override val value: String? = validate()
 
-    @Test
-    fun startWithId() {
-        assertThat(UserAgent.create(), startsWith("jp.pay.android/"))
-    }
-
-    @Test
-    fun versionIsNotEmpty() {
-        assertThat(UserAgent.create(), not(startsWith("jp.pay.android/;")))
+    private fun validate(): String? {
+        return input?.filter(Character::isDigit) // TODO validation
     }
 }

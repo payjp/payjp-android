@@ -49,6 +49,9 @@ class CardFormViewSampleActivity : AppCompatActivity() {
             button_create_token.isEnabled = isValid
         }
         button_create_token.setOnClickListener {
+            if (!card_form_view.isValid) {
+                return@setOnClickListener
+            }
             progress_bar.visibility = View.VISIBLE
             text_token_content.visibility = View.INVISIBLE
             // create token

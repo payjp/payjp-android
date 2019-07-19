@@ -22,6 +22,7 @@
  */
 package jp.pay.android.model
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Moshi
 import jp.pay.android.network.createMoshi
@@ -29,13 +30,12 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 import java.util.Date
 
 /**
  * for [Card]
  */
-@RunWith(JUnit4::class)
+@RunWith(AndroidJUnit4::class)
 class CardTest {
 
     private val moshi: Moshi by lazy {

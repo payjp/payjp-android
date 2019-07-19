@@ -20,25 +20,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.network
+package jp.pay.android.model
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.hamcrest.Matchers.not
-import org.hamcrest.Matchers.startsWith
+import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.ParameterizedRobolectricTestRunner
 
-@RunWith(AndroidJUnit4::class)
-class UserAgentTest {
+@RunWith(ParameterizedRobolectricTestRunner::class)
+class CardBrandDetectorTest(
+    private val digits: String,
+    private val brand: CardBrand
+) {
 
-    @Test
-    fun startWithId() {
-        assertThat(UserAgent.create(), startsWith("jp.pay.android/"))
+    companion object {
+        @JvmStatic
+        @ParameterizedRobolectricTestRunner.Parameters
+        fun data(): List<Array<out Any?>> {
+            return listOf(
+                arrayOf("4242424242424242", CardBrand.VISA),
+                arrayOf("0", CardBrand.UNKNOWN),
+                arrayOf("9999", CardBrand.UNKNOWN),
+                arrayOf("77", CardBrand.UNKNOWN),
+                arrayOf("1234", CardBrand.UNKNOWN),
+                arrayOf("111122223333444455556666", CardBrand.UNKNOWN),
+                arrayOf("99999999999999999999999999999999999999999999999999", CardBrand.UNKNOWN)
+            )
+        }
     }
 
     @Test
-    fun versionIsNotEmpty() {
-        assertThat(UserAgent.create(), not(startsWith("jp.pay.android/;")))
+    fun detectBrand() {
+        assertThat(CardBrandDetector.detectWithDigits(digits), `is`(brand))
     }
 }

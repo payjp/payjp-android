@@ -20,25 +20,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.network
+package jp.pay.android.ui.widget
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.hamcrest.Matchers.not
-import org.hamcrest.Matchers.startsWith
-import org.junit.Assert.assertThat
-import org.junit.Test
-import org.junit.runner.RunWith
+import jp.pay.android.model.CardComponentInput
 
-@RunWith(AndroidJUnit4::class)
-class UserAgentTest {
+/**
+ * CardComponentInputView
+ *
+ * UI Widget respond to [CardComponentInput].
+ * It will notify of the change in own input.
+ */
+internal interface CardComponentInputView<T : CardComponentInput<*>> {
 
-    @Test
-    fun startWithId() {
-        assertThat(UserAgent.create(), startsWith("jp.pay.android/"))
-    }
+    var onChangeInputListener: OnChangeInputListener<T>?
 
-    @Test
-    fun versionIsNotEmpty() {
-        assertThat(UserAgent.create(), not(startsWith("jp.pay.android/;")))
+    fun currentValue(): T?
+
+    /**
+     * Validate input immediately.
+     */
+    fun validate()
+
+    interface OnChangeInputListener<T> {
+        fun onChangeInput(input: T)
     }
 }

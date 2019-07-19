@@ -20,25 +20,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.network
+package jp.pay.android.model
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.hamcrest.Matchers.not
-import org.hamcrest.Matchers.startsWith
-import org.junit.Assert.assertThat
-import org.junit.Test
-import org.junit.runner.RunWith
+import android.text.TextUtils
 
-@RunWith(AndroidJUnit4::class)
-class UserAgentTest {
+/**
+ * Card expiration input
+ *
+ * @param input input string e.g. `01/20`
+ * @param delimiter e.g. `/` in `01/20`
+ */
+internal data class CardExpirationInput(
+    val input: String?,
+    val delimiter: Char
+) : CardComponentInput<CardExpiration> {
 
-    @Test
-    fun startWithId() {
-        assertThat(UserAgent.create(), startsWith("jp.pay.android/"))
-    }
+    override val value: CardExpiration? = validate()
 
-    @Test
-    fun versionIsNotEmpty() {
-        assertThat(UserAgent.create(), not(startsWith("jp.pay.android/;")))
+    private fun validate(): CardExpiration? = input?.split(delimiter)?.takeIf {
+        // TODO validation
+        it.size == 2 && it.all { part -> part.length == 2 && TextUtils.isDigitsOnly(part) }
+    }?.let {
+        val month = it[0]
+        val year = "20" + it[1]
+        CardExpiration(month, year)
     }
 }

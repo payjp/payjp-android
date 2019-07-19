@@ -35,14 +35,15 @@ enum class CardBrand(val rawValue: String) {
     JCB("JCB"),
     AMEX("American Express"),
     DINERS_CLUB("Diners Club"),
-    DISCOVER("Discover");
+    DISCOVER("Discover"),
+    UNKNOWN("Unknown");
 
     class JsonAdapter {
 
         @ToJson fun toJson(brand: CardBrand): String = brand.rawValue
 
         @FromJson fun fromJson(brand: String): CardBrand {
-            return CardBrand.values().firstOrNull { it.rawValue == brand }
+            return values().filter { it != UNKNOWN }.firstOrNull { it.rawValue == brand }
                     ?: throw JsonDataException("unknown brand: $brand")
         }
     }

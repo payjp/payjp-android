@@ -26,7 +26,7 @@ import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
-import com.google.android.material.textfield.TextInputEditText
+import jp.pay.android.model.CardExpirationInput
 
 // card number max digits size
 private const val TOTAL_MAX_DIGITS = 4
@@ -35,14 +35,16 @@ private const val TOTAL_MAX_SYMBOLS = 5
 private const val DELIMITER_INDEX = 2
 private const val DELIMITER_CHAR = '/'
 
-class CardExpirationEditText @JvmOverloads constructor(
+internal class CardExpirationEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : TextInputEditText(context, attrs) {
+) : CardComponentInputEditText<CardExpirationInput>(context, attrs) {
 
     init {
         addTextChangedListenerForFormat()
     }
+
+    override fun mapInput(input: String?): CardExpirationInput = CardExpirationInput(input, DELIMITER_CHAR)
 
     private fun addTextChangedListenerForFormat() {
         addTextChangedListener(object : TextWatcher {

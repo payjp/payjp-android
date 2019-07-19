@@ -27,12 +27,19 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.VisibleForTesting
-import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import jp.pay.android.PayjpToken
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.R
 import jp.pay.android.Task
+import jp.pay.android.exception.PayjpInvalidCardFormException
+import jp.pay.android.model.CardCvcInput
+import jp.pay.android.model.CardExpirationInput
+import jp.pay.android.model.CardHolderNameInput
+import jp.pay.android.model.CardNumberInput
 import jp.pay.android.model.Token
+import jp.pay.android.ui.widget.CardComponentInputView.OnChangeInputListener
+import jp.pay.android.util.Tasks
 
 /**
  * CardForm Widget
@@ -43,44 +50,131 @@ class CardFormView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr), TokenCreatableView {
 
-    private val numberEditText: TextInputEditText
-    private val expirationEditText: CardExpirationEditText
-    private val cvcEditText: TextInputEditText
-    private val holderNameEditText: TextInputEditText
+    // view
+    private val numberLayout: TextInputLayout
+    @VisibleForTesting
+    internal val numberEditText: CardNumberEditText
+    @VisibleForTesting
+    internal val expirationEditText: CardExpirationEditText
+    @VisibleForTesting
+    internal val cvcEditText: CardCvcEditText
+    @VisibleForTesting
+    internal val holderNameEditText: CardHolderNameEditText
+    // listener
     private var onValidateInputListener: TokenCreatableView.OnValidateInputListener? = null
+    // service
     @VisibleForTesting
     internal var tokenService: PayjpTokenService
+    // input value
+    private var cardNumberInput: CardNumberInput? = null
+        set(value) {
+            field = value
+            onUpdateInput()
+        }
+    private var cardExpirationInput: CardExpirationInput? = null
+        set(value) {
+            field = value
+            onUpdateInput()
+        }
+    private var cardCvcInput: CardCvcInput? = null
+        set(value) {
+            field = value
+            onUpdateInput()
+        }
+    private var cardHolderNameInput: CardHolderNameInput? = null
+        set(value) {
+            field = value
+            onUpdateInput()
+        }
 
     init {
         orientation = VERTICAL
         View.inflate(context, R.layout.card_form_view, this)
+        numberLayout = findViewById(R.id.input_layout_number)
         numberEditText = findViewById(R.id.input_edit_number)
         expirationEditText = findViewById(R.id.input_edit_expiration)
         cvcEditText = findViewById(R.id.input_edit_cvc)
         holderNameEditText = findViewById(R.id.input_edit_holder_name)
-        // TODO: format input
+        watchInputUpdate()
         // request
         tokenService = PayjpToken.getInstance()
     }
 
     override fun isValid(): Boolean {
-        // TODO validation
-        return true
+        return (cardNumberInput?.valid ?: false) &&
+            (cardExpirationInput?.valid ?: false) &&
+            (cardCvcInput?.valid ?: false) &&
+            (cardHolderNameInput?.valid ?: false)
+    }
+
+    override fun validateCardForm(): Boolean {
+        forceValidate()
+        updateErrorUI()
+        return isValid
     }
 
     override fun setOnValidateInputListener(listener: TokenCreatableView.OnValidateInputListener?) {
         this.onValidateInputListener = listener
+        onValidateInputListener?.onValidateInput(this, isValid)
     }
 
     override fun createToken(): Task<Token> {
-        // TODO validate
-        // TODO いい感じにする
-        return tokenService.createToken(
-            number = numberEditText.text.toString(),
-            expMonth = expirationEditText.text.toString().split("/")[0],
-            expYear = expirationEditText.text.toString().split("/")[1],
-            cvc = cvcEditText.text.toString(),
-            name = holderNameEditText.text.toString()
-        )
+        return if (isValid) {
+            // TODO いい感じにする
+            tokenService.createToken(
+                number = cardNumberInput!!.value!!,
+                expMonth = cardExpirationInput!!.value!!.month,
+                expYear = cardExpirationInput!!.value!!.year,
+                cvc = cardCvcInput!!.value!!,
+                name = holderNameEditText.text.toString()
+            )
+        } else {
+            Tasks.failure(
+                PayjpInvalidCardFormException("Card form is not valid")
+            )
+        }
+    }
+
+    private fun updateErrorUI() {
+        // TODO show error
+    }
+
+    private fun onUpdateInput() {
+        val valid = isValid
+        updateErrorUI()
+        onValidateInputListener?.onValidateInput(this, valid)
+    }
+
+    private fun forceValidate() {
+        numberEditText.validate()
+        expirationEditText.validate()
+        cvcEditText.validate()
+        holderNameEditText.validate()
+    }
+
+    private fun watchInputUpdate() {
+        numberEditText.onChangeInputListener = object : OnChangeInputListener<CardNumberInput> {
+            override fun onChangeInput(input: CardNumberInput) {
+                // TODO validation
+                // TODO ブランドロゴの表示
+                numberLayout.helperText = "brand = ${input.brand}"
+                cardNumberInput = input
+            }
+        }
+        expirationEditText.onChangeInputListener = object : OnChangeInputListener<CardExpirationInput> {
+            override fun onChangeInput(input: CardExpirationInput) {
+                cardExpirationInput = input
+            }
+        }
+        cvcEditText.onChangeInputListener = object : OnChangeInputListener<CardCvcInput> {
+            override fun onChangeInput(input: CardCvcInput) {
+                cardCvcInput = input
+            }
+        }
+        holderNameEditText.onChangeInputListener = object : OnChangeInputListener<CardHolderNameInput> {
+            override fun onChangeInput(input: CardHolderNameInput) {
+                cardHolderNameInput = input
+            }
+        }
     }
 }

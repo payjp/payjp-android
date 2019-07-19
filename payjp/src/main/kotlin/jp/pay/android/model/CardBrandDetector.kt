@@ -20,25 +20,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.network
+package jp.pay.android.model
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.hamcrest.Matchers.not
-import org.hamcrest.Matchers.startsWith
-import org.junit.Assert.assertThat
-import org.junit.Test
-import org.junit.runner.RunWith
+internal interface CardBrandDetectable {
 
-@RunWith(AndroidJUnit4::class)
-class UserAgentTest {
+    /**
+     * detect brand from card number
+     *
+     * @param digits Card Number
+     * @return brand
+     */
+    fun detectWithDigits(digits: String): CardBrand
+}
 
-    @Test
-    fun startWithId() {
-        assertThat(UserAgent.create(), startsWith("jp.pay.android/"))
-    }
+internal object CardBrandDetector : CardBrandDetectable {
 
-    @Test
-    fun versionIsNotEmpty() {
-        assertThat(UserAgent.create(), not(startsWith("jp.pay.android/;")))
+    override fun detectWithDigits(digits: String): CardBrand = when {
+        // TODO
+        digits.startsWith("4") -> CardBrand.VISA
+        digits.startsWith("5") -> CardBrand.MASTER_CARD
+        else -> CardBrand.UNKNOWN
     }
 }
