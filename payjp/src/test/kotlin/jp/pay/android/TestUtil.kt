@@ -20,32 +20,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.model
+package jp.pay.android
 
-import jp.pay.android.validator.CardExpirationProcessor
-import jp.pay.android.validator.CardExpirationProcessorService
+import org.mockito.Mockito
 
-/**
- * Card expiration input
- *
- * @param input input string e.g. `01/20`
- * @param delimiter e.g. `/` in `01/20`
- * @param processor process card expiration value from input.
- * @see [CardExpirationProcessorService]
- */
-internal data class CardExpirationInput(
-    val input: String?,
-    val delimiter: Char,
-    val processor: CardExpirationProcessorService = CardExpirationProcessor
-) : CardComponentInput<CardExpiration> {
-
-    override val value: CardExpiration?
-
-    init {
-        value = input?.let {
-            processor.processExpirationMonthYear(it, delimiter)
-        }?.let { monthYear ->
-            processor.processCardExpiration(monthYear)
-        }
-    }
+@Suppress("UNCHECKED_CAST")
+fun <T> anyNullable(): T {
+    return Mockito.any<T>() ?: null as T
 }
