@@ -107,6 +107,13 @@ class CardFormView @JvmOverloads constructor(
         cvcEditText = findViewById(R.id.input_edit_cvc)
         holderNameLayout = findViewById(R.id.input_layout_holder_name)
         holderNameEditText = findViewById(R.id.input_edit_holder_name)
+
+        val a = context.obtainStyledAttributes(attrs, R.styleable.CardFormView)
+        if (a.hasValue(R.styleable.CardFormView_holderNameInputEnabled)) {
+            cardHolderNameEnabled = a.getBoolean(R.styleable.CardFormView_holderNameInputEnabled, true)
+        }
+        a.recycle()
+
         watchInputUpdate()
         // request
         tokenService = PayjpToken.getInstance()
