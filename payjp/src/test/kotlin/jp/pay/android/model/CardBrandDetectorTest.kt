@@ -109,6 +109,6 @@ class CardBrandDetectorTest(
 
     @Test
     fun detectBrand() {
-        assertThat(CardBrandDetector.detectWithDigits(digits), `is`(brand))
+        assertThat("digits = $digits", CardBrandDetector.detectWithDigits(digits), `is`(brand))
     }
 }
