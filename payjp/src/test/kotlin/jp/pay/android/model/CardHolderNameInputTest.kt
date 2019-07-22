@@ -22,13 +22,34 @@
  */
 package jp.pay.android.model
 
-internal data class CardHolderNameInput(
-    val input: String?
-) : CardComponentInput<String> {
+import org.hamcrest.Matchers
+import org.junit.Assert.assertThat
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.ParameterizedRobolectricTestRunner
 
-    override val value: String? = validate()
+@RunWith(ParameterizedRobolectricTestRunner::class)
+class CardHolderNameInputTest(
+    private val input: String?,
+    private val value: String?
+) {
 
-    private fun validate() = input
-        ?.trim()
-        ?.takeIf(String::isNotEmpty)
+    companion object {
+        @JvmStatic
+        @ParameterizedRobolectricTestRunner.Parameters
+        fun data(): List<Array<out Any?>> {
+            return listOf(
+                arrayOf(null as? String, null as? String),
+                arrayOf("", null),
+                arrayOf(" ", null),
+                arrayOf("JANE DOE", "JANE DOE"),
+                arrayOf(" JANE DOE ", "JANE DOE")
+            )
+        }
+    }
+
+    @Test
+    fun formatInput() {
+        assertThat(CardHolderNameInput(input).value, Matchers.`is`(value))
+    }
 }
