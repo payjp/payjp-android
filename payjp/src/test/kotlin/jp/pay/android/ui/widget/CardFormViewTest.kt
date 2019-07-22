@@ -81,6 +81,15 @@ class CardFormViewTest {
     }
 
     @Test
+    fun not_required_card_holder_name_if_not_enabled() {
+        CardRobot().input(cardFormView)
+        cardFormView.holderNameEditText.text = null
+        assertThat(cardFormView.isValid, `is`(false))
+        cardFormView.setCardHolderNameInputEnabled(false)
+        assertThat(cardFormView.isValid, `is`(true))
+    }
+
+    @Test
     fun validateCardForm_false_without_input() {
         assertThat(cardFormView.validateCardForm(), `is`(false))
     }
