@@ -24,7 +24,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_height="match_parent"
-            android:layout_width="match_parent">
+            android:layout_width="match_parent"
+            xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -36,7 +37,26 @@
         <jp.pay.android.ui.widget.CardFormView
                 android:id="@+id/card_form_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                app:holderNameInputEnabled="false"/>
+
+        <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="カード名義入力を有効にする"
+                    android:layout_gravity="center_vertical"/>
+
+            <Switch
+                    android:id="@+id/switch_card_holder_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"/>
+        </FrameLayout>
 
         <LinearLayout
                 android:layout_width="match_parent"
