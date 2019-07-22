@@ -27,7 +27,9 @@ internal data class CardNumberInput(
     val brandDetector: CardBrandDetectable = CardBrandDetector
 ) : CardComponentInput<String> {
 
-    val brand: CardBrand = input?.let { CardBrandDetector.detectWithDigits(it) } ?: CardBrand.UNKNOWN
+    val brand: CardBrand = input?.filter(Character::isDigit)
+        ?.let(CardBrandDetector::detectWithDigits)
+        ?: CardBrand.UNKNOWN
     override val value: String? = validate()
 
     private fun validate(): String? {
