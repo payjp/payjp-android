@@ -25,6 +25,9 @@ package jp.pay.android.ui.widget
 import android.content.Context
 import android.util.AttributeSet
 import jp.pay.android.model.CardCvcInput
+import android.text.InputFilter
+
+const val CVC_MAX_LENGTH = 4
 
 internal class CardCvcEditText @JvmOverloads constructor(
     context: Context,
@@ -32,4 +35,8 @@ internal class CardCvcEditText @JvmOverloads constructor(
 ) : CardComponentInputEditText<CardCvcInput>(context, attrs) {
 
     override fun mapInput(input: String?): CardCvcInput = CardCvcInput(input)
+
+    init {
+        filters = arrayOf<InputFilter>(InputFilter.LengthFilter(CVC_MAX_LENGTH))
+    }
 }
