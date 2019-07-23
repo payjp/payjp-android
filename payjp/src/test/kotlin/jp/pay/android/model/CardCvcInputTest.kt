@@ -46,6 +46,7 @@ class CardCvcInputTest(
                 arrayOf("12abc", null),
                 arrayOf(" 12 ", null),
                 arrayOf("123", "123"),
+                arrayOf("123a", "123"),
                 arrayOf(" 123 ", "123"),
                 arrayOf("1234", "1234"),
                 arrayOf(" 1234 ", "1234")
