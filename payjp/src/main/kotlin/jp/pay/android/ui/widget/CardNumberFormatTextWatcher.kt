@@ -24,16 +24,23 @@ package jp.pay.android.ui.widget
 
 import android.text.Editable
 import android.text.TextWatcher
+import jp.pay.android.model.CardBrand
 
 // card number max digits size
+// 16 as max even if brand is amex or diners
 private const val TOTAL_MAX_DIGITS = 16
 // digits + 3 delimiters
 private const val TOTAL_MAX_SYMBOLS = 19
-// digits block (4 char + 1 char)
-private const val DELIMITER_MODULO = 5
-private const val DELIMITER_POSITION = 4
 
 internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWatcher {
+
+    // position include delimiter
+    private val delimiterPositionsCommon = listOf(4, 9, 14)
+
+    private val delimiterPositionsAmexDiners = listOf(4, 11)
+
+    var brand: CardBrand = CardBrand.UNKNOWN
+
     override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
@@ -47,26 +54,33 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
     private fun isInputCorrect(s: Editable): Boolean =
         s.length <= TOTAL_MAX_SYMBOLS &&
             (0 until s.length).all { i ->
-            when {
-                i > 0 && (i + 1) % DELIMITER_MODULO == 0 -> delimiter == s[i]
-                else -> Character.isDigit(s[i])
+                val delimiterPositions = getDelimiterPositions()
+                when {
+                    i > 0 && delimiterPositions.contains(i) -> delimiter == s[i]
+                    else -> Character.isDigit(s[i])
+                }
             }
-        }
 
     private fun buildCorrectString(digits: CharArray): String {
         val formatted = StringBuilder()
+        val delimiterPositions = getDelimiterPositions()
 
         for (i in digits.indices) {
             val c = digits[i]
             if (Character.isDigit(c)) {
                 formatted.append(c)
-                if (i > 0 && i < digits.size - 1 && (i + 1) % DELIMITER_POSITION == 0) {
+                if (i > 0 && i < digits.size - 1 && delimiterPositions.contains(formatted.lastIndex + 1)) {
                     formatted.append(delimiter)
                 }
             }
         }
 
         return formatted.toString()
+    }
+
+    private fun getDelimiterPositions() = when (brand) {
+        CardBrand.AMEX, CardBrand.DINERS_CLUB -> delimiterPositionsAmexDiners
+        else -> delimiterPositionsCommon
     }
 
     private fun createDigitArray(s: Editable): CharArray {

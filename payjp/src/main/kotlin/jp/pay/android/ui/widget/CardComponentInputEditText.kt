@@ -40,9 +40,13 @@ internal abstract class CardComponentInputEditText<T : CardComponentInput<*>> @J
         set(value) {
             if (field != value && value != null) {
                 field = value
-                onChangeInputListener?.onChangeInput(value)
+                onUpdateInput(value)
             }
         }
+
+    protected open fun onUpdateInput(input: T) {
+        onChangeInputListener?.onChangeInput(input)
+    }
 
     override var onChangeInputListener: CardComponentInputView.OnChangeInputListener<T>? = null
 
