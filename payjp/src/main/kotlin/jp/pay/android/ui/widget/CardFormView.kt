@@ -23,6 +23,7 @@
 package jp.pay.android.ui.widget
 
 import android.content.Context
+import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
@@ -119,6 +120,9 @@ class CardFormView @JvmOverloads constructor(
     init {
         orientation = VERTICAL
         View.inflate(context, R.layout.card_form_view, this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO
+        }
         numberLayout = findViewById(R.id.input_layout_number)
         numberEditText = findViewById(R.id.input_edit_number)
         expirationEditText = findViewById(R.id.input_edit_expiration)

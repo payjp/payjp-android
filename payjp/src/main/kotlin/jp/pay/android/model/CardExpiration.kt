@@ -28,4 +28,7 @@ package jp.pay.android.model
  * @param month month e.g. `12`, `05`
  * @param year year e.g. `2020`
  */
-data class CardExpiration(val month: String, val year: String)
+data class CardExpiration(val month: String, val year: String) {
+    val yearValue = year.toInt()
+    val monthValueZeroBased = month.toInt() - 1
+}
