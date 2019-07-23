@@ -48,3 +48,14 @@ enum class CardBrand(val rawValue: String) {
         }
     }
 }
+
+val CardBrand.numberRegex: Regex
+    get() = when (this) {
+        CardBrand.VISA -> Regex("""\A4[0-9]*\z""")
+        CardBrand.MASTER_CARD -> Regex("""\A(?:5[1-5]|2[2-7])[0-9]*\z""")
+        CardBrand.JCB -> Regex("""\A35[0-9]*\z""")
+        CardBrand.AMEX -> Regex("""\A3[47][0-9]*\z""")
+        CardBrand.DINERS_CLUB -> Regex("""\A3[0689][0-9]*\z""")
+        CardBrand.DISCOVER -> Regex("""\A6[0245][0-9]*\z""")
+        CardBrand.UNKNOWN -> Regex("""""")
+    }
