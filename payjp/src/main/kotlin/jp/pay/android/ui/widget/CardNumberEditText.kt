@@ -24,6 +24,7 @@ package jp.pay.android.ui.widget
 
 import android.content.Context
 import android.util.AttributeSet
+import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardNumberInput
 
 internal class CardNumberEditText @JvmOverloads constructor(
@@ -31,9 +32,18 @@ internal class CardNumberEditText @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : CardComponentInputEditText<CardNumberInput>(context, attrs) {
 
+    var acceptedBrands: List<CardBrand>? = null
+        set(value) {
+            field = value
+            validate()
+        }
+
     init {
         // TODO format
     }
 
-    override fun mapInput(input: String?): CardNumberInput = CardNumberInput(input)
+    override fun mapInput(input: String?): CardNumberInput = CardNumberInput(
+        input = input,
+        acceptedBrands = acceptedBrands
+    )
 }

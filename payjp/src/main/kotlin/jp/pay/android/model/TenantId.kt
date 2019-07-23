@@ -22,23 +22,9 @@
  */
 package jp.pay.android.model
 
-import jp.pay.android.validator.CardValidatable
-import jp.pay.android.validator.CardValidator
-
-internal data class CardNumberInput(
-    val input: String?,
-    val acceptedBrands: List<CardBrand>?,
-    val brandDetector: CardBrandDetectable = CardBrandDetector,
-    val cardValidator: CardValidatable = CardValidator
-) : CardComponentInput<String> {
-
-    val brand: CardBrand = input?.filter(Character::isDigit)
-        ?.let(brandDetector::detectWithDigits)
-        ?: CardBrand.UNKNOWN
-    override val value: String? = input?.filter(Character::isDigit)
-        ?.takeIf {
-            cardValidator.isValidCardNumber(it) &&
-                brand != CardBrand.UNKNOWN &&
-                acceptedBrands?.contains(brand) != false
-        }
-}
+/**
+ * Tenant id
+ *
+ * @param id
+ */
+data class TenantId(val id: String)

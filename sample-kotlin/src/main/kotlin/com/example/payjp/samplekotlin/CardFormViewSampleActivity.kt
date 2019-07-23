@@ -44,7 +44,8 @@ class CardFormViewSampleActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card_form_view_sample)
-
+        card_form_view.inject(PayjpToken.getInstance())
+        card_form_view.registerLifecycle(lifecycle) // TODO: improve
         card_form_view.setOnValidateInputListener { _, isValid ->
             button_create_token.isEnabled = isValid
         }

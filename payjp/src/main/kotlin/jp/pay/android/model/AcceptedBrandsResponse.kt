@@ -22,23 +22,17 @@
  */
 package jp.pay.android.model
 
-import jp.pay.android.validator.CardValidatable
-import jp.pay.android.validator.CardValidator
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-internal data class CardNumberInput(
-    val input: String?,
-    val acceptedBrands: List<CardBrand>?,
-    val brandDetector: CardBrandDetectable = CardBrandDetector,
-    val cardValidator: CardValidatable = CardValidator
-) : CardComponentInput<String> {
-
-    val brand: CardBrand = input?.filter(Character::isDigit)
-        ?.let(brandDetector::detectWithDigits)
-        ?: CardBrand.UNKNOWN
-    override val value: String? = input?.filter(Character::isDigit)
-        ?.takeIf {
-            cardValidator.isValidCardNumber(it) &&
-                brand != CardBrand.UNKNOWN &&
-                acceptedBrands?.contains(brand) != false
-        }
-}
+/**
+ * Accepted brands response
+ *
+ * @param brands brand list accepted
+ * @param livemode livemode if true
+ */
+@JsonClass(generateAdapter = true)
+data class AcceptedBrandsResponse(
+    @Json(name = "card_types_supported") val brands: List<CardBrand>,
+    val livemode: Boolean
+)

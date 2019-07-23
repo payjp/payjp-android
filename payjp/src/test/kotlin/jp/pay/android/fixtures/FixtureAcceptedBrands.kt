@@ -20,25 +20,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.model
+package jp.pay.android.fixtures
 
-import jp.pay.android.validator.CardValidatable
-import jp.pay.android.validator.CardValidator
-
-internal data class CardNumberInput(
-    val input: String?,
-    val acceptedBrands: List<CardBrand>?,
-    val brandDetector: CardBrandDetectable = CardBrandDetector,
-    val cardValidator: CardValidatable = CardValidator
-) : CardComponentInput<String> {
-
-    val brand: CardBrand = input?.filter(Character::isDigit)
-        ?.let(brandDetector::detectWithDigits)
-        ?: CardBrand.UNKNOWN
-    override val value: String? = input?.filter(Character::isDigit)
-        ?.takeIf {
-            cardValidator.isValidCardNumber(it) &&
-                brand != CardBrand.UNKNOWN &&
-                acceptedBrands?.contains(brand) != false
-        }
+const val ACCEPTED_BRANDS_FULL = """
+{
+  "card_types_supported": [
+    "Visa",
+    "MasterCard",
+    "JCB",
+    "American Express",
+    "Diners Club",
+    "Discover"
+  ],
+  "livemode": true
 }
+"""
+
+const val ACCEPTED_BRANDS_EMPTY = """
+{
+  "card_types_supported": [],
+  "livemode": true
+}
+"""
