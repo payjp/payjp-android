@@ -29,8 +29,6 @@ import jp.pay.android.model.CardBrand
 // card number max digits size
 // 16 as max even if brand is amex or diners
 private const val TOTAL_MAX_DIGITS = 16
-// digits + 3 delimiters
-private const val TOTAL_MAX_SYMBOLS = 19
 
 internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWatcher {
 
@@ -52,7 +50,7 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
     }
 
     private fun isInputCorrect(s: Editable): Boolean =
-        s.length <= TOTAL_MAX_SYMBOLS &&
+        s.length <= (TOTAL_MAX_DIGITS + getDelimiterPositions().size) &&
             (0 until s.length).all { i ->
                 val delimiterPositions = getDelimiterPositions()
                 when {
