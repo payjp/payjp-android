@@ -22,13 +22,13 @@
  */
 package jp.pay.android.ui.widget
 
+import androidx.test.core.app.ApplicationProvider
 import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 
 @RunWith(ParameterizedRobolectricTestRunner::class)
 class CardExpirationEditTextTest(
@@ -57,7 +57,7 @@ class CardExpirationEditTextTest(
 
     @Before
     fun setUp() {
-        editText = CardExpirationEditText(RuntimeEnvironment.application)
+        editText = CardExpirationEditText(ApplicationProvider.getApplicationContext())
     }
 
     @Test
