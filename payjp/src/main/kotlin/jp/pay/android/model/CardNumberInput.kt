@@ -55,5 +55,4 @@ internal data class CardNumberInput(
         }
         value = digits.takeIf { errorMessage == null }
     }
-
 }
