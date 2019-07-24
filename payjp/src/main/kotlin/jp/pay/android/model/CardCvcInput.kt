@@ -22,12 +22,12 @@
  */
 package jp.pay.android.model
 
-import android.text.TextUtils
-
 internal data class CardCvcInput(
     val input: String?
 ) : CardComponentInput<String> {
     override val value: String? = validate()
 
-    private fun validate(): String? = input?.takeIf { it.isNotEmpty() && TextUtils.isDigitsOnly(it) }
+    private fun validate(): String? = input
+        ?.filter(Character::isDigit)
+        ?.takeIf { it.length in 3..4 }
 }

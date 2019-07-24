@@ -23,7 +23,7 @@
 package jp.pay.android.network
 
 import com.squareup.moshi.Moshi
-import jp.pay.android.TokenApi
+import jp.pay.android.PayjpApi
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.DateUnixTimeJsonAdapter
 import okhttp3.Dispatcher
@@ -59,7 +59,7 @@ internal fun createApiClient(
     baseUrl: String,
     debuggable: Boolean = false,
     callbackExecutor: Executor
-): TokenApi =
+): PayjpApi =
         createMoshi().let { moshi ->
             Retrofit.Builder()
                     .baseUrl(baseUrl)
@@ -67,5 +67,5 @@ internal fun createApiClient(
                     .addCallAdapterFactory(ResultCallAdapterFactory(moshi, callbackExecutor))
                     .addConverterFactory(MoshiConverterFactory.create(moshi))
                     .build()
-                    .create(TokenApi::class.java)
+                    .create(PayjpApi::class.java)
         }

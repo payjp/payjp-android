@@ -20,15 +20,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.model
+package jp.pay.android
 
-internal data class CardHolderNameInput(
-    val input: String?
-) : CardComponentInput<String> {
+import org.mockito.Mockito
 
-    override val value: String? = validate()
-
-    private fun validate() = input
-        ?.trim()
-        ?.takeIf(String::isNotEmpty)
+@Suppress("UNCHECKED_CAST")
+fun <T> anyNullable(): T {
+    return Mockito.any<T>() ?: null as T
 }

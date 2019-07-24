@@ -20,38 +20,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android
+package jp.pay.android.fixtures
 
-import jp.pay.android.model.Token
-import jp.pay.android.network.ResultCall
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.POST
-import retrofit2.http.Path
-
-/**
- * PAYJP Token API
- *
- * see https://pay.jp/docs/api/#introduction
- */
-internal interface TokenApi {
-
-    @POST("tokens")
-    @FormUrlEncoded
-    fun createToken(
-        @Header("Authorization") authorization: String,
-        @Field("card[number]") number: String,
-        @Field("card[cvc]") cvc: String,
-        @Field("card[exp_month]") expMonth: String,
-        @Field("card[exp_year]") expYear: String,
-        @Field("card[name]") name: String?
-    ): ResultCall<Token>
-
-    @GET("tokens/{id}")
-    fun getToken(
-        @Header("Authorization") authorization: String,
-        @Path("id") id: String
-    ): ResultCall<Token>
+const val ERROR_AUTH = """
+{
+  "error": {
+    "message": "Invalid API Key: {0}",
+    "status": 401,
+    "type": "auth_error"
+  }
 }
+"""
+
+const val ERROR_CARD_DECLINED = """
+{
+  "error": {
+    "code": "card_declined",
+    "message": "Card declined",
+    "status": 402,
+    "type": "card_error"
+  }
+}
+"""
+
+const val ERROR_INVALID_ID = """
+{
+  "error": {
+    "code": "invalid_id",
+    "message": "No such token: tok_587af2665fdced4742e5fbb3ecfcaa",
+    "param": "id",
+    "status": 404,
+    "type": "client_error"
+  }
+}
+"""

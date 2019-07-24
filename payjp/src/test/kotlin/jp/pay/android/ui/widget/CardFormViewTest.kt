@@ -26,11 +26,13 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.CardRobot
-import jp.pay.android.PayjpToken
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.R
 import jp.pay.android.TestStubs
 import jp.pay.android.exception.PayjpInvalidCardFormException
+import jp.pay.android.model.AcceptedBrandsResponse
+import jp.pay.android.model.CardBrand
+import jp.pay.android.model.TenantId
 import jp.pay.android.util.Tasks
 import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertThat
@@ -59,14 +61,28 @@ class CardFormViewTest {
         val context: Context = ApplicationProvider.getApplicationContext()
         // require appcompat to
         context.setTheme(R.style.Theme_AppCompat)
-        // Set up because it called from inside of CardFormView.
-        // It will be replaced with mock.
-        PayjpToken.init("")
-        cardFormView = CardFormView(context).apply {
-            tokenService = mockTokenService
-        }
+        cardFormView = CardFormView(context).apply { inject(mockTokenService) }
         `when`(mockTokenService.createToken(anyString(), anyString(), anyString(), anyString(), anyString()))
             .thenReturn(Tasks.success(TestStubs.newToken()))
+        `when`(mockTokenService.getAcceptedBrands())
+            .thenReturn(Tasks.success(
+                AcceptedBrandsResponse(brands = listOf(CardBrand.VISA, CardBrand.MASTER_CARD), livemode = true)))
+    }
+
+    @Test
+    fun fetchAcceptedBrands() {
+        cardFormView.startFetchingAcceptedBrands()
+
+        verify(mockTokenService).getAcceptedBrands(null)
+    }
+
+    @Test
+    fun fetchAcceptedBrands_tenantId() {
+        val tenantId = TenantId("foobar")
+        cardFormView.inject(mockTokenService, tenantId)
+        cardFormView.startFetchingAcceptedBrands()
+
+        verify(mockTokenService).getAcceptedBrands(tenantId)
     }
 
     @Test

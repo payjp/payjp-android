@@ -35,10 +35,6 @@ internal interface CardBrandDetectable {
 
 internal object CardBrandDetector : CardBrandDetectable {
 
-    override fun detectWithDigits(digits: String): CardBrand = when {
-        // TODO
-        digits.startsWith("4") -> CardBrand.VISA
-        digits.startsWith("5") -> CardBrand.MASTER_CARD
-        else -> CardBrand.UNKNOWN
-    }
+    override fun detectWithDigits(digits: String): CardBrand = CardBrand.values()
+        .firstOrNull { brand -> brand.numberRegex.matches(digits) } ?: CardBrand.UNKNOWN
 }

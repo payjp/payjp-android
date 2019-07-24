@@ -22,13 +22,9 @@
  */
 package jp.pay.android.model
 
-internal data class CardHolderNameInput(
-    val input: String?
-) : CardComponentInput<String> {
-
-    override val value: String? = validate()
-
-    private fun validate() = input
-        ?.trim()
-        ?.takeIf(String::isNotEmpty)
-}
+/**
+ * Tenant id
+ *
+ * @param id
+ */
+data class TenantId(val id: String)

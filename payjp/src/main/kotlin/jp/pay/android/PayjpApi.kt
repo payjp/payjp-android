@@ -23,32 +23,43 @@
 package jp.pay.android
 
 import jp.pay.android.model.AcceptedBrandsResponse
-import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
+import jp.pay.android.network.ResultCall
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 /**
- * interface for retrieve and create token.
+ * PAYJP Token API
+ *
+ * see https://pay.jp/docs/api/#introduction
  */
-interface PayjpTokenService {
+internal interface PayjpApi {
 
+    @POST("tokens")
+    @FormUrlEncoded
     fun createToken(
-        number: String,
-        cvc: String,
-        expMonth: String,
-        expYear: String
-    ): Task<Token> = createToken(number, cvc, expMonth, expYear, null)
+        @Header("Authorization") authorization: String,
+        @Field("card[number]") number: String,
+        @Field("card[cvc]") cvc: String,
+        @Field("card[exp_month]") expMonth: String,
+        @Field("card[exp_year]") expYear: String,
+        @Field("card[name]") name: String?
+    ): ResultCall<Token>
 
-    fun createToken(
-        number: String,
-        cvc: String,
-        expMonth: String,
-        expYear: String,
-        name: String?
-    ): Task<Token>
+    @GET("tokens/{id}")
+    fun getToken(
+        @Header("Authorization") authorization: String,
+        @Path("id") id: String
+    ): ResultCall<Token>
 
-    fun getToken(id: String): Task<Token>
-
-    fun getAcceptedBrands(): Task<AcceptedBrandsResponse>
-
-    fun getAcceptedBrands(tenantId: TenantId?): Task<AcceptedBrandsResponse>
+    @GET("accounts/brands")
+    fun getAcceptedBrands(
+        @Header("Authorization") authorization: String,
+        @Query("tenant") tenant: String?
+    ): ResultCall<AcceptedBrandsResponse>
 }

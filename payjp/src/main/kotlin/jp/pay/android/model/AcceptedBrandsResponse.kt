@@ -22,13 +22,17 @@
  */
 package jp.pay.android.model
 
-internal data class CardHolderNameInput(
-    val input: String?
-) : CardComponentInput<String> {
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-    override val value: String? = validate()
-
-    private fun validate() = input
-        ?.trim()
-        ?.takeIf(String::isNotEmpty)
-}
+/**
+ * Accepted brands response
+ *
+ * @param brands brand list accepted
+ * @param livemode livemode if true
+ */
+@JsonClass(generateAdapter = true)
+data class AcceptedBrandsResponse(
+    @Json(name = "card_types_supported") val brands: List<CardBrand>,
+    val livemode: Boolean
+)

@@ -24,7 +24,11 @@ package jp.pay.android.validator
 
 import androidx.annotation.VisibleForTesting
 
-internal object CardValidator {
+internal interface CardValidatable {
+    fun isValidCardNumber(cardNumber: String): Boolean
+}
+
+internal object CardValidator : CardValidatable {
 
     /**
      * validate card number. It does not check brand.
@@ -32,7 +36,7 @@ internal object CardValidator {
      * @param cardNumber card number
      * @return valid if true
      */
-    fun isValidCardNumber(cardNumber: String): Boolean {
+    override fun isValidCardNumber(cardNumber: String): Boolean {
         return isCardNumberLengthValid(cardNumber) && isLuhnValid(cardNumber)
     }
 

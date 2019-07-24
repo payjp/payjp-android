@@ -25,6 +25,8 @@ package jp.pay.android
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
+import jp.pay.android.model.AcceptedBrandsResponse
+import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.network.createApiClient
 import java.nio.charset.Charset
@@ -37,12 +39,12 @@ import java.util.concurrent.Executor
  */
 class PayjpToken internal constructor(
     private val configuration: PayjpTokenConfiguration,
-    private val tokenApi: TokenApi
+    private val payjpApi: PayjpApi
 ) : PayjpTokenService {
 
     constructor(configuration: PayjpTokenConfiguration) : this(
         configuration = configuration,
-        tokenApi = createApiClient(
+        payjpApi = createApiClient(
             baseUrl = PayjpConstants.API_ENDPOINT,
             debuggable = configuration.debugEnabled,
             callbackExecutor = MainThreadExecutor()
@@ -106,7 +108,7 @@ class PayjpToken internal constructor(
         expYear: String,
         name: String?
     ): Task<Token> {
-        return tokenApi.createToken(authorization, number, cvc, expMonth, expYear, name)
+        return payjpApi.createToken(authorization, number, cvc, expMonth, expYear, name)
     }
 
     /**
@@ -114,7 +116,26 @@ class PayjpToken internal constructor(
      *
      */
     override fun getToken(id: String): Task<Token> {
-        return tokenApi.getToken(authorization, id)
+        return payjpApi.getToken(authorization, id)
+    }
+
+    /**
+     * Get accepted brands
+     *
+     * @return task of accepted brands
+     */
+    override fun getAcceptedBrands(): Task<AcceptedBrandsResponse> {
+        return getAcceptedBrands(tenantId = null)
+    }
+
+    /**
+     * Get accepted brands with tenant id (for platform)
+     *
+     * @param tenantId tenant id (only for platformer)
+     * @return task of accepted brands
+     */
+    override fun getAcceptedBrands(tenantId: TenantId?): Task<AcceptedBrandsResponse> {
+        return payjpApi.getAcceptedBrands(authorization, tenantId?.id)
     }
 
     private class MainThreadExecutor : Executor {
