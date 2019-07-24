@@ -40,6 +40,13 @@
                 android:layout_height="wrap_content"
                 app:holderNameInputEnabled="false"/>
 
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/TextAppearance.AppCompat.Headline"
+                android:layout_marginTop="20dp"
+                android:text="サンプル"/>
+
         <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -81,6 +88,14 @@
                     android:text="get token by id" />
 
         </LinearLayout>
+
+        <Button
+                android:id="@+id/button_create_token_anyway"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="generate token anyway" />
 
         <EditText
                 android:id="@+id/text_token_id"
