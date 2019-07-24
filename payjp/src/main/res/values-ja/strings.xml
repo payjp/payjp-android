@@ -27,4 +27,8 @@
     <string name="payjp_card_form_expiration_label">有効期限</string>
     <string name="payjp_card_form_cvc_label">CVC</string>
     <string name="payjp_card_form_holder_name_label">カード名義</string>
+
+    <string name="payjp_card_form_error_no_number">カード番号を入力してください</string>
+    <string name="payjp_card_form_error_invalid_number">正しいカード番号を入力してください</string>
+    <string name="payjp_card_form_error_invalid_brand">カードブランドが有効ではありません</string>
 </resources>

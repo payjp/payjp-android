@@ -27,6 +27,7 @@ internal data class CardHolderNameInput(
 ) : CardComponentInput<String> {
 
     override val value: String? = validate()
+    override val errorMessage: FormInputError? = null // TODO
 
     private fun validate() = input
         ?.trim()

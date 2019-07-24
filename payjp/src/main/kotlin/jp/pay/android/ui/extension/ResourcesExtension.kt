@@ -20,34 +20,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.model
+package jp.pay.android.ui.extension
 
-import jp.pay.android.validator.CardExpirationProcessor
-import jp.pay.android.validator.CardExpirationProcessorService
+import android.content.res.Resources
+import jp.pay.android.model.FormInputError
 
-/**
- * Card expiration input
- *
- * @param input input string e.g. `01/20`
- * @param delimiter e.g. `/` in `01/20`
- * @param processor process card expiration value from input.
- * @see [CardExpirationProcessorService]
- */
-internal data class CardExpirationInput(
-    val input: String?,
-    val delimiter: Char,
-    val processor: CardExpirationProcessorService = CardExpirationProcessor
-) : CardComponentInput<CardExpiration> {
-
-    override val value: CardExpiration?
-    override val errorMessage: FormInputError?
-
-    init {
-        value = input?.let {
-            processor.processExpirationMonthYear(it, delimiter)
-        }?.let { monthYear ->
-            processor.processCardExpiration(monthYear)
-        }
-        errorMessage = null // TODO invalid expiration
-    }
-}
+internal fun FormInputError.toStringWith(resources: Resources, lazy: Boolean): String? =
+    takeUnless { lazy && this.lazy }?.let { resources.getString(messageId) }

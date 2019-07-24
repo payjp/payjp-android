@@ -22,32 +22,6 @@
  */
 package jp.pay.android.model
 
-import jp.pay.android.validator.CardExpirationProcessor
-import jp.pay.android.validator.CardExpirationProcessorService
+import androidx.annotation.StringRes
 
-/**
- * Card expiration input
- *
- * @param input input string e.g. `01/20`
- * @param delimiter e.g. `/` in `01/20`
- * @param processor process card expiration value from input.
- * @see [CardExpirationProcessorService]
- */
-internal data class CardExpirationInput(
-    val input: String?,
-    val delimiter: Char,
-    val processor: CardExpirationProcessorService = CardExpirationProcessor
-) : CardComponentInput<CardExpiration> {
-
-    override val value: CardExpiration?
-    override val errorMessage: FormInputError?
-
-    init {
-        value = input?.let {
-            processor.processExpirationMonthYear(it, delimiter)
-        }?.let { monthYear ->
-            processor.processCardExpiration(monthYear)
-        }
-        errorMessage = null // TODO invalid expiration
-    }
-}
+internal data class FormInputError(@StringRes val messageId: Int, val lazy: Boolean)

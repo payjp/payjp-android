@@ -22,23 +22,38 @@
  */
 package jp.pay.android.model
 
-import jp.pay.android.validator.CardValidatable
-import jp.pay.android.validator.CardValidator
+import jp.pay.android.R
+import jp.pay.android.validator.CardNumberValidatorService
+import jp.pay.android.validator.CardNumberValidator
 
 internal data class CardNumberInput(
     val input: String?,
     val acceptedBrands: List<CardBrand>?,
     val brandDetector: CardBrandDetectable = CardBrandDetector,
-    val cardValidator: CardValidatable = CardValidator
+    val cardNumberValidator: CardNumberValidatorService = CardNumberValidator
 ) : CardComponentInput<String> {
 
     val brand: CardBrand = input?.filter(Character::isDigit)
         ?.let(brandDetector::detectWithDigits)
         ?: CardBrand.UNKNOWN
-    override val value: String? = input?.filter(Character::isDigit)
-        ?.takeIf {
-            cardValidator.isValidCardNumber(it) &&
-                brand != CardBrand.UNKNOWN &&
-                acceptedBrands?.contains(brand) != false
+
+    private val validBrand = brand != CardBrand.UNKNOWN && acceptedBrands?.contains(brand) != false
+
+    override val errorMessage: FormInputError?
+    override val value: String?
+
+    init {
+        val digits = input?.filter(Character::isDigit)
+        errorMessage = when {
+            digits.isNullOrEmpty() -> FormInputError(messageId = R.string.payjp_card_form_error_no_number, lazy = true)
+            !cardNumberValidator.isCardNumberLengthValid(digits) ->
+                FormInputError(messageId = R.string.payjp_card_form_error_invalid_number, lazy = true)
+            !cardNumberValidator.isLuhnValid(digits) ->
+                FormInputError(messageId = R.string.payjp_card_form_error_invalid_number, lazy = false)
+            !validBrand -> FormInputError(messageId = R.string.payjp_card_form_error_invalid_brand, lazy = false)
+            else -> null
         }
+        value = digits.takeIf { errorMessage == null }
+    }
+
 }
