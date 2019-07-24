@@ -29,7 +29,7 @@ import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 
 /**
- * [CardValidator]
+ * [CardNumberValidator]
  */
 @RunWith(ParameterizedRobolectricTestRunner::class)
 class CardNumberValidationTest(
@@ -81,6 +81,6 @@ class CardNumberValidationTest(
 
     @Test
     fun checkValidation() {
-        assertThat("mismatch in $cardNumber", CardValidator.isValidCardNumber(cardNumber), `is`(valid))
+        assertThat("mismatch in $cardNumber", CardNumberValidator.isValidCardNumber(cardNumber), `is`(valid))
     }
 }

@@ -22,13 +22,13 @@
  */
 package jp.pay.android.validator
 
-import androidx.annotation.VisibleForTesting
-
-internal interface CardValidatable {
+internal interface CardNumberValidatorService {
     fun isValidCardNumber(cardNumber: String): Boolean
+    fun isCardNumberLengthValid(cardNumber: String): Boolean
+    fun isLuhnValid(cardNumber: String): Boolean
 }
 
-internal object CardValidator : CardValidatable {
+internal object CardNumberValidator : CardNumberValidatorService {
 
     /**
      * validate card number. It does not check brand.
@@ -48,8 +48,7 @@ internal object CardValidator : CardValidatable {
      *
      * @param cardNumber card number
      */
-    @VisibleForTesting
-    fun isCardNumberLengthValid(cardNumber: String): Boolean {
+    override fun isCardNumberLengthValid(cardNumber: String): Boolean {
         return cardNumber.length in 14..16
     }
 
@@ -59,8 +58,7 @@ internal object CardValidator : CardValidatable {
      * @param cardNumber card number
      * @return valid if true
      */
-    @VisibleForTesting
-    fun isLuhnValid(cardNumber: String): Boolean {
+    override fun isLuhnValid(cardNumber: String): Boolean {
         var isOdd = true
         var sum = 0
 

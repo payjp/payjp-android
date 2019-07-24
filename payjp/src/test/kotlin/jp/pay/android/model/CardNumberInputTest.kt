@@ -22,7 +22,7 @@
  */
 package jp.pay.android.model
 
-import jp.pay.android.validator.CardValidatable
+import jp.pay.android.validator.CardNumberValidatorService
 import org.hamcrest.Matchers.`is`
 import org.junit.Assert.*
 import org.junit.Before
@@ -60,13 +60,13 @@ class CardNumberInputTest(
     @Mock
     private lateinit var mockDetector: CardBrandDetectable
     @Mock
-    private lateinit var mockValidator: CardValidatable
+    private lateinit var mockNumberValidator: CardNumberValidatorService
 
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
         `when`(mockDetector.detectWithDigits(anyString())).thenReturn(detectedBrand)
-        `when`(mockValidator.isValidCardNumber(anyString())).thenReturn(numberIsValid)
+        `when`(mockNumberValidator.isValidCardNumber(anyString())).thenReturn(numberIsValid)
     }
 
     @Test
@@ -75,7 +75,7 @@ class CardNumberInputTest(
             input = input,
             acceptedBrands = acceptedBrands,
             brandDetector = mockDetector,
-            cardValidator = mockValidator
+            cardNumberValidator = mockNumberValidator
         )
         assertThat(data.brand, `is`(brand))
         assertThat("data: $data", data.value, `is`(value))
