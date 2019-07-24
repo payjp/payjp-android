@@ -77,6 +77,13 @@ public interface TokenCreatableView {
     void setOnValidateInputListener(@Nullable OnValidateInputListener listener);
 
     /**
+     * Update card holder name input enabled or not.
+     *
+     * @param enabled if false hide card holder name input.
+     */
+    void setCardHolderNameInputEnabled(boolean enabled);
+
+    /**
      * Create token.
      *
      *

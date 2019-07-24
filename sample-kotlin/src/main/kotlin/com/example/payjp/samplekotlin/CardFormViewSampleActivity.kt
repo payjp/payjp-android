@@ -35,6 +35,7 @@ import kotlinx.android.synthetic.main.activity_card_form_view_sample.progress_ba
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_id
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_content
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.card_form_view
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.switch_card_holder_name
 
 class CardFormViewSampleActivity : AppCompatActivity() {
 
@@ -96,6 +97,10 @@ class CardFormViewSampleActivity : AppCompatActivity() {
                     text_token_content.visibility = View.VISIBLE
                 }
             })
+        }
+
+        switch_card_holder_name.setOnCheckedChangeListener { _, isChecked ->
+            card_form_view.setCardHolderNameInputEnabled(isChecked)
         }
     }
 

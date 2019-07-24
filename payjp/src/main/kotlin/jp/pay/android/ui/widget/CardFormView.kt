@@ -27,6 +27,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.VisibleForTesting
+import androidx.transition.TransitionManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -63,6 +64,7 @@ class CardFormView @JvmOverloads constructor(
     internal val expirationEditText: CardExpirationEditText
     @VisibleForTesting
     internal val cvcEditText: CardCvcEditText
+    private val holderNameLayout: TextInputLayout
     @VisibleForTesting
     internal val holderNameEditText: CardHolderNameEditText
     // listener
@@ -94,6 +96,19 @@ class CardFormView @JvmOverloads constructor(
             field = value
             onUpdateInput()
         }
+    private var cardHolderNameEnabled: Boolean = true
+        set(value) {
+            if (field != value) {
+                field = value
+                holderNameLayout.visibility = if (value) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
+                TransitionManager.beginDelayedTransition(this)
+                onUpdateInput()
+            }
+        }
     // result
     private var brands: List<CardBrand>? = null
         set(value) {
@@ -108,7 +123,15 @@ class CardFormView @JvmOverloads constructor(
         numberEditText = findViewById(R.id.input_edit_number)
         expirationEditText = findViewById(R.id.input_edit_expiration)
         cvcEditText = findViewById(R.id.input_edit_cvc)
+        holderNameLayout = findViewById(R.id.input_layout_holder_name)
         holderNameEditText = findViewById(R.id.input_edit_holder_name)
+
+        val a = context.obtainStyledAttributes(attrs, R.styleable.CardFormView)
+        if (a.hasValue(R.styleable.CardFormView_holderNameInputEnabled)) {
+            cardHolderNameEnabled = a.getBoolean(R.styleable.CardFormView_holderNameInputEnabled, true)
+        }
+        a.recycle()
+
         watchInputUpdate()
     }
 
@@ -149,7 +172,7 @@ class CardFormView @JvmOverloads constructor(
         return (cardNumberInput?.valid ?: false) &&
             (cardExpirationInput?.valid ?: false) &&
             (cardCvcInput?.valid ?: false) &&
-            (cardHolderNameInput?.valid ?: false)
+            (!cardHolderNameEnabled || cardHolderNameInput?.valid ?: false)
     }
 
     override fun validateCardForm(): Boolean {
@@ -161,6 +184,10 @@ class CardFormView @JvmOverloads constructor(
     override fun setOnValidateInputListener(listener: TokenCreatableView.OnValidateInputListener?) {
         this.onValidateInputListener = listener
         onValidateInputListener?.onValidateInput(this, isValid)
+    }
+
+    override fun setCardHolderNameInputEnabled(enabled: Boolean) {
+        cardHolderNameEnabled = enabled
     }
 
     override fun createToken(): Task<Token> {
