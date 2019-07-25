@@ -34,30 +34,52 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
 
     // position include delimiter
     private val delimiterPositionsCommon = listOf(4, 9, 14)
-
     private val delimiterPositionsAmexDiners = listOf(4, 11)
-
     var brand: CardBrand = CardBrand.UNKNOWN
+    private var ignoreChanges: Boolean = false
+    private var latestChangeStart: Int = 0
+    private var latestInsertionSize: Int = 0
 
-    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+        if (ignoreChanges) {
+            return
+        }
+        latestChangeStart = start
+        latestInsertionSize = after
+    }
 
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
     override fun afterTextChanged(s: Editable) {
+        if (ignoreChanges) {
+            return
+        }
         if (!isInputCorrect(s)) {
+            ignoreChanges = true
             s.replace(0, s.length, buildCorrectString(createDigitArray(s)))
+            ignoreChanges = false
         }
     }
 
-    private fun isInputCorrect(s: Editable): Boolean =
-        s.length <= (TOTAL_MAX_DIGITS + getDelimiterPositions().size) &&
-            (0 until s.length).all { i ->
-                val delimiterPositions = getDelimiterPositions()
+    private fun isInputCorrect(s: Editable): Boolean {
+        val delimiterPositions = getDelimiterPositions()
+        return when {
+            // Case A. too long
+            s.length > (TOTAL_MAX_DIGITS + delimiterPositions.size) -> false
+            // Case B. When we add `4` into `123`, input should be `1234 `.
+            s.length in delimiterPositions && latestInsertionSize > 0 -> false
+            // Case C. When we delete 1 character from `1234 `, input should be `123`.
+            s.length in delimiterPositions && latestChangeStart == s.length && latestInsertionSize == 0 -> false
+            // Case D. When we delete 1 character from `1234 5`, input should be `1234`.
+            (s.length - 1) in delimiterPositions && latestChangeStart == s.length && latestInsertionSize == 0 -> false
+            else -> (0 until s.length).all { i ->
                 when {
-                    i > 0 && delimiterPositions.contains(i) -> delimiter == s[i]
+                    i > 0 && i in delimiterPositions -> delimiter == s[i]
                     else -> Character.isDigit(s[i])
                 }
             }
+        }
+    }
 
     private fun buildCorrectString(digits: CharArray): String {
         val formatted = StringBuilder()
@@ -67,10 +89,22 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
             val c = digits[i]
             if (Character.isDigit(c)) {
                 formatted.append(c)
-                if (i > 0 && i < digits.size - 1 && delimiterPositions.contains(formatted.lastIndex + 1)) {
+                val nextIndex = formatted.lastIndex + 1
+                if (i < digits.size - 1 &&
+                    nextIndex in delimiterPositions &&
+                    // for Case C and D
+                    (latestInsertionSize > 0 ||
+                        latestChangeStart !in nextIndex..nextIndex + 1)) {
                     formatted.append(delimiter)
                 }
             }
+        }
+        // for Case C
+        val nextIndex = formatted.lastIndex + 1
+        if (nextIndex in delimiterPositions &&
+            latestChangeStart == nextIndex &&
+            latestInsertionSize == 0) {
+            formatted.delete(formatted.length - 1, formatted.length)
         }
 
         return formatted.toString()

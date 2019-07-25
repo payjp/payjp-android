@@ -32,9 +32,9 @@ private const val TOTAL_MAX_SYMBOLS = 5
 private const val DELIMITER_INDEX = 2
 
 internal class CardExpirationFormatTextWatcher(private val delimiter: Char) : TextWatcher {
-    var ignoreChanges: Boolean = false
-    var latestChangeStart: Int = 0
-    var latestInsertionSize: Int = 0
+    private var ignoreChanges: Boolean = false
+    private var latestChangeStart: Int = 0
+    private var latestInsertionSize: Int = 0
 
     override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
         if (ignoreChanges) {
