@@ -22,6 +22,7 @@
  */
 package jp.pay.android.model
 
+import jp.pay.android.R
 import org.hamcrest.Matchers.`is`
 import org.junit.Assert.*
 import org.junit.Before
@@ -30,26 +31,28 @@ import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 
 @RunWith(ParameterizedRobolectricTestRunner::class)
-class CardCvcInputTest(
+internal class CardCvcInputTest(
     private val input: String?,
-    private val value: String?
+    private val value: String?,
+    private val errorMessage: FormInputError?
 ) {
     companion object {
         @JvmStatic
         @ParameterizedRobolectricTestRunner.Parameters
         fun data(): List<Array<out Any?>> {
             return listOf(
-                arrayOf(null as? String, null as? String),
-                arrayOf("", null),
-                arrayOf("abc", null),
-                arrayOf("12", null),
-                arrayOf("12abc", null),
-                arrayOf(" 12 ", null),
-                arrayOf("123", "123"),
-                arrayOf("123a", "123"),
-                arrayOf(" 123 ", "123"),
-                arrayOf("1234", "1234"),
-                arrayOf(" 1234 ", "1234")
+                arrayOf(null as? String, null as? String, FormInputError(R.string.payjp_card_form_error_no_cvc, true)),
+                arrayOf("", null, FormInputError(R.string.payjp_card_form_error_no_cvc, true)),
+                arrayOf("abc", null, FormInputError(R.string.payjp_card_form_error_no_cvc, false)),
+                arrayOf("12", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)),
+                arrayOf("12abc", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)),
+                arrayOf(" 12 ", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)),
+                arrayOf("12345", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)),
+                arrayOf("123", "123", null),
+                arrayOf("123a", "123", null),
+                arrayOf(" 123 ", "123", null),
+                arrayOf("1234", "1234", null),
+                arrayOf(" 1234 ", "1234", null)
             )
         }
     }
@@ -62,7 +65,12 @@ class CardCvcInputTest(
     }
 
     @Test
-    fun formatInput() {
-        assertThat(cvcInput.value, `is`(value))
+    fun checkValue() {
+        assertThat("input = $input", cvcInput.value, `is`(value))
+    }
+
+    @Test
+    fun checkErrorMessage() {
+        assertThat("input = $input", cvcInput.errorMessage, `is`(errorMessage))
     }
 }
