@@ -22,6 +22,8 @@
  */
 package jp.pay.android.model
 
+import jp.pay.android.R
+import jp.pay.android.model.CardBrand.*
 import jp.pay.android.validator.CardNumberValidatorService
 import org.hamcrest.Matchers.`is`
 import org.junit.Assert.*
@@ -33,26 +35,128 @@ import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
 import org.robolectric.ParameterizedRobolectricTestRunner
 
+internal data class CardNumberInputTestData(
+    val input: String?,
+    val acceptedBrands: List<CardBrand>?,
+    val detectedBrand: CardBrand,
+    val isLengthValid: Boolean,
+    val isLuhnValid: Boolean,
+    val brand: CardBrand,
+    val value: String?,
+    val errorMessage: FormInputError?
+)
+
 @RunWith(ParameterizedRobolectricTestRunner::class)
-class CardNumberInputTest(
-    private val input: String?,
-    private val acceptedBrands: List<CardBrand>?,
-    private val detectedBrand: CardBrand,
-    private val numberIsValid: Boolean,
-    private val brand: CardBrand,
-    private val value: String?
+internal class CardNumberInputTest(
+    private val data: CardNumberInputTestData
 ) {
     companion object {
         @JvmStatic
         @ParameterizedRobolectricTestRunner.Parameters
         fun data(): List<Array<out Any?>> {
+            val accepteds = listOf(VISA, MASTER_CARD)
+
             return listOf(
-                arrayOf(null, listOf(CardBrand.VISA), CardBrand.VISA, true, CardBrand.UNKNOWN, null),
-                arrayOf("1234", listOf(CardBrand.VISA), CardBrand.VISA, true, CardBrand.VISA, "1234"),
-                arrayOf(" 1 2 3 4 abc", listOf(CardBrand.VISA), CardBrand.VISA, true, CardBrand.VISA, "1234"),
-                arrayOf("1234", listOf(CardBrand.VISA), CardBrand.VISA, false, CardBrand.VISA, null),
-                arrayOf("1234", listOf(CardBrand.MASTER_CARD), CardBrand.VISA, true, CardBrand.VISA, null),
-                arrayOf("1234", null, CardBrand.VISA, true, CardBrand.VISA, "1234")
+                arrayOf(CardNumberInputTestData(
+                    input = null,
+                    acceptedBrands = accepteds,
+                    detectedBrand = VISA,
+                    isLengthValid = true,
+                    isLuhnValid = true,
+                    brand = UNKNOWN,
+                    value = null,
+                    errorMessage = FormInputError(R.string.payjp_card_form_error_no_number, true)
+                )),
+                arrayOf(CardNumberInputTestData(
+                    input = "",
+                    acceptedBrands = accepteds,
+                    detectedBrand = VISA,
+                    isLengthValid = true,
+                    isLuhnValid = true,
+                    brand = UNKNOWN,
+                    value = null,
+                    errorMessage = FormInputError(R.string.payjp_card_form_error_no_number, true)
+                )),
+                arrayOf(CardNumberInputTestData(
+                    input = "abc",
+                    acceptedBrands = accepteds,
+                    detectedBrand = VISA,
+                    isLengthValid = true,
+                    isLuhnValid = true,
+                    brand = UNKNOWN,
+                    value = null,
+                    errorMessage = FormInputError(R.string.payjp_card_form_error_no_number, true)
+                )),
+                arrayOf(CardNumberInputTestData(
+                    input = "1",
+                    acceptedBrands = accepteds,
+                    detectedBrand = VISA,
+                    isLengthValid = false,
+                    isLuhnValid = true,
+                    brand = VISA,
+                    value = null,
+                    errorMessage = FormInputError(R.string.payjp_card_form_error_invalid_number, true)
+                )),
+                arrayOf(CardNumberInputTestData(
+                    input = "1",
+                    acceptedBrands = accepteds,
+                    detectedBrand = VISA,
+                    isLengthValid = true,
+                    isLuhnValid = false,
+                    brand = VISA,
+                    value = null,
+                    errorMessage = FormInputError(R.string.payjp_card_form_error_invalid_number, false)
+                )),
+                arrayOf(CardNumberInputTestData(
+                    input = "1",
+                    acceptedBrands = accepteds,
+                    detectedBrand = UNKNOWN,
+                    isLengthValid = true,
+                    isLuhnValid = true,
+                    brand = UNKNOWN,
+                    value = null,
+                    errorMessage = FormInputError(R.string.payjp_card_form_error_invalid_brand, true)
+                )),
+                arrayOf(CardNumberInputTestData(
+                    input = "1",
+                    acceptedBrands = accepteds,
+                    detectedBrand = JCB,
+                    isLengthValid = true,
+                    isLuhnValid = true,
+                    brand = JCB,
+                    value = null,
+                    errorMessage = FormInputError(R.string.payjp_card_form_error_invalid_brand, false)
+                )),
+                arrayOf(CardNumberInputTestData(
+                    input = "1",
+                    acceptedBrands = accepteds,
+                    detectedBrand = VISA,
+                    isLengthValid = true,
+                    isLuhnValid = true,
+                    brand = VISA,
+                    value = "1",
+                    errorMessage = null
+                )),
+                arrayOf(CardNumberInputTestData(
+                    input = "1 2 3 4",
+                    acceptedBrands = accepteds,
+                    detectedBrand = VISA,
+                    isLengthValid = true,
+                    isLuhnValid = true,
+                    brand = VISA,
+                    value = "1234",
+                    errorMessage = null
+                )),
+                arrayOf(CardNumberInputTestData(
+                    input = "1234",
+                    acceptedBrands = null,
+                    detectedBrand = VISA,
+                    isLengthValid = true,
+                    isLuhnValid = true,
+                    brand = VISA,
+                    value = "1234",
+                    errorMessage = null
+                ))
             )
         }
     }
@@ -61,24 +165,34 @@ class CardNumberInputTest(
     private lateinit var mockDetector: CardBrandDetectable
     @Mock
     private lateinit var mockNumberValidator: CardNumberValidatorService
+    private lateinit var input: CardNumberInput
 
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
-        `when`(mockDetector.detectWithDigits(anyString())).thenReturn(detectedBrand)
-        `when`(mockNumberValidator.isCardNumberLengthValid(anyString())).thenReturn(numberIsValid)
-        `when`(mockNumberValidator.isLuhnValid(anyString())).thenReturn(numberIsValid)
-    }
-
-    @Test
-    fun formatInput() {
-        val data = CardNumberInput(
-            input = input,
-            acceptedBrands = acceptedBrands,
+        `when`(mockDetector.detectWithDigits(anyString())).thenReturn(data.detectedBrand)
+        `when`(mockNumberValidator.isCardNumberLengthValid(anyString())).thenReturn(data.isLengthValid)
+        `when`(mockNumberValidator.isLuhnValid(anyString())).thenReturn(data.isLuhnValid)
+        input = CardNumberInput(
+            input = data.input,
+            acceptedBrands = data.acceptedBrands,
             brandDetector = mockDetector,
             cardNumberValidator = mockNumberValidator
         )
-        assertThat(data.brand, `is`(brand))
-        assertThat("data: $data", data.value, `is`(value))
+    }
+
+    @Test
+    fun checkValue() {
+        assertThat("data: $data", data.value, `is`(data.value))
+    }
+
+    @Test
+    fun checkBrand() {
+        assertThat("data: $data", data.brand, `is`(data.brand))
+    }
+
+    @Test
+    fun checkErrorMessage() {
+        assertThat("data: $data", data.errorMessage, `is`(data.errorMessage))
     }
 }
