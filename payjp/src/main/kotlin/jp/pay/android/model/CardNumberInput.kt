@@ -37,8 +37,6 @@ internal data class CardNumberInput(
         ?.let(brandDetector::detectWithDigits)
         ?: CardBrand.UNKNOWN
 
-    private val validBrand = brand != CardBrand.UNKNOWN && acceptedBrands?.contains(brand) != false
-
     override val errorMessage: FormInputError?
     override val value: String?
 
@@ -50,7 +48,10 @@ internal data class CardNumberInput(
                 FormInputError(messageId = R.string.payjp_card_form_error_invalid_number, lazy = true)
             !cardNumberValidator.isLuhnValid(digits) ->
                 FormInputError(messageId = R.string.payjp_card_form_error_invalid_number, lazy = false)
-            !validBrand -> FormInputError(messageId = R.string.payjp_card_form_error_invalid_brand, lazy = false)
+            brand != CardBrand.UNKNOWN ->
+                FormInputError(messageId = R.string.payjp_card_form_error_invalid_brand, lazy = true)
+            acceptedBrands?.contains(brand) == false ->
+                FormInputError(messageId = R.string.payjp_card_form_error_invalid_brand, lazy = false)
             else -> null
         }
         value = digits.takeIf { errorMessage == null }
