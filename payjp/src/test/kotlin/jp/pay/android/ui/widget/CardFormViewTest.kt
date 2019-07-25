@@ -43,6 +43,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.clearInvocations
+import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
 
@@ -125,7 +126,8 @@ class CardFormViewTest {
 
         // 2. input something (not valid)
         cardFormView.numberEditText.setText("4242424242424242")
-        verify(mockValidateInputListener).onValidateInput(cardFormView, false)
+        // 2 times call (second is after format)
+        verify(mockValidateInputListener, times(2)).onValidateInput(cardFormView, false)
         clearInvocations(mockValidateInputListener)
 
         // 3. input correctly

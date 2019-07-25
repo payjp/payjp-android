@@ -23,16 +23,9 @@
 package jp.pay.android.ui.widget
 
 import android.content.Context
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.AttributeSet
 import jp.pay.android.model.CardExpirationInput
 
-// card number max digits size
-private const val TOTAL_MAX_DIGITS = 4
-// digits + 3 delimiters
-private const val TOTAL_MAX_SYMBOLS = 5
-private const val DELIMITER_INDEX = 2
 private const val DELIMITER_CHAR = '/'
 
 internal class CardExpirationEditText @JvmOverloads constructor(
@@ -47,91 +40,6 @@ internal class CardExpirationEditText @JvmOverloads constructor(
     override fun mapInput(input: String?): CardExpirationInput = CardExpirationInput(input, DELIMITER_CHAR)
 
     private fun addTextChangedListenerForFormat() {
-        addTextChangedListener(object : TextWatcher {
-            var ignoreChanges: Boolean = false
-            var latestChangeStart: Int = 0
-            var latestInsertionSize: Int = 0
-
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                if (ignoreChanges) {
-                    return
-                }
-                latestChangeStart = start
-                latestInsertionSize = after
-            }
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            }
-
-            override fun afterTextChanged(s: Editable) {
-                if (ignoreChanges) {
-                    return
-                }
-                if (!isInputCorrect(s)) {
-                    ignoreChanges = true
-                    s.replace(0, s.length, buildCorrectString(createDigitArray(s)))
-                    ignoreChanges = false
-                }
-            }
-
-            private fun isInputCorrect(s: Editable): Boolean = when {
-                // too long
-                s.length > TOTAL_MAX_SYMBOLS -> false
-                // When we add `1` from `1`, input should be `11/`.
-                s.length == 2 && latestInsertionSize > 0 -> false
-                // When we delete 1 character from `11/`, input should be `1`.
-                s.length == 2 && latestChangeStart == 2 && latestInsertionSize == 0 -> false
-                // When we delete 1 character from `12/1`, input should be `12`.
-                s.length == 3 && latestChangeStart == 3 && latestInsertionSize == 0 -> false
-                else -> (0 until s.length).all { i ->
-                    val c = s[i]
-                    when (i) {
-                        DELIMITER_INDEX -> DELIMITER_CHAR == c
-                        // index 0 should be 0 or 1 (month in 01 ~ 12).
-                        0 -> c == '0' || c == '1'
-                        else -> Character.isDigit(c)
-                    }
-                }
-            }
-
-            private fun buildCorrectString(digits: CharArray): String {
-                val formatted = StringBuilder()
-
-                for (i in digits.indices) {
-                    val c = digits[i]
-                    var index = i
-                    if (i == 0 && c != '0' && c != '1') {
-                        formatted.append('0')
-                        index++
-                    }
-                    if (Character.isDigit(c)) {
-                        formatted.append(c)
-                        if (index < digits.size - 1 && index + 1 == DELIMITER_INDEX && latestInsertionSize > 0) {
-                            formatted.append(DELIMITER_CHAR)
-                        }
-                    }
-                }
-                if (formatted.length == 2 && latestChangeStart == 2 && latestInsertionSize == 0) {
-                    formatted.delete(formatted.length - 1, formatted.length)
-                }
-
-                return formatted.toString()
-            }
-
-            private fun createDigitArray(s: Editable): CharArray {
-                val digits = CharArray(TOTAL_MAX_DIGITS)
-                var index = 0
-                var i = 0
-                while (i < s.length && index < TOTAL_MAX_DIGITS) {
-                    val current = s[i]
-                    if (Character.isDigit(current)) {
-                        digits[index] = current
-                        index++
-                    }
-                    i++
-                }
-                return digits
-            }
-        })
+        addTextChangedListener(CardExpirationFormatTextWatcher(DELIMITER_CHAR))
     }
 }

@@ -38,12 +38,19 @@ internal class CardNumberEditText @JvmOverloads constructor(
             validate()
         }
 
+    private val formatTextWatcher: CardNumberFormatTextWatcher = CardNumberFormatTextWatcher(' ')
+
     init {
-        // TODO format
+        addTextChangedListener(formatTextWatcher)
     }
 
     override fun mapInput(input: String?): CardNumberInput = CardNumberInput(
         input = input,
         acceptedBrands = acceptedBrands
     )
+
+    override fun onUpdateInput(input: CardNumberInput) {
+        super.onUpdateInput(input)
+        formatTextWatcher.brand = input.brand
+    }
 }
