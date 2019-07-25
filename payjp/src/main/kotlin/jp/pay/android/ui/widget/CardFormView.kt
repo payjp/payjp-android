@@ -38,6 +38,7 @@ import jp.pay.android.Task
 import jp.pay.android.exception.PayjpInvalidCardFormException
 import jp.pay.android.model.AcceptedBrandsResponse
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.CardComponentInput
 import jp.pay.android.model.CardCvcInput
 import jp.pay.android.model.CardExpirationInput
 import jp.pay.android.model.CardHolderNameInput
@@ -83,21 +84,25 @@ class CardFormView @JvmOverloads constructor(
     private var cardNumberInput: CardNumberInput? = null
         set(value) {
             field = value
+            updateInputLayoutError(numberLayout, value, true)
             onUpdateInput()
         }
     private var cardExpirationInput: CardExpirationInput? = null
         set(value) {
             field = value
+            updateInputLayoutError(expirationLayout, value, true)
             onUpdateInput()
         }
     private var cardCvcInput: CardCvcInput? = null
         set(value) {
             field = value
+            updateInputLayoutError(cvcLayout, value, true)
             onUpdateInput()
         }
     private var cardHolderNameInput: CardHolderNameInput? = null
         set(value) {
             field = value
+            updateInputLayoutError(holderNameLayout, value, true)
             onUpdateInput()
         }
     private var cardHolderNameEnabled: Boolean = true
@@ -183,7 +188,7 @@ class CardFormView @JvmOverloads constructor(
 
     override fun validateCardForm(): Boolean {
         forceValidate()
-        updateErrorUI(lazy = false)
+        updateAllErrorUI(lazy = false)
         return isValid
     }
 
@@ -213,17 +218,19 @@ class CardFormView @JvmOverloads constructor(
         }
     }
 
-    private fun updateErrorUI(lazy: Boolean) {
-        numberLayout.setErrorOrNull(cardNumberInput?.errorMessage?.toStringWith(resources, lazy))
-        expirationLayout.setErrorOrNull(cardExpirationInput?.errorMessage?.toStringWith(resources, lazy))
-        cvcLayout.setErrorOrNull(cardCvcInput?.errorMessage?.toStringWith(resources, lazy))
-        holderNameLayout.setErrorOrNull(cardHolderNameInput?.errorMessage?.toStringWith(resources, lazy))
+    private fun updateAllErrorUI(lazy: Boolean) {
+        updateInputLayoutError(numberLayout, cardNumberInput, lazy)
+        updateInputLayoutError(expirationLayout, cardExpirationInput, lazy)
+        updateInputLayoutError(cvcLayout, cardCvcInput, lazy)
+        updateInputLayoutError(holderNameLayout, cardHolderNameInput, lazy)
+    }
+
+    private fun updateInputLayoutError(layout: TextInputLayout, input: CardComponentInput<*>?, lazy: Boolean) {
+        layout.setErrorOrNull(input?.errorMessage?.toStringWith(resources, lazy))
     }
 
     private fun onUpdateInput() {
-        val valid = isValid
-        updateErrorUI(lazy = true)
-        onValidateInputListener?.onValidateInput(this, valid)
+        onValidateInputListener?.onValidateInput(this, isValid)
     }
 
     private fun onUpdateBrands() {
