@@ -26,4 +26,4 @@ import android.content.res.Resources
 import jp.pay.android.model.FormInputError
 
 internal fun FormInputError.toStringWith(resources: Resources, lazy: Boolean): String? =
-    takeUnless { lazy && this.lazy }?.let { resources.getString(messageId) }
+    takeIf { !lazy || !this.lazy }?.let { resources.getString(messageId) }
