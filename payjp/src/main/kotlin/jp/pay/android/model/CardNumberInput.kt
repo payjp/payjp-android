@@ -48,7 +48,7 @@ internal data class CardNumberInput(
                 FormInputError(messageId = R.string.payjp_card_form_error_invalid_number, lazy = true)
             !cardNumberValidator.isLuhnValid(digits) ->
                 FormInputError(messageId = R.string.payjp_card_form_error_invalid_number, lazy = false)
-            brand != CardBrand.UNKNOWN ->
+            brand == CardBrand.UNKNOWN ->
                 FormInputError(messageId = R.string.payjp_card_form_error_invalid_brand, lazy = true)
             acceptedBrands?.contains(brand) == false ->
                 FormInputError(messageId = R.string.payjp_card_form_error_invalid_brand, lazy = false)

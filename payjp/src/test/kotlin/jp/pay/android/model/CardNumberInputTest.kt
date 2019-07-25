@@ -73,7 +73,7 @@ internal class CardNumberInputTest(
                     detectedBrand = VISA,
                     isLengthValid = true,
                     isLuhnValid = true,
-                    brand = UNKNOWN,
+                    brand = VISA,
                     value = null,
                     errorMessage = FormInputError(R.string.payjp_card_form_error_no_number, true)
                 )),
@@ -83,7 +83,7 @@ internal class CardNumberInputTest(
                     detectedBrand = VISA,
                     isLengthValid = true,
                     isLuhnValid = true,
-                    brand = UNKNOWN,
+                    brand = VISA,
                     value = null,
                     errorMessage = FormInputError(R.string.payjp_card_form_error_no_number, true)
                 )),
@@ -183,16 +183,16 @@ internal class CardNumberInputTest(
 
     @Test
     fun checkValue() {
-        assertThat("data: $data", data.value, `is`(data.value))
+        assertThat("data: $data", input.value, `is`(data.value))
     }
 
     @Test
     fun checkBrand() {
-        assertThat("data: $data", data.brand, `is`(data.brand))
+        assertThat("data: $data", input.brand, `is`(data.brand))
     }
 
     @Test
     fun checkErrorMessage() {
-        assertThat("data: $data", data.errorMessage, `is`(data.errorMessage))
+        assertThat("data: $data", input.errorMessage, `is`(data.errorMessage))
     }
 }
