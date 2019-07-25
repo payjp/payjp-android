@@ -35,4 +35,5 @@
     <string name="payjp_card_form_error_invalid_expiration">正しい有効期限を入力してください</string>
     <string name="payjp_card_form_error_no_cvc">CVCを入力してください</string>
     <string name="payjp_card_form_error_invalid_cvc">正しいCVCを入力してください</string>
+    <string name="payjp_card_form_error_no_holder_name">カード名義を入力してください</string>
 </resources>

@@ -22,14 +22,21 @@
  */
 package jp.pay.android.model
 
+import jp.pay.android.R
+
 internal data class CardHolderNameInput(
     val input: String?
 ) : CardComponentInput<String> {
 
-    override val value: String? = validate()
-    override val errorMessage: FormInputError? = null // TODO
+    override val value: String?
+    override val errorMessage: FormInputError?
 
-    private fun validate() = input
-        ?.trim()
-        ?.takeIf(String::isNotEmpty)
+    init {
+        val trimmed = input?.trim()
+        errorMessage = when {
+            trimmed.isNullOrEmpty() -> FormInputError(R.string.payjp_card_form_error_no_holder_name, true)
+            else -> null
+        }
+        value = trimmed.takeIf { errorMessage == null }
+    }
 }
