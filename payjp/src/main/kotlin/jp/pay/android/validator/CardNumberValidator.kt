@@ -23,22 +23,11 @@
 package jp.pay.android.validator
 
 internal interface CardNumberValidatorService {
-    fun isValidCardNumber(cardNumber: String): Boolean
     fun isCardNumberLengthValid(cardNumber: String): Boolean
     fun isLuhnValid(cardNumber: String): Boolean
 }
 
 internal object CardNumberValidator : CardNumberValidatorService {
-
-    /**
-     * validate card number. It does not check brand.
-     *
-     * @param cardNumber card number
-     * @return valid if true
-     */
-    override fun isValidCardNumber(cardNumber: String): Boolean {
-        return isCardNumberLengthValid(cardNumber) && isLuhnValid(cardNumber)
-    }
 
     /**
      * Card number length check

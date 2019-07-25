@@ -66,7 +66,8 @@ class CardNumberInputTest(
     fun setUp() {
         MockitoAnnotations.initMocks(this)
         `when`(mockDetector.detectWithDigits(anyString())).thenReturn(detectedBrand)
-        `when`(mockNumberValidator.isValidCardNumber(anyString())).thenReturn(numberIsValid)
+        `when`(mockNumberValidator.isCardNumberLengthValid(anyString())).thenReturn(numberIsValid)
+        `when`(mockNumberValidator.isLuhnValid(anyString())).thenReturn(numberIsValid)
     }
 
     @Test
