@@ -44,18 +44,31 @@ internal data class CardExpirationInput(
     override val errorMessage: FormInputError?
 
     init {
-        when (val monthYear = input?.let { processor.processExpirationMonthYear(it, delimiter) }) {
-            null -> {
-                value = null
-                errorMessage = FormInputError(R.string.payjp_card_form_error_no_expiration, true)
-            }
-            else -> {
-                value = processor.processCardExpiration(monthYear)
-                errorMessage = when (value) {
-                    null -> FormInputError(R.string.payjp_card_form_error_invalid_expiration, false)
-                    else -> null
+        val (value, error) = when (input) {
+            // empty
+            null, "" -> null to FormInputError(R.string.payjp_card_form_error_no_expiration, true)
+            else -> when (val monthYear = input.let { processor.processExpirationMonthYear(it, delimiter) }) {
+                // no formatted value
+                null -> null to FormInputError(R.string.payjp_card_form_error_invalid_expiration, true)
+                else -> {
+                    val (month, year) = monthYear
+                    val invalidExpirationMessage = R.string.payjp_card_form_error_invalid_expiration
+                    when {
+                        // invalid month
+                        !processor.validateMonth(month) -> null to FormInputError(invalidExpirationMessage, false)
+                        // no year
+                        year == null -> null to FormInputError(invalidExpirationMessage, true)
+                        else -> when (val value = processor.processCardExpiration(month to year)) {
+                            // invalid date
+                            null -> null to FormInputError(invalidExpirationMessage, false)
+                            // valid
+                            else -> value to null
+                        }
+                    }
                 }
             }
         }
+        this.value = value
+        this.errorMessage = error
     }
 }

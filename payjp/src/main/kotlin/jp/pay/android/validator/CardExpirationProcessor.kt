@@ -39,9 +39,17 @@ internal interface CardExpirationProcessorService {
      *
      * @param input input string e.g. `01/25`
      * @param delimiter e.g. `/` in `01/25`
-     * @return month and year `("12", "20")` if valid. null if invalid.
+     * @return month and year `("12", "20")` if valid. null if invalid. month is nonnull, but year is nullable
+     *   because after input month and before year, we check only month not only format but also semantic.
      */
-    fun processExpirationMonthYear(input: String, delimiter: Char): Pair<String, String>?
+    fun processExpirationMonthYear(input: String, delimiter: Char): Pair<String, String?>?
+
+    /**
+     * Validate month string
+     *
+     * @param month input string month.
+     */
+    fun validateMonth(month: String): Boolean
 
     /**
      * Create card expiration value object as [CardExpiration] from month and year.
@@ -62,15 +70,19 @@ internal interface CardExpirationProcessorService {
  *
  */
 internal object CardExpirationProcessor : CardExpirationProcessorService {
-    override fun processExpirationMonthYear(input: String, delimiter: Char): Pair<String, String>? {
+    override fun processExpirationMonthYear(input: String, delimiter: Char): Pair<String, String?>? {
         return input
             .split(delimiter)
-            .map { it.filter(Character::isDigit) }
-            .takeIf { parts ->
-                parts.size == 2 && parts.all { part -> part.length == 2 }
-            }?.let { parts ->
-                parts[0] to parts[1]
+            .map { part -> part.filter(Character::isDigit).takeIf { it.length == 2 } }
+            .takeIf { parts -> parts.size == 2 && parts[0] != null }
+            ?.let { parts ->
+                checkNotNull(parts[0]) to parts[1]
             }
+    }
+
+    override fun validateMonth(month: String): Boolean {
+        val monthInt = month.toInt()
+        return monthInt in 1..12
     }
 
     override fun processCardExpiration(
@@ -80,7 +92,7 @@ internal object CardExpirationProcessor : CardExpirationProcessorService {
         val (monthString, yearString) = monthYear
         val month = monthString.toInt()
         val year = yearString.toInt()
-        if (month !in 1..12 || year !in 0..99) {
+        if (!validateMonth(monthString) || year !in 0..99) {
             return null
         }
         val fullYear = expandTwoDigitsYearToFour(year, calendar)

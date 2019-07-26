@@ -29,47 +29,28 @@ import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 
 /**
- * @see [CardExpirationProcessor.processExpirationMonthYear]
+ * @see [CardExpirationProcessor.validateMonth]
  */
 @RunWith(ParameterizedRobolectricTestRunner::class)
-class CardExpirationProcessorMonthYearTest(
+class CardExpirationProcessorValidateMonthTest(
     private val input: String,
-    private val monthYear: Pair<String, String?>?
+    private val valid: Boolean
 ) {
     companion object {
         @JvmStatic
         @ParameterizedRobolectricTestRunner.Parameters
         fun data(): List<Array<out Any?>> {
             return listOf(
-                arrayOf("", null),
-                arrayOf("aa", null),
-                arrayOf("aa/bb", null),
-                arrayOf("1", null),
-                arrayOf("12", null),
-                arrayOf("1225", null),
-                arrayOf("/", null),
-                arrayOf("/2", null),
-                arrayOf("/25", null),
-                arrayOf("1/", null),
-                arrayOf("1/20", null),
-                arrayOf("12/", ("12" to null)),
-                arrayOf("12/3", ("12" to null)),
-                arrayOf("12-25", null),
-                arrayOf("012/25", null),
-                arrayOf("12/2099", ("12" to null)),
-                arrayOf("12/22", ("12" to "22")),
-                arrayOf("02/22", ("02" to "22")),
-                arrayOf("02/01", ("02" to "01"))
+                arrayOf("00", false),
+                arrayOf("01", true),
+                arrayOf("12", true),
+                arrayOf("13", false)
             )
         }
     }
 
     @Test
     fun checkExpirationFormat() {
-        assertThat(
-            "input = $input",
-            CardExpirationProcessor.processExpirationMonthYear(input, '/'),
-            `is`(monthYear)
-        )
+        assertThat("input = $input", CardExpirationProcessor.validateMonth(input), `is`(valid))
     }
 }
