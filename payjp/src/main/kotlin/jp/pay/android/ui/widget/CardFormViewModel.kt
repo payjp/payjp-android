@@ -29,6 +29,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModel
+import jp.pay.android.PayjpToken
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.Task
 import jp.pay.android.exception.PayjpInvalidCardFormException
@@ -41,7 +42,6 @@ import jp.pay.android.model.CardHolderNameInput
 import jp.pay.android.model.CardNumberInput
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
-import jp.pay.android.ui.widget.CardComponentInputView.OnChangeInputListener
 import jp.pay.android.util.Tasks
 
 internal interface CardFormViewModelOutput {
@@ -58,15 +58,16 @@ internal interface CardFormViewModelInput {
 
     fun setTenantId(tenantId: TenantId?)
 
+    fun updateCardInput(input: CardComponentInput<out Any>)
+
     fun updateCardHolderNameEnabled(enabled: Boolean)
 
     fun createToken(): Task<Token>
 }
 
 internal class CardFormViewModel(
-    private val tokenService: PayjpTokenService
-) : ViewModel(), CardFormViewModelOutput, CardFormViewModelInput, LifecycleObserver,
-    OnChangeInputListener<CardComponentInput<out Any>> {
+    private val tokenService: PayjpTokenService = PayjpToken.getInstance()
+) : ViewModel(), CardFormViewModelOutput, CardFormViewModelInput, LifecycleObserver {
 
     override val cardNumberInput = MutableLiveData<CardNumberInput>()
     override val cardExpirationInput = MutableLiveData<CardExpirationInput>()
@@ -98,7 +99,7 @@ internal class CardFormViewModel(
         task = null
     }
 
-    override fun onChangeInput(input: CardComponentInput<out Any>) {
+    override fun updateCardInput(input: CardComponentInput<out Any>) {
         val data = when (input) {
             is CardNumberInput -> cardNumberInput
             is CardExpirationInput -> cardExpirationInput

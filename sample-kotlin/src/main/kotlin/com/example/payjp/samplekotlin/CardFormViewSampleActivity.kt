@@ -29,29 +29,40 @@ import android.view.View
 import jp.pay.android.PayjpToken
 import jp.pay.android.Task
 import jp.pay.android.model.Token
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.*
+import jp.pay.android.ui.widget.CardFormFragment
+import jp.pay.android.ui.widget.TokenCreatableView
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_get_token
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token_anyway
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.progress_bar
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_id
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_content
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.switch_card_holder_name
 
-class CardFormViewSampleActivity : AppCompatActivity() {
+private const val FRAGMENT_CARD_FORM = "FRAGMENT_CARD_FORM"
+
+class CardFormViewSampleActivity : AppCompatActivity(), TokenCreatableView.OnValidateInputListener {
 
     private var createToken: Task<Token>? = null
     private var getToken: Task<Token>? = null
+    private lateinit var cardFormFragment: CardFormFragment
+
+    override fun onValidateInput(view: TokenCreatableView, isValid: Boolean) {
+        button_create_token.isEnabled = isValid
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card_form_view_sample)
-        card_form_view.inject(PayjpToken.getInstance())
-        card_form_view.registerLifecycle(lifecycle) // TODO: improve
-        card_form_view.setOnValidateInputListener { _, isValid ->
-            button_create_token.isEnabled = isValid
-        }
+        findCardFormFragment()
         button_create_token.setOnClickListener {
-            if (!card_form_view.isValid) {
+            if (!cardFormFragment.isValid) {
                 return@setOnClickListener
             }
             createToken()
         }
         button_create_token_anyway.setOnClickListener {
-            if (card_form_view.validateCardForm()) {
+            if (cardFormFragment.validateCardForm()) {
                 createToken()
             }
         }
@@ -61,7 +72,7 @@ class CardFormViewSampleActivity : AppCompatActivity() {
         }
 
         switch_card_holder_name.setOnCheckedChangeListener { _, isChecked ->
-            card_form_view.setCardHolderNameInputEnabled(isChecked)
+            cardFormFragment.setCardHolderNameInputEnabled(isChecked)
         }
     }
 
@@ -75,7 +86,7 @@ class CardFormViewSampleActivity : AppCompatActivity() {
         progress_bar.visibility = View.VISIBLE
         text_token_content.visibility = View.INVISIBLE
         // create token
-        createToken = card_form_view.createToken()
+        createToken = cardFormFragment.createToken()
         createToken?.enqueue(object : Task.Callback<Token> {
             override fun onSuccess(data: Token) {
                 Log.i("CardFormViewSample", "token => $data")
@@ -114,5 +125,19 @@ class CardFormViewSampleActivity : AppCompatActivity() {
                 text_token_content.visibility = View.VISIBLE
             }
         })
+    }
+
+    private fun findCardFormFragment() {
+        supportFragmentManager?.let { manager ->
+            val f = manager.findFragmentByTag(FRAGMENT_CARD_FORM)
+            cardFormFragment = f as? CardFormFragment ?: CardFormFragment.newInstance()
+            if (!cardFormFragment.isAdded) {
+                manager
+                    .beginTransaction().apply {
+                        replace(R.id.card_form_view, cardFormFragment, FRAGMENT_CARD_FORM)
+                    }
+                    .commit()
+            }
+        }
     }
 }

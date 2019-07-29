@@ -150,11 +150,6 @@ class CardFormView @JvmOverloads constructor(
         watchInputUpdate()
     }
 
-    // TODO improve
-    fun registerLifecycle(lifecycle: Lifecycle) {
-        lifecycle.addObserver(this)
-    }
-
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun startFetchingAcceptedBrands() {
         if (brands == null) {
@@ -174,11 +169,11 @@ class CardFormView @JvmOverloads constructor(
         task?.cancel()
     }
 
-    override fun inject(service: PayjpTokenService) {
+    fun inject(service: PayjpTokenService) {
         inject(service, null)
     }
 
-    override fun inject(service: PayjpTokenService, tenantId: TenantId?) {
+    fun inject(service: PayjpTokenService, tenantId: TenantId?) {
         this.tokenService = service
         this.tenantId = tenantId
     }
@@ -196,7 +191,7 @@ class CardFormView @JvmOverloads constructor(
         return isValid
     }
 
-    override fun setOnValidateInputListener(listener: TokenCreatableView.OnValidateInputListener?) {
+    fun setOnValidateInputListener(listener: TokenCreatableView.OnValidateInputListener?) {
         this.onValidateInputListener = listener
         onValidateInputListener?.onValidateInput(this, isValid)
     }

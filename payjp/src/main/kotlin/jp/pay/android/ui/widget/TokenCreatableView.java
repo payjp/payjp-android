@@ -25,36 +25,13 @@ package jp.pay.android.ui.widget;
 
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
-import jp.pay.android.PayjpTokenService;
 import jp.pay.android.Task;
-import jp.pay.android.model.TenantId;
 import jp.pay.android.model.Token;
 
 /**
  * Interface of view create token.
  */
 public interface TokenCreatableView {
-
-    /**
-     * Inject PayjpTokenService to generate token in server.
-     *
-     *
-     * @param service usually pass `PayjpToken.getInstance()`
-     */
-    void inject(@NonNull PayjpTokenService service);
-
-    /**
-     * Inject PayjpTokenService with tenant id.
-     *
-     * Tenant Id
-     *
-     * @param service usually pass `PayjpToken.getInstance()`
-     * @param tenantId tenant id (only for platformer).
-     */
-    void inject(@NonNull PayjpTokenService service, @Nullable TenantId tenantId);
 
     /**
      * Check current card input.
@@ -69,12 +46,6 @@ public interface TokenCreatableView {
      * @return true if the card input is valid.
      */
     boolean validateCardForm();
-
-    /**
-     *
-     * @param listener listener
-     */
-    void setOnValidateInputListener(@Nullable OnValidateInputListener listener);
 
     /**
      * Update card holder name input enabled or not.
