@@ -32,6 +32,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
 import androidx.transition.TransitionManager
 import com.google.android.material.textfield.TextInputLayout
+import jp.pay.android.PayjpToken
 import jp.pay.android.R
 import jp.pay.android.Task
 import jp.pay.android.exception.PayjpInvalidCardFormException
@@ -137,11 +138,14 @@ class CardFormFragment : Fragment(), TokenCreatableView {
     }
 
     private fun setUpViewModel() {
-        viewModel = ViewModelProviders.of(requireActivity()).get(CardFormViewModel::class.java).apply {
-            updateCardHolderNameEnabled(arguments?.getBoolean(ARGS_HOLDER_NAME_ENABLED) ?: true)
-            setTenantId(arguments?.getString(ARGS_TENANT_ID)?.let { TenantId(it) })
-
-            // observer
+        val tenantId = arguments?.getString(ARGS_TENANT_ID)?.let { TenantId(it) }
+        val holderNameEnabled = arguments?.getBoolean(ARGS_HOLDER_NAME_ENABLED) ?: true
+        val factory = CardFormViewModel.Factory(
+            tokenService = PayjpToken.getInstance(),
+            tenantId = tenantId,
+            holderNameEnabledDefault = holderNameEnabled
+        )
+        viewModel = ViewModelProviders.of(requireActivity(), factory).get(CardFormViewModel::class.java).apply {
             acceptedBrands.observe(viewLifecycleOwner) {
                 numberEditText.acceptedBrands = it
             }

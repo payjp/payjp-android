@@ -29,7 +29,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModel
-import jp.pay.android.PayjpToken
+import androidx.lifecycle.ViewModelProvider
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.Task
 import jp.pay.android.exception.PayjpInvalidCardFormException
@@ -56,8 +56,6 @@ internal interface CardFormViewModelOutput {
 
 internal interface CardFormViewModelInput {
 
-    fun setTenantId(tenantId: TenantId?)
-
     fun updateCardInput(input: CardComponentInput<out Any>)
 
     fun updateCardHolderNameEnabled(enabled: Boolean)
@@ -66,7 +64,9 @@ internal interface CardFormViewModelInput {
 }
 
 internal class CardFormViewModel(
-    private val tokenService: PayjpTokenService = PayjpToken.getInstance()
+    private val tokenService: PayjpTokenService,
+    private val tenantId: TenantId?,
+    holderNameEnabledDefault: Boolean
 ) : ViewModel(), CardFormViewModelOutput, CardFormViewModelInput, LifecycleObserver {
 
     override val cardNumberInput = MutableLiveData<CardNumberInput>()
@@ -78,9 +78,9 @@ internal class CardFormViewModel(
     override val isValid: LiveData<Boolean>
 
     private var task: Task<AcceptedBrandsResponse>? = null
-    private var tenantId: TenantId? = null
 
     init {
+        cardHolderNameEnabled.value = holderNameEnabledDefault
         isValid = MediatorLiveData<Boolean>().apply {
             fun checkValid() = cardNumberInput.value?.valid == true &&
                 cardExpirationInput.value?.valid == true &&
@@ -108,10 +108,6 @@ internal class CardFormViewModel(
             else -> throw IllegalStateException("unknown input")
         }
         data.value = input
-    }
-
-    override fun setTenantId(tenantId: TenantId?) {
-        this.tenantId = tenantId
     }
 
     override fun updateCardHolderNameEnabled(enabled: Boolean) {
@@ -150,6 +146,18 @@ internal class CardFormViewModel(
 
                 override fun onError(throwable: Throwable) {}
             })
+        }
+    }
+
+    class Factory(
+        private val tokenService: PayjpTokenService,
+        private val tenantId: TenantId? = null,
+        private val holderNameEnabledDefault: Boolean = true
+    ) : ViewModelProvider.NewInstanceFactory() {
+
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return CardFormViewModel(tokenService, tenantId, holderNameEnabledDefault) as T
         }
     }
 }
