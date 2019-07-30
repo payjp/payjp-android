@@ -22,11 +22,10 @@
  */
 package jp.pay.android.model
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import jp.pay.android.R
 import jp.pay.android.anyNullable
 import jp.pay.android.validator.CardExpirationProcessorService
 import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.nullValue
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -36,50 +35,59 @@ import org.mockito.Mockito.`when`
 import org.mockito.Mockito.anyChar
 import org.mockito.Mockito.anyString
 import org.mockito.MockitoAnnotations
+import org.robolectric.ParameterizedRobolectricTestRunner
 
-@RunWith(AndroidJUnit4::class)
-class CardExpirationInputTest {
+@RunWith(ParameterizedRobolectricTestRunner::class)
+internal class CardExpirationInputTest(
+    private val input: String?,
+    private val mockMonthYear: Pair<String, String?>?,
+    private val mockValidateMonth: Boolean,
+    private val mockExpiration: CardExpiration?,
+    private val result: CardExpiration?,
+    private val errorMessage: FormInputError?
+) {
+
+    companion object {
+        @JvmStatic
+        @ParameterizedRobolectricTestRunner.Parameters
+        fun data(): List<Array<out Any?>> {
+
+            return listOf(
+                arrayOf(null, null, false, null, null, FormInputError(R.string.payjp_card_form_error_no_expiration, true)),
+                arrayOf("", null, false, null, null, FormInputError(R.string.payjp_card_form_error_no_expiration, true)),
+                arrayOf("12/20", null, false, null, null, FormInputError(R.string.payjp_card_form_error_invalid_expiration, true)),
+                arrayOf("12/20", "12" to "20", false, null,
+                    null, FormInputError(R.string.payjp_card_form_error_invalid_expiration, false)),
+                arrayOf("12/20", "12" to null, true, null,
+                    null, FormInputError(R.string.payjp_card_form_error_invalid_expiration, true)),
+                arrayOf("12/20", "12" to "20", true, null,
+                    null, FormInputError(R.string.payjp_card_form_error_invalid_expiration, false)),
+                arrayOf("12/20", "12" to "20", true, CardExpiration("12", "2020"),
+                    CardExpiration("12", "2020"), null)
+            )
+        }
+    }
 
     @Mock
     private lateinit var processor: CardExpirationProcessorService
+    private lateinit var expirationInput: CardExpirationInput
 
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
-    }
-
-    private fun createInput(input: String?) = CardExpirationInput(input, '/', processor)
-
-    @Test
-    fun value_is_null_when_input_null() {
-        val input = createInput(null)
-        assertThat(input.value, nullValue())
+        `when`(processor.processExpirationMonthYear(anyString(), anyChar())).thenReturn(mockMonthYear)
+        `when`(processor.validateMonth(anyString())).thenReturn(mockValidateMonth)
+        `when`(processor.processCardExpiration(anyNullable(), anyNullable())).thenReturn(mockExpiration)
+        expirationInput = CardExpirationInput(input, '/', processor)
     }
 
     @Test
-    fun value_is_null_when_processor_return_null_monthyear() {
-        `when`(processor.processExpirationMonthYear(anyString(), anyChar())).thenReturn(null)
-        val input = createInput("12/20")
-        assertThat(input.value, nullValue())
+    fun checkValue() {
+        assertThat(expirationInput.value, `is`(result))
     }
 
     @Test
-    fun value_is_null_when_processor_return_null_expiration() {
-        val monthYear = "12" to "20"
-        `when`(processor.processExpirationMonthYear(anyString(), anyChar())).thenReturn(monthYear)
-        `when`(processor.processCardExpiration(anyNullable(), anyNullable())).thenReturn(null)
-        val input = createInput("12/20")
-        assertThat(input.value, nullValue())
-    }
-
-    @Test
-    fun value_exists_when_processor_return_expiration() {
-        val monthYear = "12" to "20"
-        val expiration = CardExpiration("12", "2020")
-        `when`(processor.processExpirationMonthYear(anyString(), anyChar())).thenReturn(monthYear)
-        `when`(processor.processCardExpiration(anyNullable(), anyNullable())).thenReturn(expiration)
-        val input = createInput("12/20")
-        assertThat(input.value, `is`(expiration))
-        assertThat(input.valid, `is`(true))
+    fun checkErrorMessage() {
+        assertThat(expirationInput.errorMessage, `is`(errorMessage))
     }
 }

@@ -20,23 +20,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.model
+package jp.pay.android.ui.extension
 
-import jp.pay.android.R
+import com.google.android.material.textfield.TextInputLayout
 
-internal data class CardHolderNameInput(
-    val input: String?
-) : CardComponentInput<String> {
-
-    override val value: String?
-    override val errorMessage: FormInputError?
-
-    init {
-        val trimmed = input?.trim()
-        errorMessage = when {
-            trimmed.isNullOrEmpty() -> FormInputError(R.string.payjp_card_form_error_no_holder_name, true)
-            else -> null
-        }
-        value = trimmed.takeIf { errorMessage == null }
-    }
+internal fun TextInputLayout.setErrorOrNull(error: CharSequence?) {
+    this.isErrorEnabled = error.isNullOrEmpty().not()
+    this.error = error
 }

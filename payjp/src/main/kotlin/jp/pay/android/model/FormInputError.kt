@@ -22,21 +22,12 @@
  */
 package jp.pay.android.model
 
-import jp.pay.android.R
+import androidx.annotation.StringRes
 
-internal data class CardHolderNameInput(
-    val input: String?
-) : CardComponentInput<String> {
-
-    override val value: String?
-    override val errorMessage: FormInputError?
-
-    init {
-        val trimmed = input?.trim()
-        errorMessage = when {
-            trimmed.isNullOrEmpty() -> FormInputError(R.string.payjp_card_form_error_no_holder_name, true)
-            else -> null
-        }
-        value = trimmed.takeIf { errorMessage == null }
-    }
-}
+/**
+ * form input error
+ *
+ * @param messageId res id.
+ * @param lazy represent no need to show error immediately (it maybe better to continue input for experience).
+ */
+internal data class FormInputError(@StringRes val messageId: Int, val lazy: Boolean)

@@ -22,6 +22,7 @@
  */
 package jp.pay.android.model
 
+import jp.pay.android.R
 import jp.pay.android.validator.CardExpirationProcessor
 import jp.pay.android.validator.CardExpirationProcessorService
 
@@ -40,12 +41,34 @@ internal data class CardExpirationInput(
 ) : CardComponentInput<CardExpiration> {
 
     override val value: CardExpiration?
+    override val errorMessage: FormInputError?
 
     init {
-        value = input?.let {
-            processor.processExpirationMonthYear(it, delimiter)
-        }?.let { monthYear ->
-            processor.processCardExpiration(monthYear)
+        val (value, error) = when (input) {
+            // empty
+            null, "" -> null to FormInputError(R.string.payjp_card_form_error_no_expiration, true)
+            else -> when (val monthYear = input.let { processor.processExpirationMonthYear(it, delimiter) }) {
+                // no formatted value
+                null -> null to FormInputError(R.string.payjp_card_form_error_invalid_expiration, true)
+                else -> {
+                    val (month, year) = monthYear
+                    val invalidExpirationMessage = R.string.payjp_card_form_error_invalid_expiration
+                    when {
+                        // invalid month
+                        !processor.validateMonth(month) -> null to FormInputError(invalidExpirationMessage, false)
+                        // no year
+                        year == null -> null to FormInputError(invalidExpirationMessage, true)
+                        else -> when (val value = processor.processCardExpiration(month to year)) {
+                            // invalid date
+                            null -> null to FormInputError(invalidExpirationMessage, false)
+                            // valid
+                            else -> value to null
+                        }
+                    }
+                }
+            }
         }
+        this.value = value
+        this.errorMessage = error
     }
 }

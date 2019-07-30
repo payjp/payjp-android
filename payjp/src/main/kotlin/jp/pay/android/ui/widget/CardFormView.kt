@@ -38,12 +38,15 @@ import jp.pay.android.Task
 import jp.pay.android.exception.PayjpInvalidCardFormException
 import jp.pay.android.model.AcceptedBrandsResponse
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.CardComponentInput
 import jp.pay.android.model.CardCvcInput
 import jp.pay.android.model.CardExpirationInput
 import jp.pay.android.model.CardHolderNameInput
 import jp.pay.android.model.CardNumberInput
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
+import jp.pay.android.ui.extension.setErrorOrNull
+import jp.pay.android.ui.extension.toStringWith
 import jp.pay.android.ui.widget.CardComponentInputView.OnChangeInputListener
 import jp.pay.android.util.Tasks
 
@@ -58,13 +61,15 @@ class CardFormView @JvmOverloads constructor(
 
     // view
     private val numberLayout: TextInputLayout
+    private val expirationLayout: TextInputLayout
+    private val cvcLayout: TextInputLayout
+    private val holderNameLayout: TextInputLayout
     @VisibleForTesting
     internal val numberEditText: CardNumberEditText
     @VisibleForTesting
     internal val expirationEditText: CardExpirationEditText
     @VisibleForTesting
     internal val cvcEditText: CardCvcEditText
-    private val holderNameLayout: TextInputLayout
     @VisibleForTesting
     internal val holderNameEditText: CardHolderNameEditText
     // listener
@@ -79,21 +84,25 @@ class CardFormView @JvmOverloads constructor(
     private var cardNumberInput: CardNumberInput? = null
         set(value) {
             field = value
+            updateInputLayoutError(numberLayout, value, true)
             onUpdateInput()
         }
     private var cardExpirationInput: CardExpirationInput? = null
         set(value) {
             field = value
+            updateInputLayoutError(expirationLayout, value, true)
             onUpdateInput()
         }
     private var cardCvcInput: CardCvcInput? = null
         set(value) {
             field = value
+            updateInputLayoutError(cvcLayout, value, true)
             onUpdateInput()
         }
     private var cardHolderNameInput: CardHolderNameInput? = null
         set(value) {
             field = value
+            updateInputLayoutError(holderNameLayout, value, true)
             onUpdateInput()
         }
     private var cardHolderNameEnabled: Boolean = true
@@ -121,7 +130,9 @@ class CardFormView @JvmOverloads constructor(
         View.inflate(context, R.layout.card_form_view, this)
         numberLayout = findViewById(R.id.input_layout_number)
         numberEditText = findViewById(R.id.input_edit_number)
+        expirationLayout = findViewById(R.id.input_layout_expiration)
         expirationEditText = findViewById(R.id.input_edit_expiration)
+        cvcLayout = findViewById(R.id.input_layout_cvc)
         cvcEditText = findViewById(R.id.input_edit_cvc)
         holderNameLayout = findViewById(R.id.input_layout_holder_name)
         holderNameEditText = findViewById(R.id.input_edit_holder_name)
@@ -177,7 +188,7 @@ class CardFormView @JvmOverloads constructor(
 
     override fun validateCardForm(): Boolean {
         forceValidate()
-        updateErrorUI()
+        updateAllErrorUI(lazy = false)
         return isValid
     }
 
@@ -207,14 +218,19 @@ class CardFormView @JvmOverloads constructor(
         }
     }
 
-    private fun updateErrorUI() {
-        // TODO show error
+    private fun updateAllErrorUI(lazy: Boolean) {
+        updateInputLayoutError(numberLayout, cardNumberInput, lazy)
+        updateInputLayoutError(expirationLayout, cardExpirationInput, lazy)
+        updateInputLayoutError(cvcLayout, cardCvcInput, lazy)
+        updateInputLayoutError(holderNameLayout, cardHolderNameInput, lazy)
+    }
+
+    private fun updateInputLayoutError(layout: TextInputLayout, input: CardComponentInput<*>?, lazy: Boolean) {
+        layout.setErrorOrNull(input?.errorMessage?.toStringWith(resources, lazy))
     }
 
     private fun onUpdateInput() {
-        val valid = isValid
-        updateErrorUI()
-        onValidateInputListener?.onValidateInput(this, valid)
+        onValidateInputListener?.onValidateInput(this, isValid)
     }
 
     private fun onUpdateBrands() {
@@ -231,9 +247,6 @@ class CardFormView @JvmOverloads constructor(
     private fun watchInputUpdate() {
         numberEditText.onChangeInputListener = object : OnChangeInputListener<CardNumberInput> {
             override fun onChangeInput(input: CardNumberInput) {
-                // TODO validation
-                // TODO ブランドロゴの表示
-                numberLayout.helperText = "brand = ${input.brand}"
                 cardNumberInput = input
             }
         }

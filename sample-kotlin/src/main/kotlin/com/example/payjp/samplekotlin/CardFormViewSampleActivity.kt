@@ -29,13 +29,7 @@ import android.view.View
 import jp.pay.android.PayjpToken
 import jp.pay.android.Task
 import jp.pay.android.model.Token
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_get_token
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.progress_bar
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_id
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_content
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.card_form_view
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.switch_card_holder_name
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.*
 
 class CardFormViewSampleActivity : AppCompatActivity() {
 
@@ -54,49 +48,16 @@ class CardFormViewSampleActivity : AppCompatActivity() {
             if (!card_form_view.isValid) {
                 return@setOnClickListener
             }
-            progress_bar.visibility = View.VISIBLE
-            text_token_content.visibility = View.INVISIBLE
-            // create token
-            createToken = card_form_view.createToken()
-            createToken?.enqueue(object : Task.Callback<Token> {
-                override fun onSuccess(data: Token) {
-                    Log.i("CardFormViewSample", "token => $data")
-                    text_token_id.setText(data.id)
-                    text_token_content.text = "The token has created."
-                    progress_bar.visibility = View.GONE
-                    text_token_content.visibility = View.VISIBLE
-                }
-
-                override fun onError(throwable: Throwable) {
-                    Log.e("CardFormViewSample", "failure creating token", throwable)
-                    text_token_content.text = throwable.toString()
-                    progress_bar.visibility = View.GONE
-                    text_token_content.visibility = View.VISIBLE
-                }
-            })
+            createToken()
+        }
+        button_create_token_anyway.setOnClickListener {
+            if (card_form_view.validateCardForm()) {
+                createToken()
+            }
         }
 
         button_get_token.setOnClickListener {
-            progress_bar.visibility = View.VISIBLE
-            text_token_content.visibility = View.INVISIBLE
-
-            // get token
-            getToken = PayjpToken.getInstance().getToken(text_token_id.text.toString())
-            getToken?.enqueue(object : Task.Callback<Token> {
-                override fun onSuccess(data: Token) {
-                    Log.i("CardFormViewSample", "token => $data")
-                    text_token_content.text = data.toString()
-                    progress_bar.visibility = View.GONE
-                    text_token_content.visibility = View.VISIBLE
-                }
-
-                override fun onError(throwable: Throwable) {
-                    Log.e("CardFormViewSample", "failure creating token", throwable)
-                    text_token_content.text = throwable.toString()
-                    progress_bar.visibility = View.GONE
-                    text_token_content.visibility = View.VISIBLE
-                }
-            })
+            getToken(text_token_id.text.toString())
         }
 
         switch_card_holder_name.setOnCheckedChangeListener { _, isChecked ->
@@ -108,5 +69,50 @@ class CardFormViewSampleActivity : AppCompatActivity() {
         super.onDestroy()
         createToken?.cancel()
         getToken?.cancel()
+    }
+
+    private fun createToken() {
+        progress_bar.visibility = View.VISIBLE
+        text_token_content.visibility = View.INVISIBLE
+        // create token
+        createToken = card_form_view.createToken()
+        createToken?.enqueue(object : Task.Callback<Token> {
+            override fun onSuccess(data: Token) {
+                Log.i("CardFormViewSample", "token => $data")
+                text_token_id.setText(data.id)
+                text_token_content.text = "The token has created."
+                progress_bar.visibility = View.GONE
+                text_token_content.visibility = View.VISIBLE
+            }
+
+            override fun onError(throwable: Throwable) {
+                Log.e("CardFormViewSample", "failure creating token", throwable)
+                text_token_content.text = throwable.toString()
+                progress_bar.visibility = View.GONE
+                text_token_content.visibility = View.VISIBLE
+            }
+        })
+    }
+
+    private fun getToken(id: String) {
+        progress_bar.visibility = View.VISIBLE
+        text_token_content.visibility = View.INVISIBLE
+        // get token
+        getToken = PayjpToken.getInstance().getToken(id)
+        getToken?.enqueue(object : Task.Callback<Token> {
+            override fun onSuccess(data: Token) {
+                Log.i("CardFormViewSample", "token => $data")
+                text_token_content.text = data.toString()
+                progress_bar.visibility = View.GONE
+                text_token_content.visibility = View.VISIBLE
+            }
+
+            override fun onError(throwable: Throwable) {
+                Log.e("CardFormViewSample", "failure creating token", throwable)
+                text_token_content.text = throwable.toString()
+                progress_bar.visibility = View.GONE
+                text_token_content.visibility = View.VISIBLE
+            }
+        })
     }
 }

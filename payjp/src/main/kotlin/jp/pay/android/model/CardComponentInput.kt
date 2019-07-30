@@ -32,5 +32,10 @@ internal interface CardComponentInput<T> {
     val valid: Boolean
         get() = value != null
 
-    // TODO val error: Int
+    /**
+     * The string resource id of input error message.
+     * If no error, it return null.
+     *
+     */
+    val errorMessage: FormInputError?
 }

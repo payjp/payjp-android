@@ -22,12 +22,21 @@
  */
 package jp.pay.android.model
 
+import jp.pay.android.R
+
 internal data class CardCvcInput(
     val input: String?
 ) : CardComponentInput<String> {
-    override val value: String? = validate()
+    override val value: String?
+    override val errorMessage: FormInputError?
 
-    private fun validate(): String? = input
-        ?.filter(Character::isDigit)
-        ?.takeIf { it.length in 3..4 }
+    init {
+        val digits = input?.filter(Character::isDigit)
+        errorMessage = when {
+            digits.isNullOrEmpty() -> FormInputError(R.string.payjp_card_form_error_no_cvc, input.isNullOrEmpty())
+            digits.length !in 3..4 -> FormInputError(R.string.payjp_card_form_error_invalid_cvc, digits.length < 3)
+            else -> null
+        }
+        value = digits.takeIf { errorMessage == null }
+    }
 }

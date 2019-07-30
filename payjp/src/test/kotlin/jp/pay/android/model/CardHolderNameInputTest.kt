@@ -22,16 +22,19 @@
  */
 package jp.pay.android.model
 
-import org.hamcrest.Matchers
+import jp.pay.android.R
+import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 
 @RunWith(ParameterizedRobolectricTestRunner::class)
-class CardHolderNameInputTest(
+internal class CardHolderNameInputTest(
     private val input: String?,
-    private val value: String?
+    private val value: String?,
+    private val errorMessage: FormInputError?
 ) {
 
     companion object {
@@ -39,17 +42,32 @@ class CardHolderNameInputTest(
         @ParameterizedRobolectricTestRunner.Parameters
         fun data(): List<Array<out Any?>> {
             return listOf(
-                arrayOf(null as? String, null as? String),
-                arrayOf("", null),
-                arrayOf(" ", null),
-                arrayOf("JANE DOE", "JANE DOE"),
-                arrayOf(" JANE DOE ", "JANE DOE")
+                arrayOf(null as? String, null as? String,
+                    FormInputError(R.string.payjp_card_form_error_no_holder_name, true)),
+                arrayOf("", null,
+                    FormInputError(R.string.payjp_card_form_error_no_holder_name, true)),
+                arrayOf(" ", null,
+                    FormInputError(R.string.payjp_card_form_error_no_holder_name, true)),
+                arrayOf("JANE DOE", "JANE DOE", null),
+                arrayOf(" JANE DOE ", "JANE DOE", null)
             )
         }
     }
 
+    private lateinit var holderNameInput: CardHolderNameInput
+
+    @Before
+    fun setUp() {
+        holderNameInput = CardHolderNameInput(input)
+    }
+
     @Test
-    fun formatInput() {
-        assertThat(CardHolderNameInput(input).value, Matchers.`is`(value))
+    fun checkValue() {
+        assertThat("input = $input", holderNameInput.value, `is`(value))
+    }
+
+    @Test
+    fun checkErrorMessage() {
+        assertThat("input = $input", holderNameInput.errorMessage, `is`(errorMessage))
     }
 }
