@@ -120,12 +120,17 @@ internal class CardFormViewModel(
 
     override fun createToken(): Task<Token> {
         return if (isValid.value == true) {
+            val name = if (cardHolderNameEnabled.value == true) {
+                cardHolderNameInput.value?.value
+            } else {
+                null
+            }
             tokenService.createToken(
                 number = checkNotNull(cardNumberInput.value?.value),
                 expMonth = checkNotNull(cardExpirationInput.value?.value).month,
                 expYear = checkNotNull(cardExpirationInput.value?.value).year,
                 cvc = checkNotNull(cardCvcInput.value?.value),
-                name = checkNotNull(cardHolderNameInput.value?.value)
+                name = name
             )
         } else {
             Tasks.failure(
