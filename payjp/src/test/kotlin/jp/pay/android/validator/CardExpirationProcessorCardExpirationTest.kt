@@ -64,6 +64,8 @@ class CardExpirationProcessorCardExpirationTest(
     fun processCardExpiration() {
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.YEAR, currentYear)
+        // prevent setting next month (e.g. 4/31 -> 5/1)
+        calendar.set(Calendar.DAY_OF_MONTH, 1)
         // calendar month is zero-based (0, 1, 2, .. 11)
         calendar.set(Calendar.MONTH, currentMonth - 1)
         assertThat(
