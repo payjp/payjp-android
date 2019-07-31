@@ -63,6 +63,13 @@ internal interface CardFormViewModelInput {
     fun createToken(): Task<Token>
 }
 
+/**
+ * ViewModel for [CardFormFragment]
+ *
+ * @param tokenService service to fetch token
+ * @param tenantId for platform
+ * @param holderNameEnabledDefault whether enable holder name input or not
+ */
 internal class CardFormViewModel(
     private val tokenService: PayjpTokenService,
     private val tenantId: TenantId?,
@@ -137,7 +144,7 @@ internal class CardFormViewModel(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun fetchAcceptedBrands() {
-        if (acceptedBrands.value != null) {
+        if (acceptedBrands.value == null) {
             task = tokenService.getAcceptedBrands(tenantId)
             task?.enqueue(object : Task.Callback<AcceptedBrandsResponse> {
                 override fun onSuccess(data: AcceptedBrandsResponse) {
@@ -149,7 +156,10 @@ internal class CardFormViewModel(
         }
     }
 
-    class Factory(
+    /**
+     * Factory class for [CardFormViewModel]
+     */
+    internal class Factory(
         private val tokenService: PayjpTokenService,
         private val tenantId: TenantId? = null,
         private val holderNameEnabledDefault: Boolean = true
