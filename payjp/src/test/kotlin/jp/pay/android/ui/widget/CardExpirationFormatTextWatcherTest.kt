@@ -22,6 +22,7 @@
  */
 package jp.pay.android.ui.widget
 
+import android.widget.EditText
 import androidx.test.core.app.ApplicationProvider
 import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertThat
@@ -31,7 +32,7 @@ import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 
 @RunWith(ParameterizedRobolectricTestRunner::class)
-class CardExpirationEditTextTest(
+class CardExpirationFormatTextWatcherTest(
     private val input: String?,
     private val result: String?
 ) {
@@ -53,16 +54,19 @@ class CardExpirationEditTextTest(
         }
     }
 
-    private lateinit var editText: CardExpirationEditText
+    private lateinit var textWatcher: CardExpirationFormatTextWatcher
+    private lateinit var editText: EditText
 
     @Before
     fun setUp() {
-        editText = CardExpirationEditText(ApplicationProvider.getApplicationContext())
+        textWatcher = CardExpirationFormatTextWatcher('/')
+        editText = EditText(ApplicationProvider.getApplicationContext())
+        editText.addTextChangedListener(textWatcher)
     }
 
     @Test
     fun formatInput() {
         editText.setText(input)
-        assertThat(editText.text.toString(), `is`(result))
+        assertThat("input = $input", editText.text.toString(), `is`(result))
     }
 }

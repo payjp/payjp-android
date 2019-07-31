@@ -28,7 +28,9 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:importantForAutofill="no"
+        android:orientation="vertical"
+        tools:targetApi="o">
 
     <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_number"

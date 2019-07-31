@@ -69,7 +69,6 @@ class CardFormViewModelTest {
         cardHolderNameEnabled.observeForever { }
         acceptedBrands.observeForever { }
         isValid.observeForever { }
-
     }
 
     @Test
