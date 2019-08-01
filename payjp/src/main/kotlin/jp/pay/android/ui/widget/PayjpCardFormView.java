@@ -31,7 +31,7 @@ import jp.pay.android.model.Token;
 /**
  * Interface of view create token.
  */
-public interface TokenCreatableView {
+public interface PayjpCardFormView {
 
     /**
      * Check current card input.
@@ -73,6 +73,6 @@ public interface TokenCreatableView {
          * @param view    view
          * @param isValid if true card input is ready to create token.
          */
-        void onValidateInput(@NonNull TokenCreatableView view, boolean isValid);
+        void onValidateInput(@NonNull PayjpCardFormView view, boolean isValid);
     }
 }

@@ -29,8 +29,8 @@ import android.view.View
 import jp.pay.android.PayjpToken
 import jp.pay.android.Task
 import jp.pay.android.model.Token
-import jp.pay.android.ui.widget.CardFormFragment
-import jp.pay.android.ui.widget.TokenCreatableView
+import jp.pay.android.ui.widget.PayjpCardFormFragment
+import jp.pay.android.ui.widget.PayjpCardFormView
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_get_token
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token_anyway
@@ -41,13 +41,13 @@ import kotlinx.android.synthetic.main.activity_card_form_view_sample.switch_card
 
 private const val FRAGMENT_CARD_FORM = "FRAGMENT_CARD_FORM"
 
-class CardFormViewSampleActivity : AppCompatActivity(), TokenCreatableView.OnValidateInputListener {
+class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnValidateInputListener {
 
     private var createToken: Task<Token>? = null
     private var getToken: Task<Token>? = null
-    private lateinit var cardFormFragment: CardFormFragment
+    private lateinit var cardFormFragment: PayjpCardFormFragment
 
-    override fun onValidateInput(view: TokenCreatableView, isValid: Boolean) {
+    override fun onValidateInput(view: PayjpCardFormView, isValid: Boolean) {
         button_create_token.isEnabled = isValid
     }
 
@@ -130,7 +130,7 @@ class CardFormViewSampleActivity : AppCompatActivity(), TokenCreatableView.OnVal
     private fun findCardFormFragment() {
         supportFragmentManager?.let { manager ->
             val f = manager.findFragmentByTag(FRAGMENT_CARD_FORM)
-            cardFormFragment = f as? CardFormFragment ?: CardFormFragment.newInstance()
+            cardFormFragment = f as? PayjpCardFormFragment ?: PayjpCardFormFragment.newInstance()
             if (!cardFormFragment.isAdded) {
                 manager
                     .beginTransaction().apply {

@@ -78,7 +78,7 @@ internal interface CardFormViewModelInput {
 }
 
 /**
- * ViewModel for [CardFormFragment]
+ * ViewModel for [PayjpCardFormFragment]
  *
  * @param tokenService service to fetch token
  * @param tenantId for platform

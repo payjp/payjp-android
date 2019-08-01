@@ -49,7 +49,7 @@ import jp.pay.android.validator.CardExpirationInputTransformer
 import jp.pay.android.validator.CardHolderNameInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformer
 
-class CardFormFragment : Fragment(), TokenCreatableView {
+class PayjpCardFormFragment : Fragment(), PayjpCardFormView {
 
     companion object {
         private const val ARGS_HOLDER_NAME_ENABLED = "ARGS_HOLDER_NAME_ENABLED"
@@ -63,8 +63,8 @@ class CardFormFragment : Fragment(), TokenCreatableView {
          * @return fragment
          */
         @JvmStatic
-        fun newInstance(holderNameEnabled: Boolean = true, tenantId: TenantId? = null): CardFormFragment =
-            CardFormFragment().apply {
+        fun newInstance(holderNameEnabled: Boolean = true, tenantId: TenantId? = null): PayjpCardFormFragment =
+            PayjpCardFormFragment().apply {
                 arguments = Bundle().apply {
                     putBoolean(ARGS_HOLDER_NAME_ENABLED, holderNameEnabled)
                     putString(ARGS_TENANT_ID, tenantId?.id)
@@ -82,13 +82,13 @@ class CardFormFragment : Fragment(), TokenCreatableView {
     private lateinit var holderNameEditText: EditText
 
     private var viewModel: CardFormViewModel? = null
-    private var onValidateInputListener: TokenCreatableView.OnValidateInputListener? = null
+    private var onValidateInputListener: PayjpCardFormView.OnValidateInputListener? = null
     private val delimiterExpiration = PayjpConstants.CARD_FORM_DELIMITER_EXPIRATION
     private val cardNumberFormatter = CardNumberFormatTextWatcher(PayjpConstants.CARD_FORM_DELIMITER_NUMBER)
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        if (context is TokenCreatableView.OnValidateInputListener) {
+        if (context is PayjpCardFormView.OnValidateInputListener) {
             this.onValidateInputListener = context
         }
     }
@@ -168,7 +168,7 @@ class CardFormFragment : Fragment(), TokenCreatableView {
                 TransitionManager.beginDelayedTransition(view as ViewGroup)
             }
             isValid.observe(viewLifecycleOwner) {
-                onValidateInputListener?.onValidateInput(this@CardFormFragment, it)
+                onValidateInputListener?.onValidateInput(this@PayjpCardFormFragment, it)
             }
             cardNumberBrand.observe(viewLifecycleOwner) {
                 cardNumberFormatter.brand = it
@@ -192,7 +192,7 @@ class CardFormFragment : Fragment(), TokenCreatableView {
             expirationEditText.addOnTextChanged { s, _, _, _ -> inputCardExpiration(s.toString()) }
             cvcEditText.addOnTextChanged { s, _, _, _ -> inputCardCvc(s.toString()) }
             holderNameEditText.addOnTextChanged { s, _, _, _ -> inputCardHolderName(s.toString()) }
-            this@CardFormFragment.lifecycle.addObserver(this)
+            this@PayjpCardFormFragment.lifecycle.addObserver(this)
         }
     }
 }
