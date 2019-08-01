@@ -31,25 +31,23 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.map
-import jp.pay.android.PayjpConstants
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.Task
 import jp.pay.android.exception.PayjpInvalidCardFormException
 import jp.pay.android.model.AcceptedBrandsResponse
 import jp.pay.android.model.CardBrand
-import jp.pay.android.model.CardBrandDetectorService
 import jp.pay.android.model.CardComponentInput
-import jp.pay.android.model.CardCvcInput
+import jp.pay.android.model.CardComponentInput.CardCvcInput
+import jp.pay.android.model.CardComponentInput.CardExpirationInput
+import jp.pay.android.model.CardComponentInput.CardHolderNameInput
+import jp.pay.android.model.CardComponentInput.CardNumberInput
 import jp.pay.android.model.CardExpiration
-import jp.pay.android.model.CardExpirationInput
-import jp.pay.android.model.CardHolderNameInput
-import jp.pay.android.model.CardNumberInput
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.util.RemappableMediatorLiveData
 import jp.pay.android.util.Tasks
-import jp.pay.android.validator.CardExpirationProcessorService
-import jp.pay.android.validator.CardNumberValidatorService
+import jp.pay.android.validator.CardInputTransformer
+import jp.pay.android.validator.CardNumberInputTransformerServise
 
 internal interface CardFormViewModelOutput {
     val cardNumberError: LiveData<Int?>
@@ -88,11 +86,11 @@ internal interface CardFormViewModelInput {
  */
 internal class CardFormViewModel(
     private val tokenService: PayjpTokenService,
-    private val brandDetector: CardBrandDetectorService,
-    private val cardNumberValidator: CardNumberValidatorService,
-    private val cardExpirationProcessor: CardExpirationProcessorService,
+    private val cardNumberInputTransformer: CardNumberInputTransformerServise,
+    private val cardExpirationInputTransformer: CardInputTransformer<CardExpirationInput>,
+    private val cardCvcInputTransformer: CardInputTransformer<CardCvcInput>,
+    private val cardHolderNameInputTransformer: CardInputTransformer<CardHolderNameInput>,
     private val tenantId: TenantId?,
-    private val cardExpirationDelimiter: Char,
     holderNameEnabledDefault: Boolean
 ) : ViewModel(), CardFormViewModelOutput, CardFormViewModelInput, LifecycleObserver {
 
@@ -109,7 +107,6 @@ internal class CardFormViewModel(
     private val cardExpirationInput = MutableLiveData<CardExpirationInput>()
     private val cardCvcInput = MutableLiveData<CardCvcInput>()
     private val cardHolderNameInput = MutableLiveData<CardHolderNameInput>()
-    private val acceptedBrands = MutableLiveData<List<CardBrand>>()
     private val showErrorImmediately = MutableLiveData<Boolean>()
     private var task: Task<AcceptedBrandsResponse>? = null
 
@@ -140,25 +137,17 @@ internal class CardFormViewModel(
         task = null
     }
 
-    override fun inputCardNumber(input: String) {
-        showErrorImmediately.value = false
-        cardNumberInput.value = createCardNumberInput(input)
-    }
+    override fun inputCardNumber(input: String) =
+        inputComponent(input, cardNumberInput, cardNumberInputTransformer)
 
-    override fun inputCardExpiration(input: String) {
-        showErrorImmediately.value = false
-        cardExpirationInput.value = createCardExpirationInput(input)
-    }
+    override fun inputCardExpiration(input: String) =
+        inputComponent(input, cardExpirationInput, cardExpirationInputTransformer)
 
-    override fun inputCardCvc(input: String) {
-        showErrorImmediately.value = false
-        cardCvcInput.value = createCardCvcInput(input)
-    }
+    override fun inputCardCvc(input: String) =
+        inputComponent(input, cardCvcInput, cardCvcInputTransformer)
 
-    override fun inputCardHolderName(input: String) {
-        showErrorImmediately.value = false
-        cardHolderNameInput.value = createCardHolderNameInput(input)
-    }
+    override fun inputCardHolderName(input: String) =
+        inputComponent(input, cardHolderNameInput, cardHolderNameInputTransformer)
 
     override fun updateCardHolderNameEnabled(enabled: Boolean) {
         showErrorImmediately.value = false
@@ -168,21 +157,13 @@ internal class CardFormViewModel(
     override fun validate() {
         showErrorImmediately.value = true
         // if no input, input empty string
-        fun <T: CardComponentInput<*>> forceValidate(
-            input: MutableLiveData<T>,
-            error: RemappableMediatorLiveData<T, Int?>,
-            inputFactory: (i: String) -> T
-        ) {
-            if (input.value == null) {
-                input.value = inputFactory("")
-            } else {
-                error.remap()
-            }
+        fun <T : CardComponentInput<*>> forceValidate(input: MutableLiveData<T>, transformer: CardInputTransformer<T>) {
+            input.value = transformer.transform(input.value?.input)
         }
-        forceValidate(cardNumberInput, cardNumberError, this::createCardNumberInput)
-        forceValidate(cardExpirationInput, cardExpirationError, this::createCardExpirationInput)
-        forceValidate(cardCvcInput, cardCvcError, this::createCardCvcInput)
-        forceValidate(cardHolderNameInput, cardHolderNameError, this::createCardHolderNameInput)
+        forceValidate(cardNumberInput, cardNumberInputTransformer)
+        forceValidate(cardExpirationInput, cardExpirationInputTransformer)
+        forceValidate(cardCvcInput, cardCvcInputTransformer)
+        forceValidate(cardHolderNameInput, cardHolderNameInputTransformer)
     }
 
     override fun createToken(): Task<Token> {
@@ -208,11 +189,11 @@ internal class CardFormViewModel(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun fetchAcceptedBrands() {
-        if (acceptedBrands.value == null) {
+        if (cardNumberInputTransformer.acceptedBrands == null) {
             task = tokenService.getAcceptedBrands(tenantId)
             task?.enqueue(object : Task.Callback<AcceptedBrandsResponse> {
                 override fun onSuccess(data: AcceptedBrandsResponse) {
-                    acceptedBrands.postValue(data.brands)
+                    cardNumberInputTransformer.acceptedBrands = data.brands
                 }
 
                 override fun onError(throwable: Throwable) {}
@@ -224,31 +205,25 @@ internal class CardFormViewModel(
         return input?.errorMessage?.take(showErrorImmediately.value != true)
     }
 
-    private fun createCardNumberInput(input: String) = CardNumberInput(
-        input = input,
-        acceptedBrands = acceptedBrands.value,
-        brandDetector = brandDetector,
-        cardNumberValidator = cardNumberValidator)
-
-    private fun createCardExpirationInput(input: String) = CardExpirationInput(
-        input = input,
-        delimiter = cardExpirationDelimiter,
-        processor = cardExpirationProcessor)
-
-    private fun createCardCvcInput(input: String) = CardCvcInput(input)
-
-    private fun createCardHolderNameInput(input: String) = CardHolderNameInput(input)
+    private fun <T : CardComponentInput<*>> inputComponent(
+        input: String,
+        data: MutableLiveData<T>,
+        transformer: CardInputTransformer<T>
+    ) {
+        showErrorImmediately.value = false
+        data.value = transformer.transform(input)
+    }
 
     /**
      * Factory class for [CardFormViewModel]
      */
     internal class Factory(
         private val tokenService: PayjpTokenService,
-        private val brandDetector: CardBrandDetectorService,
-        private val cardNumberValidator: CardNumberValidatorService,
-        private val cardExpirationProcessor: CardExpirationProcessorService,
+        private val cardNumberInputTransformer: CardNumberInputTransformerServise,
+        private val cardExpirationInputTransformer: CardInputTransformer<CardExpirationInput>,
+        private val cardCvcInputTransformer: CardInputTransformer<CardCvcInput>,
+        private val cardHolderNameInputTransformer: CardInputTransformer<CardHolderNameInput>,
         private val tenantId: TenantId? = null,
-        private val cardExpirationDelimiter: Char = PayjpConstants.CARD_FORM_DELIMITER_EXPIRATION,
         private val holderNameEnabledDefault: Boolean = true
     ) : ViewModelProvider.NewInstanceFactory() {
 
@@ -256,11 +231,11 @@ internal class CardFormViewModel(
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return CardFormViewModel(
                 tokenService = tokenService,
-                brandDetector = brandDetector,
-                cardNumberValidator = cardNumberValidator,
-                cardExpirationProcessor = cardExpirationProcessor,
+                cardNumberInputTransformer = cardNumberInputTransformer,
+                cardExpirationInputTransformer = cardExpirationInputTransformer,
+                cardCvcInputTransformer = cardCvcInputTransformer,
+                cardHolderNameInputTransformer = cardHolderNameInputTransformer,
                 tenantId = tenantId,
-                cardExpirationDelimiter = cardExpirationDelimiter,
                 holderNameEnabledDefault = holderNameEnabledDefault) as T
         }
     }

@@ -39,14 +39,15 @@ import jp.pay.android.PayjpToken
 import jp.pay.android.R
 import jp.pay.android.Task
 import jp.pay.android.exception.PayjpInvalidCardFormException
-import jp.pay.android.model.CardBrandDetector
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.ui.extension.addOnTextChanged
 import jp.pay.android.ui.extension.setErrorOrNull
 import jp.pay.android.util.Tasks
-import jp.pay.android.validator.CardExpirationProcessor
-import jp.pay.android.validator.CardNumberValidator
+import jp.pay.android.validator.CardCvcInputTransformer
+import jp.pay.android.validator.CardExpirationInputTransformer
+import jp.pay.android.validator.CardHolderNameInputTransformer
+import jp.pay.android.validator.CardNumberInputTransformer
 
 class CardFormFragment : Fragment(), TokenCreatableView {
 
@@ -137,7 +138,7 @@ class CardFormFragment : Fragment(), TokenCreatableView {
         cvcEditText = view.findViewById(R.id.input_edit_cvc)
         holderNameLayout = view.findViewById(R.id.input_layout_holder_name)
         holderNameEditText = view.findViewById(R.id.input_edit_holder_name)
-        
+
         // add formatter
         numberEditText.addTextChangedListener(cardNumberFormatter)
         expirationEditText.addTextChangedListener(
@@ -150,11 +151,11 @@ class CardFormFragment : Fragment(), TokenCreatableView {
         val holderNameEnabled = arguments?.getBoolean(ARGS_HOLDER_NAME_ENABLED) ?: true
         val factory = CardFormViewModel.Factory(
             tokenService = PayjpToken.getInstance(),
-            brandDetector = CardBrandDetector,
-            cardNumberValidator = CardNumberValidator,
-            cardExpirationProcessor = CardExpirationProcessor,
+            cardNumberInputTransformer = CardNumberInputTransformer(),
+            cardExpirationInputTransformer = CardExpirationInputTransformer(delimiter = delimiterExpiration),
+            cardCvcInputTransformer = CardCvcInputTransformer,
+            cardHolderNameInputTransformer = CardHolderNameInputTransformer,
             tenantId = tenantId,
-            cardExpirationDelimiter = delimiterExpiration,
             holderNameEnabledDefault = holderNameEnabled
         )
         viewModel = ViewModelProviders.of(requireActivity(), factory).get(CardFormViewModel::class.java).apply {

@@ -22,12 +22,17 @@
  */
 package jp.pay.android.model
 
-internal interface CardComponentInput<T> {
+internal sealed class CardComponentInput<T> {
+
+    /**
+     * raw value of input
+     */
+    abstract val input: String?
 
     /**
      * validated value or null
      */
-    val value: T?
+    abstract val value: T?
 
     val valid: Boolean
         get() = value != null
@@ -37,5 +42,44 @@ internal interface CardComponentInput<T> {
      * If no error, it return null.
      *
      */
-    val errorMessage: FormInputError?
+    abstract val errorMessage: FormInputError?
+
+    /**
+     * Card Number
+     */
+    internal data class CardNumberInput(
+        override val input: String?,
+        override val value: String?,
+        override val errorMessage: FormInputError?,
+        val brand: CardBrand
+    ) : CardComponentInput<String>()
+
+    /**
+     * Card Expiration
+     *
+     * @param input input string e.g. `01/20`
+     */
+    internal data class CardExpirationInput(
+        override val input: String?,
+        override val value: CardExpiration?,
+        override val errorMessage: FormInputError?
+    ) : CardComponentInput<CardExpiration>()
+
+    /**
+     * CVC
+     */
+    internal data class CardCvcInput(
+        override val input: String?,
+        override val value: String?,
+        override val errorMessage: FormInputError?
+    ) : CardComponentInput<String>()
+
+    /**
+     * Card Holder Name
+     */
+    internal data class CardHolderNameInput(
+        override val input: String?,
+        override val value: String?,
+        override val errorMessage: FormInputError?
+    ) : CardComponentInput<String>()
 }

@@ -20,21 +20,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.util
+package jp.pay.android.validator
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
+import jp.pay.android.R
+import jp.pay.android.model.CardComponentInput
+import jp.pay.android.model.FormInputError
 
-internal class RemappableMediatorLiveData<S1, T>(
-    private val source1: LiveData<S1>,
-    private val mapFunc: (s1: S1?) -> T
-) : MediatorLiveData<T>() {
-
-    init {
-        addSource(source1) { remap() }
-    }
-
-    fun remap() {
-        value = mapFunc(source1.value)
+internal object CardCvcInputTransformer : CardInputTransformer<CardComponentInput.CardCvcInput> {
+    override fun transform(input: String?): CardComponentInput.CardCvcInput {
+        val digits = input?.filter(Character::isDigit)
+        val errorMessage = when {
+            digits.isNullOrEmpty() -> FormInputError(R.string.payjp_card_form_error_no_cvc, input.isNullOrEmpty())
+            digits.length !in 3..4 -> FormInputError(R.string.payjp_card_form_error_invalid_cvc, digits.length < 3)
+            else -> null
+        }
+        val value = digits.takeIf { errorMessage == null }
+        return CardComponentInput.CardCvcInput(input, value, errorMessage)
     }
 }
