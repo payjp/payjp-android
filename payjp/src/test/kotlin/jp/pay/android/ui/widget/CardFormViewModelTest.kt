@@ -41,6 +41,7 @@ import jp.pay.android.util.Tasks
 import jp.pay.android.validator.CardInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformerServise
 import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.nullValue
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -48,6 +49,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.anyString
+import org.mockito.Mockito.never
 import org.mockito.Mockito.reset
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
@@ -69,12 +71,6 @@ internal class CardFormViewModelTest {
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
-
-        `when`(mockTokenService.getAcceptedBrands(anyNullable()))
-            .thenReturn(
-                Tasks.success(
-                    AcceptedBrandsResponse(brands = listOf(CardBrand.VISA, CardBrand.MASTER_CARD), livemode = true)
-                ))
     }
 
     private fun createViewModel(
@@ -116,16 +112,40 @@ internal class CardFormViewModelTest {
     }
 
     @Test
-    fun fetchAcceptedBrands() {
+    fun fetchAcceptedBrands_no_brands() {
+        val brands = listOf(CardBrand.VISA, CardBrand.MASTER_CARD)
+        `when`(mockTokenService.getAcceptedBrands(anyNullable()))
+            .thenReturn(
+                Tasks.success(
+                    AcceptedBrandsResponse(brands = brands, livemode = true)
+                ))
+        `when`(cardNumberInputTransformer.acceptedBrands).thenReturn(null)
         createViewModel().fetchAcceptedBrands()
         verify(mockTokenService).getAcceptedBrands(null)
+        verify(cardNumberInputTransformer).acceptedBrands = brands
+    }
+
+    @Test
+    fun fetchAcceptedBrands_already_fetched() {
+        val brands = listOf(CardBrand.VISA, CardBrand.MASTER_CARD)
+        `when`(cardNumberInputTransformer.acceptedBrands).thenReturn(brands)
+        createViewModel().fetchAcceptedBrands()
+        verify(mockTokenService, never()).getAcceptedBrands(null)
     }
 
     @Test
     fun fetchAcceptedBrands_withTenantId() {
         val tenantId = TenantId("foobar")
+        val brands = listOf(CardBrand.VISA, CardBrand.MASTER_CARD)
+        `when`(mockTokenService.getAcceptedBrands(anyNullable()))
+            .thenReturn(
+                Tasks.success(
+                    AcceptedBrandsResponse(brands = brands, livemode = true)
+                ))
+        `when`(cardNumberInputTransformer.acceptedBrands).thenReturn(null)
         createViewModel(tenantId = tenantId).fetchAcceptedBrands()
         verify(mockTokenService).getAcceptedBrands(tenantId)
+        verify(cardNumberInputTransformer).acceptedBrands = brands
     }
 
     @Test
@@ -167,6 +187,7 @@ internal class CardFormViewModelTest {
     @Test
     fun not_required_card_holder_name_if_not_enabled() {
         val robot = CardRobot()
+        mockCorrectInput()
         createViewModel().run {
             inputCardNumber(robot.number)
             inputCardExpiration(robot.exp)
@@ -178,38 +199,145 @@ internal class CardFormViewModelTest {
     }
 
     @Test
-    fun cardNumberError() {
-        // TODO
+    fun cardNumberError_lazy() {
+        val errorId = 0
+        val formError = FormInputError(errorId, true)
+        `when`(cardNumberInputTransformer.transform(anyString()))
+            .thenReturn(CardNumberInput(null, null, formError, CardBrand.VISA))
+        createViewModel().run {
+            inputCardNumber("")
+            assertThat(cardNumberError.value, nullValue())
+        }
     }
 
     @Test
-    fun cardExpirationError() {
-        // TODO
+    fun cardNumberError_not_lazy() {
+        val errorId = 0
+        val formError = FormInputError(errorId, false)
+        `when`(cardNumberInputTransformer.transform(anyString()))
+            .thenReturn(CardNumberInput(null, null, formError, CardBrand.VISA))
+        createViewModel().run {
+            inputCardNumber("")
+            assertThat(cardNumberError.value, `is`(errorId))
+        }
     }
 
     @Test
-    fun cardCvcError() {
-        // TODO
+    fun cardExpirationError_lazy() {
+        val errorId = 0
+        val formError = FormInputError(errorId, true)
+        `when`(cardExpirationInputTransformer.transform(anyString()))
+            .thenReturn(CardExpirationInput(null, null, formError))
+        createViewModel().run {
+            inputCardExpiration("")
+            assertThat(cardExpirationError.value, nullValue())
+        }
     }
 
     @Test
-    fun cardHolderNameError() {
-        // TODO
+    fun cardExpirationError_not_lazy() {
+        val errorId = 0
+        val formError = FormInputError(errorId, false)
+        `when`(cardExpirationInputTransformer.transform(anyString()))
+            .thenReturn(CardExpirationInput(null, null, formError))
+        createViewModel().run {
+            inputCardExpiration("")
+            assertThat(cardExpirationError.value, `is`(errorId))
+        }
+    }
+
+    @Test
+    fun cardCvcError_lazy() {
+        val errorId = 0
+        val formError = FormInputError(errorId, true)
+        `when`(cardCvcInputTransformer.transform(anyString()))
+            .thenReturn(CardCvcInput(null, null, formError))
+        createViewModel().run {
+            inputCardCvc("")
+            assertThat(cardCvcError.value, nullValue())
+        }
+    }
+
+    @Test
+    fun cardCvcError_not_lazy() {
+        val errorId = 0
+        val formError = FormInputError(errorId, false)
+        `when`(cardCvcInputTransformer.transform(anyString()))
+            .thenReturn(CardCvcInput(null, null, formError))
+        createViewModel().run {
+            inputCardCvc("")
+            assertThat(cardCvcError.value, `is`(errorId))
+        }
+    }
+
+    @Test
+    fun cardHolderNameError_lazy() {
+        val errorId = 0
+        val formError = FormInputError(errorId, true)
+        `when`(cardHolderNameInputTransformer.transform(anyString()))
+            .thenReturn(CardHolderNameInput(null, null, formError))
+        createViewModel().run {
+            inputCardHolderName("")
+            assertThat(cardHolderNameError.value, nullValue())
+        }
+    }
+
+    @Test
+    fun cardHolderNameError_not_lazy() {
+        val errorId = 0
+        val formError = FormInputError(errorId, false)
+        `when`(cardHolderNameInputTransformer.transform(anyString()))
+            .thenReturn(CardHolderNameInput(null, null, formError))
+        createViewModel().run {
+            inputCardHolderName("")
+            assertThat(cardHolderNameError.value, `is`(errorId))
+        }
     }
 
     @Test
     fun validate_indicate_error_without_input() {
-        // TODO
+        val errorId = 1
+        val formError = FormInputError(errorId, true)
+        `when`(cardNumberInputTransformer.transform(anyString()))
+            .thenReturn(CardNumberInput(null, null, formError, CardBrand.VISA))
+        `when`(cardExpirationInputTransformer.transform(anyString()))
+            .thenReturn(CardExpirationInput(null, null, formError))
+        `when`(cardCvcInputTransformer.transform(anyString()))
+            .thenReturn(CardCvcInput(null, null, formError))
+        `when`(cardHolderNameInputTransformer.transform(anyString()))
+            .thenReturn(CardHolderNameInput(null, null, formError))
+        createViewModel().run {
+            assertThat(cardNumberError.value, nullValue())
+            assertThat(cardExpirationError.value, nullValue())
+            assertThat(cardCvcError.value, nullValue())
+            assertThat(cardHolderNameError.value, nullValue())
+            validate()
+            assertThat(cardNumberError.value, `is`(errorId))
+            assertThat(cardExpirationError.value, `is`(errorId))
+            assertThat(cardCvcError.value, `is`(errorId))
+            assertThat(cardHolderNameError.value, `is`(errorId))
+        }
     }
 
     @Test
     fun cardNumberBrand() {
-        // TODO
+        `when`(cardNumberInputTransformer.transform(anyString()))
+            .thenReturn(CardNumberInput(null, "4242", null, CardBrand.VISA))
+        createViewModel().run {
+            inputCardNumber("4242")
+            assertThat(cardNumberBrand.value, `is`(CardBrand.VISA))
+        }
     }
 
     @Test
     fun cardExpiration() {
-        // TODO
+        val expiration = CardExpiration("12", "2030")
+        `when`(cardExpirationInputTransformer.transform(anyString()))
+            .thenReturn(CardExpirationInput(null, expiration, null))
+        createViewModel().run {
+            inputCardExpiration("12/30")
+            assertThat(cardExpiration.value, `is`(expiration))
+        }
     }
 
     @Test(expected = PayjpInvalidCardFormException::class)

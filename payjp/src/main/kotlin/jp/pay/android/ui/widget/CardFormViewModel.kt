@@ -158,7 +158,7 @@ internal class CardFormViewModel(
         showErrorImmediately.value = true
         // if no input, input empty string
         fun <T : CardComponentInput<*>> forceValidate(input: MutableLiveData<T>, transformer: CardInputTransformer<T>) {
-            input.value = transformer.transform(input.value?.input)
+            input.value = transformer.transform(input.value?.input.orEmpty())
         }
         forceValidate(cardNumberInput, cardNumberInputTransformer)
         forceValidate(cardExpirationInput, cardExpirationInputTransformer)
