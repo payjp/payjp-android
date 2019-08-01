@@ -29,25 +29,22 @@ import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.view.View
 import android.view.autofill.AutofillValue
-import jp.pay.android.model.CardExpirationInput
+import com.google.android.material.textfield.TextInputEditText
+import jp.pay.android.model.CardExpiration
 import java.util.Calendar
-
-private const val DELIMITER_CHAR = '/'
-private const val DATE_FORMAT = "MM/yy"
 
 internal class CardExpirationEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : CardComponentInputEditText<CardExpirationInput>(context, attrs) {
+) : TextInputEditText(context, attrs) {
+
+    var expiration: CardExpiration? = null
 
     init {
-        addTextChangedListenerForFormat()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             importantForAutofill = IMPORTANT_FOR_AUTOFILL_YES_EXCLUDE_DESCENDANTS
         }
     }
-
-    override fun mapInput(input: String?): CardExpirationInput = CardExpirationInput(input, DELIMITER_CHAR)
 
     override fun getAutofillType(): Int {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -59,7 +56,7 @@ internal class CardExpirationEditText @JvmOverloads constructor(
 
     @TargetApi(Build.VERSION_CODES.O)
     override fun getAutofillValue(): AutofillValue? {
-        return input?.value?.let { expiration ->
+        return expiration?.let { expiration ->
             val calendar = Calendar.getInstance()
             calendar.clear()
             calendar.set(Calendar.YEAR, expiration.yearValue)
@@ -73,13 +70,9 @@ internal class CardExpirationEditText @JvmOverloads constructor(
             if (value.isDate) {
                 val calendar = Calendar.getInstance()
                 calendar.timeInMillis = value.dateValue
-                val formatted = DateFormat.format(DATE_FORMAT, calendar)
+                val formatted = DateFormat.format("MM/yy", calendar)
                 setText(formatted)
             }
         }
-    }
-
-    private fun addTextChangedListenerForFormat() {
-        addTextChangedListener(CardExpirationFormatTextWatcher(DELIMITER_CHAR))
     }
 }

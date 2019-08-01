@@ -20,23 +20,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.ui.widget
 
-import android.content.Context
-import android.util.AttributeSet
-import jp.pay.android.model.CardCvcInput
-import android.text.InputFilter
+package jp.pay.android.util
 
-const val CVC_MAX_LENGTH = 4
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 
-internal class CardCvcEditText @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null
-) : CardComponentInputEditText<CardCvcInput>(context, attrs) {
-
-    override fun mapInput(input: String?): CardCvcInput = CardCvcInput(input)
+internal class RemappableMediatorLiveData<S1, T>(
+    private val source1: LiveData<S1>,
+    private val mapFunc: (s1: S1?) -> T
+): MediatorLiveData<T>() {
 
     init {
-        filters = arrayOf<InputFilter>(InputFilter.LengthFilter(CVC_MAX_LENGTH))
+        addSource(source1) { remap() }
+    }
+
+    fun remap() {
+        value = mapFunc(source1.value)
     }
 }

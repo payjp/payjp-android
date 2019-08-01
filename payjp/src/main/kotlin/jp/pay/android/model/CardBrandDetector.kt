@@ -22,7 +22,7 @@
  */
 package jp.pay.android.model
 
-internal interface CardBrandDetectable {
+internal interface CardBrandDetectorService {
 
     /**
      * detect brand from card number
@@ -33,7 +33,7 @@ internal interface CardBrandDetectable {
     fun detectWithDigits(digits: String): CardBrand
 }
 
-internal object CardBrandDetector : CardBrandDetectable {
+internal object CardBrandDetector : CardBrandDetectorService {
 
     override fun detectWithDigits(digits: String): CardBrand = CardBrand.values()
         .firstOrNull { brand -> brand.numberRegex.matches(digits) } ?: CardBrand.UNKNOWN

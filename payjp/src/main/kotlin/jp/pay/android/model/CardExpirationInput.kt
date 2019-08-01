@@ -23,7 +23,6 @@
 package jp.pay.android.model
 
 import jp.pay.android.R
-import jp.pay.android.validator.CardExpirationProcessor
 import jp.pay.android.validator.CardExpirationProcessorService
 
 /**
@@ -37,7 +36,7 @@ import jp.pay.android.validator.CardExpirationProcessorService
 internal data class CardExpirationInput(
     val input: String?,
     val delimiter: Char,
-    val processor: CardExpirationProcessorService = CardExpirationProcessor
+    val processor: CardExpirationProcessorService
 ) : CardComponentInput<CardExpiration> {
 
     override val value: CardExpiration?

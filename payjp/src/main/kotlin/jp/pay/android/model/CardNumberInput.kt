@@ -24,13 +24,12 @@ package jp.pay.android.model
 
 import jp.pay.android.R
 import jp.pay.android.validator.CardNumberValidatorService
-import jp.pay.android.validator.CardNumberValidator
 
 internal data class CardNumberInput(
     val input: String?,
     val acceptedBrands: List<CardBrand>?,
-    val brandDetector: CardBrandDetectable = CardBrandDetector,
-    val cardNumberValidator: CardNumberValidatorService = CardNumberValidator
+    val brandDetector: CardBrandDetectorService,
+    val cardNumberValidator: CardNumberValidatorService
 ) : CardComponentInput<String> {
 
     val brand: CardBrand = input?.filter(Character::isDigit)

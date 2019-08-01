@@ -162,7 +162,7 @@ internal class CardNumberInputTest(
     }
 
     @Mock
-    private lateinit var mockDetector: CardBrandDetectable
+    private lateinit var mockDetector: CardBrandDetectorService
     @Mock
     private lateinit var mockNumberValidator: CardNumberValidatorService
     private lateinit var input: CardNumberInput
