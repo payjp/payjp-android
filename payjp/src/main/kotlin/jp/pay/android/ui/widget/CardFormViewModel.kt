@@ -101,7 +101,7 @@ internal class CardFormViewModel(
     override val cardCvcError: RemappableMediatorLiveData<CardCvcInput, Int?>
     override val cardHolderNameError: RemappableMediatorLiveData<CardHolderNameInput, Int?>
     override val cardHolderNameEnabled = MutableLiveData<Boolean>()
-    override val cardNumberBrand = MutableLiveData<CardBrand>()
+    override val cardNumberBrand: LiveData<CardBrand>
     override val cardExpiration: LiveData<CardExpiration?>
     override val isValid: LiveData<Boolean>
 
@@ -131,6 +131,7 @@ internal class CardFormViewModel(
         cardExpirationError = RemappableMediatorLiveData(cardExpirationInput, this::retrieveError)
         cardCvcError = RemappableMediatorLiveData(cardCvcInput, this::retrieveError)
         cardHolderNameError = RemappableMediatorLiveData(cardHolderNameInput, this::retrieveError)
+        cardNumberBrand = cardNumberInput.map { it?.brand ?: CardBrand.UNKNOWN }
         cardExpiration = cardExpirationInput.map { it?.value }
     }
 
