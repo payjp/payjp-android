@@ -22,14 +22,15 @@
   ~ SOFTWARE.
   -->
 
-<merge
+<LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:importantForAutofill="no"
         android:orientation="vertical"
-        tools:parentTag="android.widget.LinearLayout">
+        tools:targetApi="o">
 
     <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_number"
@@ -37,7 +38,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/payjp_card_form_number_label">
 
-        <jp.pay.android.ui.widget.CardNumberEditText
+        <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/input_edit_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -91,7 +92,7 @@
                 app:layout_constraintStart_toEndOf="@+id/input_layout_expiration"
                 app:layout_constraintHorizontal_bias="0.5">
 
-            <jp.pay.android.ui.widget.CardCvcEditText
+            <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_edit_cvc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -114,7 +115,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-        <jp.pay.android.ui.widget.CardHolderNameEditText
+        <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/input_edit_holder_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -126,4 +127,4 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-</merge>
+</LinearLayout>

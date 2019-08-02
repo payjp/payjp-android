@@ -20,23 +20,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.ui.widget
+package jp.pay.android.validator
 
-import android.content.Context
-import android.util.AttributeSet
-import jp.pay.android.model.CardCvcInput
-import android.text.InputFilter
+import jp.pay.android.R
+import jp.pay.android.model.CardComponentInput
+import jp.pay.android.model.FormInputError
 
-const val CVC_MAX_LENGTH = 4
-
-internal class CardCvcEditText @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null
-) : CardComponentInputEditText<CardCvcInput>(context, attrs) {
-
-    override fun mapInput(input: String?): CardCvcInput = CardCvcInput(input)
-
-    init {
-        filters = arrayOf<InputFilter>(InputFilter.LengthFilter(CVC_MAX_LENGTH))
+internal object CardHolderNameInputTransformer : CardInputTransformer<CardComponentInput.CardHolderNameInput> {
+    override fun transform(input: String?): CardComponentInput.CardHolderNameInput {
+        val trimmed = input?.trim()
+        val errorMessage = when {
+            trimmed.isNullOrEmpty() -> FormInputError(R.string.payjp_card_form_error_no_holder_name, true)
+            else -> null
+        }
+        val value = trimmed.takeIf { errorMessage == null }
+        return CardComponentInput.CardHolderNameInput(input, value, errorMessage)
     }
 }

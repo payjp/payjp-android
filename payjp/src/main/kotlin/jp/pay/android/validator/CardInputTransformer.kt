@@ -20,16 +20,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.ui.widget
+package jp.pay.android.validator
 
-import android.content.Context
-import android.util.AttributeSet
-import jp.pay.android.model.CardHolderNameInput
+import jp.pay.android.model.CardComponentInput
 
-internal class CardHolderNameEditText @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null
-) : CardComponentInputEditText<CardHolderNameInput>(context, attrs) {
+internal interface CardInputTransformer<T : CardComponentInput<*>> {
 
-    override fun mapInput(input: String?): CardHolderNameInput = CardHolderNameInput(input)
+    fun transform(input: String?): T
 }

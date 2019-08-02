@@ -23,6 +23,7 @@
 package jp.pay.android.model
 
 import jp.pay.android.R
+import jp.pay.android.validator.CardHolderNameInputTransformer
 import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Before
@@ -54,11 +55,11 @@ internal class CardHolderNameInputTest(
         }
     }
 
-    private lateinit var holderNameInput: CardHolderNameInput
+    private lateinit var holderNameInput: CardComponentInput.CardHolderNameInput
 
     @Before
     fun setUp() {
-        holderNameInput = CardHolderNameInput(input)
+        holderNameInput = CardHolderNameInputTransformer.transform(input)
     }
 
     @Test

@@ -60,6 +60,7 @@ ext {
     okHttp = "3.9.0"
     moshi = "1.6.0"
     retrofit = "2.3.0"
+    lifecycle = "2.0.0"
 }
 
 allprojects {

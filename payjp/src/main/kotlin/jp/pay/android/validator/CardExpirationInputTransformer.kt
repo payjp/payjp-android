@@ -20,30 +20,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.model
+package jp.pay.android.validator
 
 import jp.pay.android.R
-import jp.pay.android.validator.CardExpirationProcessor
-import jp.pay.android.validator.CardExpirationProcessorService
+import jp.pay.android.model.CardComponentInput
+import jp.pay.android.model.FormInputError
 
-/**
- * Card expiration input
- *
- * @param input input string e.g. `01/20`
- * @param delimiter e.g. `/` in `01/20`
- * @param processor process card expiration value from input.
- * @see [CardExpirationProcessorService]
- */
-internal data class CardExpirationInput(
-    val input: String?,
-    val delimiter: Char,
-    val processor: CardExpirationProcessorService = CardExpirationProcessor
-) : CardComponentInput<CardExpiration> {
-
-    override val value: CardExpiration?
-    override val errorMessage: FormInputError?
-
-    init {
+internal class CardExpirationInputTransformer(
+    private val delimiter: Char,
+    private val processor: CardExpirationProcessorService = CardExpirationProcessor
+) : CardInputTransformer<CardComponentInput.CardExpirationInput> {
+    override fun transform(input: String?): CardComponentInput.CardExpirationInput {
         val (value, error) = when (input) {
             // empty
             null, "" -> null to FormInputError(R.string.payjp_card_form_error_no_expiration, true)
@@ -68,7 +55,6 @@ internal data class CardExpirationInput(
                 }
             }
         }
-        this.value = value
-        this.errorMessage = error
+        return CardComponentInput.CardExpirationInput(input, value, error)
     }
 }

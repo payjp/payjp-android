@@ -23,8 +23,9 @@
 package jp.pay.android.model
 
 import jp.pay.android.R
+import jp.pay.android.validator.CardCvcInputTransformer
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.*
+import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -57,11 +58,11 @@ internal class CardCvcInputTest(
         }
     }
 
-    private lateinit var cvcInput: CardCvcInput
+    private lateinit var cvcInput: CardComponentInput.CardCvcInput
 
     @Before
     fun setUp() {
-        cvcInput = CardCvcInput(input)
+        cvcInput = CardCvcInputTransformer.transform(input)
     }
 
     @Test

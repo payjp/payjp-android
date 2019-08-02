@@ -20,28 +20,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.ui.widget
+package jp.pay.android.util
 
-import jp.pay.android.model.CardComponentInput
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 
-/**
- * CardComponentInputView
- *
- * UI Widget respond to [CardComponentInput].
- * It will notify of the change in own input.
- */
-internal interface CardComponentInputView<T : CardComponentInput<*>> {
+internal class RemappableMediatorLiveData<S1, T>(
+    private val source1: LiveData<S1>,
+    private val mapFunc: (s1: S1?) -> T
+) : MediatorLiveData<T>() {
 
-    var onChangeInputListener: OnChangeInputListener<T>?
+    init {
+        addSource(source1) { remap() }
+    }
 
-    fun currentValue(): T?
-
-    /**
-     * Validate input immediately.
-     */
-    fun validate()
-
-    interface OnChangeInputListener<T> {
-        fun onChangeInput(input: T)
+    fun remap() {
+        value = mapFunc(source1.value)
     }
 }

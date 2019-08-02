@@ -24,6 +24,7 @@ package jp.pay.android.model
 
 import jp.pay.android.R
 import jp.pay.android.anyNullable
+import jp.pay.android.validator.CardExpirationInputTransformer
 import jp.pay.android.validator.CardExpirationProcessorService
 import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertThat
@@ -70,7 +71,7 @@ internal class CardExpirationInputTest(
 
     @Mock
     private lateinit var processor: CardExpirationProcessorService
-    private lateinit var expirationInput: CardExpirationInput
+    private lateinit var expirationInput: CardComponentInput.CardExpirationInput
 
     @Before
     fun setUp() {
@@ -78,7 +79,8 @@ internal class CardExpirationInputTest(
         `when`(processor.processExpirationMonthYear(anyString(), anyChar())).thenReturn(mockMonthYear)
         `when`(processor.validateMonth(anyString())).thenReturn(mockValidateMonth)
         `when`(processor.processCardExpiration(anyNullable(), anyNullable())).thenReturn(mockExpiration)
-        expirationInput = CardExpirationInput(input, '/', processor)
+        val transformer = CardExpirationInputTransformer('/', processor)
+        expirationInput = transformer.transform(input)
     }
 
     @Test

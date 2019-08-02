@@ -20,23 +20,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.model
+package jp.pay.android.validator
 
 import jp.pay.android.R
+import jp.pay.android.model.CardComponentInput
+import jp.pay.android.model.FormInputError
 
-internal data class CardHolderNameInput(
-    val input: String?
-) : CardComponentInput<String> {
-
-    override val value: String?
-    override val errorMessage: FormInputError?
-
-    init {
-        val trimmed = input?.trim()
-        errorMessage = when {
-            trimmed.isNullOrEmpty() -> FormInputError(R.string.payjp_card_form_error_no_holder_name, true)
+internal object CardCvcInputTransformer : CardInputTransformer<CardComponentInput.CardCvcInput> {
+    override fun transform(input: String?): CardComponentInput.CardCvcInput {
+        val digits = input?.filter(Character::isDigit)
+        val errorMessage = when {
+            digits.isNullOrEmpty() -> FormInputError(R.string.payjp_card_form_error_no_cvc, input.isNullOrEmpty())
+            digits.length !in 3..4 -> FormInputError(R.string.payjp_card_form_error_invalid_cvc, digits.length < 3)
             else -> null
         }
-        value = trimmed.takeIf { errorMessage == null }
+        val value = digits.takeIf { errorMessage == null }
+        return CardComponentInput.CardCvcInput(input, value, errorMessage)
     }
 }

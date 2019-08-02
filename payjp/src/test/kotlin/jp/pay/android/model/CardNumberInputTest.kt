@@ -24,14 +24,16 @@ package jp.pay.android.model
 
 import jp.pay.android.R
 import jp.pay.android.model.CardBrand.*
+import jp.pay.android.validator.CardNumberInputTransformer
 import jp.pay.android.validator.CardNumberValidatorService
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.*
+import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.anyString
 import org.mockito.MockitoAnnotations
 import org.robolectric.ParameterizedRobolectricTestRunner
 
@@ -162,10 +164,10 @@ internal class CardNumberInputTest(
     }
 
     @Mock
-    private lateinit var mockDetector: CardBrandDetectable
+    private lateinit var mockDetector: CardBrandDetectorService
     @Mock
     private lateinit var mockNumberValidator: CardNumberValidatorService
-    private lateinit var input: CardNumberInput
+    private lateinit var input: CardComponentInput.CardNumberInput
 
     @Before
     fun setUp() {
@@ -173,12 +175,9 @@ internal class CardNumberInputTest(
         `when`(mockDetector.detectWithDigits(anyString())).thenReturn(data.detectedBrand)
         `when`(mockNumberValidator.isCardNumberLengthValid(anyString())).thenReturn(data.isLengthValid)
         `when`(mockNumberValidator.isLuhnValid(anyString())).thenReturn(data.isLuhnValid)
-        input = CardNumberInput(
-            input = data.input,
-            acceptedBrands = data.acceptedBrands,
-            brandDetector = mockDetector,
-            cardNumberValidator = mockNumberValidator
-        )
+        val transformer = CardNumberInputTransformer(mockDetector, mockNumberValidator)
+        transformer.acceptedBrands = data.acceptedBrands
+        input = transformer.transform(data.input)
     }
 
     @Test
