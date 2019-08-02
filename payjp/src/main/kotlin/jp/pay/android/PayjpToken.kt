@@ -29,6 +29,7 @@ import jp.pay.android.model.AcceptedBrandsResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.network.createApiClient
+import jp.pay.android.plugin.CardScannerResolver
 import java.nio.charset.Charset
 import java.util.concurrent.Executor
 
@@ -49,7 +50,9 @@ class PayjpToken internal constructor(
             debuggable = configuration.debugEnabled,
             callbackExecutor = MainThreadExecutor()
         )
-    )
+    ) {
+        CardScannerResolver.cardScannerPlugin = configuration.cardScannerPlugin
+    }
 
     constructor(publicKey: String) : this(PayjpTokenConfiguration.Builder(publicKey).build())
 

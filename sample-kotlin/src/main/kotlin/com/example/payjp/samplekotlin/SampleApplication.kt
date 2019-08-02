@@ -25,13 +25,15 @@ package com.example.payjp.samplekotlin
 import android.app.Application
 import jp.pay.android.PayjpToken
 import jp.pay.android.PayjpTokenConfiguration
+import jp.pay.android.cardio.PayjpCardScannerPlugin
 
 class SampleApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
         PayjpToken.init(PayjpTokenConfiguration.Builder("pk_test_0383a1b8f91e8a6e3ea0e2a9")
-                .setDebugEnabled(BuildConfig.DEBUG)
-                .build())
+            .setDebugEnabled(BuildConfig.DEBUG)
+            .setCardScannerPlugin(PayjpCardScannerPlugin)
+            .build())
     }
 }

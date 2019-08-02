@@ -23,11 +23,13 @@
 package jp.pay.android.ui.widget
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.InputFilter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
@@ -41,6 +43,8 @@ import jp.pay.android.Task
 import jp.pay.android.exception.PayjpInvalidCardFormException
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
+import jp.pay.android.plugin.CardScannerPlugin
+import jp.pay.android.plugin.CardScannerResolver
 import jp.pay.android.ui.extension.addOnTextChanged
 import jp.pay.android.ui.extension.setErrorOrNull
 import jp.pay.android.util.Tasks
@@ -49,7 +53,7 @@ import jp.pay.android.validator.CardExpirationInputTransformer
 import jp.pay.android.validator.CardHolderNameInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformer
 
-class PayjpCardFormFragment : Fragment(), PayjpCardFormView {
+class PayjpCardFormFragment : Fragment(), PayjpCardFormView, CardScannerPlugin.CardScanOnResultListener {
 
     companion object {
         private const val ARGS_HOLDER_NAME_ENABLED = "ARGS_HOLDER_NAME_ENABLED"
@@ -99,11 +103,25 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.payjp_card_form_view, container, false).also { setUpUI(it as ViewGroup) }
+        inflater.inflate(R.layout.payjp_card_form_view, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setUpUI(view as ViewGroup)
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setUpViewModel()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        CardScannerResolver.resolve()?.onActivityResult(requestCode, resultCode, data, this)
+    }
+
+    override fun onScanResult(cardNumber: String?) {
+        cardNumber?.let(numberEditText::setText)
+        expirationEditText.requestFocusFromTouch()
     }
 
     override fun isValid(): Boolean = viewModel?.isValid?.value ?: false
@@ -144,6 +162,14 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView {
         expirationEditText.addTextChangedListener(
             CardExpirationFormatTextWatcher(delimiterExpiration))
         cvcEditText.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(PayjpConstants.CARD_FORM_MAX_LENGTH_CVC))
+
+        CardScannerResolver.resolve()?.let { bridge ->
+            val button = view.findViewById<Button>(R.id.button_scan)
+            button.visibility = View.VISIBLE
+            button.setOnClickListener {
+                bridge.startScanActivity(this)
+            }
+        }
     }
 
     private fun setUpViewModel() {

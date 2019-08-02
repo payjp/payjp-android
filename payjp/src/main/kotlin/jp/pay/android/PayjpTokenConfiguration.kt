@@ -22,6 +22,8 @@
  */
 package jp.pay.android
 
+import jp.pay.android.plugin.CardScannerPlugin
+
 /**
  * Configuration for PayjpToken
  *
@@ -29,7 +31,8 @@ package jp.pay.android
  */
 class PayjpTokenConfiguration private constructor(
     val publicKey: String,
-    val debugEnabled: Boolean
+    val debugEnabled: Boolean,
+    val cardScannerPlugin: CardScannerPlugin?
 ) {
 
     /**
@@ -45,8 +48,12 @@ class PayjpTokenConfiguration private constructor(
          */
         private var debugEnabled: Boolean = false
 
+        private var cardScannerPlugin: CardScannerPlugin? = null
+
         fun setDebugEnabled(enabled: Boolean): Builder = apply { debugEnabled = enabled }
 
-        fun build(): PayjpTokenConfiguration = PayjpTokenConfiguration(publicKey, debugEnabled)
+        fun setCardScannerPlugin(plugin: CardScannerPlugin?) = apply { cardScannerPlugin = plugin }
+
+        fun build(): PayjpTokenConfiguration = PayjpTokenConfiguration(publicKey, debugEnabled, cardScannerPlugin)
     }
 }

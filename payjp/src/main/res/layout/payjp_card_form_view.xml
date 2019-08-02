@@ -32,24 +32,44 @@
         android:orientation="vertical"
         tools:targetApi="o">
 
-    <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_layout_number"
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/payjp_card_form_number_label">
+            android:layout_height="wrap_content">
 
-        <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_edit_number"
-                android:layout_width="match_parent"
+        <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_layout_number"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
-                android:inputType="phone"
-                android:maxLines="1"
-                android:autofillHints="creditCardNumber"
-                tools:text="1234 1234 1234 1234"
-                tools:targetApi="o"/>
+                android:hint="@string/payjp_card_form_number_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/button_scan">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_edit_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="phone"
+                    android:maxLines="1"
+                    android:autofillHints="creditCardNumber"
+                    tools:text="1234 1234 1234 1234"
+                    tools:targetApi="o"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+                android:id="@+id/button_scan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="scan"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
