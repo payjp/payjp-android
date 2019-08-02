@@ -113,10 +113,6 @@ internal class CardFormViewModel(
     init {
         cardHolderNameEnabled.value = holderNameEnabledDefault
         isValid = MediatorLiveData<Boolean>().apply {
-            fun checkValid() = cardNumberInput.value?.valid == true &&
-                cardExpirationInput.value?.valid == true &&
-                cardCvcInput.value?.valid == true &&
-                (cardHolderNameEnabled.value == false || cardHolderNameInput.value?.valid == true)
             addSource(cardNumberInput) { value = checkValid() }
             addSource(cardExpirationInput) { value = checkValid() }
             addSource(cardCvcInput) { value = checkValid() }
@@ -156,10 +152,6 @@ internal class CardFormViewModel(
 
     override fun validate() {
         showErrorImmediately.value = true
-        // if no input, input empty string
-        fun <T : CardComponentInput<*>> forceValidate(input: MutableLiveData<T>, transformer: CardInputTransformer<T>) {
-            input.value = transformer.transform(input.value?.input.orEmpty())
-        }
         forceValidate(cardNumberInput, cardNumberInputTransformer)
         forceValidate(cardExpirationInput, cardExpirationInputTransformer)
         forceValidate(cardCvcInput, cardCvcInputTransformer)
@@ -201,6 +193,11 @@ internal class CardFormViewModel(
         }
     }
 
+    private fun checkValid() = cardNumberInput.value?.valid == true &&
+        cardExpirationInput.value?.valid == true &&
+        cardCvcInput.value?.valid == true &&
+        (cardHolderNameEnabled.value == false || cardHolderNameInput.value?.valid == true)
+
     private fun retrieveError(input: CardComponentInput<*>?): Int? {
         return input?.errorMessage?.take(showErrorImmediately.value != true)
     }
@@ -212,6 +209,13 @@ internal class CardFormViewModel(
     ) {
         showErrorImmediately.value = false
         data.value = transformer.transform(input)
+    }
+
+    private fun <T : CardComponentInput<*>> forceValidate(
+        input: MutableLiveData<T>,
+        transformer: CardInputTransformer<T>
+    ) {
+        input.value = transformer.transform(input.value?.input.orEmpty())
     }
 
     /**
