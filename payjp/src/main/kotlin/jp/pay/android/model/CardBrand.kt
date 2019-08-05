@@ -60,7 +60,7 @@ val CardBrand.numberRegex: Regex
         CardBrand.UNKNOWN -> Regex("""""")
     }
 
-val CardBrand.numberSize: Int
+val CardBrand.numberLength: Int
     get() = when (this) {
         CardBrand.DINERS_CLUB -> 14
         CardBrand.AMEX -> 15

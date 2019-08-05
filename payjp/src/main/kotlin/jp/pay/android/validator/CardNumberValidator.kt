@@ -23,11 +23,16 @@
 package jp.pay.android.validator
 
 import jp.pay.android.model.CardBrand
-import jp.pay.android.model.numberSize
+import jp.pay.android.model.numberLength
+import jp.pay.android.validator.CardNumberValidatorService.CardNumberLengthStatus
 
 internal interface CardNumberValidatorService {
-    fun isCardNumberLengthValid(cardNumber: String, brand: CardBrand = CardBrand.UNKNOWN): Boolean
+    fun isCardNumberLengthValid(cardNumber: String, brand: CardBrand = CardBrand.UNKNOWN): CardNumberLengthStatus
     fun isLuhnValid(cardNumber: String): Boolean
+
+    enum class CardNumberLengthStatus {
+        MATCH, TOO_LONG, TOO_SHORT
+    }
 }
 
 internal object CardNumberValidator : CardNumberValidatorService {
@@ -35,13 +40,16 @@ internal object CardNumberValidator : CardNumberValidatorService {
     /**
      * Card number length check
      *
-     * Strictly speaking, The length depends on the brand. (e.g. american express)
-     * But in client sdk, it's enough to check the range.
-     *
      * @param cardNumber card number
+     * @param brand brand
      */
-    override fun isCardNumberLengthValid(cardNumber: String, brand: CardBrand): Boolean {
-        return cardNumber.length == brand.numberSize
+    override fun isCardNumberLengthValid(cardNumber: String, brand: CardBrand): CardNumberLengthStatus {
+        val brandLength = brand.numberLength
+        return when {
+            cardNumber.length < brandLength -> CardNumberLengthStatus.TOO_SHORT
+            cardNumber.length > brandLength -> CardNumberLengthStatus.TOO_LONG
+            else -> CardNumberLengthStatus.MATCH
+        }
     }
 
     /**
