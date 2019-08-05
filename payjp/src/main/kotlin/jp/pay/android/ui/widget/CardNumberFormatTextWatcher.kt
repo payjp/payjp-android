@@ -25,10 +25,7 @@ package jp.pay.android.ui.widget
 import android.text.Editable
 import android.text.TextWatcher
 import jp.pay.android.model.CardBrand
-
-// card number max digits size
-// 16 as max even if brand is amex or diners
-private const val TOTAL_MAX_DIGITS = 16
+import jp.pay.android.model.numberLength
 
 internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWatcher {
 
@@ -65,7 +62,7 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
         val delimiterPositions = getDelimiterPositions()
         return when {
             // Case A. too long
-            s.length > (TOTAL_MAX_DIGITS + delimiterPositions.size) -> false
+            s.length > (getMaxDigits() + delimiterPositions.size) -> false
             // Case B. When we add `4` into `123`, input should be `1234 `.
             s.length in delimiterPositions && latestInsertionSize > 0 -> false
             // Case C. When we delete 1 character from `1234 `, input should be `123`.
@@ -115,11 +112,14 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
         else -> delimiterPositionsCommon
     }
 
+    private fun getMaxDigits() = brand.numberLength
+
     private fun createDigitArray(s: Editable): CharArray {
-        val digits = CharArray(TOTAL_MAX_DIGITS)
+        val max = getMaxDigits()
+        val digits = CharArray(max)
         var index = 0
         var i = 0
-        while (i < s.length && index < TOTAL_MAX_DIGITS) {
+        while (i < s.length && index < max) {
             val current = s[i]
             if (Character.isDigit(current)) {
                 digits[index] = current
