@@ -23,7 +23,6 @@
 package jp.pay.android.ui.widget
 
 import android.view.inputmethod.EditorInfo
-import androidx.core.view.inputmethod.EditorInfoCompat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.CardRobot
 import jp.pay.android.PayjpTokenService
@@ -96,6 +95,9 @@ internal class CardFormViewModelTest {
         cardNumberBrand.observeForever { }
         cardExpiration.observeForever { }
         isValid.observeForever { }
+        cardNumberValid.observeForever { }
+        cardExpirationValid.observeForever { }
+        cardCvcValid.observeForever { }
     }
 
     private fun mockCorrectInput(
@@ -303,6 +305,36 @@ internal class CardFormViewModelTest {
         createViewModel().run {
             inputCardHolderName("")
             assertThat(cardHolderNameError.value, `is`(errorId))
+        }
+    }
+
+    @Test
+    fun cardNumberValid() {
+        `when`(cardNumberInputTransformer.transform(anyString()))
+            .thenReturn(CardNumberInput(null, "1234", null, CardBrand.VISA))
+        createViewModel().run {
+            inputCardNumber("")
+            assertThat(cardNumberValid.value, `is`(true))
+        }
+    }
+
+    @Test
+    fun cardExpirationValid() {
+        `when`(cardExpirationInputTransformer.transform(anyString()))
+            .thenReturn(CardExpirationInput(null, CardExpiration("12", "2030"), null))
+        createViewModel().run {
+            inputCardExpiration("")
+            assertThat(cardExpirationValid.value, `is`(true))
+        }
+    }
+
+    @Test
+    fun cardCvcValid() {
+        `when`(cardCvcInputTransformer.transform(anyString()))
+            .thenReturn(CardCvcInput(null, "123", null))
+        createViewModel().run {
+            inputCardCvc("")
+            assertThat(cardCvcValid.value, `is`(true))
         }
     }
 

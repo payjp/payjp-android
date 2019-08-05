@@ -60,6 +60,9 @@ internal interface CardFormViewModelOutput {
     val cardNumberBrand: LiveData<CardBrand>
     val cardExpiration: LiveData<CardExpiration?>
     val isValid: LiveData<Boolean>
+    val cardNumberValid: LiveData<Boolean>
+    val cardExpirationValid: LiveData<Boolean>
+    val cardCvcValid: LiveData<Boolean>
 }
 
 internal interface CardFormViewModelInput {
@@ -105,10 +108,13 @@ internal class CardFormViewModel(
     override val cardNumberBrand: LiveData<CardBrand>
     override val cardExpiration: LiveData<CardExpiration?>
     override val isValid: LiveData<Boolean>
+    override val cardNumberValid: LiveData<Boolean>
+    override val cardExpirationValid: LiveData<Boolean>
+    override val cardCvcValid: LiveData<Boolean>
 
-    val cardNumberInput = MutableLiveData<CardNumberInput>()
-    val cardExpirationInput = MutableLiveData<CardExpirationInput>()
-    val cardCvcInput = MutableLiveData<CardCvcInput>()
+    private val cardNumberInput = MutableLiveData<CardNumberInput>()
+    private val cardExpirationInput = MutableLiveData<CardExpirationInput>()
+    private val cardCvcInput = MutableLiveData<CardCvcInput>()
     private val cardHolderNameInput = MutableLiveData<CardHolderNameInput>()
     private val showErrorImmediately = MutableLiveData<Boolean>()
     private var task: Task<AcceptedBrandsResponse>? = null
@@ -136,6 +142,9 @@ internal class CardFormViewModel(
         cardHolderNameError = RemappableMediatorLiveData(cardHolderNameInput, this::retrieveError)
         cardNumberBrand = cardNumberInput.map { it?.brand ?: CardBrand.UNKNOWN }
         cardExpiration = cardExpirationInput.map { it?.value }
+        cardNumberValid = cardNumberInput.map { it.valid }
+        cardExpirationValid = cardExpirationInput.map { it.valid }
+        cardCvcValid = cardCvcInput.map { it.valid }
     }
 
     override fun onCleared() {
