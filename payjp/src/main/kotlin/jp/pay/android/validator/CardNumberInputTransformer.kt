@@ -47,6 +47,8 @@ internal class CardNumberInputTransformer(
         val digits = input?.filter(Character::isDigit)
         val errorMessage = when {
             digits.isNullOrEmpty() -> FormInputError(messageId = R.string.payjp_card_form_error_no_number, lazy = true)
+            brand != CardBrand.UNKNOWN && acceptedBrands?.contains(brand) == false ->
+                FormInputError(messageId = R.string.payjp_card_form_error_invalid_brand, lazy = false)
             !cardNumberValidator.isCardNumberLengthValid(digits) ->
                 FormInputError(messageId = R.string.payjp_card_form_error_invalid_number, lazy = true)
             !cardNumberValidator.isLuhnValid(digits) ->
