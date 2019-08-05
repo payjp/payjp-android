@@ -22,8 +22,11 @@
  */
 package jp.pay.android.validator
 
+import jp.pay.android.model.CardBrand
+import jp.pay.android.model.numberSize
+
 internal interface CardNumberValidatorService {
-    fun isCardNumberLengthValid(cardNumber: String): Boolean
+    fun isCardNumberLengthValid(cardNumber: String, brand: CardBrand = CardBrand.UNKNOWN): Boolean
     fun isLuhnValid(cardNumber: String): Boolean
 }
 
@@ -37,8 +40,8 @@ internal object CardNumberValidator : CardNumberValidatorService {
      *
      * @param cardNumber card number
      */
-    override fun isCardNumberLengthValid(cardNumber: String): Boolean {
-        return cardNumber.length in 14..16
+    override fun isCardNumberLengthValid(cardNumber: String, brand: CardBrand): Boolean {
+        return cardNumber.length == brand.numberSize
     }
 
     /**

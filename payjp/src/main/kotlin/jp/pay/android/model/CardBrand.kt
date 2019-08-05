@@ -59,3 +59,10 @@ val CardBrand.numberRegex: Regex
         CardBrand.DISCOVER -> Regex("""\A6(?:011|5)[0-9]*\z""")
         CardBrand.UNKNOWN -> Regex("""""")
     }
+
+val CardBrand.numberSize: Int
+    get() = when (this) {
+        CardBrand.DINERS_CLUB -> 14
+        CardBrand.AMEX -> 15
+        else -> 16
+    }
