@@ -68,10 +68,13 @@ class CardBrandDetectorTest(
                 arrayOf("2221222233334444", CardBrand.MASTER_CARD),
                 arrayOf("22212222333344445555", CardBrand.MASTER_CARD),
                 // JCB
-                arrayOf("35", CardBrand.JCB),
-                arrayOf("3511", CardBrand.JCB),
-                arrayOf("3511222233334444", CardBrand.JCB),
-                arrayOf("35112222333344445555", CardBrand.JCB),
+                arrayOf("35", CardBrand.UNKNOWN),
+                arrayOf("352", CardBrand.UNKNOWN),
+                arrayOf("353", CardBrand.JCB),
+                arrayOf("3528", CardBrand.JCB),
+                arrayOf("3511", CardBrand.UNKNOWN),
+                arrayOf("3531222233334444", CardBrand.JCB),
+                arrayOf("35312222333344445555", CardBrand.JCB),
                 // AMEX
                 arrayOf("34", CardBrand.AMEX),
                 arrayOf("37", CardBrand.AMEX),
@@ -86,6 +89,7 @@ class CardBrandDetectorTest(
                 arrayOf("303", CardBrand.DINERS_CLUB),
                 arrayOf("304", CardBrand.DINERS_CLUB),
                 arrayOf("305", CardBrand.DINERS_CLUB),
+                arrayOf("306", CardBrand.UNKNOWN),
                 arrayOf("36", CardBrand.DINERS_CLUB),
                 arrayOf("38", CardBrand.DINERS_CLUB),
                 arrayOf("3001", CardBrand.DINERS_CLUB),
@@ -96,13 +100,15 @@ class CardBrandDetectorTest(
                 arrayOf("38012222333344", CardBrand.DINERS_CLUB),
                 arrayOf("38012222333344445555", CardBrand.DINERS_CLUB),
                 // DISCOVER
+                arrayOf("6", CardBrand.UNKNOWN),
+                arrayOf("601", CardBrand.UNKNOWN),
                 arrayOf("6011", CardBrand.DISCOVER),
-                arrayOf("65", CardBrand.DISCOVER),
                 arrayOf("60112", CardBrand.DISCOVER),
-                arrayOf("650", CardBrand.DISCOVER),
                 arrayOf("6011222233334444", CardBrand.DISCOVER),
                 arrayOf("6511222233334444", CardBrand.DISCOVER),
-                arrayOf("65112222333344445555", CardBrand.DISCOVER)
+                arrayOf("65112222333344445555", CardBrand.DISCOVER),
+                arrayOf("65", CardBrand.DISCOVER),
+                arrayOf("650", CardBrand.DISCOVER)
             )
         }
     }
