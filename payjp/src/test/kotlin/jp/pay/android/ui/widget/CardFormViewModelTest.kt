@@ -207,9 +207,9 @@ internal class CardFormViewModelTest {
     fun cvcImeOptions() {
         val viewModel = createViewModel()
         viewModel.updateCardHolderNameEnabled(false)
-        assertThat(viewModel.cvcImeOptions, `is`(EditorInfo.IME_ACTION_DONE))
+        assertThat(viewModel.cvcImeOptions.value, `is`(EditorInfo.IME_ACTION_DONE))
         viewModel.updateCardHolderNameEnabled(true)
-        assertThat(viewModel.cvcImeOptions, `is`(EditorInfo.IME_ACTION_NEXT))
+        assertThat(viewModel.cvcImeOptions.value, `is`(EditorInfo.IME_ACTION_NEXT))
     }
 
     @Test
