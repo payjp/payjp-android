@@ -167,6 +167,7 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView {
                 }
                 TransitionManager.beginDelayedTransition(view as ViewGroup)
             }
+            cvcImeOptions.observe(viewLifecycleOwner, cvcEditText::setImeOptions)
             isValid.observe(viewLifecycleOwner) {
                 onValidateInputListener?.onValidateInput(this@PayjpCardFormFragment, it)
             }

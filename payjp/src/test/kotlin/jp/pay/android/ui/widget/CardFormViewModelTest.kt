@@ -22,6 +22,8 @@
  */
 package jp.pay.android.ui.widget
 
+import android.view.inputmethod.EditorInfo
+import androidx.core.view.inputmethod.EditorInfoCompat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.CardRobot
 import jp.pay.android.PayjpTokenService
@@ -90,6 +92,7 @@ internal class CardFormViewModelTest {
         cardCvcError.observeForever { }
         cardHolderNameError.observeForever { }
         cardHolderNameEnabled.observeForever { }
+        cvcImeOptions.observeForever { }
         cardNumberBrand.observeForever { }
         cardExpiration.observeForever { }
         isValid.observeForever { }
@@ -196,6 +199,15 @@ internal class CardFormViewModelTest {
             updateCardHolderNameEnabled(false)
             assertThat(isValid.value, `is`(true))
         }
+    }
+
+    @Test
+    fun cvcImeOptions() {
+        val viewModel = createViewModel()
+        viewModel.updateCardHolderNameEnabled(false)
+        assertThat(viewModel.cvcImeOptions, `is`(EditorInfo.IME_ACTION_DONE))
+        viewModel.updateCardHolderNameEnabled(true)
+        assertThat(viewModel.cvcImeOptions, `is`(EditorInfo.IME_ACTION_NEXT))
     }
 
     @Test

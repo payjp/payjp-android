@@ -22,6 +22,7 @@
  */
 package jp.pay.android.ui.widget
 
+import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
@@ -55,6 +56,7 @@ internal interface CardFormViewModelOutput {
     val cardCvcError: LiveData<Int?>
     val cardHolderNameError: LiveData<Int?>
     val cardHolderNameEnabled: LiveData<Boolean>
+    val cvcImeOptions: LiveData<Int>
     val cardNumberBrand: LiveData<CardBrand>
     val cardExpiration: LiveData<CardExpiration?>
     val isValid: LiveData<Boolean>
@@ -99,19 +101,27 @@ internal class CardFormViewModel(
     override val cardCvcError: RemappableMediatorLiveData<CardCvcInput, Int?>
     override val cardHolderNameError: RemappableMediatorLiveData<CardHolderNameInput, Int?>
     override val cardHolderNameEnabled = MutableLiveData<Boolean>()
+    override val cvcImeOptions: LiveData<Int>
     override val cardNumberBrand: LiveData<CardBrand>
     override val cardExpiration: LiveData<CardExpiration?>
     override val isValid: LiveData<Boolean>
 
-    private val cardNumberInput = MutableLiveData<CardNumberInput>()
-    private val cardExpirationInput = MutableLiveData<CardExpirationInput>()
-    private val cardCvcInput = MutableLiveData<CardCvcInput>()
+    val cardNumberInput = MutableLiveData<CardNumberInput>()
+    val cardExpirationInput = MutableLiveData<CardExpirationInput>()
+    val cardCvcInput = MutableLiveData<CardCvcInput>()
     private val cardHolderNameInput = MutableLiveData<CardHolderNameInput>()
     private val showErrorImmediately = MutableLiveData<Boolean>()
     private var task: Task<AcceptedBrandsResponse>? = null
 
     init {
         cardHolderNameEnabled.value = holderNameEnabledDefault
+        cvcImeOptions = cardHolderNameEnabled.map {
+            if (it) {
+                EditorInfo.IME_ACTION_NEXT
+            } else {
+                EditorInfo.IME_ACTION_DONE
+            }
+        }
         isValid = MediatorLiveData<Boolean>().apply {
             addSource(cardNumberInput) { value = checkValid() }
             addSource(cardExpirationInput) { value = checkValid() }
