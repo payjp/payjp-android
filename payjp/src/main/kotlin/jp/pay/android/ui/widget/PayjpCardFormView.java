@@ -25,9 +25,7 @@ package jp.pay.android.ui.widget;
 
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import jp.pay.android.Task;
-import jp.pay.android.model.TenantId;
 import jp.pay.android.model.Token;
 
 /**
@@ -57,23 +55,14 @@ public interface PayjpCardFormView {
     void setCardHolderNameInputEnabled(boolean enabled);
 
     /**
-     * Create token
+     * Create token.
      *
+     *
+     * @see [jp.pay.android.PayjpTokenService.createToken]
      * @return task
      */
     @NonNull
     Task<Token> createToken();
-
-    /**
-     * Create token with tenantId. It is only for platform API user.
-     *
-     *
-     * @see [jp.pay.android.PayjpTokenService.createToken]
-     * @param tenantId tenant for platform
-     * @return task
-     */
-    @NonNull
-    Task<Token> createToken(@Nullable TenantId tenantId);
 
     /**
      * listener for every validation result.

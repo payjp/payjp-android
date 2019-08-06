@@ -399,12 +399,12 @@ internal class CardFormViewModelTest {
             "JANE DOE"
         )
         val tenantId = TenantId("id")
-        createViewModel().run {
+        createViewModel(tenantId = tenantId).run {
             inputCardNumber(robot.number)
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
             inputCardHolderName(robot.name)
-            createToken(tenantId = tenantId).run()
+            createToken().run()
             verify(mockTokenService).createToken(
                 number = "4242424242424242",
                 expMonth = "12",

@@ -74,7 +74,7 @@ internal interface CardFormViewModelInput {
 
     fun validate()
 
-    fun createToken(tenantId: TenantId? = null): Task<Token>
+    fun createToken(): Task<Token>
 }
 
 /**
@@ -158,7 +158,7 @@ internal class CardFormViewModel(
         forceValidate(cardHolderNameInput, cardHolderNameInputTransformer)
     }
 
-    override fun createToken(tenantId: TenantId?): Task<Token> {
+    override fun createToken(): Task<Token> {
         return if (isValid.value == true) {
             val name = if (cardHolderNameEnabled.value == true) {
                 cardHolderNameInput.value?.value
