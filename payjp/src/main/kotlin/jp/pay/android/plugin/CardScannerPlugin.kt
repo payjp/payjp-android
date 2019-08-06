@@ -39,7 +39,7 @@ interface CardScannerPlugin {
     fun startScanActivity(activity: Activity)
 
     /**
-     * start scan activity from frragment
+     * start scan activity from fragment
      *
      * @param fragment called fragment
      */
