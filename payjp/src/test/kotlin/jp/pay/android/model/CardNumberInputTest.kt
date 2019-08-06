@@ -132,6 +132,16 @@ internal class CardNumberInputTest(
                 arrayOf(CardNumberInputTestData(
                     input = "1",
                     acceptedBrands = accepteds,
+                    detectedBrand = JCB,
+                    isLengthValid = false,
+                    isLuhnValid = false,
+                    brand = JCB,
+                    value = null,
+                    errorMessage = FormInputError(R.string.payjp_card_form_error_invalid_brand, false)
+                )),
+                arrayOf(CardNumberInputTestData(
+                    input = "1",
+                    acceptedBrands = accepteds,
                     detectedBrand = VISA,
                     isLengthValid = true,
                     isLuhnValid = true,
