@@ -133,6 +133,25 @@ class PayjpTokenTest {
     }
 
     @Test
+    fun createToken_ok_with_tenant() {
+        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
+
+        PayjpToken(configuration = configuration,
+            payjpApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
+                callbackExecutor = CurrentThreadExecutor()))
+            .createToken(number = "4242424242424242",
+                cvc = "123", expMonth = "02", expYear = "2020", tenantId = TenantId("tenant_id"))
+            .run()
+
+        assertEquals("card%5Bnumber%5D=4242424242424242" +
+            "&card%5Bcvc%5D=123" +
+            "&card%5Bexp_month%5D=02" +
+            "&card%5Bexp_year%5D=2020" +
+            "&tenant=tenant_id",
+            mockWebServer.takeRequest().body.readString(Charset.forName("utf-8")))
+    }
+
+    @Test
     fun createToken_auth_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(401).setBody(ERROR_AUTH))
 

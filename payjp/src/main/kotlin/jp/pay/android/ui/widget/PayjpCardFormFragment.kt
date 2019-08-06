@@ -123,11 +123,12 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView {
         }
     }
 
-    override fun createToken(): Task<Token> {
-        return viewModel?.createToken() ?: Tasks.failure(
+    override fun createToken(): Task<Token> = createToken(tenantId = null)
+
+    override fun createToken(tenantId: TenantId?): Task<Token> =
+        viewModel?.createToken(tenantId = tenantId) ?: Tasks.failure(
             PayjpInvalidCardFormException("Card form is not ready.")
         )
-    }
 
     private fun setUpUI(view: ViewGroup) {
         numberLayout = view.findViewById(R.id.input_layout_number)

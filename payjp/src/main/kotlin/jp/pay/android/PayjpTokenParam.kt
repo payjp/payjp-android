@@ -22,29 +22,30 @@
  */
 package jp.pay.android
 
-import jp.pay.android.model.AcceptedBrandsResponse
 import jp.pay.android.model.TenantId
-import jp.pay.android.model.Token
 
-/**
- * interface for retrieve and create token.
- */
-interface PayjpTokenService {
+data class PayjpTokenParam(
+    val number: String,
+    val cvc: String,
+    val expMonth: String,
+    val expYear: String,
+    val name: String?,
+    val tenantId: TenantId?
+) {
 
-    fun createToken(
-        number: String,
-        cvc: String,
-        expMonth: String,
-        expYear: String,
-        name: String? = null,
-        tenantId: TenantId? = null
-    ): Task<Token> = createToken(PayjpTokenParam(number, cvc, expMonth, expYear, name, tenantId))
+    class Builder(
+        private val number: String,
+        private val cvc: String,
+        private val expMonth: String,
+        private val expYear: String
+    ) {
 
-    fun createToken(param: PayjpTokenParam): Task<Token>
+        private var name: String? = null
+        private var tenantId: TenantId? = null
 
-    fun getToken(id: String): Task<Token>
+        fun name(name: String?): Builder = apply { this.name = name }
+        fun tenantId(tenantId: TenantId?): Builder = apply { this.tenantId = tenantId }
 
-    fun getAcceptedBrands(): Task<AcceptedBrandsResponse>
-
-    fun getAcceptedBrands(tenantId: TenantId?): Task<AcceptedBrandsResponse>
+        fun build(): PayjpTokenParam = PayjpTokenParam(number, cvc, expMonth, expYear, name, tenantId)
+    }
 }
