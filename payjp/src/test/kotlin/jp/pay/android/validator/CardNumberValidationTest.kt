@@ -22,6 +22,10 @@
  */
 package jp.pay.android.validator
 
+import jp.pay.android.model.CardBrand
+import jp.pay.android.validator.CardNumberValidatorService.CardNumberLengthStatus.MATCH
+import jp.pay.android.validator.CardNumberValidatorService.CardNumberLengthStatus.TOO_LONG
+import jp.pay.android.validator.CardNumberValidatorService.CardNumberLengthStatus.TOO_SHORT
 import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Test
@@ -32,10 +36,11 @@ import org.robolectric.ParameterizedRobolectricTestRunner
  * [CardNumberValidator]
  */
 @RunWith(ParameterizedRobolectricTestRunner::class)
-class CardNumberValidationTest(
+internal class CardNumberValidationTest(
+    private val brand: CardBrand,
     private val cardNumber: String,
     private val isLuhnValid: Boolean,
-    private val isLengthValid: Boolean
+    private val isLengthValid: CardNumberValidatorService.CardNumberLengthStatus
 ) {
 
     companion object {
@@ -44,38 +49,44 @@ class CardNumberValidationTest(
         fun data(): List<Array<out Any?>> {
             // cf. https://www.freeformatter.com/credit-card-number-generator-validator.html
             return listOf(
-                arrayOf("", true, false),
-                arrayOf("1234567890123", false, false),
-                arrayOf("12345678901234", false, true),
-                arrayOf("12345678901237", true, true),
-                arrayOf("4242424242424242", true, true),
-                arrayOf("12345678901234569", true, false),
-                arrayOf("12345678901237ab", false, true),
-                arrayOf("ab12345678901237", false, true),
+                arrayOf(CardBrand.UNKNOWN, "", true, TOO_SHORT),
+                arrayOf(CardBrand.UNKNOWN, "12345678901234", false, TOO_SHORT),
+                arrayOf(CardBrand.UNKNOWN, "123456789012341", false, TOO_SHORT),
+                arrayOf(CardBrand.UNKNOWN, "4242424242424242", true, MATCH),
+                arrayOf(CardBrand.UNKNOWN, "12345678901234569", true, TOO_LONG),
+                arrayOf(CardBrand.UNKNOWN, "12345678901237ab", false, MATCH),
+                arrayOf(CardBrand.UNKNOWN, "ab12345678901237", false, MATCH),
                 // Visa
-                arrayOf("4200250796648831", true, true),
-                arrayOf("4929613427952262", true, true),
-                arrayOf("4929610527143692", false, true),
+                arrayOf(CardBrand.VISA, "420025079664883", true, TOO_SHORT),
+                arrayOf(CardBrand.VISA, "4200250796648831", true, MATCH),
+                arrayOf(CardBrand.VISA, "4929613427952262", true, MATCH),
+                arrayOf(CardBrand.VISA, "4929610527143692", false, MATCH),
                 // Master
-                arrayOf("5269278488737492", true, true),
-                arrayOf("5106733522040110", true, true),
-                arrayOf("5589306849102132", false, true),
+                arrayOf(CardBrand.MASTER_CARD, "526927848873749", false, TOO_SHORT),
+                arrayOf(CardBrand.MASTER_CARD, "5269278488737492", true, MATCH),
+                arrayOf(CardBrand.MASTER_CARD, "5106733522040110", true, MATCH),
+                arrayOf(CardBrand.MASTER_CARD, "5589306849102132", false, MATCH),
                 // Amex
-                arrayOf("346191816620108", true, true),
-                arrayOf("341179142096577", true, true),
-                arrayOf("372086951160373", false, true),
+                arrayOf(CardBrand.AMEX, "34619181662010", false, TOO_SHORT),
+                arrayOf(CardBrand.AMEX, "34619181662010801", false, TOO_LONG),
+                arrayOf(CardBrand.AMEX, "346191816620108", true, MATCH),
+                arrayOf(CardBrand.AMEX, "341179142096577", true, MATCH),
+                arrayOf(CardBrand.AMEX, "372086951160373", false, MATCH),
                 // Discover
-                arrayOf("6011341651562441", true, true),
-                arrayOf("6011290763638088", true, true),
-                arrayOf("6011621030885715", false, true),
+                arrayOf(CardBrand.DISCOVER, "601134165156244", false, TOO_SHORT),
+                arrayOf(CardBrand.DISCOVER, "6011341651562441", true, MATCH),
+                arrayOf(CardBrand.DISCOVER, "6011290763638088", true, MATCH),
+                arrayOf(CardBrand.DISCOVER, "6011621030885715", false, MATCH),
                 // Diners
-                arrayOf("36868003801279", true, true),
-                arrayOf("36785415704877", true, true),
-                arrayOf("36267608413862", false, true),
+                arrayOf(CardBrand.DINERS_CLUB, "3686800380127", false, TOO_SHORT),
+                arrayOf(CardBrand.DINERS_CLUB, "36868003801279", true, MATCH),
+                arrayOf(CardBrand.DINERS_CLUB, "36785415704877", true, MATCH),
+                arrayOf(CardBrand.DINERS_CLUB, "36267608413862", false, MATCH),
                 // JCB
-                arrayOf("3533401879982122", true, true),
-                arrayOf("3535909680226735", true, true),
-                arrayOf("3534067821171002", false, true)
+                arrayOf(CardBrand.JCB, "353340187998212", false, TOO_SHORT),
+                arrayOf(CardBrand.JCB, "3533401879982122", true, MATCH),
+                arrayOf(CardBrand.JCB, "3535909680226735", true, MATCH),
+                arrayOf(CardBrand.JCB, "3534067821171002", false, MATCH)
             )
         }
     }
@@ -88,6 +99,6 @@ class CardNumberValidationTest(
     @Test
     fun checkLength() {
         assertThat("cardNumber $cardNumber",
-            CardNumberValidator.isCardNumberLengthValid(cardNumber), `is`(isLengthValid))
+            CardNumberValidator.isCardNumberLengthValid(cardNumber, brand), `is`(isLengthValid))
     }
 }
