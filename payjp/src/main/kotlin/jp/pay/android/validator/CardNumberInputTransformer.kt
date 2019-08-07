@@ -48,6 +48,8 @@ internal class CardNumberInputTransformer(
         val lengthCheck = cardNumberValidator.isCardNumberLengthValid(digits.orEmpty(), brand)
         val errorMessage = when {
             digits.isNullOrEmpty() -> FormInputError(messageId = R.string.payjp_card_form_error_no_number, lazy = true)
+            brand != CardBrand.UNKNOWN && acceptedBrands?.contains(brand) == false ->
+                FormInputError(messageId = R.string.payjp_card_form_error_invalid_brand, lazy = false)
             lengthCheck == CardNumberValidatorService.CardNumberLengthStatus.TOO_LONG ->
                 FormInputError(messageId = R.string.payjp_card_form_error_invalid_number, lazy = false)
             lengthCheck == CardNumberValidatorService.CardNumberLengthStatus.TOO_SHORT ->
@@ -56,8 +58,6 @@ internal class CardNumberInputTransformer(
                 FormInputError(messageId = R.string.payjp_card_form_error_invalid_number, lazy = false)
             brand == CardBrand.UNKNOWN ->
                 FormInputError(messageId = R.string.payjp_card_form_error_invalid_brand, lazy = true)
-            acceptedBrands?.contains(brand) == false ->
-                FormInputError(messageId = R.string.payjp_card_form_error_invalid_brand, lazy = false)
             else -> null
         }
         val value = digits.takeIf { errorMessage == null }
