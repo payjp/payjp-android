@@ -22,9 +22,11 @@
  */
 package jp.pay.android.cardio
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import io.card.payment.CardIOActivity
 import io.card.payment.CreditCard
@@ -32,15 +34,23 @@ import jp.pay.android.plugin.CardScannerPlugin
 
 object PayjpCardScannerPlugin : CardScannerPlugin {
 
-    private const val REQUEST_CODE = 100
+    private const val REQUEST_CODE_OPEN_CARD_IO = 100
+    private const val REQUEST_CODE_PERMISSION = 0
+    private val PERMISSIONS_CARD_SCANNER = arrayOf(Manifest.permission.CAMERA)
 
-    override fun startScanActivity(activity: Activity) {
-        activity.startActivityForResult(createIntent(activity), REQUEST_CODE)
+    override fun startScanActivity(activity: Activity, delegate: CardScannerPlugin.CardScannerPermissionDelegate?) {
+        if (PermissionUtil.hasSelfPermissions(activity, PERMISSIONS_CARD_SCANNER)) {
+            startScanActivityInner(activity)
+        } else {
+            ActivityCompat.requestPermissions(activity, PERMISSIONS_CARD_SCANNER, REQUEST_CODE_PERMISSION)
+        }
     }
 
-    override fun startScanActivity(fragment: Fragment) {
-        fragment.activity?.let {
-            fragment.startActivityForResult(createIntent(it), REQUEST_CODE)
+    override fun startScanActivity(fragment: Fragment, delegate: CardScannerPlugin.CardScannerPermissionDelegate?) {
+        if (PermissionUtil.hasSelfPermissions(fragment.requireActivity(), PERMISSIONS_CARD_SCANNER)) {
+            startScanActivityInner(fragment)
+        } else {
+            fragment.requestPermissions(PERMISSIONS_CARD_SCANNER, REQUEST_CODE_PERMISSION)
         }
     }
 
@@ -57,6 +67,48 @@ object PayjpCardScannerPlugin : CardScannerPlugin {
             listener?.onScanResult(cardNumber = card.cardNumber)
         }
         return true
+    }
+
+    override fun onRequestPermissionResult(
+        activity: Activity,
+        requestCode: Int,
+        grantResults: IntArray,
+        delegate: CardScannerPlugin.CardScannerPermissionDelegate?
+    ) {
+        if (requestCode == REQUEST_CODE_PERMISSION) {
+            if (PermissionUtil.verifyPermissionResults(grantResults)) {
+                startScanActivityInner(activity)
+            } else {
+                if (!PermissionUtil.shouldShowRequestPermissionRationale(activity, PERMISSIONS_CARD_SCANNER)) {
+                    delegate?.onNeverAskAgainCardScannerPermission()
+                }
+            }
+        }
+    }
+
+    override fun onRequestPermissionResult(
+        fragment: Fragment,
+        requestCode: Int,
+        grantResults: IntArray,
+        delegate: CardScannerPlugin.CardScannerPermissionDelegate?
+    ) {
+        if (requestCode == REQUEST_CODE_PERMISSION) {
+            if (PermissionUtil.verifyPermissionResults(grantResults)) {
+                startScanActivityInner(fragment)
+            } else {
+                if (!PermissionUtil.shouldShowRequestPermissionRationale(fragment, PERMISSIONS_CARD_SCANNER)) {
+                    delegate?.onNeverAskAgainCardScannerPermission()
+                }
+            }
+        }
+    }
+
+    private fun startScanActivityInner(activity: Activity) {
+        activity.startActivityForResult(createIntent(activity), REQUEST_CODE_OPEN_CARD_IO)
+    }
+
+    private fun startScanActivityInner(fragment: Fragment) {
+        fragment.startActivityForResult(createIntent(fragment.requireActivity()), REQUEST_CODE_OPEN_CARD_IO)
     }
 
     private fun createIntent(context: Context): Intent {

@@ -24,13 +24,16 @@ package jp.pay.android.ui.widget
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.text.InputFilter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
@@ -52,8 +55,10 @@ import jp.pay.android.validator.CardCvcInputTransformer
 import jp.pay.android.validator.CardExpirationInputTransformer
 import jp.pay.android.validator.CardHolderNameInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformer
+import java.lang.ref.WeakReference
 
-class PayjpCardFormFragment : Fragment(), PayjpCardFormView, CardScannerPlugin.CardScanOnResultListener {
+class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
+    CardScannerPlugin.CardScanOnResultListener, CardScannerPlugin.CardScannerPermissionDelegate {
 
     companion object {
         private const val ARGS_HOLDER_NAME_ENABLED = "ARGS_HOLDER_NAME_ENABLED"
@@ -119,9 +124,32 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView, CardScannerPlugin.C
         CardScannerResolver.resolve()?.onActivityResult(requestCode, resultCode, data, this)
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        CardScannerResolver.resolve()?.onRequestPermissionResult(this, requestCode, grantResults, this)
+    }
+
     override fun onScanResult(cardNumber: String?) {
         cardNumber?.let(numberEditText::setText)
         expirationEditText.requestFocusFromTouch()
+    }
+
+    override fun onNeverAskAgainCardScannerPermission() {
+        activity?.let { activity ->
+            val weakFragment = WeakReference(this)
+            AlertDialog.Builder(activity)
+                .setTitle(R.string.payjp_card_scanner_permission_denied_title)
+                .setMessage(R.string.payjp_card_scanner_permission_denied_message)
+                .setPositiveButton(R.string.payjp_card_scanner_permission_denied_setting) { _, _ ->
+                    weakFragment.get()?.startActivity(
+                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            .apply { data = Uri.parse("package:${activity.packageName}") }
+                    )
+                }
+                .setNegativeButton(R.string.payjp_card_scanner_permission_denied_cancel) { _, _ -> }
+                .create()
+                .show()
+        }
     }
 
     override fun isValid(): Boolean = viewModel?.isValid?.value ?: false
@@ -167,7 +195,7 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView, CardScannerPlugin.C
             val button = view.findViewById<Button>(R.id.button_scan)
             button.visibility = View.VISIBLE
             button.setOnClickListener {
-                bridge.startScanActivity(this)
+                bridge.startScanActivity(this, this)
             }
         }
     }

@@ -35,15 +35,17 @@ interface CardScannerPlugin {
      * start scan activity
      *
      * @param activity called activity
+     * @param delegate permission request action delegate
      */
-    fun startScanActivity(activity: Activity)
+    fun startScanActivity(activity: Activity, delegate: CardScannerPermissionDelegate?)
 
     /**
      * start scan activity from fragment
      *
      * @param fragment called fragment
+     * @param delegate permission request action delegate
      */
-    fun startScanActivity(fragment: Fragment)
+    fun startScanActivity(fragment: Fragment, delegate: CardScannerPermissionDelegate?)
 
     /**
      * pass result from Activity or Fragment's onActivityResult to listener.
@@ -54,6 +56,38 @@ interface CardScannerPlugin {
      * @param listener listener
      */
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, listener: CardScanOnResultListener?): Boolean
+
+    /**
+     * Delegate [Activity.onRequestPermissionsResult]
+     *
+     * @param activity activity
+     * @param requestCode code requested
+     * @param grantResults results
+     * @param delegate if user select "never ask again", delegate call
+     *   [CardScannerPermissionDelegate.onNeverAskAgainCardScannerPermission]
+     */
+    fun onRequestPermissionResult(
+        activity: Activity,
+        requestCode: Int,
+        grantResults: IntArray,
+        delegate: CardScannerPermissionDelegate?
+    )
+
+    /**
+     * Delegate [Fragment.onRequestPermissionsResult]
+     *
+     * @param fragment fragment
+     * @param requestCode code requested
+     * @param grantResults results
+     * @param delegate if user select "never ask again", delegate call
+     *   [CardScannerPermissionDelegate.onNeverAskAgainCardScannerPermission]
+     */
+    fun onRequestPermissionResult(
+        fragment: Fragment,
+        requestCode: Int,
+        grantResults: IntArray,
+        delegate: CardScannerPermissionDelegate?
+    )
 
     /**
      * CardScanOnResultListener
@@ -67,5 +101,14 @@ interface CardScannerPlugin {
          * @param cardNumber card number scanned
          */
         fun onScanResult(cardNumber: String?)
+    }
+
+    /**
+     * Delegate interface for requesting permission of card scanner.
+     *
+     */
+    interface CardScannerPermissionDelegate {
+
+        fun onNeverAskAgainCardScannerPermission()
     }
 }
