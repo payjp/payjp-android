@@ -144,7 +144,7 @@ internal class CardNumberInputTest(
                     input = "1",
                     acceptedBrands = accepteds,
                     detectedBrand = JCB,
-                    isLengthValid = false,
+                    isLengthValid = CardNumberValidatorService.CardNumberLengthStatus.MATCH,
                     isLuhnValid = false,
                     brand = JCB,
                     value = null,
