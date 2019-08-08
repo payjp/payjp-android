@@ -200,7 +200,7 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView {
                 }
             }
             cardCvcValid.observe(viewLifecycleOwner) { valid ->
-                if (valid && cvcEditText.hasFocus() && holderNameEditText.visibility == View.VISIBLE) {
+                if (valid && cvcEditText.hasFocus() && holderNameLayout.visibility == View.VISIBLE) {
                     holderNameEditText.requestFocusFromTouch()
                 }
             }
