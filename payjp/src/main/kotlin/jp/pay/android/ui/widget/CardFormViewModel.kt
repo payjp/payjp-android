@@ -27,6 +27,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -46,8 +47,9 @@ import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.util.RemappableMediatorLiveData
 import jp.pay.android.util.Tasks
+import jp.pay.android.validator.CardCvcInputTransformerService
 import jp.pay.android.validator.CardInputTransformer
-import jp.pay.android.validator.CardNumberInputTransformerServise
+import jp.pay.android.validator.CardNumberInputTransformerService
 
 internal interface CardFormViewModelOutput {
     val cardNumberError: LiveData<Int?>
@@ -86,9 +88,9 @@ internal interface CardFormViewModelInput {
  */
 internal class CardFormViewModel(
     private val tokenService: PayjpTokenService,
-    private val cardNumberInputTransformer: CardNumberInputTransformerServise,
+    private val cardNumberInputTransformer: CardNumberInputTransformerService,
     private val cardExpirationInputTransformer: CardInputTransformer<CardExpirationInput>,
-    private val cardCvcInputTransformer: CardInputTransformer<CardCvcInput>,
+    private val cardCvcInputTransformer: CardCvcInputTransformerService,
     private val cardHolderNameInputTransformer: CardInputTransformer<CardHolderNameInput>,
     private val tenantId: TenantId?,
     holderNameEnabledDefault: Boolean
@@ -109,6 +111,7 @@ internal class CardFormViewModel(
     private val cardHolderNameInput = MutableLiveData<CardHolderNameInput>()
     private val showErrorImmediately = MutableLiveData<Boolean>()
     private var task: Task<AcceptedBrandsResponse>? = null
+    private val brandObserver: Observer<CardBrand>
 
     init {
         cardHolderNameEnabled.value = holderNameEnabledDefault
@@ -126,11 +129,20 @@ internal class CardFormViewModel(
         cardHolderNameError = RemappableMediatorLiveData(cardHolderNameInput, this::retrieveError)
         cardNumberBrand = cardNumberInput.map { it?.brand ?: CardBrand.UNKNOWN }
         cardExpiration = cardExpirationInput.map { it?.value }
+        brandObserver = Observer {
+            if (it != cardCvcInputTransformer.brand) {
+                cardCvcInputTransformer.brand = it
+                // If brand changed, revalidate cvc.
+                forceValidate(cardCvcInput, cardCvcInputTransformer)
+            }
+        }
+        cardNumberBrand.observeForever(brandObserver)
     }
 
     override fun onCleared() {
         task?.cancel()
         task = null
+        cardNumberBrand.removeObserver(brandObserver)
     }
 
     override fun inputCardNumber(input: String) =
@@ -212,10 +224,10 @@ internal class CardFormViewModel(
     }
 
     private fun <T : CardComponentInput<*>> forceValidate(
-        input: MutableLiveData<T>,
+        data: MutableLiveData<T>,
         transformer: CardInputTransformer<T>
     ) {
-        input.value = transformer.transform(input.value?.input.orEmpty())
+        data.value = transformer.transform(data.value?.input.orEmpty())
     }
 
     /**
@@ -223,9 +235,9 @@ internal class CardFormViewModel(
      */
     internal class Factory(
         private val tokenService: PayjpTokenService,
-        private val cardNumberInputTransformer: CardNumberInputTransformerServise,
+        private val cardNumberInputTransformer: CardNumberInputTransformerService,
         private val cardExpirationInputTransformer: CardInputTransformer<CardExpirationInput>,
-        private val cardCvcInputTransformer: CardInputTransformer<CardCvcInput>,
+        private val cardCvcInputTransformer: CardCvcInputTransformerService,
         private val cardHolderNameInputTransformer: CardInputTransformer<CardHolderNameInput>,
         private val tenantId: TenantId? = null,
         private val holderNameEnabledDefault: Boolean = true

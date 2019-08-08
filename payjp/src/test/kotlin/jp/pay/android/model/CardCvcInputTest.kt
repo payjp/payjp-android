@@ -23,7 +23,9 @@
 package jp.pay.android.model
 
 import jp.pay.android.R
+import jp.pay.android.model.CardBrand.*
 import jp.pay.android.validator.CardCvcInputTransformer
+import jp.pay.android.validator.CardCvcInputTransformerService
 import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Before
@@ -33,6 +35,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner
 
 @RunWith(ParameterizedRobolectricTestRunner::class)
 internal class CardCvcInputTest(
+    private val brand: CardBrand,
     private val input: String?,
     private val value: String?,
     private val errorMessage: FormInputError?
@@ -42,27 +45,42 @@ internal class CardCvcInputTest(
         @ParameterizedRobolectricTestRunner.Parameters
         fun data(): List<Array<out Any?>> {
             return listOf(
-                arrayOf(null as? String, null as? String, FormInputError(R.string.payjp_card_form_error_no_cvc, true)),
-                arrayOf("", null, FormInputError(R.string.payjp_card_form_error_no_cvc, true)),
-                arrayOf("abc", null, FormInputError(R.string.payjp_card_form_error_no_cvc, false)),
-                arrayOf("12", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)),
-                arrayOf("12abc", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)),
-                arrayOf(" 12 ", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)),
-                arrayOf("12345", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)),
-                arrayOf("123", "123", null),
-                arrayOf("123a", "123", null),
-                arrayOf(" 123 ", "123", null),
-                arrayOf("1234", "1234", null),
-                arrayOf(" 1234 ", "1234", null)
+                arrayOf(UNKNOWN, null, null, FormInputError(R.string.payjp_card_form_error_no_cvc, true)),
+                arrayOf(UNKNOWN, "", null, FormInputError(R.string.payjp_card_form_error_no_cvc, true)),
+                arrayOf(UNKNOWN, "abc", null, FormInputError(R.string.payjp_card_form_error_no_cvc, false)),
+                arrayOf(UNKNOWN, "12", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)),
+                arrayOf(UNKNOWN, "12abc", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)),
+                arrayOf(UNKNOWN, " 12 ", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)),
+                arrayOf(UNKNOWN, "12345", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)),
+                arrayOf(VISA, "123", "123", null),
+                arrayOf(VISA, "123a", "123", null),
+                arrayOf(VISA, " 123 ", "123", null),
+                arrayOf(MASTER_CARD, "123", "123", null),
+                arrayOf(JCB, "123", "123", null),
+                arrayOf(DINERS_CLUB, "123", "123", null),
+                arrayOf(DISCOVER, "123", "123", null),
+                arrayOf(AMEX, "123", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)),
+                arrayOf(UNKNOWN, "123", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)),
+                arrayOf(VISA, "1234", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)),
+                arrayOf(MASTER_CARD, "1234", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)),
+                arrayOf(JCB, "1234", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)),
+                arrayOf(DINERS_CLUB, "1234", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)),
+                arrayOf(DISCOVER, "1234", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)),
+                arrayOf(AMEX, "1234", "1234", null),
+                arrayOf(UNKNOWN, "1234", "1234", null),
+                arrayOf(UNKNOWN, " 1234 ", "1234", null)
             )
         }
     }
 
+    private lateinit var transformer: CardCvcInputTransformerService
     private lateinit var cvcInput: CardComponentInput.CardCvcInput
 
     @Before
     fun setUp() {
-        cvcInput = CardCvcInputTransformer.transform(input)
+        transformer = CardCvcInputTransformer()
+        transformer.brand = brand
+        cvcInput = transformer.transform(input)
     }
 
     @Test

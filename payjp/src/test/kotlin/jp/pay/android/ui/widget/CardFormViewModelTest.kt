@@ -38,8 +38,9 @@ import jp.pay.android.model.CardExpiration
 import jp.pay.android.model.FormInputError
 import jp.pay.android.model.TenantId
 import jp.pay.android.util.Tasks
+import jp.pay.android.validator.CardCvcInputTransformerService
 import jp.pay.android.validator.CardInputTransformer
-import jp.pay.android.validator.CardNumberInputTransformerServise
+import jp.pay.android.validator.CardNumberInputTransformerService
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.nullValue
 import org.junit.Assert.assertThat
@@ -60,11 +61,11 @@ internal class CardFormViewModelTest {
     @Mock
     private lateinit var mockTokenService: PayjpTokenService
     @Mock
-    private lateinit var cardNumberInputTransformer: CardNumberInputTransformerServise
+    private lateinit var cardNumberInputTransformer: CardNumberInputTransformerService
     @Mock
     private lateinit var cardExpirationInputTransformer: CardInputTransformer<CardExpirationInput>
     @Mock
-    private lateinit var cardCvcInputTransformer: CardInputTransformer<CardCvcInput>
+    private lateinit var cardCvcInputTransformer: CardCvcInputTransformerService
     @Mock
     private lateinit var cardHolderNameInputTransformer: CardInputTransformer<CardHolderNameInput>
 

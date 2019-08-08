@@ -66,3 +66,9 @@ val CardBrand.numberLength: Int
         CardBrand.AMEX -> 15
         else -> 16
     }
+
+val CardBrand.cvcLength: Int
+    get() = when (this) {
+        CardBrand.AMEX, CardBrand.UNKNOWN -> 4
+        else -> 3
+    }
