@@ -55,6 +55,7 @@
                     android:maxLines="1"
                     android:autofillHints="creditCardNumber"
                     tools:text="1234 1234 1234 1234"
+                    android:nextFocusForward="@id/input_edit_expiration"
                     tools:targetApi="o"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -95,6 +96,7 @@
                     android:maxLines="1"
                     android:inputType="date"
                     android:imeOptions="actionNext"
+                    android:nextFocusForward="@id/input_edit_cvc"
                     tools:text="12/20"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -119,6 +121,8 @@
                     android:maxLines="1"
                     android:inputType="numberPassword"
                     android:autofillHints="creditCardSecurityCode"
+                    android:nextFocusForward="@id/input_edit_holder_name"
+                    android:imeOptions="actionNext"
                     tools:text="123"
                     tools:targetApi="o"/>
 
@@ -140,6 +144,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textCapCharacters"
+                android:imeOptions="actionDone"
                 android:autofillHints="name"
                 android:maxLines="1"
                 tools:text="TARO YAMADA"

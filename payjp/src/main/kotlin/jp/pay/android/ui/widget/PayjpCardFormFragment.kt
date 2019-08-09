@@ -221,6 +221,7 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
                 }
                 TransitionManager.beginDelayedTransition(view as ViewGroup)
             }
+            cvcImeOptions.observe(viewLifecycleOwner, cvcEditText::setImeOptions)
             isValid.observe(viewLifecycleOwner) {
                 onValidateInputListener?.onValidateInput(this@PayjpCardFormFragment, it)
             }
@@ -241,6 +242,21 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
             }
             cardHolderNameError.observe(viewLifecycleOwner) { resId ->
                 holderNameLayout.setErrorOrNull(resId?.let { getString(it) })
+            }
+            cardNumberValid.observe(viewLifecycleOwner) { valid ->
+                if (valid && numberEditText.hasFocus()) {
+                    expirationEditText.requestFocusFromTouch()
+                }
+            }
+            cardExpirationValid.observe(viewLifecycleOwner) { valid ->
+                if (valid && expirationEditText.hasFocus()) {
+                    cvcEditText.requestFocusFromTouch()
+                }
+            }
+            cardCvcValid.observe(viewLifecycleOwner) { valid ->
+                if (valid && cvcEditText.hasFocus() && holderNameLayout.visibility == View.VISIBLE) {
+                    holderNameEditText.requestFocusFromTouch()
+                }
             }
             numberEditText.addOnTextChanged { s, _, _, _ -> inputCardNumber(s.toString()) }
             expirationEditText.addOnTextChanged { s, _, _, _ -> inputCardExpiration(s.toString()) }
