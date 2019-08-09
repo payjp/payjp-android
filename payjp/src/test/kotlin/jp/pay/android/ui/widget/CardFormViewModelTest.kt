@@ -349,7 +349,13 @@ internal class CardFormViewModelTest {
 
     @Test
     fun validateCardForm_true_with_correct_input() {
-        `when`(mockTokenService.createToken(anyString(), anyString(), anyString(), anyString(), anyString()))
+        `when`(mockTokenService.createToken(
+            number = anyString(),
+            cvc = anyString(),
+            expMonth = anyString(),
+            expYear = anyString(),
+            name = anyString(),
+            tenantId = anyNullable()))
             .thenReturn(Tasks.success(TestStubs.newToken()))
         val robot = CardRobot()
         mockCorrectInput(
@@ -369,7 +375,43 @@ internal class CardFormViewModelTest {
                 expMonth = "12",
                 expYear = "2030",
                 cvc = "123",
-                name = "JANE DOE"
+                name = "JANE DOE",
+                tenantId = null
+            )
+        }
+    }
+
+    @Test
+    fun validateCardForm_true_with_correct_input_and_token() {
+        `when`(mockTokenService.createToken(
+            number = anyString(),
+            cvc = anyString(),
+            expMonth = anyString(),
+            expYear = anyString(),
+            name = anyString(),
+            tenantId = anyNullable()))
+            .thenReturn(Tasks.success(TestStubs.newToken()))
+        val robot = CardRobot()
+        mockCorrectInput(
+            "4242424242424242",
+            CardExpiration("12", "2030"),
+            "123",
+            "JANE DOE"
+        )
+        val tenantId = TenantId("id")
+        createViewModel(tenantId = tenantId).run {
+            inputCardNumber(robot.number)
+            inputCardExpiration(robot.exp)
+            inputCardCvc(robot.cvc)
+            inputCardHolderName(robot.name)
+            createToken().run()
+            verify(mockTokenService).createToken(
+                number = "4242424242424242",
+                expMonth = "12",
+                expYear = "2030",
+                cvc = "123",
+                name = "JANE DOE",
+                tenantId = tenantId
             )
         }
     }

@@ -33,6 +33,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import jp.pay.android.PayjpToken;
+import jp.pay.android.PayjpTokenParam;
 import jp.pay.android.Task;
 import jp.pay.android.model.Token;
 
@@ -73,7 +74,11 @@ public class MainActivity extends AppCompatActivity {
             final String expYear = textCardExpYear.getText().toString();
             final String name = textCardName.getText().toString();
 
-            createToken = PayjpToken.getInstance().createToken(number, cvc, expMonth, expYear, name);
+            createToken = PayjpToken.getInstance().createToken(
+                    new PayjpTokenParam.Builder(number, cvc, expMonth, expYear)
+                            .name(name)
+                            .build()
+            );
             createToken.enqueue(new Task.Callback<Token>() {
                 @Override
                 public void onSuccess(Token data) {

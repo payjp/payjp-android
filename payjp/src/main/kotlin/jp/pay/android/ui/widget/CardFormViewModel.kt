@@ -170,7 +170,8 @@ internal class CardFormViewModel(
                 expMonth = checkNotNull(cardExpirationInput.value?.value).month,
                 expYear = checkNotNull(cardExpirationInput.value?.value).year,
                 cvc = checkNotNull(cardCvcInput.value?.value),
-                name = name
+                name = name,
+                tenantId = tenantId
             )
         } else {
             Tasks.failure(
