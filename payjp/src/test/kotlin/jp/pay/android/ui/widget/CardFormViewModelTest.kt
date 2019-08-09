@@ -22,6 +22,7 @@
  */
 package jp.pay.android.ui.widget
 
+import android.view.inputmethod.EditorInfo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.CardRobot
 import jp.pay.android.PayjpTokenService
@@ -91,9 +92,13 @@ internal class CardFormViewModelTest {
         cardCvcError.observeForever { }
         cardHolderNameError.observeForever { }
         cardHolderNameEnabled.observeForever { }
+        cvcImeOptions.observeForever { }
         cardNumberBrand.observeForever { }
         cardExpiration.observeForever { }
         isValid.observeForever { }
+        cardNumberValid.observeForever { }
+        cardExpirationValid.observeForever { }
+        cardCvcValid.observeForever { }
     }
 
     private fun mockCorrectInput(
@@ -200,6 +205,15 @@ internal class CardFormViewModelTest {
     }
 
     @Test
+    fun cvcImeOptions() {
+        val viewModel = createViewModel()
+        viewModel.updateCardHolderNameEnabled(false)
+        assertThat(viewModel.cvcImeOptions.value, `is`(EditorInfo.IME_ACTION_DONE))
+        viewModel.updateCardHolderNameEnabled(true)
+        assertThat(viewModel.cvcImeOptions.value, `is`(EditorInfo.IME_ACTION_NEXT))
+    }
+
+    @Test
     fun cardNumberError_lazy() {
         val errorId = 0
         val formError = FormInputError(errorId, true)
@@ -296,6 +310,36 @@ internal class CardFormViewModelTest {
     }
 
     @Test
+    fun cardNumberValid() {
+        `when`(cardNumberInputTransformer.transform(anyString()))
+            .thenReturn(CardNumberInput(null, "1234", null, CardBrand.VISA))
+        createViewModel().run {
+            inputCardNumber("")
+            assertThat(cardNumberValid.value, `is`(true))
+        }
+    }
+
+    @Test
+    fun cardExpirationValid() {
+        `when`(cardExpirationInputTransformer.transform(anyString()))
+            .thenReturn(CardExpirationInput(null, CardExpiration("12", "2030"), null))
+        createViewModel().run {
+            inputCardExpiration("")
+            assertThat(cardExpirationValid.value, `is`(true))
+        }
+    }
+
+    @Test
+    fun cardCvcValid() {
+        `when`(cardCvcInputTransformer.transform(anyString()))
+            .thenReturn(CardCvcInput(null, "123", null))
+        createViewModel().run {
+            inputCardCvc("")
+            assertThat(cardCvcValid.value, `is`(true))
+        }
+    }
+
+    @Test
     fun validate_indicate_error_without_input() {
         val errorId = 1
         val formError = FormInputError(errorId, true)
@@ -350,7 +394,13 @@ internal class CardFormViewModelTest {
 
     @Test
     fun validateCardForm_true_with_correct_input() {
-        `when`(mockTokenService.createToken(anyString(), anyString(), anyString(), anyString(), anyString()))
+        `when`(mockTokenService.createToken(
+            number = anyString(),
+            cvc = anyString(),
+            expMonth = anyString(),
+            expYear = anyString(),
+            name = anyString(),
+            tenantId = anyNullable()))
             .thenReturn(Tasks.success(TestStubs.newToken()))
         val robot = CardRobot()
         mockCorrectInput(
@@ -370,7 +420,43 @@ internal class CardFormViewModelTest {
                 expMonth = "12",
                 expYear = "2030",
                 cvc = "123",
-                name = "JANE DOE"
+                name = "JANE DOE",
+                tenantId = null
+            )
+        }
+    }
+
+    @Test
+    fun validateCardForm_true_with_correct_input_and_token() {
+        `when`(mockTokenService.createToken(
+            number = anyString(),
+            cvc = anyString(),
+            expMonth = anyString(),
+            expYear = anyString(),
+            name = anyString(),
+            tenantId = anyNullable()))
+            .thenReturn(Tasks.success(TestStubs.newToken()))
+        val robot = CardRobot()
+        mockCorrectInput(
+            "4242424242424242",
+            CardExpiration("12", "2030"),
+            "123",
+            "JANE DOE"
+        )
+        val tenantId = TenantId("id")
+        createViewModel(tenantId = tenantId).run {
+            inputCardNumber(robot.number)
+            inputCardExpiration(robot.exp)
+            inputCardCvc(robot.cvc)
+            inputCardHolderName(robot.name)
+            createToken().run()
+            verify(mockTokenService).createToken(
+                number = "4242424242424242",
+                expMonth = "12",
+                expYear = "2030",
+                cvc = "123",
+                name = "JANE DOE",
+                tenantId = tenantId
             )
         }
     }

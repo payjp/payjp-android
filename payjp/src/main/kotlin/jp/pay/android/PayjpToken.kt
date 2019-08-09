@@ -97,18 +97,16 @@ class PayjpToken internal constructor(
         authorization = createAuthorization(configuration.publicKey)
     }
 
-    /**
-     * Create token from card.
-     *
-     */
-    override fun createToken(
-        number: String,
-        cvc: String,
-        expMonth: String,
-        expYear: String,
-        name: String?
-    ): Task<Token> {
-        return payjpApi.createToken(authorization, number, cvc, expMonth, expYear, name)
+    override fun createToken(param: PayjpTokenParam): Task<Token> {
+        return payjpApi.createToken(
+            authorization = authorization,
+            number = param.number,
+            cvc = param.cvc,
+            expMonth = param.expMonth,
+            expYear = param.expYear,
+            name = param.name,
+            tenant = param.tenantId?.id
+        )
     }
 
     /**
