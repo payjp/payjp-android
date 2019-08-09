@@ -119,6 +119,7 @@ object PayjpCardScannerPlugin : CardScannerPlugin {
             .putExtra(CardIOActivity.EXTRA_USE_PAYPAL_ACTIONBAR_ICON, false)
             .putExtra(CardIOActivity.EXTRA_SUPPRESS_CONFIRMATION, true)
             .putExtra(CardIOActivity.EXTRA_SUPPRESS_MANUAL_ENTRY, true)
+            .putExtra(CardIOActivity.EXTRA_HIDE_CARDIO_LOGO, true)
             .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
     }
 }
