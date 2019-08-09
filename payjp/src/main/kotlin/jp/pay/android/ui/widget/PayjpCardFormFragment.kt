@@ -195,7 +195,7 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
             val button = view.findViewById<Button>(R.id.button_scan)
             button.visibility = View.VISIBLE
             button.setOnClickListener {
-                bridge.startScanActivity(this, this)
+                bridge.startScanActivity(this)
             }
         }
     }

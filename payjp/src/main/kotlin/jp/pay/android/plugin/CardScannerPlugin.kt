@@ -35,17 +35,15 @@ interface CardScannerPlugin {
      * start scan activity
      *
      * @param activity called activity
-     * @param delegate permission request action delegate
      */
-    fun startScanActivity(activity: Activity, delegate: CardScannerPermissionDelegate?)
+    fun startScanActivity(activity: Activity)
 
     /**
      * start scan activity from fragment
      *
      * @param fragment called fragment
-     * @param delegate permission request action delegate
      */
-    fun startScanActivity(fragment: Fragment, delegate: CardScannerPermissionDelegate?)
+    fun startScanActivity(fragment: Fragment)
 
     /**
      * pass result from Activity or Fragment's onActivityResult to listener.

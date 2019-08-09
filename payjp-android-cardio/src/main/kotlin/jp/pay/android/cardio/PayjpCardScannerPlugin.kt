@@ -38,7 +38,7 @@ object PayjpCardScannerPlugin : CardScannerPlugin {
     private const val REQUEST_CODE_PERMISSION = 0
     private val PERMISSIONS_CARD_SCANNER = arrayOf(Manifest.permission.CAMERA)
 
-    override fun startScanActivity(activity: Activity, delegate: CardScannerPlugin.CardScannerPermissionDelegate?) {
+    override fun startScanActivity(activity: Activity) {
         if (PermissionUtil.hasSelfPermissions(activity, PERMISSIONS_CARD_SCANNER)) {
             startScanActivityInner(activity)
         } else {
@@ -46,7 +46,7 @@ object PayjpCardScannerPlugin : CardScannerPlugin {
         }
     }
 
-    override fun startScanActivity(fragment: Fragment, delegate: CardScannerPlugin.CardScannerPermissionDelegate?) {
+    override fun startScanActivity(fragment: Fragment) {
         if (PermissionUtil.hasSelfPermissions(fragment.requireActivity(), PERMISSIONS_CARD_SCANNER)) {
             startScanActivityInner(fragment)
         } else {
