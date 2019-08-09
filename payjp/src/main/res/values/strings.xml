@@ -36,4 +36,11 @@
     <string name="payjp_card_form_error_no_cvc">Please enter a card cvc.</string>
     <string name="payjp_card_form_error_invalid_cvc">Please enter a valid card cvc.</string>
     <string name="payjp_card_form_error_no_holder_name">Please enter a card holder name.</string>
+    <string name="payjp_card_scanner_permission_denied_title">Scan card</string>
+    <string name="payjp_card_scanner_permission_denied_message"><![CDATA[
+The app is not allowed to use the camera.
+Please make sure that the app permission in Settings app.
+]]></string>
+    <string name="payjp_card_scanner_permission_denied_setting">Settings</string>
+    <string name="payjp_card_scanner_permission_denied_cancel">Cancel</string>
 </resources>

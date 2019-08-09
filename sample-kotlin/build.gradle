@@ -30,7 +30,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.payjp.samplekotlin"
-        minSdkVersion rootProject.minSdkVersion
+        minSdkVersion 16
         targetSdkVersion rootProject.sdkVersion
         versionCode 1
         versionName "1.0.0"
@@ -62,9 +62,13 @@ dependencies {
 
     implementation project(':payjp')
     //implementation "jp.pay:payjp-android:0.1.0"
+    implementation project(':payjp-android-cardio')
 
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
+
+    // card scan
+    implementation 'io.card:android-sdk:5.5.1'
 }
