@@ -39,8 +39,9 @@ import jp.pay.android.model.CardExpiration
 import jp.pay.android.model.FormInputError
 import jp.pay.android.model.TenantId
 import jp.pay.android.util.Tasks
+import jp.pay.android.validator.CardCvcInputTransformerService
 import jp.pay.android.validator.CardInputTransformer
-import jp.pay.android.validator.CardNumberInputTransformerServise
+import jp.pay.android.validator.CardNumberInputTransformerService
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.nullValue
 import org.junit.Assert.assertThat
@@ -52,6 +53,7 @@ import org.mockito.Mockito.`when`
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.never
 import org.mockito.Mockito.reset
+import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
 
@@ -61,11 +63,11 @@ internal class CardFormViewModelTest {
     @Mock
     private lateinit var mockTokenService: PayjpTokenService
     @Mock
-    private lateinit var cardNumberInputTransformer: CardNumberInputTransformerServise
+    private lateinit var cardNumberInputTransformer: CardNumberInputTransformerService
     @Mock
     private lateinit var cardExpirationInputTransformer: CardInputTransformer<CardExpirationInput>
     @Mock
-    private lateinit var cardCvcInputTransformer: CardInputTransformer<CardCvcInput>
+    private lateinit var cardCvcInputTransformer: CardCvcInputTransformerService
     @Mock
     private lateinit var cardHolderNameInputTransformer: CardInputTransformer<CardHolderNameInput>
 
@@ -218,6 +220,8 @@ internal class CardFormViewModelTest {
         val formError = FormInputError(errorId, true)
         `when`(cardNumberInputTransformer.transform(anyString()))
             .thenReturn(CardNumberInput(null, null, formError, CardBrand.VISA))
+        `when`(cardCvcInputTransformer.transform(anyString()))
+            .thenReturn(CardCvcInput(null, null, formError))
         createViewModel().run {
             inputCardNumber("")
             assertThat(cardNumberError.value, nullValue())
@@ -230,6 +234,8 @@ internal class CardFormViewModelTest {
         val formError = FormInputError(errorId, false)
         `when`(cardNumberInputTransformer.transform(anyString()))
             .thenReturn(CardNumberInput(null, null, formError, CardBrand.VISA))
+        `when`(cardCvcInputTransformer.transform(anyString()))
+            .thenReturn(CardCvcInput(null, null, formError))
         createViewModel().run {
             inputCardNumber("")
             assertThat(cardNumberError.value, `is`(errorId))
@@ -312,6 +318,8 @@ internal class CardFormViewModelTest {
     fun cardNumberValid() {
         `when`(cardNumberInputTransformer.transform(anyString()))
             .thenReturn(CardNumberInput(null, "1234", null, CardBrand.VISA))
+        `when`(cardCvcInputTransformer.transform(anyString()))
+            .thenReturn(CardCvcInput(null, null, FormInputError(0, true)))
         createViewModel().run {
             inputCardNumber("")
             assertThat(cardNumberValid.value, `is`(true))
@@ -367,9 +375,45 @@ internal class CardFormViewModelTest {
     fun cardNumberBrand() {
         `when`(cardNumberInputTransformer.transform(anyString()))
             .thenReturn(CardNumberInput(null, "4242", null, CardBrand.VISA))
+        `when`(cardCvcInputTransformer.transform(anyString()))
+            .thenReturn(CardCvcInput(null, "123", null))
         createViewModel().run {
             inputCardNumber("4242")
             assertThat(cardNumberBrand.value, `is`(CardBrand.VISA))
+        }
+    }
+
+    @Test
+    fun cardNumberBrand_validate_cvc_when_brand_changed() {
+        `when`(cardNumberInputTransformer.transform(anyString()))
+            .thenReturn(CardNumberInput("4242", "4242", null, CardBrand.VISA))
+            .thenReturn(CardNumberInput("3714", "3714", null, CardBrand.AMEX))
+        `when`(cardCvcInputTransformer.brand)
+            .thenReturn(CardBrand.UNKNOWN)
+            .thenReturn(CardBrand.VISA)
+        `when`(cardCvcInputTransformer.transform(anyString()))
+            .thenReturn(CardCvcInput(null, "123", null))
+        createViewModel().run {
+            inputCardNumber("4242")
+            inputCardNumber("3714")
+            verify(cardCvcInputTransformer, times(2)).transform(anyString())
+        }
+    }
+
+    @Test
+    fun cardNumberBrand_not_validate_cvc_when_brand_not_changed() {
+        `when`(cardNumberInputTransformer.transform(anyString()))
+            .thenReturn(CardNumberInput(null, "4242", null, CardBrand.VISA))
+        `when`(cardCvcInputTransformer.brand)
+            .thenReturn(CardBrand.UNKNOWN)
+            .thenReturn(CardBrand.VISA)
+        `when`(cardCvcInputTransformer.transform(anyString()))
+            .thenReturn(CardCvcInput(null, "123", null))
+        createViewModel().run {
+            inputCardNumber("4242")
+            inputCardNumber("4242")
+            verify(cardNumberInputTransformer, times(2)).transform(anyString())
+            verify(cardCvcInputTransformer).transform(anyString())
         }
     }
 

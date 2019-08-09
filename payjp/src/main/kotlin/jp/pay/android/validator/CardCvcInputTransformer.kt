@@ -23,15 +23,25 @@
 package jp.pay.android.validator
 
 import jp.pay.android.R
+import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput
 import jp.pay.android.model.FormInputError
+import jp.pay.android.model.cvcLength
 
-internal object CardCvcInputTransformer : CardInputTransformer<CardComponentInput.CardCvcInput> {
+internal interface CardCvcInputTransformerService : CardInputTransformer<CardComponentInput.CardCvcInput> {
+    var brand: CardBrand
+}
+
+internal class CardCvcInputTransformer : CardCvcInputTransformerService {
+
+    override var brand: CardBrand = CardBrand.UNKNOWN
+
     override fun transform(input: String?): CardComponentInput.CardCvcInput {
         val digits = input?.filter(Character::isDigit)
         val errorMessage = when {
             digits.isNullOrEmpty() -> FormInputError(R.string.payjp_card_form_error_no_cvc, input.isNullOrEmpty())
-            digits.length !in 3..4 -> FormInputError(R.string.payjp_card_form_error_invalid_cvc, digits.length < 3)
+            digits.length != brand.cvcLength ->
+                FormInputError(R.string.payjp_card_form_error_invalid_cvc, digits.length < brand.cvcLength)
             else -> null
         }
         val value = digits.takeIf { errorMessage == null }

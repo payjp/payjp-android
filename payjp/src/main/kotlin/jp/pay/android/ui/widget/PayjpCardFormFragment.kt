@@ -44,8 +44,10 @@ import jp.pay.android.PayjpToken
 import jp.pay.android.R
 import jp.pay.android.Task
 import jp.pay.android.exception.PayjpInvalidCardFormException
+import jp.pay.android.model.CardBrand
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
+import jp.pay.android.model.cvcLength
 import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.plugin.CardScannerResolver
 import jp.pay.android.ui.extension.addOnTextChanged
@@ -189,8 +191,8 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
         numberEditText.addTextChangedListener(cardNumberFormatter)
         expirationEditText.addTextChangedListener(
             CardExpirationFormatTextWatcher(delimiterExpiration))
-        cvcEditText.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(PayjpConstants.CARD_FORM_MAX_LENGTH_CVC))
-
+        // default cvc length
+        cvcEditText.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(CardBrand.UNKNOWN.cvcLength))
         CardScannerResolver.resolve()?.let { bridge ->
             val button = view.findViewById<Button>(R.id.button_scan)
             button.visibility = View.VISIBLE
@@ -207,7 +209,7 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
             tokenService = PayjpToken.getInstance(),
             cardNumberInputTransformer = CardNumberInputTransformer(),
             cardExpirationInputTransformer = CardExpirationInputTransformer(delimiter = delimiterExpiration),
-            cardCvcInputTransformer = CardCvcInputTransformer,
+            cardCvcInputTransformer = CardCvcInputTransformer(),
             cardHolderNameInputTransformer = CardHolderNameInputTransformer,
             tenantId = tenantId,
             holderNameEnabledDefault = holderNameEnabled
@@ -227,6 +229,7 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
             }
             cardNumberBrand.observe(viewLifecycleOwner) {
                 cardNumberFormatter.brand = it
+                cvcEditText.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(it.cvcLength))
             }
             cardExpiration.observe(viewLifecycleOwner) {
                 expirationEditText.expiration = it

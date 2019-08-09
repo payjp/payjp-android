@@ -27,5 +27,4 @@ internal object PayjpConstants {
 
     const val CARD_FORM_DELIMITER_NUMBER = ' '
     const val CARD_FORM_DELIMITER_EXPIRATION = '/'
-    const val CARD_FORM_MAX_LENGTH_CVC = 4
 }
