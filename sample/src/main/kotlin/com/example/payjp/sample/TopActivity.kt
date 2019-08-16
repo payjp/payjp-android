@@ -45,6 +45,10 @@ class TopActivity : AppCompatActivity() {
                 Intent(this, CardFormViewSampleActivity::class.java)
             ),
             Sample(
+                "CardFormView Example (Java)",
+                Intent(this, CardFormViewSampleJavaActivity::class.java)
+            ),
+            Sample(
                 "Generate Card Tokens Manually",
                 Intent(this, GenerateTokenSampleActivity::class.java)
             ),

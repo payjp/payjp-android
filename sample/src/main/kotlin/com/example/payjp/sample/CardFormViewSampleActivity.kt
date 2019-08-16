@@ -31,13 +31,7 @@ import jp.pay.android.Task
 import jp.pay.android.model.Token
 import jp.pay.android.ui.widget.PayjpCardFormFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_get_token
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token_anyway
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.progress_bar
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_id
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_content
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.switch_card_holder_name
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.*
 
 private const val FRAGMENT_CARD_FORM = "FRAGMENT_CARD_FORM"
 
@@ -61,7 +55,7 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
             }
             createToken()
         }
-        button_create_token_anyway.setOnClickListener {
+        button_create_token_with_validate.setOnClickListener {
             if (cardFormFragment.validateCardForm()) {
                 createToken()
             }

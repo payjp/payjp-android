@@ -76,7 +76,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="generate token" />
+                    android:text="create token" />
 
             <Button
                     android:id="@+id/button_get_token"
@@ -89,12 +89,12 @@
         </LinearLayout>
 
         <Button
-                android:id="@+id/button_create_token_anyway"
+                android:id="@+id/button_create_token_with_validate"
                 style="@style/Widget.AppCompat.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="generate token anyway" />
+                android:text="validate form and create token" />
 
         <EditText
                 android:id="@+id/text_token_id"

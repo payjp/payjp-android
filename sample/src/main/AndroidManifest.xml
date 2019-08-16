@@ -47,6 +47,7 @@
         <activity android:name=".GenerateTokenSampleActivity" />
         <activity android:name=".GenerateTokenSampleJavaActivity" />
         <activity android:name=".CardFormViewSampleActivity" />
+        <activity android:name=".CardFormViewSampleJavaActivity" />
     </application>
 
 </manifest>

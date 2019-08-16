@@ -27,7 +27,7 @@ import jp.pay.android.PayjpToken;
 import jp.pay.android.PayjpTokenConfiguration;
 import jp.pay.android.cardio.PayjpCardScannerPlugin;
 
-class SampleApplication extends Application {
+public class SampleApplication extends Application {
 
     @Override
     public void onCreate() {
