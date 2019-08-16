@@ -20,20 +20,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.example.payjp.sample
+package com.example.payjp.sample;
 
-import android.app.Application
-import jp.pay.android.PayjpToken
-import jp.pay.android.PayjpTokenConfiguration
-import jp.pay.android.cardio.PayjpCardScannerPlugin
+import android.app.Application;
+import jp.pay.android.PayjpToken;
+import jp.pay.android.PayjpTokenConfiguration;
+import jp.pay.android.cardio.PayjpCardScannerPlugin;
 
-class SampleApplication : Application() {
+class SampleApplication extends Application {
 
-    override fun onCreate() {
-        super.onCreate()
-        PayjpToken.init(PayjpTokenConfiguration.Builder("pk_test_0383a1b8f91e8a6e3ea0e2a9")
-            .setDebugEnabled(BuildConfig.DEBUG)
-            .setCardScannerPlugin(PayjpCardScannerPlugin)
-            .build())
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        PayjpToken.init(new PayjpTokenConfiguration.Builder("pk_test_0383a1b8f91e8a6e3ea0e2a9")
+                .setDebugEnabled(BuildConfig.DEBUG)
+                .setCardScannerPlugin(PayjpCardScannerPlugin.INSTANCE)
+                .build());
     }
 }
