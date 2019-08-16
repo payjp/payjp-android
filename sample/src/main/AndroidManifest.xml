@@ -45,6 +45,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".GenerateTokenSampleActivity" />
+        <activity android:name=".GenerateTokenSampleJavaActivity" />
         <activity android:name=".CardFormViewSampleActivity" />
     </application>
 

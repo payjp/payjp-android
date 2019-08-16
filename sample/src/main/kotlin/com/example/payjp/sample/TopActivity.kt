@@ -41,12 +41,16 @@ class TopActivity : AppCompatActivity() {
     private val samples by lazy {
         listOf(
             Sample(
+                "CardFormView Example",
+                Intent(this, CardFormViewSampleActivity::class.java)
+            ),
+            Sample(
                 "Generate Card Tokens Manually",
                 Intent(this, GenerateTokenSampleActivity::class.java)
             ),
             Sample(
-                "CardFormView Example",
-                Intent(this, CardFormViewSampleActivity::class.java)
+                "Generate Card Tokens Manually (Java)",
+                Intent(this, GenerateTokenSampleJavaActivity::class.java)
             )
         )
     }
