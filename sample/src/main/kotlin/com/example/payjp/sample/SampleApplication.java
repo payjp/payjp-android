@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 PAY, Inc.
+ * Copyright (c) 2019 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,5 +20,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package com.example.payjp.sample;
 
-include ':payjp', ':sample', ':payjp-android-cardio'
+import android.app.Application;
+import jp.pay.android.PayjpToken;
+import jp.pay.android.PayjpTokenConfiguration;
+import jp.pay.android.cardio.PayjpCardScannerPlugin;
+
+public class SampleApplication extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        PayjpToken.init(new PayjpTokenConfiguration.Builder("pk_test_0383a1b8f91e8a6e3ea0e2a9")
+                .setDebugEnabled(BuildConfig.DEBUG)
+                .setCardScannerPlugin(PayjpCardScannerPlugin.INSTANCE)
+                .build());
+    }
+}
