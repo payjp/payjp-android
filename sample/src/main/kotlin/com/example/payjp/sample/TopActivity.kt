@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.example.payjp.samplekotlin
+package com.example.payjp.sample
 
 import android.content.Context
 import android.content.Intent
