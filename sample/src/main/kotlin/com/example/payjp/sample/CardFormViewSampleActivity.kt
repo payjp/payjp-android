@@ -23,15 +23,21 @@
 package com.example.payjp.sample
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import jp.pay.android.PayjpToken
 import jp.pay.android.Task
 import jp.pay.android.model.Token
 import jp.pay.android.ui.widget.PayjpCardFormFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.*
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token_with_validate
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_get_token
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.progress_bar
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.switch_card_holder_name
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_content
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_id
 
 private const val FRAGMENT_CARD_FORM = "FRAGMENT_CARD_FORM"
 
