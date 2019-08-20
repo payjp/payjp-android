@@ -48,7 +48,8 @@ class PayjpToken internal constructor(
         payjpApi = createApiClient(
             baseUrl = PayjpConstants.API_ENDPOINT,
             debuggable = configuration.debugEnabled,
-            callbackExecutor = MainThreadExecutor()
+            callbackExecutor = MainThreadExecutor(),
+            locale = configuration.locale
         )
     ) {
         CardScannerResolver.cardScannerPlugin = configuration.cardScannerPlugin

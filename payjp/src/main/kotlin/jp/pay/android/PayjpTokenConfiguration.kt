@@ -23,6 +23,7 @@
 package jp.pay.android
 
 import jp.pay.android.plugin.CardScannerPlugin
+import java.util.Locale
 
 /**
  * Configuration for PayjpToken
@@ -32,6 +33,7 @@ import jp.pay.android.plugin.CardScannerPlugin
 class PayjpTokenConfiguration private constructor(
     val publicKey: String,
     val debugEnabled: Boolean,
+    val locale: Locale,
     val cardScannerPlugin: CardScannerPlugin?
 ) {
 
@@ -48,12 +50,32 @@ class PayjpTokenConfiguration private constructor(
          */
         private var debugEnabled: Boolean = false
 
+        private var locale: Locale = Locale.getDefault()
+
         private var cardScannerPlugin: CardScannerPlugin? = null
 
-        fun setDebugEnabled(enabled: Boolean): Builder = apply { debugEnabled = enabled }
+        /**
+         * set debugEnabled
+         *
+         * @param enabled if true log for debug.
+         */
+        fun setDebugEnabled(enabled: Boolean) = apply { debugEnabled = enabled }
 
+        /**
+         * set locale (`en` or `ja`)
+         *
+         * @param locale Locale
+         */
+        fun setLocale(locale: Locale) = apply { this.locale = locale }
+
+        /**
+         * set card scanner plugin
+         * you also need to add `payjp-android-cardio`.
+         *
+         * @see plugin plugin
+         */
         fun setCardScannerPlugin(plugin: CardScannerPlugin?) = apply { cardScannerPlugin = plugin }
 
-        fun build(): PayjpTokenConfiguration = PayjpTokenConfiguration(publicKey, debugEnabled, cardScannerPlugin)
+        fun build() = PayjpTokenConfiguration(publicKey, debugEnabled, locale, cardScannerPlugin)
     }
 }
