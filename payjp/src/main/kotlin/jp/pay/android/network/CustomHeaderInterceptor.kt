@@ -24,18 +24,20 @@ package jp.pay.android.network
 
 import okhttp3.Interceptor
 import okhttp3.Response
+import java.util.Locale
 
 /**
  * Request interceptor
  */
-internal class UaRequestInterceptor : Interceptor {
+internal class CustomHeaderInterceptor(private val locale: Locale) : Interceptor {
 
     private val userAgent = UserAgent.create()
 
     override fun intercept(chain: Interceptor.Chain?): Response {
         val newRequest = chain!!.request().newBuilder()
-                .header("user-agent", userAgent)
-                .build()
+            .header("user-agent", userAgent)
+            .header("locale", locale.language)
+            .build()
 
         return chain.proceed(newRequest)
     }

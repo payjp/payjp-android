@@ -31,14 +31,15 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.util.Locale
 import java.util.concurrent.Executor
 
 /**
  * ApiClient factory
  */
-internal fun createOkHttp(debuggable: Boolean = false) =
+internal fun createOkHttp(locale: Locale, debuggable: Boolean = false) =
         OkHttpClient.Builder()
-                .addInterceptor(UaRequestInterceptor())
+                .addInterceptor(CustomHeaderInterceptor(locale))
                 .apply {
                     if (debuggable) {
                         addNetworkInterceptor(HttpLoggingInterceptor()
@@ -58,12 +59,13 @@ internal fun createMoshi() =
 internal fun createApiClient(
     baseUrl: String,
     debuggable: Boolean = false,
-    callbackExecutor: Executor
+    callbackExecutor: Executor,
+    locale: Locale
 ): PayjpApi =
         createMoshi().let { moshi ->
             Retrofit.Builder()
                     .baseUrl(baseUrl)
-                    .client(createOkHttp(debuggable))
+                    .client(createOkHttp(locale, debuggable))
                     .addCallAdapterFactory(ResultCallAdapterFactory(moshi, callbackExecutor))
                     .addConverterFactory(MoshiConverterFactory.create(moshi))
                     .build()
