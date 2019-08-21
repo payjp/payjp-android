@@ -29,7 +29,7 @@ android {
     compileSdkVersion rootProject.sdkVersion
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion rootProject.minSdkVersion
     }
 
     sourceSets.all {
