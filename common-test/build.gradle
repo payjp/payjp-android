@@ -30,6 +30,11 @@ android {
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
     }
+
+    lintOptions {
+        abortOnError false
+        disable ['InvalidPackage']
+    }
 }
 
 dependencies {
