@@ -20,35 +20,54 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package jp.pay.android.coroutine
 
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-android'
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.Test
+import org.junit.runner.RunWith
 
-apply from: rootProject.file("gradle/dependencies-test.gradle")
+import org.junit.Assert.*
 
-android {
-    compileSdkVersion rootProject.sdkVersion
+@RunWith(AndroidJUnit4::class)
+class PayjpCoroutineExtKtTest {
 
-    defaultConfig {
-        minSdkVersion rootProject.minSdkVersion
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    @Test
+    fun createTokenSuspend_failure() {
+        fail()
     }
 
-    sourceSets.all {
-        java.srcDirs += "src/${name}/kotlin"
+    @Test
+    fun createTokenSuspend_success() {
+        fail()
     }
 
-    testOptions {
-        unitTests {
-            returnDefaultValues = true
-            includeAndroidResources = true
-        }
+    @Test
+    fun createTokenSuspendWithParam_failure() {
+        fail()
     }
-}
 
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0-RC2'
-    implementation project(':payjp')
+    @Test
+    fun createTokenSuspendWithParam_success() {
+        fail()
+    }
+
+    @Test
+    fun getTokenSuspend_failure() {
+        fail()
+    }
+
+    @Test
+    fun getTokenSuspend_success() {
+        fail()
+    }
+
+    @Test
+    fun getAcceptedBrandsSuspend_failure() {
+        fail()
+    }
+
+    @Test
+    fun getAcceptedBrandsSuspend_success() {
+        fail()
+    }
 }
