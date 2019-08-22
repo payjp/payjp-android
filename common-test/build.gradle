@@ -20,54 +20,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.coroutine
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.junit.Test
-import org.junit.runner.RunWith
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
-import org.junit.Assert.*
+android {
+    compileSdkVersion rootProject.sdkVersion
 
-@RunWith(AndroidJUnit4::class)
-class PayjpCoroutineExtKtTest {
-
-    @Test
-    fun createTokenSuspend_failure() {
-        fail()
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
     }
+}
 
-    @Test
-    fun createTokenSuspend_success() {
-        fail()
-    }
-
-    @Test
-    fun createTokenSuspendWithParam_failure() {
-        fail()
-    }
-
-    @Test
-    fun createTokenSuspendWithParam_success() {
-        fail()
-    }
-
-    @Test
-    fun getTokenSuspend_failure() {
-        fail()
-    }
-
-    @Test
-    fun getTokenSuspend_success() {
-        fail()
-    }
-
-    @Test
-    fun getAcceptedBrandsSuspend_failure() {
-        fail()
-    }
-
-    @Test
-    fun getAcceptedBrandsSuspend_success() {
-        fail()
-    }
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation project(":payjp")
+    implementation "org.mockito:mockito-core:$mockito"
 }
