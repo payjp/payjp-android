@@ -55,6 +55,10 @@ class TopActivity : AppCompatActivity() {
             Sample(
                 "Generate Card Tokens Manually (Java)",
                 Intent(this, GenerateTokenSampleJavaActivity::class.java)
+            ),
+            Sample(
+                "Coroutine Extension Example",
+                Intent(this, CoroutineSampleActivity::class.java)
             )
         )
     }

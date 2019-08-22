@@ -33,13 +33,13 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-suspend fun PayjpCardFormView.createToken(): Token = createToken().toSuspend()
+suspend fun PayjpCardFormView.createTokenSuspend(): Token = createToken().toSuspend()
 
-suspend fun PayjpTokenService.createToken(param: PayjpTokenParam): Token = createToken(param).toSuspend()
+suspend fun PayjpTokenService.createTokenSuspend(param: PayjpTokenParam): Token = createToken(param).toSuspend()
 
-suspend fun PayjpTokenService.getToken(id: String): Token = getToken(id).toSuspend()
+suspend fun PayjpTokenService.getTokenSuspend(id: String): Token = getToken(id).toSuspend()
 
-suspend fun PayjpTokenService.getAcceptedBrands(tenantId: TenantId? = null): AcceptedBrandsResponse =
+suspend fun PayjpTokenService.getAcceptedBrandsSuspend(tenantId: TenantId? = null): AcceptedBrandsResponse =
     getAcceptedBrands(tenantId).toSuspend()
 
 suspend fun <T> Task<T>.toSuspend(): T = suspendCoroutine { cont ->
