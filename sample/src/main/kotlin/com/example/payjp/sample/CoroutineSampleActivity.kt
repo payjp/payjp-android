@@ -85,7 +85,7 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
             val token = withContext(Dispatchers.IO) { cardFormFragment.createTokenSuspend() }
             updateSuccessUI(token)
         } catch (t: Throwable) {
-            updateErrorUI(t)
+            updateErrorUI(t, "failure creating token")
         }
     }
 
@@ -96,7 +96,7 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
             val token = withContext(Dispatchers.IO) { PayjpToken.getInstance().getTokenSuspend(id) }
             updateSuccessUI(token)
         } catch (t: Throwable) {
-            updateErrorUI(t)
+            updateErrorUI(t, "failure retrieving token")
         }
     }
 
@@ -108,8 +108,8 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
         text_token_content.visibility = View.VISIBLE
     }
 
-    private fun updateErrorUI(t: Throwable) {
-        Log.e("CardFormViewSample", "failure creating token", t)
+    private fun updateErrorUI(t: Throwable, message: String) {
+        Log.e("CardFormViewSample", message, t)
         text_token_content.text = t.toString()
         progress_bar.visibility = View.GONE
         text_token_content.visibility = View.VISIBLE
