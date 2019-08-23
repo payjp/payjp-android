@@ -34,7 +34,7 @@ internal object PermissionUtil {
     fun hasSelfPermissions(context: Context, permissions: Array<String>): Boolean =
         permissions.all {
             try {
-                PermissionChecker.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+                PermissionChecker.checkSelfPermission(context, it) == PermissionChecker.PERMISSION_GRANTED
             } catch (e: RuntimeException) {
                 false
             }
