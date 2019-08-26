@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 PAY, Inc.
+ * Copyright (c) 2019 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,4 +21,24 @@
  * SOFTWARE.
  */
 
-include ':payjp', ':sample', ':payjp-android-cardio', ':payjp-android-coroutine', ':common-test'
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion rootProject.sdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+    }
+
+    lintOptions {
+        abortOnError false
+        disable ['InvalidPackage']
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation project(":payjp")
+    implementation "org.mockito:mockito-core:$mockito"
+}

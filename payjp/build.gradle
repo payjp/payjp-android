@@ -26,6 +26,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'org.jetbrains.dokka-android'
 
+apply from: rootProject.file("gradle/dependencies-test.gradle")
+
 android {
     compileSdkVersion rootProject.sdkVersion
 
@@ -68,12 +70,8 @@ dependencies {
     kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle"
     implementation "com.google.android.material:material:1.0.0"
 
-    testImplementation 'junit:junit:4.12'
-    testImplementation "androidx.test:core:1.2.0"
-    testImplementation "androidx.test.ext:junit:1.1.1"
-    testImplementation "org.robolectric:robolectric:4.3"
     testImplementation "com.squareup.okhttp3:mockwebserver:$okHttp"
-    testImplementation "org.mockito:mockito-core:2.28.2"
+    testImplementation project(":common-test")
 }
 
 apply from: 'gradle-mvn-push.gradle'

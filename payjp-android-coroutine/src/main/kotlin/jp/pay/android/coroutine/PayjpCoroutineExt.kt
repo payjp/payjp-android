@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 PAY, Inc.
+ * Copyright (c) 2019 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,5 +20,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package jp.pay.android.coroutine
 
-include ':payjp', ':sample', ':payjp-android-cardio', ':payjp-android-coroutine', ':common-test'
+import jp.pay.android.PayjpTokenParam
+import jp.pay.android.PayjpTokenService
+import jp.pay.android.Task
+import jp.pay.android.model.AcceptedBrandsResponse
+import jp.pay.android.model.TenantId
+import jp.pay.android.model.Token
+import jp.pay.android.ui.widget.PayjpCardFormView
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
+
+suspend fun PayjpCardFormView.createTokenSuspend(): Token = createToken().toSuspend()
+
+suspend fun PayjpTokenService.createTokenSuspend(param: PayjpTokenParam): Token = createToken(param).toSuspend()
+
+suspend fun PayjpTokenService.getTokenSuspend(id: String): Token = getToken(id).toSuspend()
+
+suspend fun PayjpTokenService.getAcceptedBrandsSuspend(tenantId: TenantId? = null): AcceptedBrandsResponse =
+    getAcceptedBrands(tenantId).toSuspend()
+
+suspend fun <T> Task<T>.toSuspend(): T = suspendCoroutine { cont ->
+    try { cont.resume(run()) } catch (e: Exception) { cont.resumeWithException(e) }
+}

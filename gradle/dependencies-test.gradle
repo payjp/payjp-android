@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 PAY, Inc.
+ * Copyright (c) 2019 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,4 +21,10 @@
  * SOFTWARE.
  */
 
-include ':payjp', ':sample', ':payjp-android-cardio', ':payjp-android-coroutine', ':common-test'
+dependencies {
+    testImplementation 'junit:junit:4.12'
+    testImplementation "androidx.test:core:1.2.0"
+    testImplementation "androidx.test.ext:junit:1.1.1"
+    testImplementation "org.robolectric:robolectric:4.3"
+    testImplementation "org.mockito:mockito-core:$mockito"
+}
