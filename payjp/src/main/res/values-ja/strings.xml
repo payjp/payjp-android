@@ -24,8 +24,8 @@
 
 <resources>
     <string name="payjp_card_form_number_label">カード番号</string>
-    <string name="payjp_card_form_expiration_label">有効期限</string>
-    <string name="payjp_card_form_cvc_label">CVC</string>
+    <string name="payjp_card_form_expiration_label">有効期限 月/年</string>
+    <string name="payjp_card_form_cvc_label">セキュリティコード</string>
     <string name="payjp_card_form_holder_name_label">カード名義</string>
 
     <string name="payjp_card_form_error_no_number">カード番号を入力してください</string>
