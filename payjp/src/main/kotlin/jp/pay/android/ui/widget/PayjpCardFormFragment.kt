@@ -97,7 +97,7 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
     private val delimiterExpiration = PayjpConstants.CARD_FORM_DELIMITER_EXPIRATION
     private val cardNumberFormatter = CardNumberFormatTextWatcher(PayjpConstants.CARD_FORM_DELIMITER_NUMBER)
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is PayjpCardFormView.OnValidateInputListener) {
             this.onValidateInputListener = context
