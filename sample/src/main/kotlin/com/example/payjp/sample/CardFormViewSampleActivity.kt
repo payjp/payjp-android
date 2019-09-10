@@ -22,10 +22,16 @@
  */
 package com.example.payjp.sample
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import jp.pay.android.PayjpToken
 import jp.pay.android.Task
 import jp.pay.android.model.Token
@@ -53,6 +59,7 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTheme(restoreTheme().id)
         setContentView(R.layout.activity_card_form_view_sample)
         findCardFormFragment()
         button_create_token.setOnClickListener {
@@ -80,6 +87,25 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
         super.onDestroy()
         createToken?.cancel()
         getToken?.cancel()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_theme -> {
+                showThemeChooserDialog()
+                return true
+            }
+            R.id.menu_daynight -> {
+                changeDayNight()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun createToken() {
@@ -128,7 +154,7 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
     }
 
     private fun findCardFormFragment() {
-        supportFragmentManager?.let { manager ->
+        supportFragmentManager.let { manager ->
             val f = manager.findFragmentByTag(FRAGMENT_CARD_FORM)
             cardFormFragment = f as? PayjpCardFormFragment ?: PayjpCardFormFragment.newInstance()
             if (!cardFormFragment.isAdded) {
@@ -140,4 +166,48 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
             }
         }
     }
+
+    private fun showThemeChooserDialog() {
+        val items = Theme.values().map { it.name }
+        val current = Theme.values().toList().indexOf(restoreTheme())
+        AlertDialog.Builder(this)
+            .setTitle("テーマを選択")
+            .setSingleChoiceItems(items.toTypedArray(), current) { _, which ->
+                val theme = Theme.values()[which]
+                changeTheme(theme)
+            }
+            .create()
+            .show()
+    }
+
+    private fun changeTheme(theme: Theme) {
+        getSharedPreferences("sample", Context.MODE_PRIVATE)
+            .edit()
+            .putString("theme", theme.name)
+            .apply()
+        startActivity(
+            Intent(this, CardFormViewSampleActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
+    }
+
+    private fun restoreTheme(): Theme = getSharedPreferences("sample", Context.MODE_PRIVATE)
+        .getString("theme", null)
+        ?.let { Theme.valueOf(it) }
+        ?: Theme.AppCompat
+
+    private fun changeDayNight() {
+        val mode = when (AppCompatDelegate.getDefaultNightMode()) {
+            AppCompatDelegate.MODE_NIGHT_YES -> AppCompatDelegate.MODE_NIGHT_NO
+            else -> AppCompatDelegate.MODE_NIGHT_YES
+        }
+        AppCompatDelegate.setDefaultNightMode(mode)
+    }
+}
+
+enum class Theme(val id: Int) {
+    AppCompat(R.style.AppTheme),
+    MaterialComponent_Outline(R.style.Material_Outline),
+    MaterialComponent_Filled(R.style.Material_Filled),
+    MaterialComponent_Filled_Dense(R.style.Material_FilledDense),
 }
