@@ -25,6 +25,6 @@ package jp.pay.android
 internal object PayjpConstants {
     const val API_ENDPOINT = "https://api.pay.jp/v1/"
 
-    const val CARD_FORM_DELIMITER_NUMBER = ' '
+    const val CARD_FORM_DELIMITER_NUMBER = '-'
     const val CARD_FORM_DELIMITER_EXPIRATION = '/'
 }
