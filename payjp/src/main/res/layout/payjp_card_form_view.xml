@@ -34,9 +34,9 @@
             android:id="@+id/input_layout_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="@string/payjp_card_form_number_label"
             app:endIconDrawable="@drawable/ic_camera"
             app:endIconMode="none"
-            app:hintEnabled="false"
             app:startIconDrawable="@drawable/ic_card"
             app:startIconTint="@null"
             tools:endIconMode="custom">
@@ -46,7 +46,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="creditCardNumber"
-                android:hint="@string/payjp_card_form_number_label"
                 android:imeOptions="actionNext"
                 android:inputType="phone"
                 android:maxLines="1"
@@ -60,14 +59,13 @@
             android:id="@+id/input_layout_expiration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:hintEnabled="false">
+            android:layout_marginTop="@dimen/payjp_card_form_margin"
+            android:hint="@string/payjp_card_form_expiration_label">
 
         <jp.pay.android.ui.widget.CardExpirationEditText
                 android:id="@+id/input_edit_expiration"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/payjp_card_form_expiration_label"
                 android:imeOptions="actionNext"
                 android:inputType="date"
                 android:maxLines="1"
@@ -80,18 +78,17 @@
             android:id="@+id/input_layout_cvc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/payjp_card_form_margin"
+            android:hint="@string/payjp_card_form_cvc_label"
             app:endIconDrawable="@drawable/ic_cvc_back"
             app:endIconMode="custom"
-            app:endIconTint="@null"
-            app:hintEnabled="false">
+            app:endIconTint="@null">
 
         <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/input_edit_cvc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="creditCardSecurityCode"
-                android:hint="@string/payjp_card_form_cvc_label"
                 android:imeOptions="actionNext"
                 android:inputType="numberPassword"
                 android:maxLines="1"
@@ -105,15 +102,14 @@
             android:id="@+id/input_layout_holder_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:hintEnabled="false">
+            android:layout_marginTop="@dimen/payjp_card_form_margin"
+            android:hint="@string/payjp_card_form_holder_name_label">
 
         <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/input_edit_holder_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="name"
-                android:hint="@string/payjp_card_form_holder_name_label"
                 android:imeOptions="actionDone"
                 android:inputType="textCapCharacters"
                 android:maxLines="1"
