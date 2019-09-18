@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -49,6 +50,7 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
     private @Nullable Task<Token> createToken;
     private @Nullable Task<Token> getToken;
     private PayjpCardFormFragment cardFormFragment;
+    private LinearLayout layoutButtons;
     private ProgressBar progressBar;
     private TextView textTokenId;
     private TextView textTokenContent;
@@ -58,6 +60,7 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card_form_view_sample);
+        layoutButtons = findViewById(R.id.layout_buttons);
         progressBar = findViewById(R.id.progress_bar);
         textTokenId = findViewById(R.id.text_token_id);
         textTokenContent = findViewById(R.id.text_token_content);
@@ -112,6 +115,7 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
     }
 
     private void createToken() {
+        layoutButtons.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
         textTokenContent.setVisibility(View.INVISIBLE);
         createToken = cardFormFragment.createToken();
@@ -121,6 +125,7 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
                 Log.i("GenerateTokenSampleJava", "token => " + data);
                 textTokenId.setText(data.getId());
                 progressBar.setVisibility(View.GONE);
+                layoutButtons.setVisibility(View.VISIBLE);
                 textTokenContent.setText("The token has created.");
                 textTokenContent.setVisibility(View.VISIBLE);
             }
@@ -129,6 +134,7 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
             public void onError(@NonNull Throwable throwable) {
                 Log.e("GenerateTokenSampleJava", "failure creating token", throwable);
                 progressBar.setVisibility(View.GONE);
+                layoutButtons.setVisibility(View.VISIBLE);
                 textTokenContent.setVisibility(View.VISIBLE);
                 textTokenContent.setText(throwable.toString());
             }
@@ -136,6 +142,7 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
     }
 
     private void getToken(@NonNull String id) {
+        layoutButtons.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
         textTokenContent.setVisibility(View.INVISIBLE);
         getToken = PayjpToken.getInstance().getToken(id);
@@ -145,6 +152,7 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
                 Log.i("GenerateTokenSampleJava", "token => " + data);
                 textTokenContent.setText(data.toString());
                 progressBar.setVisibility(View.GONE);
+                layoutButtons.setVisibility(View.VISIBLE);
                 textTokenContent.setVisibility(View.VISIBLE);
             }
 
@@ -152,6 +160,7 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
             public void onError(@NonNull Throwable throwable) {
                 Log.e("GenerateTokenSampleJava", "failure creating token", throwable);
                 progressBar.setVisibility(View.GONE);
+                layoutButtons.setVisibility(View.VISIBLE);
                 textTokenContent.setVisibility(View.VISIBLE);
                 textTokenContent.setText(throwable.toString());
             }

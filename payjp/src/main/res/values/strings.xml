@@ -25,7 +25,7 @@
 <resources>
     <string name="payjp_card_form_number_label">Card number</string>
     <string name="payjp_card_form_expiration_label">Expiration date</string>
-    <string name="payjp_card_form_cvc_label">CVC</string>
+    <string name="payjp_card_form_cvc_label">Security code</string>
     <string name="payjp_card_form_holder_name_label">Name</string>
 
     <string name="payjp_card_form_error_no_number">Please enter a card number.</string>
@@ -33,8 +33,8 @@
     <string name="payjp_card_form_error_invalid_brand">Your card\'s brand is not accepted.</string>
     <string name="payjp_card_form_error_no_expiration">Please enter a card expiration.</string>
     <string name="payjp_card_form_error_invalid_expiration">Please enter a valid card expiration.</string>
-    <string name="payjp_card_form_error_no_cvc">Please enter a card cvc.</string>
-    <string name="payjp_card_form_error_invalid_cvc">Please enter a valid card cvc.</string>
+    <string name="payjp_card_form_error_no_cvc">Please enter a security code.</string>
+    <string name="payjp_card_form_error_invalid_cvc">Please enter a valid security code.</string>
     <string name="payjp_card_form_error_no_holder_name">Please enter a card holder name.</string>
     <string name="payjp_card_scanner_permission_denied_title">Scan card</string>
     <string name="payjp_card_scanner_permission_denied_message"><![CDATA[

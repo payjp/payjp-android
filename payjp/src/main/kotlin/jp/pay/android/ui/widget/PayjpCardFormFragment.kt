@@ -31,7 +31,6 @@ import android.text.InputFilter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -51,6 +50,8 @@ import jp.pay.android.model.cvcLength
 import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.plugin.CardScannerResolver
 import jp.pay.android.ui.extension.addOnTextChanged
+import jp.pay.android.ui.extension.cvcIconResourceId
+import jp.pay.android.ui.extension.logoResourceId
 import jp.pay.android.ui.extension.setErrorOrNull
 import jp.pay.android.util.Tasks
 import jp.pay.android.validator.CardCvcInputTransformer
@@ -97,7 +98,7 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
     private val delimiterExpiration = PayjpConstants.CARD_FORM_DELIMITER_EXPIRATION
     private val cardNumberFormatter = CardNumberFormatTextWatcher(PayjpConstants.CARD_FORM_DELIMITER_NUMBER)
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is PayjpCardFormView.OnValidateInputListener) {
             this.onValidateInputListener = context
@@ -194,9 +195,8 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
         // default cvc length
         cvcEditText.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(CardBrand.UNKNOWN.cvcLength))
         CardScannerResolver.resolve()?.let { bridge ->
-            val button = view.findViewById<Button>(R.id.button_scan)
-            button.visibility = View.VISIBLE
-            button.setOnClickListener {
+            numberLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
+            numberLayout.setEndIconOnClickListener {
                 bridge.startScanActivity(this)
             }
         }
@@ -230,6 +230,8 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
             cardNumberBrand.observe(viewLifecycleOwner) {
                 cardNumberFormatter.brand = it
                 cvcEditText.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(it.cvcLength))
+                cvcLayout.setEndIconDrawable(it.cvcIconResourceId)
+                numberLayout.setStartIconDrawable(it.logoResourceId)
             }
             cardExpiration.observe(viewLifecycleOwner) {
                 expirationEditText.expiration = it

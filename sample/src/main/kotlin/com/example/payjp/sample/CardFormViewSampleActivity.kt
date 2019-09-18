@@ -22,10 +22,16 @@
  */
 package com.example.payjp.sample
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import jp.pay.android.PayjpToken
 import jp.pay.android.Task
 import jp.pay.android.model.Token
@@ -34,6 +40,7 @@ import jp.pay.android.ui.widget.PayjpCardFormView
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token_with_validate
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_get_token
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.layout_buttons
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.progress_bar
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.switch_card_holder_name
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_content
@@ -53,6 +60,7 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTheme(restoreTheme().id)
         setContentView(R.layout.activity_card_form_view_sample)
         findCardFormFragment()
         button_create_token.setOnClickListener {
@@ -82,7 +90,27 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
         getToken?.cancel()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_theme -> {
+                showThemeChooserDialog()
+                return true
+            }
+            R.id.menu_daynight -> {
+                changeDayNight()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     private fun createToken() {
+        layout_buttons.visibility = View.INVISIBLE
         progress_bar.visibility = View.VISIBLE
         text_token_content.visibility = View.INVISIBLE
         // create token
@@ -93,6 +121,7 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
                 text_token_id.setText(data.id)
                 text_token_content.text = "The token has created."
                 progress_bar.visibility = View.GONE
+                layout_buttons.visibility = View.VISIBLE
                 text_token_content.visibility = View.VISIBLE
             }
 
@@ -100,12 +129,14 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
                 Log.e("CardFormViewSample", "failure creating token", throwable)
                 text_token_content.text = throwable.toString()
                 progress_bar.visibility = View.GONE
+                layout_buttons.visibility = View.VISIBLE
                 text_token_content.visibility = View.VISIBLE
             }
         })
     }
 
     private fun getToken(id: String) {
+        layout_buttons.visibility = View.INVISIBLE
         progress_bar.visibility = View.VISIBLE
         text_token_content.visibility = View.INVISIBLE
         // get token
@@ -115,6 +146,7 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
                 Log.i("CardFormViewSample", "token => $data")
                 text_token_content.text = data.toString()
                 progress_bar.visibility = View.GONE
+                layout_buttons.visibility = View.VISIBLE
                 text_token_content.visibility = View.VISIBLE
             }
 
@@ -122,13 +154,14 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
                 Log.e("CardFormViewSample", "failure creating token", throwable)
                 text_token_content.text = throwable.toString()
                 progress_bar.visibility = View.GONE
+                layout_buttons.visibility = View.VISIBLE
                 text_token_content.visibility = View.VISIBLE
             }
         })
     }
 
     private fun findCardFormFragment() {
-        supportFragmentManager?.let { manager ->
+        supportFragmentManager.let { manager ->
             val f = manager.findFragmentByTag(FRAGMENT_CARD_FORM)
             cardFormFragment = f as? PayjpCardFormFragment ?: PayjpCardFormFragment.newInstance()
             if (!cardFormFragment.isAdded) {
@@ -140,4 +173,48 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
             }
         }
     }
+
+    private fun showThemeChooserDialog() {
+        val items = Theme.values().map { it.name }
+        val current = Theme.values().toList().indexOf(restoreTheme())
+        AlertDialog.Builder(this)
+            .setTitle("テーマを選択")
+            .setSingleChoiceItems(items.toTypedArray(), current) { _, which ->
+                val theme = Theme.values()[which]
+                changeTheme(theme)
+            }
+            .create()
+            .show()
+    }
+
+    private fun changeTheme(theme: Theme) {
+        getSharedPreferences("sample", Context.MODE_PRIVATE)
+            .edit()
+            .putString("theme", theme.name)
+            .apply()
+        startActivity(
+            Intent(this, CardFormViewSampleActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
+    }
+
+    private fun restoreTheme(): Theme = getSharedPreferences("sample", Context.MODE_PRIVATE)
+        .getString("theme", null)
+        ?.let { Theme.valueOf(it) }
+        ?: Theme.AppCompat
+
+    private fun changeDayNight() {
+        val mode = when (AppCompatDelegate.getDefaultNightMode()) {
+            AppCompatDelegate.MODE_NIGHT_YES -> AppCompatDelegate.MODE_NIGHT_NO
+            else -> AppCompatDelegate.MODE_NIGHT_YES
+        }
+        AppCompatDelegate.setDefaultNightMode(mode)
+    }
+}
+
+enum class Theme(val id: Int) {
+    AppCompat(R.style.AppTheme),
+    MaterialComponent_Outline(R.style.Material_Outline),
+    MaterialComponent_Filled(R.style.Material_Filled),
+    MaterialComponent_Filled_Dense(R.style.Material_FilledDense),
 }

@@ -24,8 +24,8 @@
 
 <resources>
     <string name="payjp_card_form_number_label">カード番号</string>
-    <string name="payjp_card_form_expiration_label">有効期限</string>
-    <string name="payjp_card_form_cvc_label">CVC</string>
+    <string name="payjp_card_form_expiration_label">有効期限 月/年</string>
+    <string name="payjp_card_form_cvc_label">セキュリティコード</string>
     <string name="payjp_card_form_holder_name_label">カード名義</string>
 
     <string name="payjp_card_form_error_no_number">カード番号を入力してください</string>
@@ -33,8 +33,8 @@
     <string name="payjp_card_form_error_invalid_brand">カードブランドが有効ではありません</string>
     <string name="payjp_card_form_error_no_expiration">有効期限を入力してください</string>
     <string name="payjp_card_form_error_invalid_expiration">正しい有効期限を入力してください</string>
-    <string name="payjp_card_form_error_no_cvc">CVCを入力してください</string>
-    <string name="payjp_card_form_error_invalid_cvc">正しいCVCを入力してください</string>
+    <string name="payjp_card_form_error_no_cvc">セキュリティコードを入力してください</string>
+    <string name="payjp_card_form_error_invalid_cvc">正しいセキュリティコードを入力してください</string>
     <string name="payjp_card_form_error_no_holder_name">カード名義を入力してください</string>
     <string name="payjp_card_scanner_permission_denied_title">カードの読み取り</string>
     <string name="payjp_card_scanner_permission_denied_message"><![CDATA[

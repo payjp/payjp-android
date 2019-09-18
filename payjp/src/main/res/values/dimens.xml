@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   ~
-  ~ Copyright (c) 2018 PAY, Inc.
+  ~ Copyright (c) 2019 PAY, Inc.
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -23,17 +23,5 @@
   -->
 
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-
-    <!-- https://material.io/resources/color/ -->
-    <color name="primaryColor">#ff5252</color>
-    <color name="primaryLightColor">#ff867f</color>
-    <color name="primaryDarkColor">#c50e29</color>
-    <color name="secondaryColor">#ffc400</color>
-    <color name="secondaryLightColor">#fff64f</color>
-    <color name="secondaryDarkColor">#c79400</color>
-    <color name="primaryTextColor">#424242</color>
-    <color name="secondaryTextColor">#37474f</color>
+    <dimen name="payjp_card_form_margin">12dp</dimen>
 </resources>

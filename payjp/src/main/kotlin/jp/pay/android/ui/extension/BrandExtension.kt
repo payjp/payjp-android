@@ -20,26 +20,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package jp.pay.android.ui.extension
 
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'org.jetbrains.dokka-android'
+import androidx.annotation.DrawableRes
+import jp.pay.android.R
+import jp.pay.android.model.CardBrand
 
-android {
-    compileSdkVersion rootProject.sdkVersion
-
-    defaultConfig {
-        minSdkVersion rootProject.minSdkVersion
+val CardBrand.logoResourceId: Int
+    @DrawableRes
+    get() = when (this) {
+        CardBrand.VISA -> R.drawable.logo_visa
+        CardBrand.MASTER_CARD -> R.drawable.logo_mastercard
+        CardBrand.JCB -> R.drawable.logo_jcb
+        CardBrand.AMEX -> R.drawable.logo_amex
+        CardBrand.DINERS_CLUB -> R.drawable.logo_diners
+        CardBrand.DISCOVER -> R.drawable.logo_discover
+        CardBrand.UNKNOWN -> R.drawable.ic_card
     }
 
-    sourceSets.all {
-        java.srcDirs += "src/${name}/kotlin"
+val CardBrand.cvcIconResourceId: Int
+    @DrawableRes
+    get() = when (this) {
+        CardBrand.AMEX -> R.drawable.ic_cvc_front
+        else -> R.drawable.ic_cvc_back
     }
-}
-
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    api project(':payjp')
-    implementation 'io.card:android-sdk:5.5.1'
-    implementation 'androidx.fragment:fragment:1.1.0'
-}
