@@ -69,7 +69,7 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
             s.length in delimiterPositions && latestChangeStart == s.length && latestInsertionSize == 0 -> false
             // Case D. When we delete 1 character from `1234 5`, input should be `1234`.
             (s.length - 1) in delimiterPositions && latestChangeStart == s.length && latestInsertionSize == 0 -> false
-            else -> (0 until s.length).all { i ->
+            else -> s.indices.all { i ->
                 when {
                     i > 0 && i in delimiterPositions -> delimiter == s[i]
                     else -> Character.isDigit(s[i])
