@@ -67,7 +67,7 @@ internal class CardExpirationFormatTextWatcher(private val delimiter: Char) : Te
         s.length == 2 && latestChangeStart == 2 && latestInsertionSize == 0 -> false
         // When we delete 1 character from `12/1`, input should be `12`.
         s.length == 3 && latestChangeStart == 3 && latestInsertionSize == 0 -> false
-        else -> (0 until s.length).all { i ->
+        else -> s.indices.all { i ->
             val c = s[i]
             when (i) {
                 DELIMITER_INDEX -> delimiter == c
