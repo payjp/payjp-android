@@ -22,9 +22,9 @@
   -->
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent">
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -36,7 +36,66 @@
         <FrameLayout
                 android:id="@+id/card_form_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
+
+        <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <LinearLayout
+                    android:id="@+id/layout_buttons"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal">
+
+                    <Button
+                            android:id="@+id/button_create_token"
+                            style="?android:buttonStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:text="create token"
+                            tools:ignore="RtlCompat" />
+
+                    <Button
+                            android:id="@+id/button_create_token_with_validate"
+                            style="?android:buttonStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:text="validate form and create token"
+                            tools:ignore="RtlCompat" />
+
+                </LinearLayout>
+
+                <Button
+                        android:id="@+id/button_get_token"
+                        style="?android:buttonStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="get token by id" />
+
+            </LinearLayout>
+
+            <ProgressBar
+                    android:id="@+id/progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="16dp"
+                    android:visibility="gone" />
+
+        </FrameLayout>
 
         <FrameLayout
                 android:layout_width="match_parent"
@@ -47,37 +106,16 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="カード名義入力を有効にする"
-                    android:layout_gravity="center_vertical"/>
+                    android:layout_gravity="center_vertical"
+                    android:text="カード名義入力を有効にする" />
 
             <Switch
                     android:id="@+id/switch_card_holder_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:layout_gravity="end"/>
+                    android:layout_gravity="end"
+                    android:checked="true" />
         </FrameLayout>
-
-        <Button
-                android:id="@+id/button_create_token"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="create token" />
-
-        <Button
-                android:id="@+id/button_create_token_with_validate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="validate form and create token" />
-
-        <Button
-                android:id="@+id/button_get_token"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="get token by id" />
 
         <EditText
                 android:id="@+id/text_token_id"
@@ -96,20 +134,11 @@
                 android:id="@+id/text_token_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
-                android:text="The token will be shown here." />
-
-        <ProgressBar
-                android:id="@+id/progress_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
                 android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:visibility="gone" />
+                android:layout_marginBottom="8dp"
+                android:text="The token will be shown here." />
 
     </LinearLayout>
 

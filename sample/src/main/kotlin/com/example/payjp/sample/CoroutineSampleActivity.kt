@@ -34,6 +34,7 @@ import jp.pay.android.ui.widget.PayjpCardFormFragment
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token_with_validate
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_get_token
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.layout_buttons
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.progress_bar
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.switch_card_holder_name
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_content
@@ -79,6 +80,7 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
     }
 
     private fun createToken() = launch {
+        layout_buttons.visibility = View.INVISIBLE
         progress_bar.visibility = View.VISIBLE
         text_token_content.visibility = View.INVISIBLE
         try {
@@ -90,6 +92,7 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
     }
 
     private fun getToken(id: String) = launch {
+        layout_buttons.visibility = View.INVISIBLE
         progress_bar.visibility = View.VISIBLE
         text_token_content.visibility = View.INVISIBLE
         try {
@@ -105,6 +108,7 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
         text_token_id.setText(token.id)
         text_token_content.text = token.toString()
         progress_bar.visibility = View.GONE
+        layout_buttons.visibility = View.VISIBLE
         text_token_content.visibility = View.VISIBLE
     }
 
@@ -112,11 +116,12 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
         Log.e("CardFormViewSample", message, t)
         text_token_content.text = t.toString()
         progress_bar.visibility = View.GONE
+        layout_buttons.visibility = View.VISIBLE
         text_token_content.visibility = View.VISIBLE
     }
 
     private fun findCardFormFragment() {
-        supportFragmentManager?.let { manager ->
+        supportFragmentManager.let { manager ->
             val f = manager.findFragmentByTag(FRAGMENT_CARD_FORM)
             cardFormFragment = f as? PayjpCardFormFragment ?: PayjpCardFormFragment.newInstance()
             if (!cardFormFragment.isAdded) {

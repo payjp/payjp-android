@@ -40,6 +40,7 @@ import jp.pay.android.ui.widget.PayjpCardFormView
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token_with_validate
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_get_token
+import kotlinx.android.synthetic.main.activity_card_form_view_sample.layout_buttons
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.progress_bar
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.switch_card_holder_name
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_content
@@ -109,6 +110,7 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
     }
 
     private fun createToken() {
+        layout_buttons.visibility = View.INVISIBLE
         progress_bar.visibility = View.VISIBLE
         text_token_content.visibility = View.INVISIBLE
         // create token
@@ -119,6 +121,7 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
                 text_token_id.setText(data.id)
                 text_token_content.text = "The token has created."
                 progress_bar.visibility = View.GONE
+                layout_buttons.visibility = View.VISIBLE
                 text_token_content.visibility = View.VISIBLE
             }
 
@@ -126,12 +129,14 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
                 Log.e("CardFormViewSample", "failure creating token", throwable)
                 text_token_content.text = throwable.toString()
                 progress_bar.visibility = View.GONE
+                layout_buttons.visibility = View.VISIBLE
                 text_token_content.visibility = View.VISIBLE
             }
         })
     }
 
     private fun getToken(id: String) {
+        layout_buttons.visibility = View.INVISIBLE
         progress_bar.visibility = View.VISIBLE
         text_token_content.visibility = View.INVISIBLE
         // get token
@@ -141,6 +146,7 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
                 Log.i("CardFormViewSample", "token => $data")
                 text_token_content.text = data.toString()
                 progress_bar.visibility = View.GONE
+                layout_buttons.visibility = View.VISIBLE
                 text_token_content.visibility = View.VISIBLE
             }
 
@@ -148,6 +154,7 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
                 Log.e("CardFormViewSample", "failure creating token", throwable)
                 text_token_content.text = throwable.toString()
                 progress_bar.visibility = View.GONE
+                layout_buttons.visibility = View.VISIBLE
                 text_token_content.visibility = View.VISIBLE
             }
         })
