@@ -26,6 +26,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'org.jetbrains.dokka-android'
 
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
 apply from: rootProject.file("gradle/dependencies-test.gradle")
 
 android {
@@ -72,5 +73,3 @@ dependencies {
     testImplementation "com.squareup.okhttp3:mockwebserver:$okHttp"
     testImplementation project(":common-test")
 }
-
-apply from: 'gradle-mvn-push.gradle'
