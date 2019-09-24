@@ -61,13 +61,13 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofit"
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit"
 
-    implementation 'androidx.fragment:fragment:1.1.0'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation "androidx.fragment:fragment:$fragment"
+    implementation "androidx.appcompat:appcompat:$appcompat"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.1.0"
     kapt "androidx.lifecycle:lifecycle-common-java8:$lifecycle"
-    implementation "com.google.android.material:material:1.1.0-alpha10"
+    implementation "com.google.android.material:material:$material"
 
     testImplementation "com.squareup.okhttp3:mockwebserver:$okHttp"
     testImplementation project(":common-test")
