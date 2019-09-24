@@ -31,11 +31,13 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
 import jp.pay.android.PayjpToken;
 import jp.pay.android.Task;
 import jp.pay.android.model.Token;
@@ -47,8 +49,10 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
 
     private static final String FRAGMENT_CARD_FORM = "FRAGMENT_CARD_FORM";
 
-    private @Nullable Task<Token> createToken;
-    private @Nullable Task<Token> getToken;
+    private @Nullable
+    Task<Token> createToken;
+    private @Nullable
+    Task<Token> getToken;
     private PayjpCardFormFragment cardFormFragment;
     private LinearLayout layoutButtons;
     private ProgressBar progressBar;

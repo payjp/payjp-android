@@ -29,7 +29,8 @@ import jp.pay.android.model.CardBrandDetectorService
 import jp.pay.android.model.CardComponentInput
 import jp.pay.android.model.FormInputError
 
-internal interface CardNumberInputTransformerService : CardInputTransformer<CardComponentInput.CardNumberInput> {
+internal interface CardNumberInputTransformerService :
+    CardInputTransformer<CardComponentInput.CardNumberInput> {
     var acceptedBrands: List<CardBrand>?
 }
 
@@ -47,17 +48,35 @@ internal class CardNumberInputTransformer(
         val digits = input?.filter(Character::isDigit)
         val lengthCheck = cardNumberValidator.isCardNumberLengthValid(digits.orEmpty(), brand)
         val errorMessage = when {
-            digits.isNullOrEmpty() -> FormInputError(messageId = R.string.payjp_card_form_error_no_number, lazy = true)
+            digits.isNullOrEmpty() -> FormInputError(
+                messageId = R.string.payjp_card_form_error_no_number,
+                lazy = true
+            )
             brand != CardBrand.UNKNOWN && acceptedBrands?.contains(brand) == false ->
-                FormInputError(messageId = R.string.payjp_card_form_error_invalid_brand, lazy = false)
+                FormInputError(
+                    messageId = R.string.payjp_card_form_error_invalid_brand,
+                    lazy = false
+                )
             lengthCheck == CardNumberValidatorService.CardNumberLengthStatus.TOO_LONG ->
-                FormInputError(messageId = R.string.payjp_card_form_error_invalid_number, lazy = false)
+                FormInputError(
+                    messageId = R.string.payjp_card_form_error_invalid_number,
+                    lazy = false
+                )
             lengthCheck == CardNumberValidatorService.CardNumberLengthStatus.TOO_SHORT ->
-                FormInputError(messageId = R.string.payjp_card_form_error_invalid_number, lazy = true)
+                FormInputError(
+                    messageId = R.string.payjp_card_form_error_invalid_number,
+                    lazy = true
+                )
             !cardNumberValidator.isLuhnValid(digits) ->
-                FormInputError(messageId = R.string.payjp_card_form_error_invalid_number, lazy = false)
+                FormInputError(
+                    messageId = R.string.payjp_card_form_error_invalid_number,
+                    lazy = false
+                )
             brand == CardBrand.UNKNOWN ->
-                FormInputError(messageId = R.string.payjp_card_form_error_invalid_brand, lazy = true)
+                FormInputError(
+                    messageId = R.string.payjp_card_form_error_invalid_brand,
+                    lazy = true
+                )
             else -> null
         }
         val value = digits.takeIf { errorMessage == null }

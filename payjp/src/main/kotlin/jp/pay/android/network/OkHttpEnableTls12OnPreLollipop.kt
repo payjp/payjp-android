@@ -39,32 +39,41 @@ import javax.net.ssl.X509TrustManager
  * @link https://github.com/square/okhttp/issues/2372
  */
 internal fun OkHttpClient.Builder.enableTls12OnPreLollipop(): OkHttpClient.Builder {
-    return takeIf { Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN &&
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1 }?.apply {
+    return takeIf {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN &&
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1
+    }?.apply {
         try {
             val trustManagerFactory = TrustManagerFactory.getInstance(
-                    TrustManagerFactory.getDefaultAlgorithm())
+                TrustManagerFactory.getDefaultAlgorithm()
+            )
             trustManagerFactory.init(null as KeyStore?)
             val trustManagers = trustManagerFactory.trustManagers
             if (trustManagers.size != 1 || trustManagers[0] !is X509TrustManager) {
-                throw IllegalStateException("Unexpected default trust managers:" + Arrays.toString(trustManagers))
+                throw IllegalStateException(
+                    "Unexpected default trust managers:" + Arrays.toString(
+                        trustManagers
+                    )
+                )
             }
             val trustManager = trustManagers[0] as X509TrustManager
 
             val sslContext = SSLContext.getInstance("TLSv1.2")
-                    .apply { init(null, null, null) }
+                .apply { init(null, null, null) }
 
             sslSocketFactory(Tls12SocketFactory(sslContext.socketFactory), trustManager)
 
             val cs = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-                    .tlsVersions(TlsVersion.TLS_1_2)
-                    .build()
+                .tlsVersions(TlsVersion.TLS_1_2)
+                .build()
 
-            connectionSpecs(mutableListOf(
+            connectionSpecs(
+                mutableListOf(
                     cs,
                     ConnectionSpec.COMPATIBLE_TLS,
                     ConnectionSpec.CLEARTEXT
-            ))
+                )
+            )
             if (BuildConfig.DEBUG) {
                 Log.v("payjp-android", "apply TLSv1.2 for pre-Lollipop")
             }

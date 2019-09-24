@@ -33,4 +33,4 @@ cache:
     - vendor/bundle
 
 script:
-    - bundle exec fastlane android check
+  - bundle exec fastlane android check

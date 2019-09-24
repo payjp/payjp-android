@@ -21,4 +21,4 @@
   ~ SOFTWARE.
   -->
 
-<manifest package="jp.pay.android.cardio"/>
+<manifest package="jp.pay.android.cardio" />

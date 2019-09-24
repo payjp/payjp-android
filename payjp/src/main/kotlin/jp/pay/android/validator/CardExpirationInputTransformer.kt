@@ -34,15 +34,22 @@ internal class CardExpirationInputTransformer(
         val (value, error) = when (input) {
             // empty
             null, "" -> null to FormInputError(R.string.payjp_card_form_error_no_expiration, true)
-            else -> when (val monthYear = input.let { processor.processExpirationMonthYear(it, delimiter) }) {
+            else -> when (val monthYear =
+                input.let { processor.processExpirationMonthYear(it, delimiter) }) {
                 // no formatted value
-                null -> null to FormInputError(R.string.payjp_card_form_error_invalid_expiration, true)
+                null -> null to FormInputError(
+                    R.string.payjp_card_form_error_invalid_expiration,
+                    true
+                )
                 else -> {
                     val (month, year) = monthYear
                     val invalidExpirationMessage = R.string.payjp_card_form_error_invalid_expiration
                     when {
                         // invalid month
-                        !processor.validateMonth(month) -> null to FormInputError(invalidExpirationMessage, false)
+                        !processor.validateMonth(month) -> null to FormInputError(
+                            invalidExpirationMessage,
+                            false
+                        )
                         // no year
                         year == null -> null to FormInputError(invalidExpirationMessage, true)
                         else -> when (val value = processor.processCardExpiration(month to year)) {

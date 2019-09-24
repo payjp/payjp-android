@@ -48,14 +48,16 @@ internal class ResultCall<T>(
 
     private fun generateHttpError(response: Response<*>): Exception {
         return response.errorBody()?.string()
-                ?.let { source ->
-                    moshi.adapter(ErrorEnvelope::class.java).fromJson(source)
-                            ?.let {
-                                PayjpApiException(it.error.message, HttpException(response),
-                                        response.code(), it.error, source)
-                            }
-                }
-                ?: IOException("unknown response", HttpException(response))
+            ?.let { source ->
+                moshi.adapter(ErrorEnvelope::class.java).fromJson(source)
+                    ?.let {
+                        PayjpApiException(
+                            it.error.message, HttpException(response),
+                            response.code(), it.error, source
+                        )
+                    }
+            }
+            ?: IOException("unknown response", HttpException(response))
     }
 
     override fun run(): T = execute().body()!!
@@ -74,7 +76,7 @@ internal class ResultCall<T>(
 
     override fun execute(): Response<T> {
         return delegate.execute()
-                .let { it.takeIf { it.isSuccessful } ?: throw generateHttpError(it) }
+            .let { it.takeIf { it.isSuccessful } ?: throw generateHttpError(it) }
     }
 
     override fun enqueue(callback: Callback<T>) {
@@ -83,7 +85,10 @@ internal class ResultCall<T>(
 
                 callbackExecutor.execute({
                     when {
-                        delegate.isCanceled -> callback.onFailure(this@ResultCall, IOException("Canceled"))
+                        delegate.isCanceled -> callback.onFailure(
+                            this@ResultCall,
+                            IOException("Canceled")
+                        )
                         response.isSuccessful -> callback.onResponse(this@ResultCall, response)
                         else -> callback.onFailure(this@ResultCall, generateHttpError(response))
                     }

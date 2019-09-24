@@ -53,7 +53,12 @@ interface CardScannerPlugin {
      * @param data data of onActivityResult
      * @param listener listener
      */
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?, listener: CardScanOnResultListener?): Boolean
+    fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+        listener: CardScanOnResultListener?
+    ): Boolean
 
     /**
      * Delegate [Activity.onRequestPermissionsResult]

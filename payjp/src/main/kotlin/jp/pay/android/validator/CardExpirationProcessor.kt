@@ -70,7 +70,10 @@ internal interface CardExpirationProcessorService {
  *
  */
 internal object CardExpirationProcessor : CardExpirationProcessorService {
-    override fun processExpirationMonthYear(input: String, delimiter: Char): Pair<String, String?>? {
+    override fun processExpirationMonthYear(
+        input: String,
+        delimiter: Char
+    ): Pair<String, String?>? {
         return input
             .split(delimiter)
             .map { part -> part.filter(Character::isDigit).takeIf { it.length == 2 } }

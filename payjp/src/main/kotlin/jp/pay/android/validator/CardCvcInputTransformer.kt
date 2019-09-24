@@ -28,7 +28,8 @@ import jp.pay.android.model.CardComponentInput
 import jp.pay.android.model.FormInputError
 import jp.pay.android.model.cvcLength
 
-internal interface CardCvcInputTransformerService : CardInputTransformer<CardComponentInput.CardCvcInput> {
+internal interface CardCvcInputTransformerService :
+    CardInputTransformer<CardComponentInput.CardCvcInput> {
     var brand: CardBrand
 }
 
@@ -39,9 +40,15 @@ internal class CardCvcInputTransformer : CardCvcInputTransformerService {
     override fun transform(input: String?): CardComponentInput.CardCvcInput {
         val digits = input?.filter(Character::isDigit)
         val errorMessage = when {
-            digits.isNullOrEmpty() -> FormInputError(R.string.payjp_card_form_error_no_cvc, input.isNullOrEmpty())
+            digits.isNullOrEmpty() -> FormInputError(
+                R.string.payjp_card_form_error_no_cvc,
+                input.isNullOrEmpty()
+            )
             digits.length != brand.cvcLength ->
-                FormInputError(R.string.payjp_card_form_error_invalid_cvc, digits.length < brand.cvcLength)
+                FormInputError(
+                    R.string.payjp_card_form_error_invalid_cvc,
+                    digits.length < brand.cvcLength
+                )
             else -> null
         }
         val value = digits.takeIf { errorMessage == null }

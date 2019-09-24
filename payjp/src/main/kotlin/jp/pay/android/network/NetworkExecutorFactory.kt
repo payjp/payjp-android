@@ -32,5 +32,5 @@ import java.util.concurrent.Executors
 object NetworkExecutorFactory {
     private const val THREAD_MAX_SIZE = 3
     fun create(): ExecutorService =
-            Executors.newFixedThreadPool(THREAD_MAX_SIZE, { r -> Thread(r, "payjp") })
+        Executors.newFixedThreadPool(THREAD_MAX_SIZE, { r -> Thread(r, "payjp") })
 }

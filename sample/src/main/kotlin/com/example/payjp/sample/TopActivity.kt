@@ -32,7 +32,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.activity_top.*
+import kotlinx.android.synthetic.main.activity_top.recycler_view
 
 typealias OnClickSample = (sample: TopActivity.Sample) -> Unit
 
@@ -90,7 +90,11 @@ class TopActivity : AppCompatActivity() {
         }
     }
 
-    class TopViewHolder(inflater: LayoutInflater, parent: ViewGroup, onClick: OnClickSample? = null) :
+    class TopViewHolder(
+        inflater: LayoutInflater,
+        parent: ViewGroup,
+        onClick: OnClickSample? = null
+    ) :
         RecyclerView.ViewHolder(inflater.inflate(R.layout.card_sample, parent, false)) {
 
         private val nameView by lazy { itemView.findViewById<TextView>(R.id.name) }

@@ -272,7 +272,8 @@ internal class CardFormViewModel(
                 cardCvcInputTransformer = cardCvcInputTransformer,
                 cardHolderNameInputTransformer = cardHolderNameInputTransformer,
                 tenantId = tenantId,
-                holderNameEnabledDefault = holderNameEnabledDefault) as T
+                holderNameEnabledDefault = holderNameEnabledDefault
+            ) as T
         }
     }
 }

@@ -57,6 +57,7 @@ import java.util.concurrent.Executor
 class PayjpTokenTest {
 
     private val mockWebServer = MockWebServer()
+
     internal inner class CurrentThreadExecutor : Executor {
         override fun execute(r: Runnable) {
             r.run()
@@ -76,7 +77,7 @@ class PayjpTokenTest {
     // pk_test_0383a1b8f91e8a6e3ea0e2a9
     // Basic cGtfdGVzdF8wMzgzYTFiOGY5MWU4YTZlM2VhMGUyYTk6
     private val configuration =
-            PayjpTokenConfiguration.Builder(publicKey = "pk_test_0383a1b8f91e8a6e3ea0e2a9").build()
+        PayjpTokenConfiguration.Builder(publicKey = "pk_test_0383a1b8f91e8a6e3ea0e2a9").build()
 
     @Test
     fun init_callTwice() {
@@ -89,79 +90,111 @@ class PayjpTokenTest {
     fun createToken_ok() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
 
-        PayjpToken(configuration = configuration,
-                payjpApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
-                        callbackExecutor = CurrentThreadExecutor(), locale = Locale.US))
-                .createToken(number = "4242424242424242",
-                        cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA")
-                .run()
-                .let { token ->
-                    assertEquals("tok_5ca06b51685e001723a2c3b4aeb4", token.id)
-                    assertEquals("car_e3ccd4e0959f45e7c75bacc4be90", token.card.id)
-                }
+        PayjpToken(
+            configuration = configuration,
+            payjpApi = createApiClient(
+                baseUrl = mockWebServer.url("/").toString(),
+                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
+            )
+        )
+            .createToken(
+                number = "4242424242424242",
+                cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA"
+            )
+            .run()
+            .let { token ->
+                assertEquals("tok_5ca06b51685e001723a2c3b4aeb4", token.id)
+                assertEquals("car_e3ccd4e0959f45e7c75bacc4be90", token.card.id)
+            }
 
         mockWebServer.takeRequest()
-                .let { request ->
-                    assertEquals("POST", request.method)
-                    assertEquals("/tokens", request.path)
-                    assertEquals("Basic cGtfdGVzdF8wMzgzYTFiOGY5MWU4YTZlM2VhMGUyYTk6",
-                            request.getHeader("Authorization"))
-                    assertEquals("en", request.getHeader("Locale"))
-                    assertEquals("card%5Bnumber%5D=4242424242424242" +
-                            "&card%5Bcvc%5D=123" +
-                            "&card%5Bexp_month%5D=02" +
-                            "&card%5Bexp_year%5D=2020" +
-                            "&card%5Bname%5D=TARO%20YAMADA",
-                            request.body.readString(Charset.forName("utf-8")))
-                }
+            .let { request ->
+                assertEquals("POST", request.method)
+                assertEquals("/tokens", request.path)
+                assertEquals(
+                    "Basic cGtfdGVzdF8wMzgzYTFiOGY5MWU4YTZlM2VhMGUyYTk6",
+                    request.getHeader("Authorization")
+                )
+                assertEquals("en", request.getHeader("Locale"))
+                assertEquals(
+                    "card%5Bnumber%5D=4242424242424242" +
+                        "&card%5Bcvc%5D=123" +
+                        "&card%5Bexp_month%5D=02" +
+                        "&card%5Bexp_year%5D=2020" +
+                        "&card%5Bname%5D=TARO%20YAMADA",
+                    request.body.readString(Charset.forName("utf-8"))
+                )
+            }
     }
 
     @Test
     fun createToken_ok_without_name() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
 
-        PayjpToken(configuration = configuration,
-                payjpApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
-                        callbackExecutor = CurrentThreadExecutor(), locale = Locale.US))
-                .createToken(number = "4242424242424242",
-                        cvc = "123", expMonth = "02", expYear = "2020")
-                .run()
+        PayjpToken(
+            configuration = configuration,
+            payjpApi = createApiClient(
+                baseUrl = mockWebServer.url("/").toString(),
+                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
+            )
+        )
+            .createToken(
+                number = "4242424242424242",
+                cvc = "123", expMonth = "02", expYear = "2020"
+            )
+            .run()
 
-        assertEquals("card%5Bnumber%5D=4242424242424242" +
+        assertEquals(
+            "card%5Bnumber%5D=4242424242424242" +
                 "&card%5Bcvc%5D=123" +
                 "&card%5Bexp_month%5D=02" +
                 "&card%5Bexp_year%5D=2020",
-                mockWebServer.takeRequest().body.readString(Charset.forName("utf-8")))
+            mockWebServer.takeRequest().body.readString(Charset.forName("utf-8"))
+        )
     }
 
     @Test
     fun createToken_ok_with_tenant() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
 
-        PayjpToken(configuration = configuration,
-            payjpApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
-                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US))
-            .createToken(number = "4242424242424242",
-                cvc = "123", expMonth = "02", expYear = "2020", tenantId = TenantId("tenant_id"))
+        PayjpToken(
+            configuration = configuration,
+            payjpApi = createApiClient(
+                baseUrl = mockWebServer.url("/").toString(),
+                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
+            )
+        )
+            .createToken(
+                number = "4242424242424242",
+                cvc = "123", expMonth = "02", expYear = "2020", tenantId = TenantId("tenant_id")
+            )
             .run()
 
-        assertEquals("card%5Bnumber%5D=4242424242424242" +
-            "&card%5Bcvc%5D=123" +
-            "&card%5Bexp_month%5D=02" +
-            "&card%5Bexp_year%5D=2020" +
-            "&tenant=tenant_id",
-            mockWebServer.takeRequest().body.readString(Charset.forName("utf-8")))
+        assertEquals(
+            "card%5Bnumber%5D=4242424242424242" +
+                "&card%5Bcvc%5D=123" +
+                "&card%5Bexp_month%5D=02" +
+                "&card%5Bexp_year%5D=2020" +
+                "&tenant=tenant_id",
+            mockWebServer.takeRequest().body.readString(Charset.forName("utf-8"))
+        )
     }
 
     @Test
     fun createToken_auth_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(401).setBody(ERROR_AUTH))
 
-        val task = PayjpToken(configuration = configuration,
-                payjpApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
-                        callbackExecutor = CurrentThreadExecutor(), locale = Locale.US))
-                .createToken(number = "4242424242424242",
-                        cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA")
+        val task = PayjpToken(
+            configuration = configuration,
+            payjpApi = createApiClient(
+                baseUrl = mockWebServer.url("/").toString(),
+                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
+            )
+        )
+            .createToken(
+                number = "4242424242424242",
+                cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA"
+            )
 
         try {
             task.run()
@@ -180,11 +213,17 @@ class PayjpTokenTest {
     fun createToken_card_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(402).setBody(ERROR_CARD_DECLINED))
 
-        val task = PayjpToken(configuration = configuration,
-                payjpApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
-                        callbackExecutor = CurrentThreadExecutor(), locale = Locale.US))
-                .createToken(number = "4242424242424242",
-                        cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA")
+        val task = PayjpToken(
+            configuration = configuration,
+            payjpApi = createApiClient(
+                baseUrl = mockWebServer.url("/").toString(),
+                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
+            )
+        )
+            .createToken(
+                number = "4242424242424242",
+                cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA"
+            )
 
         try {
             task.run()
@@ -203,11 +242,17 @@ class PayjpTokenTest {
     fun createToken_server_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(501))
 
-        val task = PayjpToken(configuration = configuration,
-                payjpApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
-                        callbackExecutor = CurrentThreadExecutor(), locale = Locale.US))
-                .createToken(number = "4242424242424242",
-                        cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA")
+        val task = PayjpToken(
+            configuration = configuration,
+            payjpApi = createApiClient(
+                baseUrl = mockWebServer.url("/").toString(),
+                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
+            )
+        )
+            .createToken(
+                number = "4242424242424242",
+                cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA"
+            )
 
         try {
             task.run()
@@ -220,34 +265,44 @@ class PayjpTokenTest {
     fun getToken_ok() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
 
-        PayjpToken(configuration = configuration,
-                payjpApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
-                        callbackExecutor = CurrentThreadExecutor(), locale = Locale.US))
-                .getToken("tok_5ca06b51685e001723a2c3b4aeb4")
-                .run()
-                .let { token ->
-                    assertEquals("tok_5ca06b51685e001723a2c3b4aeb4", token.id)
-                    assertEquals("car_e3ccd4e0959f45e7c75bacc4be90", token.card.id)
-                }
+        PayjpToken(
+            configuration = configuration,
+            payjpApi = createApiClient(
+                baseUrl = mockWebServer.url("/").toString(),
+                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
+            )
+        )
+            .getToken("tok_5ca06b51685e001723a2c3b4aeb4")
+            .run()
+            .let { token ->
+                assertEquals("tok_5ca06b51685e001723a2c3b4aeb4", token.id)
+                assertEquals("car_e3ccd4e0959f45e7c75bacc4be90", token.card.id)
+            }
 
         mockWebServer.takeRequest()
-                .let { request ->
-                    assertEquals("GET", request.method)
-                    assertEquals("/tokens/tok_5ca06b51685e001723a2c3b4aeb4", request.path)
-                    assertEquals("Basic cGtfdGVzdF8wMzgzYTFiOGY5MWU4YTZlM2VhMGUyYTk6",
-                            request.getHeader("Authorization"))
-                    assertEquals("en", request.getHeader("Locale"))
-                }
+            .let { request ->
+                assertEquals("GET", request.method)
+                assertEquals("/tokens/tok_5ca06b51685e001723a2c3b4aeb4", request.path)
+                assertEquals(
+                    "Basic cGtfdGVzdF8wMzgzYTFiOGY5MWU4YTZlM2VhMGUyYTk6",
+                    request.getHeader("Authorization")
+                )
+                assertEquals("en", request.getHeader("Locale"))
+            }
     }
 
     @Test
     fun getToken_auth_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(401).setBody(ERROR_AUTH))
 
-        val task = PayjpToken(configuration = configuration,
-                payjpApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
-                        callbackExecutor = CurrentThreadExecutor(), locale = Locale.US))
-                .getToken("tok_5ca06b51685e001723a2c3b4aeb4")
+        val task = PayjpToken(
+            configuration = configuration,
+            payjpApi = createApiClient(
+                baseUrl = mockWebServer.url("/").toString(),
+                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
+            )
+        )
+            .getToken("tok_5ca06b51685e001723a2c3b4aeb4")
 
         try {
             task.run()
@@ -266,10 +321,14 @@ class PayjpTokenTest {
     fun getToken_client_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(404).setBody(ERROR_INVALID_ID))
 
-        val task = PayjpToken(configuration = configuration,
-                payjpApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
-                        callbackExecutor = CurrentThreadExecutor(), locale = Locale.US))
-                .getToken("tok_587af2665fdced4742e5fbb3ecfcaa")
+        val task = PayjpToken(
+            configuration = configuration,
+            payjpApi = createApiClient(
+                baseUrl = mockWebServer.url("/").toString(),
+                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
+            )
+        )
+            .getToken("tok_587af2665fdced4742e5fbb3ecfcaa")
 
         try {
             task.run()
@@ -288,10 +347,14 @@ class PayjpTokenTest {
     fun getToken_server_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(501))
 
-        val task = PayjpToken(configuration = configuration,
-                payjpApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
-                        callbackExecutor = CurrentThreadExecutor(), locale = Locale.US))
-                .getToken("tok_5ca06b51685e001723a2c3b4aeb4")
+        val task = PayjpToken(
+            configuration = configuration,
+            payjpApi = createApiClient(
+                baseUrl = mockWebServer.url("/").toString(),
+                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
+            )
+        )
+            .getToken("tok_5ca06b51685e001723a2c3b4aeb4")
 
         try {
             task.run()
@@ -304,23 +367,33 @@ class PayjpTokenTest {
     fun getAcceptedBrands_ok() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(ACCEPTED_BRANDS_FULL))
 
-        PayjpToken(configuration = configuration,
-            payjpApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
-                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US))
+        PayjpToken(
+            configuration = configuration,
+            payjpApi = createApiClient(
+                baseUrl = mockWebServer.url("/").toString(),
+                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
+            )
+        )
             .getAcceptedBrands()
             .run()
             .let { response ->
                 assertEquals(true, response.livemode)
-                assertThat(response.brands, contains(CardBrand.VISA, CardBrand.MASTER_CARD, CardBrand.JCB,
-                    CardBrand.AMEX, CardBrand.DINERS_CLUB, CardBrand.DISCOVER))
+                assertThat(
+                    response.brands, contains(
+                        CardBrand.VISA, CardBrand.MASTER_CARD, CardBrand.JCB,
+                        CardBrand.AMEX, CardBrand.DINERS_CLUB, CardBrand.DISCOVER
+                    )
+                )
             }
 
         mockWebServer.takeRequest()
             .let { request ->
                 assertEquals("GET", request.method)
                 assertEquals("/accounts/brands", request.path)
-                assertEquals("Basic cGtfdGVzdF8wMzgzYTFiOGY5MWU4YTZlM2VhMGUyYTk6",
-                    request.getHeader("Authorization"))
+                assertEquals(
+                    "Basic cGtfdGVzdF8wMzgzYTFiOGY5MWU4YTZlM2VhMGUyYTk6",
+                    request.getHeader("Authorization")
+                )
                 assertEquals("en", request.getHeader("Locale"))
             }
     }
@@ -329,9 +402,13 @@ class PayjpTokenTest {
     fun getAcceptedBrands_empty() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(ACCEPTED_BRANDS_EMPTY))
 
-        PayjpToken(configuration = configuration,
-            payjpApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
-                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US))
+        PayjpToken(
+            configuration = configuration,
+            payjpApi = createApiClient(
+                baseUrl = mockWebServer.url("/").toString(),
+                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
+            )
+        )
             .getAcceptedBrands()
             .run()
             .let { response ->
@@ -343,8 +420,10 @@ class PayjpTokenTest {
             .let { request ->
                 assertEquals("GET", request.method)
                 assertEquals("/accounts/brands", request.path)
-                assertEquals("Basic cGtfdGVzdF8wMzgzYTFiOGY5MWU4YTZlM2VhMGUyYTk6",
-                    request.getHeader("Authorization"))
+                assertEquals(
+                    "Basic cGtfdGVzdF8wMzgzYTFiOGY5MWU4YTZlM2VhMGUyYTk6",
+                    request.getHeader("Authorization")
+                )
             }
     }
 
@@ -352,23 +431,33 @@ class PayjpTokenTest {
     fun getAcceptedBrands_tenant() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(ACCEPTED_BRANDS_FULL))
 
-        PayjpToken(configuration = configuration,
-            payjpApi = createApiClient(baseUrl = mockWebServer.url("/").toString(),
-                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US))
+        PayjpToken(
+            configuration = configuration,
+            payjpApi = createApiClient(
+                baseUrl = mockWebServer.url("/").toString(),
+                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
+            )
+        )
             .getAcceptedBrands(TenantId("foobar"))
             .run()
             .let { response ->
                 assertEquals(true, response.livemode)
-                assertThat(response.brands, contains(CardBrand.VISA, CardBrand.MASTER_CARD, CardBrand.JCB,
-                    CardBrand.AMEX, CardBrand.DINERS_CLUB, CardBrand.DISCOVER))
+                assertThat(
+                    response.brands, contains(
+                        CardBrand.VISA, CardBrand.MASTER_CARD, CardBrand.JCB,
+                        CardBrand.AMEX, CardBrand.DINERS_CLUB, CardBrand.DISCOVER
+                    )
+                )
             }
 
         mockWebServer.takeRequest()
             .let { request ->
                 assertEquals("GET", request.method)
                 assertEquals("/accounts/brands?tenant=foobar", request.path)
-                assertEquals("Basic cGtfdGVzdF8wMzgzYTFiOGY5MWU4YTZlM2VhMGUyYTk6",
-                    request.getHeader("Authorization"))
+                assertEquals(
+                    "Basic cGtfdGVzdF8wMzgzYTFiOGY5MWU4YTZlM2VhMGUyYTk6",
+                    request.getHeader("Authorization")
+                )
             }
     }
 }

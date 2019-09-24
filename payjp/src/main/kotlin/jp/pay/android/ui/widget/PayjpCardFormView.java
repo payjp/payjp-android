@@ -25,6 +25,7 @@ package jp.pay.android.ui.widget;
 
 
 import androidx.annotation.NonNull;
+
 import jp.pay.android.Task;
 import jp.pay.android.model.Token;
 
@@ -57,9 +58,8 @@ public interface PayjpCardFormView {
     /**
      * Create token.
      *
-     *
-     * @see [jp.pay.android.PayjpTokenService.createToken]
      * @return task
+     * @see [jp.pay.android.PayjpTokenService.createToken]
      */
     @NonNull
     Task<Token> createToken();

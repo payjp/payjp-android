@@ -45,25 +45,25 @@ class CardTest {
     @Test
     fun json_to_properties() {
         moshi.adapter(Card::class.java)
-                .fromJson(CARD_OK)
-                ?.apply {
+            .fromJson(CARD_OK)
+            ?.apply {
 
-                    assertEquals(id, "car_e3ccd4e0959f45e7c75bacc4be90")
-                    assertEquals(name, null)
-                    assertEquals(last4, "4242")
-                    assertEquals(brand, CardBrand.VISA)
-                    assertEquals(expirationMonth, 2)
-                    assertEquals(expirationYear, 2020)
-                    assertEquals(fingerprint, "e1d8225886e3a7211127df751c86787f")
-                    assertEquals(livemode, false)
-                    assertEquals(created, Date(1442290383L * 1000))
-                } ?: fail("card is null")
+                assertEquals(id, "car_e3ccd4e0959f45e7c75bacc4be90")
+                assertEquals(name, null)
+                assertEquals(last4, "4242")
+                assertEquals(brand, CardBrand.VISA)
+                assertEquals(expirationMonth, 2)
+                assertEquals(expirationYear, 2020)
+                assertEquals(fingerprint, "e1d8225886e3a7211127df751c86787f")
+                assertEquals(livemode, false)
+                assertEquals(created, Date(1442290383L * 1000))
+            } ?: fail("card is null")
     }
 
     @Test(expected = JsonDataException::class)
     fun if_id_null_throw_exception() {
         moshi.adapter(Card::class.java)
-                .fromJson(CARD_ID_NULL)
+            .fromJson(CARD_ID_NULL)
         fail("should throw exception")
     }
 
