@@ -23,6 +23,7 @@
 package com.example.payjp.sample;
 
 import android.app.Application;
+
 import jp.pay.android.PayjpToken;
 import jp.pay.android.PayjpTokenConfiguration;
 import jp.pay.android.cardio.PayjpCardScannerPlugin;

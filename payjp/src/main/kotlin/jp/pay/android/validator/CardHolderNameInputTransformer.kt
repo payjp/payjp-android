@@ -26,11 +26,15 @@ import jp.pay.android.R
 import jp.pay.android.model.CardComponentInput
 import jp.pay.android.model.FormInputError
 
-internal object CardHolderNameInputTransformer : CardInputTransformer<CardComponentInput.CardHolderNameInput> {
+internal object CardHolderNameInputTransformer :
+    CardInputTransformer<CardComponentInput.CardHolderNameInput> {
     override fun transform(input: String?): CardComponentInput.CardHolderNameInput {
         val trimmed = input?.trim()
         val errorMessage = when {
-            trimmed.isNullOrEmpty() -> FormInputError(R.string.payjp_card_form_error_no_holder_name, true)
+            trimmed.isNullOrEmpty() -> FormInputError(
+                R.string.payjp_card_form_error_no_holder_name,
+                true
+            )
             else -> null
         }
         val value = trimmed.takeIf { errorMessage == null }

@@ -23,22 +23,22 @@
 package com.example.payjp.sample
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import jp.pay.android.PayjpToken
 import jp.pay.android.Task
 import jp.pay.android.model.Token
-import kotlinx.android.synthetic.main.activity_generate_token_sample.button_get_token
 import kotlinx.android.synthetic.main.activity_generate_token_sample.button_create_token
+import kotlinx.android.synthetic.main.activity_generate_token_sample.button_get_token
 import kotlinx.android.synthetic.main.activity_generate_token_sample.progress_bar
+import kotlinx.android.synthetic.main.activity_generate_token_sample.text_card_cvc
 import kotlinx.android.synthetic.main.activity_generate_token_sample.text_card_exp_month
 import kotlinx.android.synthetic.main.activity_generate_token_sample.text_card_exp_year
-import kotlinx.android.synthetic.main.activity_generate_token_sample.text_card_cvc
-import kotlinx.android.synthetic.main.activity_generate_token_sample.text_card_number
 import kotlinx.android.synthetic.main.activity_generate_token_sample.text_card_name
-import kotlinx.android.synthetic.main.activity_generate_token_sample.text_token_id
+import kotlinx.android.synthetic.main.activity_generate_token_sample.text_card_number
 import kotlinx.android.synthetic.main.activity_generate_token_sample.text_token_content
+import kotlinx.android.synthetic.main.activity_generate_token_sample.text_token_id
 
 class GenerateTokenSampleActivity : AppCompatActivity() {
 
@@ -59,8 +59,10 @@ class GenerateTokenSampleActivity : AppCompatActivity() {
             val expYear = text_card_exp_year.text.toString()
             val name = text_card_name.text.toString()
 
-            createToken = PayjpToken.getInstance().createToken(number = number, cvc = cvc,
-                    expMonth = expMonth, expYear = expYear, name = name)
+            createToken = PayjpToken.getInstance().createToken(
+                number = number, cvc = cvc,
+                expMonth = expMonth, expYear = expYear, name = name
+            )
             createToken?.enqueue(object : Task.Callback<Token> {
                 override fun onSuccess(data: Token) {
                     Log.i("GenerateTokenSample", "token => $data")

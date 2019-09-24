@@ -93,12 +93,18 @@ internal class CardNumberValidationTest(
 
     @Test
     fun checkLuhn() {
-        assertThat("cardNumber $cardNumber", CardNumberValidator.isLuhnValid(cardNumber), `is`(isLuhnValid))
+        assertThat(
+            "cardNumber $cardNumber",
+            CardNumberValidator.isLuhnValid(cardNumber),
+            `is`(isLuhnValid)
+        )
     }
 
     @Test
     fun checkLength() {
-        assertThat("cardNumber $cardNumber",
-            CardNumberValidator.isCardNumberLengthValid(cardNumber, brand), `is`(isLengthValid))
+        assertThat(
+            "cardNumber $cardNumber",
+            CardNumberValidator.isCardNumberLengthValid(cardNumber, brand), `is`(isLengthValid)
+        )
     }
 }

@@ -46,6 +46,7 @@ data class PayjpTokenParam(
         fun name(name: String?): Builder = apply { this.name = name }
         fun tenantId(tenantId: TenantId?): Builder = apply { this.tenantId = tenantId }
 
-        fun build(): PayjpTokenParam = PayjpTokenParam(number, cvc, expMonth, expYear, name, tenantId)
+        fun build(): PayjpTokenParam =
+            PayjpTokenParam(number, cvc, expMonth, expYear, name, tenantId)
     }
 }

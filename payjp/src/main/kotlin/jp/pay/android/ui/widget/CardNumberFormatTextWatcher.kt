@@ -91,7 +91,8 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
                     nextIndex in delimiterPositions &&
                     // for Case C and D
                     (latestInsertionSize > 0 ||
-                        latestChangeStart !in nextIndex..nextIndex + 1)) {
+                        latestChangeStart !in nextIndex..nextIndex + 1)
+                ) {
                     formatted.append(delimiter)
                 }
             }
@@ -100,7 +101,8 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
         val nextIndex = formatted.lastIndex + 1
         if (nextIndex in delimiterPositions &&
             latestChangeStart == nextIndex &&
-            latestInsertionSize == 0) {
+            latestInsertionSize == 0
+        ) {
             formatted.delete(formatted.length - 1, formatted.length)
         }
 

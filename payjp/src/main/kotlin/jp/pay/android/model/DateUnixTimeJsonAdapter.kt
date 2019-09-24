@@ -31,7 +31,9 @@ import java.util.Date
  */
 class DateUnixTimeJsonAdapter {
 
-    @FromJson fun fromJson(date: Long): Date = Date(date * 1000)
+    @FromJson
+    fun fromJson(date: Long): Date = Date(date * 1000)
 
-    @ToJson fun toJson(date: Date): Long = date.time
+    @ToJson
+    fun toJson(date: Date): Long = date.time
 }

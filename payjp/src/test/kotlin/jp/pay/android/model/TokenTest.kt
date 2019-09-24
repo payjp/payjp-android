@@ -44,15 +44,15 @@ class TokenTest {
     @Test
     fun json_to_properties() {
         moshi.adapter(Token::class.java)
-                .fromJson(TOKEN_OK)
-                ?.apply {
+            .fromJson(TOKEN_OK)
+            ?.apply {
 
-                    assertEquals(id, "tok_5ca06b51685e001723a2c3b4aeb4")
-                    assertEquals(card.id, "car_e3ccd4e0959f45e7c75bacc4be90")
-                    assertEquals(created, Date(1442290383L * 1000))
-                    assertEquals(livemode, false)
-                    assertEquals(used, false)
-                } ?: fail("card is null")
+                assertEquals(id, "tok_5ca06b51685e001723a2c3b4aeb4")
+                assertEquals(card.id, "car_e3ccd4e0959f45e7c75bacc4be90")
+                assertEquals(created, Date(1442290383L * 1000))
+                assertEquals(livemode, false)
+                assertEquals(used, false)
+            } ?: fail("card is null")
     }
 
     companion object {

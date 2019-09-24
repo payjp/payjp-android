@@ -34,18 +34,27 @@ internal object PermissionUtil {
     fun hasSelfPermissions(context: Context, permissions: Array<String>): Boolean =
         permissions.all {
             try {
-                PermissionChecker.checkSelfPermission(context, it) == PermissionChecker.PERMISSION_GRANTED
+                PermissionChecker.checkSelfPermission(
+                    context,
+                    it
+                ) == PermissionChecker.PERMISSION_GRANTED
             } catch (e: RuntimeException) {
                 false
             }
         }
 
-    fun shouldShowRequestPermissionRationale(activity: Activity, permissions: Array<String>): Boolean =
+    fun shouldShowRequestPermissionRationale(
+        activity: Activity,
+        permissions: Array<String>
+    ): Boolean =
         permissions.any {
             ActivityCompat.shouldShowRequestPermissionRationale(activity, it)
         }
 
-    fun shouldShowRequestPermissionRationale(fragment: Fragment, permissions: Array<String>): Boolean =
+    fun shouldShowRequestPermissionRationale(
+        fragment: Fragment,
+        permissions: Array<String>
+    ): Boolean =
         permissions.any {
             fragment.shouldShowRequestPermissionRationale(it)
         }

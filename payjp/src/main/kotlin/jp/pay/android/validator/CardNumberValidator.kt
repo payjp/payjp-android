@@ -27,7 +27,11 @@ import jp.pay.android.model.numberLength
 import jp.pay.android.validator.CardNumberValidatorService.CardNumberLengthStatus
 
 internal interface CardNumberValidatorService {
-    fun isCardNumberLengthValid(cardNumber: String, brand: CardBrand = CardBrand.UNKNOWN): CardNumberLengthStatus
+    fun isCardNumberLengthValid(
+        cardNumber: String,
+        brand: CardBrand = CardBrand.UNKNOWN
+    ): CardNumberLengthStatus
+
     fun isLuhnValid(cardNumber: String): Boolean
 
     enum class CardNumberLengthStatus {
@@ -43,7 +47,10 @@ internal object CardNumberValidator : CardNumberValidatorService {
      * @param cardNumber card number
      * @param brand brand
      */
-    override fun isCardNumberLengthValid(cardNumber: String, brand: CardBrand): CardNumberLengthStatus {
+    override fun isCardNumberLengthValid(
+        cardNumber: String,
+        brand: CardBrand
+    ): CardNumberLengthStatus {
         val brandLength = brand.numberLength
         return when {
             cardNumber.length < brandLength -> CardNumberLengthStatus.TOO_SHORT

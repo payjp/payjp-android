@@ -75,7 +75,10 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
          * @return fragment
          */
         @JvmStatic
-        fun newInstance(holderNameEnabled: Boolean = true, tenantId: TenantId? = null): PayjpCardFormFragment =
+        fun newInstance(
+            holderNameEnabled: Boolean = true,
+            tenantId: TenantId? = null
+        ): PayjpCardFormFragment =
             PayjpCardFormFragment().apply {
                 arguments = Bundle().apply {
                     putBoolean(ARGS_HOLDER_NAME_ENABLED, holderNameEnabled)
@@ -96,7 +99,8 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
     private var viewModel: CardFormViewModel? = null
     private var onValidateInputListener: PayjpCardFormView.OnValidateInputListener? = null
     private val delimiterExpiration = PayjpConstants.CARD_FORM_DELIMITER_EXPIRATION
-    private val cardNumberFormatter = CardNumberFormatTextWatcher(PayjpConstants.CARD_FORM_DELIMITER_NUMBER)
+    private val cardNumberFormatter =
+        CardNumberFormatTextWatcher(PayjpConstants.CARD_FORM_DELIMITER_NUMBER)
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -110,7 +114,11 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
         super.onDetach()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? =
         inflater.inflate(R.layout.payjp_card_form_view, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -127,9 +135,14 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
         CardScannerResolver.resolve()?.onActivityResult(requestCode, resultCode, data, this)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        CardScannerResolver.resolve()?.onRequestPermissionResult(this, requestCode, grantResults, this)
+        CardScannerResolver.resolve()
+            ?.onRequestPermissionResult(this, requestCode, grantResults, this)
     }
 
     override fun onScanResult(cardNumber: String?) {
@@ -191,9 +204,11 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
         // add formatter
         numberEditText.addTextChangedListener(cardNumberFormatter)
         expirationEditText.addTextChangedListener(
-            CardExpirationFormatTextWatcher(delimiterExpiration))
+            CardExpirationFormatTextWatcher(delimiterExpiration)
+        )
         // default cvc length
-        cvcEditText.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(CardBrand.UNKNOWN.cvcLength))
+        cvcEditText.filters =
+            arrayOf<InputFilter>(InputFilter.LengthFilter(CardBrand.UNKNOWN.cvcLength))
         CardScannerResolver.resolve()?.let { bridge ->
             numberLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
             numberLayout.setEndIconOnClickListener {
@@ -214,60 +229,63 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
             tenantId = tenantId,
             holderNameEnabledDefault = holderNameEnabled
         )
-        viewModel = ViewModelProviders.of(requireActivity(), factory).get(CardFormViewModel::class.java).apply {
-            cardHolderNameEnabled.observe(viewLifecycleOwner) {
-                holderNameLayout.visibility = if (it) {
-                    View.VISIBLE
-                } else {
-                    View.GONE
+        viewModel =
+            ViewModelProviders.of(requireActivity(), factory).get(CardFormViewModel::class.java)
+                .apply {
+                    cardHolderNameEnabled.observe(viewLifecycleOwner) {
+                        holderNameLayout.visibility = if (it) {
+                            View.VISIBLE
+                        } else {
+                            View.GONE
+                        }
+                        TransitionManager.beginDelayedTransition(view as ViewGroup)
+                    }
+                    cvcImeOptions.observe(viewLifecycleOwner, cvcEditText::setImeOptions)
+                    isValid.observe(viewLifecycleOwner) {
+                        onValidateInputListener?.onValidateInput(this@PayjpCardFormFragment, it)
+                    }
+                    cardNumberBrand.observe(viewLifecycleOwner) {
+                        cardNumberFormatter.brand = it
+                        cvcEditText.filters =
+                            arrayOf<InputFilter>(InputFilter.LengthFilter(it.cvcLength))
+                        cvcLayout.setEndIconDrawable(it.cvcIconResourceId)
+                        numberLayout.setStartIconDrawable(it.logoResourceId)
+                    }
+                    cardExpiration.observe(viewLifecycleOwner) {
+                        expirationEditText.expiration = it
+                    }
+                    cardNumberError.observe(viewLifecycleOwner) { resId ->
+                        numberLayout.setErrorOrNull(resId?.let { getString(it) })
+                    }
+                    cardExpirationError.observe(viewLifecycleOwner) { resId ->
+                        expirationLayout.setErrorOrNull(resId?.let { getString(it) })
+                    }
+                    cardCvcError.observe(viewLifecycleOwner) { resId ->
+                        cvcLayout.setErrorOrNull(resId?.let { getString(it) })
+                    }
+                    cardHolderNameError.observe(viewLifecycleOwner) { resId ->
+                        holderNameLayout.setErrorOrNull(resId?.let { getString(it) })
+                    }
+                    cardNumberValid.observe(viewLifecycleOwner) { valid ->
+                        if (valid && numberEditText.hasFocus()) {
+                            expirationEditText.requestFocusFromTouch()
+                        }
+                    }
+                    cardExpirationValid.observe(viewLifecycleOwner) { valid ->
+                        if (valid && expirationEditText.hasFocus()) {
+                            cvcEditText.requestFocusFromTouch()
+                        }
+                    }
+                    cardCvcValid.observe(viewLifecycleOwner) { valid ->
+                        if (valid && cvcEditText.hasFocus() && holderNameLayout.visibility == View.VISIBLE) {
+                            holderNameEditText.requestFocusFromTouch()
+                        }
+                    }
+                    numberEditText.addOnTextChanged { s, _, _, _ -> inputCardNumber(s.toString()) }
+                    expirationEditText.addOnTextChanged { s, _, _, _ -> inputCardExpiration(s.toString()) }
+                    cvcEditText.addOnTextChanged { s, _, _, _ -> inputCardCvc(s.toString()) }
+                    holderNameEditText.addOnTextChanged { s, _, _, _ -> inputCardHolderName(s.toString()) }
+                    this@PayjpCardFormFragment.lifecycle.addObserver(this)
                 }
-                TransitionManager.beginDelayedTransition(view as ViewGroup)
-            }
-            cvcImeOptions.observe(viewLifecycleOwner, cvcEditText::setImeOptions)
-            isValid.observe(viewLifecycleOwner) {
-                onValidateInputListener?.onValidateInput(this@PayjpCardFormFragment, it)
-            }
-            cardNumberBrand.observe(viewLifecycleOwner) {
-                cardNumberFormatter.brand = it
-                cvcEditText.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(it.cvcLength))
-                cvcLayout.setEndIconDrawable(it.cvcIconResourceId)
-                numberLayout.setStartIconDrawable(it.logoResourceId)
-            }
-            cardExpiration.observe(viewLifecycleOwner) {
-                expirationEditText.expiration = it
-            }
-            cardNumberError.observe(viewLifecycleOwner) { resId ->
-                numberLayout.setErrorOrNull(resId?.let { getString(it) })
-            }
-            cardExpirationError.observe(viewLifecycleOwner) { resId ->
-                expirationLayout.setErrorOrNull(resId?.let { getString(it) })
-            }
-            cardCvcError.observe(viewLifecycleOwner) { resId ->
-                cvcLayout.setErrorOrNull(resId?.let { getString(it) })
-            }
-            cardHolderNameError.observe(viewLifecycleOwner) { resId ->
-                holderNameLayout.setErrorOrNull(resId?.let { getString(it) })
-            }
-            cardNumberValid.observe(viewLifecycleOwner) { valid ->
-                if (valid && numberEditText.hasFocus()) {
-                    expirationEditText.requestFocusFromTouch()
-                }
-            }
-            cardExpirationValid.observe(viewLifecycleOwner) { valid ->
-                if (valid && expirationEditText.hasFocus()) {
-                    cvcEditText.requestFocusFromTouch()
-                }
-            }
-            cardCvcValid.observe(viewLifecycleOwner) { valid ->
-                if (valid && cvcEditText.hasFocus() && holderNameLayout.visibility == View.VISIBLE) {
-                    holderNameEditText.requestFocusFromTouch()
-                }
-            }
-            numberEditText.addOnTextChanged { s, _, _, _ -> inputCardNumber(s.toString()) }
-            expirationEditText.addOnTextChanged { s, _, _, _ -> inputCardExpiration(s.toString()) }
-            cvcEditText.addOnTextChanged { s, _, _, _ -> inputCardCvc(s.toString()) }
-            holderNameEditText.addOnTextChanged { s, _, _, _ -> inputCardHolderName(s.toString()) }
-            this@PayjpCardFormFragment.lifecycle.addObserver(this)
-        }
     }
 }

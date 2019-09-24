@@ -46,8 +46,10 @@ import org.mockito.MockitoAnnotations
 @RunWith(AndroidJUnit4::class)
 class PayjpCoroutineExtTest {
 
-    @Mock private lateinit var payjpCardFormView: PayjpCardFormView
-    @Mock private lateinit var payjpToken: PayjpTokenService
+    @Mock
+    private lateinit var payjpCardFormView: PayjpCardFormView
+    @Mock
+    private lateinit var payjpToken: PayjpTokenService
     private val params: PayjpTokenParam = PayjpTokenParam(
         number = "4242424242424242",
         expYear = "2030",

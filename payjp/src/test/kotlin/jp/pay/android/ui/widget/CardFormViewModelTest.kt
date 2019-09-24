@@ -125,7 +125,8 @@ internal class CardFormViewModelTest {
             .thenReturn(
                 Tasks.success(
                     AcceptedBrandsResponse(brands = brands, livemode = true)
-                ))
+                )
+            )
         `when`(cardNumberInputTransformer.acceptedBrands).thenReturn(null)
         createViewModel().fetchAcceptedBrands()
         verify(mockTokenService).getAcceptedBrands(null)
@@ -148,7 +149,8 @@ internal class CardFormViewModelTest {
             .thenReturn(
                 Tasks.success(
                     AcceptedBrandsResponse(brands = brands, livemode = true)
-                ))
+                )
+            )
         `when`(cardNumberInputTransformer.acceptedBrands).thenReturn(null)
         createViewModel(tenantId = tenantId).fetchAcceptedBrands()
         verify(mockTokenService).getAcceptedBrands(tenantId)
@@ -437,13 +439,16 @@ internal class CardFormViewModelTest {
 
     @Test
     fun validateCardForm_true_with_correct_input() {
-        `when`(mockTokenService.createToken(
-            number = anyString(),
-            cvc = anyString(),
-            expMonth = anyString(),
-            expYear = anyString(),
-            name = anyString(),
-            tenantId = anyNullable()))
+        `when`(
+            mockTokenService.createToken(
+                number = anyString(),
+                cvc = anyString(),
+                expMonth = anyString(),
+                expYear = anyString(),
+                name = anyString(),
+                tenantId = anyNullable()
+            )
+        )
             .thenReturn(Tasks.success(TestStubs.newToken()))
         val robot = CardRobot()
         mockCorrectInput(
@@ -471,13 +476,16 @@ internal class CardFormViewModelTest {
 
     @Test
     fun validateCardForm_true_with_correct_input_and_token() {
-        `when`(mockTokenService.createToken(
-            number = anyString(),
-            cvc = anyString(),
-            expMonth = anyString(),
-            expYear = anyString(),
-            name = anyString(),
-            tenantId = anyNullable()))
+        `when`(
+            mockTokenService.createToken(
+                number = anyString(),
+                cvc = anyString(),
+                expMonth = anyString(),
+                expYear = anyString(),
+                name = anyString(),
+                tenantId = anyNullable()
+            )
+        )
             .thenReturn(Tasks.success(TestStubs.newToken()))
         val robot = CardRobot()
         mockCorrectInput(

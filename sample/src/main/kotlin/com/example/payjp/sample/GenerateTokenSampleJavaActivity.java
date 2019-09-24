@@ -28,9 +28,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
 import jp.pay.android.PayjpToken;
 import jp.pay.android.PayjpTokenParam;
 import jp.pay.android.Task;
