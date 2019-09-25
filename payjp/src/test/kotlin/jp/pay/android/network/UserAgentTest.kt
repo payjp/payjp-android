@@ -22,14 +22,14 @@
  */
 package jp.pay.android.network
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.hamcrest.Matchers.not
 import org.hamcrest.Matchers.startsWith
 import org.junit.Assert.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 
-@RunWith(JUnit4::class)
+@RunWith(AndroidJUnit4::class)
 class UserAgentTest {
 
     @Test

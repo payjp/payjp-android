@@ -23,7 +23,7 @@
 package jp.pay.android.network
 
 import com.squareup.moshi.Moshi
-import jp.pay.android.TokenApi
+import jp.pay.android.PayjpApi
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.DateUnixTimeJsonAdapter
 import okhttp3.Dispatcher
@@ -31,41 +31,43 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.util.Locale
 import java.util.concurrent.Executor
 
 /**
  * ApiClient factory
  */
-internal fun createOkHttp(debuggable: Boolean = false) =
-        OkHttpClient.Builder()
-                .addInterceptor(UaRequestInterceptor())
-                .apply {
-                    if (debuggable) {
-                        addNetworkInterceptor(HttpLoggingInterceptor()
-                                .apply { this.level = HttpLoggingInterceptor.Level.HEADERS })
-                    }
-                }
-                .enableTls12OnPreLollipop()
-                .dispatcher(Dispatcher(NetworkExecutorFactory.create()))
-                .build()
+internal fun createOkHttp(locale: Locale, debuggable: Boolean = false) =
+    OkHttpClient.Builder()
+        .addInterceptor(CustomHeaderInterceptor(locale))
+        .apply {
+            if (debuggable) {
+                addNetworkInterceptor(HttpLoggingInterceptor()
+                    .apply { this.level = HttpLoggingInterceptor.Level.HEADERS })
+            }
+        }
+        .enableTls12OnPreLollipop()
+        .dispatcher(Dispatcher(NetworkExecutorFactory.create()))
+        .build()
 
 internal fun createMoshi() =
-        Moshi.Builder()
-                .add(CardBrand.JsonAdapter())
-                .add(DateUnixTimeJsonAdapter())
-                .build()
+    Moshi.Builder()
+        .add(CardBrand.JsonAdapter())
+        .add(DateUnixTimeJsonAdapter())
+        .build()
 
 internal fun createApiClient(
     baseUrl: String,
     debuggable: Boolean = false,
-    callbackExecutor: Executor
-): TokenApi =
-        createMoshi().let { moshi ->
-            Retrofit.Builder()
-                    .baseUrl(baseUrl)
-                    .client(createOkHttp(debuggable))
-                    .addCallAdapterFactory(ResultCallAdapterFactory(moshi, callbackExecutor))
-                    .addConverterFactory(MoshiConverterFactory.create(moshi))
-                    .build()
-                    .create(TokenApi::class.java)
-        }
+    callbackExecutor: Executor,
+    locale: Locale
+): PayjpApi =
+    createMoshi().let { moshi ->
+        Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .client(createOkHttp(locale, debuggable))
+            .addCallAdapterFactory(ResultCallAdapterFactory(moshi, callbackExecutor))
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create(PayjpApi::class.java)
+    }

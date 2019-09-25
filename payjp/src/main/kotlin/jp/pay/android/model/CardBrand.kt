@@ -35,15 +35,42 @@ enum class CardBrand(val rawValue: String) {
     JCB("JCB"),
     AMEX("American Express"),
     DINERS_CLUB("Diners Club"),
-    DISCOVER("Discover");
+    DISCOVER("Discover"),
+    UNKNOWN("Unknown");
 
     class JsonAdapter {
 
-        @ToJson fun toJson(brand: CardBrand): String = brand.rawValue
+        @ToJson
+        fun toJson(brand: CardBrand): String = brand.rawValue
 
-        @FromJson fun fromJson(brand: String): CardBrand {
-            return CardBrand.values().firstOrNull { it.rawValue == brand }
-                    ?: throw JsonDataException("unknown brand: $brand")
+        @FromJson
+        fun fromJson(brand: String): CardBrand {
+            return values().filter { it != UNKNOWN }.firstOrNull { it.rawValue == brand }
+                ?: throw JsonDataException("unknown brand: $brand")
         }
     }
 }
+
+val CardBrand.numberRegex: Regex
+    get() = when (this) {
+        CardBrand.VISA -> Regex("""\A4[0-9]*\z""")
+        CardBrand.MASTER_CARD -> Regex("""\A(?:5[1-5]|2[2-7])[0-9]*\z""")
+        CardBrand.JCB -> Regex("""\A(?:352[8-9]|35[3-8])[0-9]*\z""")
+        CardBrand.AMEX -> Regex("""\A3[47][0-9]*\z""")
+        CardBrand.DINERS_CLUB -> Regex("""\A3(?:0[0-5]|[68])[0-9]*\z""")
+        CardBrand.DISCOVER -> Regex("""\A6(?:011|5)[0-9]*\z""")
+        CardBrand.UNKNOWN -> Regex("""""")
+    }
+
+val CardBrand.numberLength: Int
+    get() = when (this) {
+        CardBrand.DINERS_CLUB -> 14
+        CardBrand.AMEX -> 15
+        else -> 16
+    }
+
+val CardBrand.cvcLength: Int
+    get() = when (this) {
+        CardBrand.AMEX, CardBrand.UNKNOWN -> 4
+        else -> 3
+    }

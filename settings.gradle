@@ -21,4 +21,4 @@
  * SOFTWARE.
  */
 
-include ':payjp', ':sample-kotlin', ':sample-java'
+include ':payjp', ':sample', ':payjp-android-cardio', ':payjp-android-coroutine', ':common-test'

@@ -32,6 +32,6 @@ internal object UserAgent {
 
     fun create(): String {
         return "jp.pay.android/${BuildConfig.VERSION_NAME}; " +
-                "Android/${Build.VERSION.RELEASE}; ${Build.DEVICE}; ${Build.BRAND}; ${Build.MODEL}"
+            "Android/${Build.VERSION.RELEASE}; ${Build.DEVICE}; ${Build.BRAND}; ${Build.MODEL}"
     }
 }

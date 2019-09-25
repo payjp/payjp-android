@@ -26,7 +26,8 @@ package jp.pay.android
  * Singleton factory
  */
 internal class SingletonFactory<T> {
-    @Volatile private var instance: T? = null
+    @Volatile
+    private var instance: T? = null
 
     fun init(initializer: () -> T): T {
         if (instance == null) {
