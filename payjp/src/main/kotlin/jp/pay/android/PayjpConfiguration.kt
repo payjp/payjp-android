@@ -26,11 +26,16 @@ import jp.pay.android.plugin.CardScannerPlugin
 import java.util.Locale
 
 /**
- * Configuration for PayjpToken
+ * Configuration for Payjp
  *
  * use `Configuration.Builder`
+ *
+ * @param publicKey public key `pk_xxxxxxxxxxxxxxxxx`
+ * @param debugEnabled is debug enabled or not
+ * @param locale locale of request header
+ * @param cardScannerPlugin optional scanner plugin.
  */
-class PayjpTokenConfiguration private constructor(
+class PayjpConfiguration private constructor(
     val publicKey: String,
     val debugEnabled: Boolean,
     val locale: Locale,
@@ -63,6 +68,7 @@ class PayjpTokenConfiguration private constructor(
 
         /**
          * set locale (`en` or `ja`)
+         * the default value is [Locale.getDefault].
          *
          * @param locale Locale
          */
@@ -76,6 +82,11 @@ class PayjpTokenConfiguration private constructor(
          */
         fun setCardScannerPlugin(plugin: CardScannerPlugin?) = apply { cardScannerPlugin = plugin }
 
-        fun build() = PayjpTokenConfiguration(publicKey, debugEnabled, locale, cardScannerPlugin)
+        /**
+         * Build configuration.
+         *
+         * @return configuration
+         */
+        fun build() = PayjpConfiguration(publicKey, debugEnabled, locale, cardScannerPlugin)
     }
 }

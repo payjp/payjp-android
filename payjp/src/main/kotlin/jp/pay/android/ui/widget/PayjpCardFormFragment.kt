@@ -39,7 +39,7 @@ import androidx.lifecycle.observe
 import androidx.transition.TransitionManager
 import com.google.android.material.textfield.TextInputLayout
 import jp.pay.android.PayjpConstants
-import jp.pay.android.PayjpToken
+import jp.pay.android.Payjp
 import jp.pay.android.R
 import jp.pay.android.Task
 import jp.pay.android.exception.PayjpInvalidCardFormException
@@ -221,7 +221,7 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
         val tenantId = arguments?.getString(ARGS_TENANT_ID)?.let { TenantId(it) }
         val holderNameEnabled = arguments?.getBoolean(ARGS_HOLDER_NAME_ENABLED) ?: true
         val factory = CardFormViewModel.Factory(
-            tokenService = PayjpToken.getInstance(),
+            tokenService = Payjp.getInstance(),
             cardNumberInputTransformer = CardNumberInputTransformer(),
             cardExpirationInputTransformer = CardExpirationInputTransformer(delimiter = delimiterExpiration),
             cardCvcInputTransformer = CardCvcInputTransformer(),

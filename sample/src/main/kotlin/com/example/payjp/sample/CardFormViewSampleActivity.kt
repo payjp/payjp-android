@@ -32,7 +32,7 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import jp.pay.android.PayjpToken
+import jp.pay.android.Payjp
 import jp.pay.android.Task
 import jp.pay.android.model.Token
 import jp.pay.android.ui.widget.PayjpCardFormFragment
@@ -140,7 +140,7 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
         progress_bar.visibility = View.VISIBLE
         text_token_content.visibility = View.INVISIBLE
         // get token
-        getToken = PayjpToken.getInstance().getToken(id)
+        getToken = Payjp.getInstance().getToken(id)
         getToken?.enqueue(object : Task.Callback<Token> {
             override fun onSuccess(data: Token) {
                 Log.i("CardFormViewSample", "token => $data")

@@ -26,7 +26,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import jp.pay.android.PayjpToken
+import jp.pay.android.Payjp
 import jp.pay.android.Task
 import jp.pay.android.model.Token
 import kotlinx.android.synthetic.main.activity_generate_token_sample.button_create_token
@@ -59,7 +59,7 @@ class GenerateTokenSampleActivity : AppCompatActivity() {
             val expYear = text_card_exp_year.text.toString()
             val name = text_card_name.text.toString()
 
-            createToken = PayjpToken.getInstance().createToken(
+            createToken = Payjp.getInstance().createToken(
                 number = number, cvc = cvc,
                 expMonth = expMonth, expYear = expYear, name = name
             )
@@ -86,7 +86,7 @@ class GenerateTokenSampleActivity : AppCompatActivity() {
             text_token_content.visibility = View.INVISIBLE
 
             // get token
-            getToken = PayjpToken.getInstance().getToken(text_token_id.text.toString())
+            getToken = Payjp.getInstance().getToken(text_token_id.text.toString())
             getToken?.enqueue(object : Task.Callback<Token> {
                 override fun onSuccess(data: Token) {
                     Log.i("GenerateTokenSample", "token => $data")

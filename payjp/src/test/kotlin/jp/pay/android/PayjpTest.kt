@@ -51,10 +51,10 @@ import java.util.Locale
 import java.util.concurrent.Executor
 
 /**
- * [PayjpToken]
+ * [Payjp]
  */
 @RunWith(AndroidJUnit4::class)
-class PayjpTokenTest {
+class PayjpTest {
 
     private val mockWebServer = MockWebServer()
 
@@ -77,12 +77,12 @@ class PayjpTokenTest {
     // pk_test_0383a1b8f91e8a6e3ea0e2a9
     // Basic cGtfdGVzdF8wMzgzYTFiOGY5MWU4YTZlM2VhMGUyYTk6
     private val configuration =
-        PayjpTokenConfiguration.Builder(publicKey = "pk_test_0383a1b8f91e8a6e3ea0e2a9").build()
+        PayjpConfiguration.Builder(publicKey = "pk_test_0383a1b8f91e8a6e3ea0e2a9").build()
 
     @Test
     fun init_callTwice() {
-        val target1 = PayjpToken.init(configuration)
-        val target2 = PayjpToken.init(configuration)
+        val target1 = Payjp.init(configuration)
+        val target2 = Payjp.init(configuration)
         assertEquals(target1, target2)
     }
 
@@ -90,7 +90,7 @@ class PayjpTokenTest {
     fun createToken_ok() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
 
-        PayjpToken(
+        Payjp(
             configuration = configuration,
             payjpApi = createApiClient(
                 baseUrl = mockWebServer.url("/").toString(),
@@ -131,7 +131,7 @@ class PayjpTokenTest {
     fun createToken_ok_without_name() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
 
-        PayjpToken(
+        Payjp(
             configuration = configuration,
             payjpApi = createApiClient(
                 baseUrl = mockWebServer.url("/").toString(),
@@ -157,7 +157,7 @@ class PayjpTokenTest {
     fun createToken_ok_with_tenant() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
 
-        PayjpToken(
+        Payjp(
             configuration = configuration,
             payjpApi = createApiClient(
                 baseUrl = mockWebServer.url("/").toString(),
@@ -184,7 +184,7 @@ class PayjpTokenTest {
     fun createToken_auth_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(401).setBody(ERROR_AUTH))
 
-        val task = PayjpToken(
+        val task = Payjp(
             configuration = configuration,
             payjpApi = createApiClient(
                 baseUrl = mockWebServer.url("/").toString(),
@@ -213,7 +213,7 @@ class PayjpTokenTest {
     fun createToken_card_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(402).setBody(ERROR_CARD_DECLINED))
 
-        val task = PayjpToken(
+        val task = Payjp(
             configuration = configuration,
             payjpApi = createApiClient(
                 baseUrl = mockWebServer.url("/").toString(),
@@ -242,7 +242,7 @@ class PayjpTokenTest {
     fun createToken_server_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(501))
 
-        val task = PayjpToken(
+        val task = Payjp(
             configuration = configuration,
             payjpApi = createApiClient(
                 baseUrl = mockWebServer.url("/").toString(),
@@ -265,7 +265,7 @@ class PayjpTokenTest {
     fun getToken_ok() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
 
-        PayjpToken(
+        Payjp(
             configuration = configuration,
             payjpApi = createApiClient(
                 baseUrl = mockWebServer.url("/").toString(),
@@ -295,7 +295,7 @@ class PayjpTokenTest {
     fun getToken_auth_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(401).setBody(ERROR_AUTH))
 
-        val task = PayjpToken(
+        val task = Payjp(
             configuration = configuration,
             payjpApi = createApiClient(
                 baseUrl = mockWebServer.url("/").toString(),
@@ -321,7 +321,7 @@ class PayjpTokenTest {
     fun getToken_client_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(404).setBody(ERROR_INVALID_ID))
 
-        val task = PayjpToken(
+        val task = Payjp(
             configuration = configuration,
             payjpApi = createApiClient(
                 baseUrl = mockWebServer.url("/").toString(),
@@ -347,7 +347,7 @@ class PayjpTokenTest {
     fun getToken_server_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(501))
 
-        val task = PayjpToken(
+        val task = Payjp(
             configuration = configuration,
             payjpApi = createApiClient(
                 baseUrl = mockWebServer.url("/").toString(),
@@ -367,7 +367,7 @@ class PayjpTokenTest {
     fun getAcceptedBrands_ok() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(ACCEPTED_BRANDS_FULL))
 
-        PayjpToken(
+        Payjp(
             configuration = configuration,
             payjpApi = createApiClient(
                 baseUrl = mockWebServer.url("/").toString(),
@@ -402,7 +402,7 @@ class PayjpTokenTest {
     fun getAcceptedBrands_empty() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(ACCEPTED_BRANDS_EMPTY))
 
-        PayjpToken(
+        Payjp(
             configuration = configuration,
             payjpApi = createApiClient(
                 baseUrl = mockWebServer.url("/").toString(),
@@ -431,7 +431,7 @@ class PayjpTokenTest {
     fun getAcceptedBrands_tenant() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(ACCEPTED_BRANDS_FULL))
 
-        PayjpToken(
+        Payjp(
             configuration = configuration,
             payjpApi = createApiClient(
                 baseUrl = mockWebServer.url("/").toString(),

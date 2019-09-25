@@ -26,7 +26,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import jp.pay.android.PayjpToken
+import jp.pay.android.Payjp
 import jp.pay.android.coroutine.createTokenSuspend
 import jp.pay.android.coroutine.getTokenSuspend
 import jp.pay.android.model.Token
@@ -96,7 +96,7 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
         progress_bar.visibility = View.VISIBLE
         text_token_content.visibility = View.INVISIBLE
         try {
-            val token = withContext(Dispatchers.IO) { PayjpToken.getInstance().getTokenSuspend(id) }
+            val token = withContext(Dispatchers.IO) { Payjp.getInstance().getTokenSuspend(id) }
             updateSuccessUI(token)
         } catch (t: Throwable) {
             updateErrorUI(t, "failure retrieving token")
