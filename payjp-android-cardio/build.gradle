@@ -25,6 +25,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka-android'
 
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+
 android {
     compileSdkVersion rootProject.sdkVersion
 
@@ -40,6 +42,6 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     api project(':payjp')
-    implementation 'io.card:android-sdk:5.5.1'
-    implementation 'androidx.fragment:fragment:1.1.0'
+    implementation "io.card:android-sdk:$cardio"
+    implementation "androidx.fragment:fragment:$fragment"
 }

@@ -33,16 +33,48 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
+/**
+ * Create token by suspend function.
+ *
+ * @return token
+ * @see [PayjpCardFormView.createToken]
+ */
 suspend fun PayjpCardFormView.createTokenSuspend(): Token = createToken().toSuspend()
 
+/**
+ * Create token with param by suspend function.
+ *
+ * @param param parameters for token.
+ * @return token
+ * @see [PayjpTokenService.createToken]
+ */
 suspend fun PayjpTokenService.createTokenSuspend(param: PayjpTokenParam): Token =
     createToken(param).toSuspend()
 
+/**
+ * Get token by suspend function.
+ *
+ * @param id token id
+ * @return token
+ * @see [PayjpTokenService.getToken]
+ */
 suspend fun PayjpTokenService.getTokenSuspend(id: String): Token = getToken(id).toSuspend()
 
+/**
+ * Get accepted brands by suspend function.
+ *
+ * @param tenantId tenant id (only for platformer)
+ * @return accepted brands
+ * @see [PayjpTokenService.getAcceptedBrands]
+ */
 suspend fun PayjpTokenService.getAcceptedBrandsSuspend(tenantId: TenantId? = null): AcceptedBrandsResponse =
     getAcceptedBrands(tenantId).toSuspend()
 
+/**
+ * coroutine extension for [Task].
+ *
+ * @return result of task
+ */
 suspend fun <T> Task<T>.toSuspend(): T = suspendCoroutine { cont ->
     try {
         cont.resume(run())
