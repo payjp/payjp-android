@@ -53,7 +53,7 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutine"
-    implementation project(':payjp')
+    api project(':payjp')
 
     testImplementation project(":common-test")
 }
