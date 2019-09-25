@@ -31,6 +31,17 @@ import jp.pay.android.model.Token
  */
 interface PayjpTokenService {
 
+    /**
+     * Create token from card information.
+     *
+     * @param number card number
+     * @param cvc card cvc
+     * @param expMonth card expiration month (zero-padding 2 digits e.g. January -> `01`)
+     * @param expYear card expiration year (4 digits e.g. 2020 -> `2020`)
+     * @param name card holder name
+     * @param tenantId tenant id (only for platform)
+     * @return task to create token.
+     */
     fun createToken(
         number: String,
         cvc: String,
@@ -40,11 +51,35 @@ interface PayjpTokenService {
         tenantId: TenantId? = null
     ): Task<Token> = createToken(PayjpTokenParam(number, cvc, expMonth, expYear, name, tenantId))
 
+    /**
+     * Create token from param
+     *
+     * @param param param
+     * @return task to create token.
+     */
     fun createToken(param: PayjpTokenParam): Task<Token>
 
+    /**
+     * Retrieve token from token id.
+     *
+     * @param id token id
+     * @return task to retrieve token.
+     */
     fun getToken(id: String): Task<Token>
 
-    fun getAcceptedBrands(): Task<AcceptedBrandsResponse>
+    /**
+     * Get accepted brands.
+     *
+     * @return task to get accepted brands.
+     */
+    fun getAcceptedBrands(): Task<AcceptedBrandsResponse> = getAcceptedBrands(tenantId = null)
 
+    /**
+     * get accepted brands with tenantId.
+     * only for platform.
+     *
+     * @param tenantId tenant id.
+     * @return task to get accepted brands.
+     */
     fun getAcceptedBrands(tenantId: TenantId?): Task<AcceptedBrandsResponse>
 }

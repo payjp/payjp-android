@@ -24,6 +24,16 @@ package jp.pay.android
 
 import jp.pay.android.model.TenantId
 
+/**
+ * Parameter to create card token.
+ *
+ * @param number card number
+ * @param cvc card cvc
+ * @param expMonth card expiration month (zero-padding 2 digits e.g. January -> `01`)
+ * @param expYear card expiration year (4 digits e.g. 2020 -> `2020`)
+ * @param name card holder name
+ * @param tenantId optional tenant id (only for platform)
+ */
 data class PayjpTokenParam(
     val number: String,
     val cvc: String,
@@ -43,9 +53,26 @@ data class PayjpTokenParam(
         private var name: String? = null
         private var tenantId: TenantId? = null
 
+        /**
+         * Set card holder name
+         * default is `null`
+         *
+         * @param name card holder name
+         */
         fun name(name: String?): Builder = apply { this.name = name }
+
+        /**
+         * Set tenant id
+         *
+         * @param tenantId tenant id
+         */
         fun tenantId(tenantId: TenantId?): Builder = apply { this.tenantId = tenantId }
 
+        /**
+         * Build param
+         *
+         * @return param object.
+         */
         fun build(): PayjpTokenParam =
             PayjpTokenParam(number, cvc, expMonth, expYear, name, tenantId)
     }

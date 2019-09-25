@@ -38,12 +38,12 @@ import java.util.concurrent.Executor
  *
  * We recommend use as singleton instance.
  */
-class PayjpToken internal constructor(
-    private val configuration: PayjpTokenConfiguration,
+class Payjp internal constructor(
+    private val configuration: PayjpConfiguration,
     private val payjpApi: PayjpApi
 ) : PayjpTokenService {
 
-    constructor(configuration: PayjpTokenConfiguration) : this(
+    constructor(configuration: PayjpConfiguration) : this(
         configuration = configuration,
         payjpApi = createApiClient(
             baseUrl = PayjpConstants.API_ENDPOINT,
@@ -55,24 +55,24 @@ class PayjpToken internal constructor(
         CardScannerResolver.cardScannerPlugin = configuration.cardScannerPlugin
     }
 
-    constructor(publicKey: String) : this(PayjpTokenConfiguration.Builder(publicKey).build())
+    constructor(publicKey: String) : this(PayjpConfiguration.Builder(publicKey).build())
 
     companion object {
-        private val factory = SingletonFactory<PayjpToken>()
+        private val factory = SingletonFactory<Payjp>()
 
         /**
          * Get singleton instance.
-         * You must call `PayjpToken#init(String publicKey)`
-         * or `PayjpToken#init(PayjpTokenConfiguration configuration)`
+         * You must call `Payjp#init(String publicKey)`
+         * or `Payjp#init(PayjpConfiguration configuration)`
          * that create singleton instance if needed, before use it.
          * You can also manage instance yourself with initialized by constructor.
          *
          * ```
-         * PayjpToken(PayjpTokenConfiguration)
+         * Payjp(PayjpConfiguration)
          * ```
          */
         @JvmStatic
-        fun getInstance(): PayjpToken = factory.get()
+        fun getInstance(): Payjp = factory.get()
 
         /**
          * Initialize managed-singleton instance.
@@ -80,18 +80,18 @@ class PayjpToken internal constructor(
          * @param publicKey public API Key
          */
         @JvmStatic
-        fun init(publicKey: String): PayjpToken {
-            return init(PayjpTokenConfiguration.Builder(publicKey).build())
+        fun init(publicKey: String): Payjp {
+            return init(PayjpConfiguration.Builder(publicKey).build())
         }
 
         /**
          * Initialize managed-singleton instance.
          *
-         * @param configuration configuration for [PayjpToken]
+         * @param configuration configuration for [Payjp]
          */
         @JvmStatic
-        fun init(configuration: PayjpTokenConfiguration): PayjpToken {
-            return factory.init { PayjpToken(configuration) }
+        fun init(configuration: PayjpConfiguration): Payjp {
+            return factory.init { Payjp(configuration) }
         }
     }
 
@@ -119,15 +119,6 @@ class PayjpToken internal constructor(
      */
     override fun getToken(id: String): Task<Token> {
         return payjpApi.getToken(authorization, id)
-    }
-
-    /**
-     * Get accepted brands
-     *
-     * @return task of accepted brands
-     */
-    override fun getAcceptedBrands(): Task<AcceptedBrandsResponse> {
-        return getAcceptedBrands(tenantId = null)
     }
 
     /**

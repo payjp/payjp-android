@@ -38,7 +38,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import jp.pay.android.PayjpToken;
+import jp.pay.android.Payjp;
 import jp.pay.android.Task;
 import jp.pay.android.model.Token;
 import jp.pay.android.ui.widget.PayjpCardFormFragment;
@@ -149,7 +149,7 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
         layoutButtons.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
         textTokenContent.setVisibility(View.INVISIBLE);
-        getToken = PayjpToken.getInstance().getToken(id);
+        getToken = Payjp.getInstance().getToken(id);
         getToken.enqueue(new Task.Callback<Token>() {
             @Override
             public void onSuccess(Token data) {
