@@ -24,13 +24,18 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.3.40'
+    ext.kotlin_version = '1.3.50'
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.2'
+        // TODO: upgrade to latest version
+        // 3.5.0にするとCard.IOがうまく動かなくなる問題が発生
+        // https://base.slack.com/archives/C6701M41X/p1568083519419300
+        // cf. https://issuetracker.google.com/issues/140353927
+        // cf. https://issuetracker.google.com/issues/139885946
+        classpath 'com.android.tools.build:gradle:3.4.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.18"
     }
@@ -53,19 +58,25 @@ subprojects {
 
 ext {
 
-    minSdkVersion = 14
+    minSdkVersion = 16
     sdkVersion = 28
 
-    supportLib = "27.1.1"
-    okHttp = "3.9.0"
-    moshi = "1.6.0"
-    retrofit = "2.3.0"
+    okHttp = "3.12.3"
+    moshi = "1.8.0"
+    retrofit = "2.6.1"
+    lifecycle = "2.1.0"
+    mockito = "2.28.2"
+    coroutine = "1.3.1"
+    appcompat = "1.1.0"
+    fragment = "1.1.0"
+    material = "1.1.0-alpha10"
+    cardio = "5.5.1"
 }
 
 allprojects {
     repositories {
         google()
         jcenter()
-        //maven { url "https://oss.sonatype.org/content/groups/public/" }
+        maven { url "https://oss.sonatype.org/content/groups/public/" }
     }
 }

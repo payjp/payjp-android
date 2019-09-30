@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~
+  ~ Copyright (c) 2019 PAY, Inc.
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<resources>
+    <string name="payjp_card_form_number_label">カード番号</string>
+    <string name="payjp_card_form_expiration_label">有効期限 月/年</string>
+    <string name="payjp_card_form_cvc_label">セキュリティコード</string>
+    <string name="payjp_card_form_holder_name_label">カード名義</string>
+
+    <string name="payjp_card_form_error_no_number">カード番号を入力してください</string>
+    <string name="payjp_card_form_error_invalid_number">正しいカード番号を入力してください</string>
+    <string name="payjp_card_form_error_invalid_brand">カードブランドが有効ではありません</string>
+    <string name="payjp_card_form_error_no_expiration">有効期限を入力してください</string>
+    <string name="payjp_card_form_error_invalid_expiration">正しい有効期限を入力してください</string>
+    <string name="payjp_card_form_error_no_cvc">セキュリティコードを入力してください</string>
+    <string name="payjp_card_form_error_invalid_cvc">正しいセキュリティコードを入力してください</string>
+    <string name="payjp_card_form_error_no_holder_name">カード名義を入力してください</string>
+    <string name="payjp_card_scanner_permission_denied_title">カードの読み取り</string>
+    <string name="payjp_card_scanner_permission_denied_message"><![CDATA[
+カメラの使用が許可されていません。
+カードを読み取るには設定アプリからアプリの権限を変更してください。
+]]></string>
+    <string name="payjp_card_scanner_permission_denied_setting">設定を確認</string>
+    <string name="payjp_card_scanner_permission_denied_cancel">キャンセル</string>
+</resources>

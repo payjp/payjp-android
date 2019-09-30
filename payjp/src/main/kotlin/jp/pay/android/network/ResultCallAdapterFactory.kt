@@ -42,12 +42,17 @@ internal class ResultCallAdapterFactory(
     private fun getResultResponseType(returnType: Type): Type {
         if (returnType !is ParameterizedType) {
             throw IllegalArgumentException(
-                    "ResultCall return type must be parameterized as ResultCall<Foo>")
+                "ResultCall return type must be parameterized as ResultCall<Foo>"
+            )
         }
         return getParameterUpperBound(0, returnType)
     }
 
-    override fun get(returnType: Type, annotations: Array<out Annotation>?, retrofit: Retrofit): CallAdapter<*, *>? {
+    override fun get(
+        returnType: Type,
+        annotations: Array<out Annotation>?,
+        retrofit: Retrofit
+    ): CallAdapter<*, *>? {
         if (getRawType(returnType) != ResultCall::class.java) {
             return null
         }

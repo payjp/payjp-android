@@ -26,6 +26,9 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'org.jetbrains.dokka-android'
 
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+apply from: rootProject.file("gradle/dependencies-test.gradle")
+
 android {
     compileSdkVersion rootProject.sdkVersion
 
@@ -42,7 +45,10 @@ android {
     }
 
     testOptions {
-        unitTests.returnDefaultValues = true
+        unitTests {
+            returnDefaultValues = true
+            includeAndroidResources = true
+        }
     }
 }
 
@@ -56,9 +62,14 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofit"
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit"
 
-    testImplementation 'junit:junit:4.12'
-    testImplementation "org.robolectric:robolectric:3.8"
-    testImplementation "com.squareup.okhttp3:mockwebserver:$okHttp"
-}
+    implementation "androidx.fragment:fragment:$fragment"
+    implementation "androidx.appcompat:appcompat:$appcompat"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.1.0"
+    kapt "androidx.lifecycle:lifecycle-common-java8:$lifecycle"
+    implementation "com.google.android.material:material:$material"
 
-apply from: 'gradle-mvn-push.gradle'
+    testImplementation "com.squareup.okhttp3:mockwebserver:$okHttp"
+    testImplementation project(":common-test")
+}
