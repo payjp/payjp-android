@@ -30,12 +30,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        // TODO: upgrade to latest version
-        // 3.5.0にするとCard.IOがうまく動かなくなる問題が発生
-        // https://base.slack.com/archives/C6701M41X/p1568083519419300
-        // cf. https://issuetracker.google.com/issues/140353927
-        // cf. https://issuetracker.google.com/issues/139885946
-        classpath 'com.android.tools.build:gradle:3.4.1'
+        classpath 'com.android.tools.build:gradle:3.5.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.18"
     }
