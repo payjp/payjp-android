@@ -34,6 +34,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import jp.pay.android.Payjp
 import jp.pay.android.Task
+import jp.pay.android.model.CardBrand
 import jp.pay.android.model.Token
 import jp.pay.android.ui.widget.PayjpCardFormFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
@@ -48,7 +49,9 @@ import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_
 
 private const val FRAGMENT_CARD_FORM = "FRAGMENT_CARD_FORM"
 
-class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnValidateInputListener {
+class CardFormViewSampleActivity : AppCompatActivity(),
+    PayjpCardFormView.OnValidateInputListener,
+    PayjpCardFormView.OnFetchAcceptedBrandsListener {
 
     private var createToken: Task<Token>? = null
     private var getToken: Task<Token>? = null
@@ -56,6 +59,14 @@ class CardFormViewSampleActivity : AppCompatActivity(), PayjpCardFormView.OnVali
 
     override fun onValidateInput(view: PayjpCardFormView, isValid: Boolean) {
         button_create_token.isEnabled = isValid
+    }
+
+    override fun onSuccessFetchAcceptedBrands(brands: MutableList<CardBrand>) {
+        Log.i("CardFormViewSample", "acceptedBrands => $brands")
+    }
+
+    override fun onErrorFetchAcceptedBrands(error: Throwable) {
+        Log.i("CardFormViewSample", "onErrorFetchAcceptedBrands => $error")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

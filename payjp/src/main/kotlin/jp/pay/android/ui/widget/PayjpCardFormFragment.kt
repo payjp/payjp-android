@@ -54,6 +54,7 @@ import jp.pay.android.ui.extension.cvcIconResourceId
 import jp.pay.android.ui.extension.logoResourceId
 import jp.pay.android.ui.extension.setErrorOrNull
 import jp.pay.android.util.Tasks
+import jp.pay.android.util.consume
 import jp.pay.android.validator.CardCvcInputTransformer
 import jp.pay.android.validator.CardExpirationInputTransformer
 import jp.pay.android.validator.CardHolderNameInputTransformer
@@ -98,6 +99,7 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
 
     private var viewModel: CardFormViewModel? = null
     private var onValidateInputListener: PayjpCardFormView.OnValidateInputListener? = null
+    private var onFetchAcceptedBrandsListener: PayjpCardFormView.OnFetchAcceptedBrandsListener? = null
     private val delimiterExpiration = PayjpConstants.CARD_FORM_DELIMITER_EXPIRATION
     private val cardNumberFormatter =
         CardNumberFormatTextWatcher(PayjpConstants.CARD_FORM_DELIMITER_NUMBER)
@@ -107,10 +109,14 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
         if (context is PayjpCardFormView.OnValidateInputListener) {
             this.onValidateInputListener = context
         }
+        if (context is PayjpCardFormView.OnFetchAcceptedBrandsListener) {
+            this.onFetchAcceptedBrandsListener = context
+        }
     }
 
     override fun onDetach() {
         this.onValidateInputListener = null
+        this.onFetchAcceptedBrandsListener = null
         super.onDetach()
     }
 
@@ -232,6 +238,16 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
         viewModel =
             ViewModelProviders.of(requireActivity(), factory).get(CardFormViewModel::class.java)
                 .apply {
+                    acceptedBrands.observe(viewLifecycleOwner) { oneOff ->
+                        oneOff.consume {
+                            onFetchAcceptedBrandsListener?.onSuccessFetchAcceptedBrands(it)
+                        }
+                    }
+                    errorFetchAcceptedBrands.observe(viewLifecycleOwner) { oneOff ->
+                        oneOff.consume {
+                            onFetchAcceptedBrandsListener?.onErrorFetchAcceptedBrands(it)
+                        }
+                    }
                     cardHolderNameEnabled.observe(viewLifecycleOwner) {
                         holderNameLayout.visibility = if (it) {
                             View.VISIBLE

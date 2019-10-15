@@ -26,7 +26,10 @@ package jp.pay.android.ui.widget;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
+
 import jp.pay.android.Task;
+import jp.pay.android.model.CardBrand;
 import jp.pay.android.model.Token;
 
 /**
@@ -74,5 +77,25 @@ public interface PayjpCardFormView {
          * @param isValid if true card input is ready to create token.
          */
         void onValidateInput(@NonNull PayjpCardFormView view, boolean isValid);
+    }
+
+    /**
+     * listener for result of request accepted brands.
+     */
+    interface OnFetchAcceptedBrandsListener {
+
+        /**
+         * Success callback of fetch accepted brands.
+         *
+         * @param brands brands that accepted.
+         */
+        void onSuccessFetchAcceptedBrands(@NonNull List<CardBrand> brands);
+
+        /**
+         * Error callback of fetch accepted brands.
+         *
+         * @param error error
+         */
+        void onErrorFetchAcceptedBrands(@NonNull Throwable error);
     }
 }
