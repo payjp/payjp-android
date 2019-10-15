@@ -100,6 +100,8 @@ internal class CardFormViewModelTest {
         cardNumberValid.observeForever { }
         cardExpirationValid.observeForever { }
         cardCvcValid.observeForever { }
+        errorFetchAcceptedBrands.observeForever { }
+        acceptedBrands.observeForever { }
     }
 
     private fun mockCorrectInput(
@@ -128,9 +130,25 @@ internal class CardFormViewModelTest {
                 )
             )
         `when`(cardNumberInputTransformer.acceptedBrands).thenReturn(null)
-        createViewModel().fetchAcceptedBrands()
+        val viewModel = createViewModel()
+        viewModel.fetchAcceptedBrands()
         verify(mockTokenService).getAcceptedBrands(null)
         verify(cardNumberInputTransformer).acceptedBrands = brands
+        assertThat(viewModel.acceptedBrands.value?.peek(), `is`(brands))
+        assertThat(viewModel.errorFetchAcceptedBrands.value?.peek(), `is`(nullValue()))
+    }
+
+    @Test
+    fun fetchAcceptedBrands_error() {
+        val error: Throwable = RuntimeException("omg")
+        `when`(mockTokenService.getAcceptedBrands(anyNullable()))
+            .thenReturn(Tasks.failure(error))
+        `when`(cardNumberInputTransformer.acceptedBrands).thenReturn(null)
+        val viewModel = createViewModel()
+        viewModel.fetchAcceptedBrands()
+        verify(cardNumberInputTransformer, never()).acceptedBrands = anyNullable()
+        assertThat(viewModel.acceptedBrands.value?.peek(), `is`(nullValue()))
+        assertThat(viewModel.errorFetchAcceptedBrands.value?.peek(), `is`(error))
     }
 
     @Test

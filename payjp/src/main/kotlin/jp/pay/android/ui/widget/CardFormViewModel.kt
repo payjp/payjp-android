@@ -46,6 +46,7 @@ import jp.pay.android.model.CardComponentInput.CardNumberInput
 import jp.pay.android.model.CardExpiration
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
+import jp.pay.android.util.OneOffValue
 import jp.pay.android.util.RemappableMediatorLiveData
 import jp.pay.android.util.Tasks
 import jp.pay.android.validator.CardCvcInputTransformerService
@@ -65,6 +66,8 @@ internal interface CardFormViewModelOutput {
     val cardNumberValid: LiveData<Boolean>
     val cardExpirationValid: LiveData<Boolean>
     val cardCvcValid: LiveData<Boolean>
+    val errorFetchAcceptedBrands: LiveData<OneOffValue<Throwable>>
+    val acceptedBrands: LiveData<OneOffValue<List<CardBrand>>>
 }
 
 internal interface CardFormViewModelInput {
@@ -113,6 +116,8 @@ internal class CardFormViewModel(
     override val cardNumberValid: LiveData<Boolean>
     override val cardExpirationValid: LiveData<Boolean>
     override val cardCvcValid: LiveData<Boolean>
+    override val errorFetchAcceptedBrands: MutableLiveData<OneOffValue<Throwable>> = MutableLiveData()
+    override val acceptedBrands: MutableLiveData<OneOffValue<List<CardBrand>>> = MutableLiveData()
 
     private val cardNumberInput = MutableLiveData<CardNumberInput>()
     private val cardExpirationInput = MutableLiveData<CardExpirationInput>()
@@ -218,9 +223,12 @@ internal class CardFormViewModel(
             task?.enqueue(object : Task.Callback<AcceptedBrandsResponse> {
                 override fun onSuccess(data: AcceptedBrandsResponse) {
                     cardNumberInputTransformer.acceptedBrands = data.brands
+                    acceptedBrands.value = OneOffValue(data.brands)
                 }
 
-                override fun onError(throwable: Throwable) {}
+                override fun onError(throwable: Throwable) {
+                    errorFetchAcceptedBrands.value = OneOffValue(throwable)
+                }
             })
         }
     }
