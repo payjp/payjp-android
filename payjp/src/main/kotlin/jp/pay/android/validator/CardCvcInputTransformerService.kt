@@ -20,27 +20,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.ui.extension
+package jp.pay.android.validator
 
-import androidx.annotation.DrawableRes
-import jp.pay.android.R
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.CardComponentInput
 
-val CardBrand.logoResourceId: Int
-    @DrawableRes
-    get() = when (this) {
-        CardBrand.VISA -> R.drawable.logo_visa
-        CardBrand.MASTER_CARD -> R.drawable.logo_mastercard
-        CardBrand.JCB -> R.drawable.logo_jcb
-        CardBrand.AMEX -> R.drawable.logo_amex
-        CardBrand.DINERS_CLUB -> R.drawable.logo_diners
-        CardBrand.DISCOVER -> R.drawable.logo_discover
-        CardBrand.UNKNOWN -> R.drawable.ic_card
-    }
-
-val CardBrand.cvcIconResourceId: Int
-    @DrawableRes
-    get() = when (this) {
-        CardBrand.AMEX -> R.drawable.ic_cvc_front
-        else -> R.drawable.ic_cvc_back
-    }
+internal interface CardCvcInputTransformerService :
+    CardInputTransformer<CardComponentInput.CardCvcInput> {
+    var brand: CardBrand
+}

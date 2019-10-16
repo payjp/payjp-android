@@ -28,7 +28,7 @@ import java.util.Date
 /**
  * Token
  *
- * https://pay.jp/docs/api/#token-トークン
+ * cf. [https://pay.jp/docs/api/#token-トークン](https://pay.jp/docs/api/#token-トークン)
  */
 @JsonClass(generateAdapter = true)
 data class Token(

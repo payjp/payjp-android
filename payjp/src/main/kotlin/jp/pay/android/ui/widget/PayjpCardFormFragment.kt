@@ -46,7 +46,6 @@ import jp.pay.android.exception.PayjpInvalidCardFormException
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
-import jp.pay.android.model.cvcLength
 import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.plugin.CardScannerResolver
 import jp.pay.android.ui.extension.addOnTextChanged
@@ -54,7 +53,6 @@ import jp.pay.android.ui.extension.cvcIconResourceId
 import jp.pay.android.ui.extension.logoResourceId
 import jp.pay.android.ui.extension.setErrorOrNull
 import jp.pay.android.util.Tasks
-import jp.pay.android.util.consume
 import jp.pay.android.validator.CardCvcInputTransformer
 import jp.pay.android.validator.CardExpirationInputTransformer
 import jp.pay.android.validator.CardHolderNameInputTransformer

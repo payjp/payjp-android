@@ -24,8 +24,16 @@ package jp.pay.android.util
 
 import jp.pay.android.Task
 
+/**
+ * Utility of [Task]
+ */
 object Tasks {
 
+    /**
+     * Make failure task
+     *
+     * @param e error
+     */
     fun <T> failure(e: Throwable): Task<T> {
         return object : Task<T> {
             private var executed = false
@@ -48,6 +56,11 @@ object Tasks {
         }
     }
 
+    /**
+     * Make success task
+     *
+     * @param result result
+     */
     fun <T> success(result: T): Task<T> {
         return object : Task<T> {
             private var executed = false

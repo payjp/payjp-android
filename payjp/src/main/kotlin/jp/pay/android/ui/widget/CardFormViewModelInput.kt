@@ -20,19 +20,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.model
+package jp.pay.android.ui.widget
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import jp.pay.android.Task
+import jp.pay.android.model.Token
 
-/**
- * Accepted brands response
- *
- * @param brands brand list accepted
- * @param livemode livemode if true
- */
-@JsonClass(generateAdapter = true)
-data class AcceptedBrandsResponse(
-    @Json(name = "card_types_supported") val brands: List<CardBrand>,
-    val livemode: Boolean
-)
+internal interface CardFormViewModelInput {
+
+    fun inputCardNumber(input: String)
+
+    fun inputCardExpiration(input: String)
+
+    fun inputCardCvc(input: String)
+
+    fun inputCardHolderName(input: String)
+
+    fun updateCardHolderNameEnabled(enabled: Boolean)
+
+    fun validate()
+
+    fun createToken(): Task<Token>
+}

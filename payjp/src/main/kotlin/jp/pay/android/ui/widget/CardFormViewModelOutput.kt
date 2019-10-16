@@ -20,64 +20,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android
+package jp.pay.android.ui.widget
 
-import java.io.IOException
+import androidx.lifecycle.LiveData
+import jp.pay.android.model.CardBrand
+import jp.pay.android.model.CardExpiration
+import jp.pay.android.util.OneOffValue
 
-/**
- * Simple request invocation interface.
- * It is mostly the same as `Retrofit.Call`.
- */
-interface Task<out T> {
-
-    /**
-     * Execute synchronously and return the result.
-     *
-     * @throws IOException if a problem occurred in execution.
-     * @return T result
-     */
-    @Throws(IOException::class)
-    fun run(): T
-
-    /**
-     * Run task and notify callback of result or error.
-     *
-     * @param callback
-     */
-    fun enqueue(callback: Callback<T>)
-
-    /**
-     * True if [run] or [enqueue] was executed.
-     */
-    fun isExecuted(): Boolean
-
-    /**
-     * Cancel the task.
-     */
-    fun cancel()
-
-    /**
-     * True if [cancel] was called.
-     */
-    fun isCanceled(): Boolean
-
-    /**
-     * Callback
-     */
-    interface Callback<in T> {
-
-        /**
-         * Success
-         *
-         * @param data result of task
-         */
-        fun onSuccess(data: T)
-
-        /**
-         * Error
-         *
-         * @param throwable error in task
-         */
-        fun onError(throwable: Throwable)
-    }
+internal interface CardFormViewModelOutput {
+    val cardNumberError: LiveData<Int?>
+    val cardExpirationError: LiveData<Int?>
+    val cardCvcError: LiveData<Int?>
+    val cardHolderNameError: LiveData<Int?>
+    val cardHolderNameEnabled: LiveData<Boolean>
+    val cvcImeOptions: LiveData<Int>
+    val cardNumberBrand: LiveData<CardBrand>
+    val cardExpiration: LiveData<CardExpiration?>
+    val isValid: LiveData<Boolean>
+    val cardNumberValid: LiveData<Boolean>
+    val cardExpirationValid: LiveData<Boolean>
+    val cardCvcValid: LiveData<Boolean>
+    val errorFetchAcceptedBrands: LiveData<OneOffValue<Throwable>>
+    val acceptedBrands: LiveData<OneOffValue<List<CardBrand>>>
 }

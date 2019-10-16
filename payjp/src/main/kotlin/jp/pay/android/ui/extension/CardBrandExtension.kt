@@ -20,64 +20,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android
+@file:JvmName("CardBrandExtension")
 
-import java.io.IOException
+package jp.pay.android.ui.extension
+
+import androidx.annotation.DrawableRes
+import jp.pay.android.R
+import jp.pay.android.model.CardBrand
 
 /**
- * Simple request invocation interface.
- * It is mostly the same as `Retrofit.Call`.
+ * Card brand logo
+ * If the brand is unknown, returns default card icon.
+ *
+ * @return drawable resource id of brand logo.
+ * @see [CardBrand]
  */
-interface Task<out T> {
-
-    /**
-     * Execute synchronously and return the result.
-     *
-     * @throws IOException if a problem occurred in execution.
-     * @return T result
-     */
-    @Throws(IOException::class)
-    fun run(): T
-
-    /**
-     * Run task and notify callback of result or error.
-     *
-     * @param callback
-     */
-    fun enqueue(callback: Callback<T>)
-
-    /**
-     * True if [run] or [enqueue] was executed.
-     */
-    fun isExecuted(): Boolean
-
-    /**
-     * Cancel the task.
-     */
-    fun cancel()
-
-    /**
-     * True if [cancel] was called.
-     */
-    fun isCanceled(): Boolean
-
-    /**
-     * Callback
-     */
-    interface Callback<in T> {
-
-        /**
-         * Success
-         *
-         * @param data result of task
-         */
-        fun onSuccess(data: T)
-
-        /**
-         * Error
-         *
-         * @param throwable error in task
-         */
-        fun onError(throwable: Throwable)
+val CardBrand.logoResourceId: Int
+    @DrawableRes
+    get() = when (this) {
+        CardBrand.VISA -> R.drawable.logo_visa
+        CardBrand.MASTER_CARD -> R.drawable.logo_mastercard
+        CardBrand.JCB -> R.drawable.logo_jcb
+        CardBrand.AMEX -> R.drawable.logo_amex
+        CardBrand.DINERS_CLUB -> R.drawable.logo_diners
+        CardBrand.DISCOVER -> R.drawable.logo_discover
+        CardBrand.UNKNOWN -> R.drawable.ic_card
     }
-}
+
+/**
+ * Icon of security code (a.k.a. cvc, cvv)
+ *
+ * @return drawable resource id of icon.
+ */
+val CardBrand.cvcIconResourceId: Int
+    @DrawableRes
+    get() = when (this) {
+        CardBrand.AMEX -> R.drawable.ic_cvc_front
+        else -> R.drawable.ic_cvc_back
+    }

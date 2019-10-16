@@ -36,7 +36,7 @@ import androidx.lifecycle.map
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.Task
 import jp.pay.android.exception.PayjpInvalidCardFormException
-import jp.pay.android.model.AcceptedBrandsResponse
+import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput
 import jp.pay.android.model.CardComponentInput.CardCvcInput
@@ -52,40 +52,6 @@ import jp.pay.android.util.Tasks
 import jp.pay.android.validator.CardCvcInputTransformerService
 import jp.pay.android.validator.CardInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformerService
-
-internal interface CardFormViewModelOutput {
-    val cardNumberError: LiveData<Int?>
-    val cardExpirationError: LiveData<Int?>
-    val cardCvcError: LiveData<Int?>
-    val cardHolderNameError: LiveData<Int?>
-    val cardHolderNameEnabled: LiveData<Boolean>
-    val cvcImeOptions: LiveData<Int>
-    val cardNumberBrand: LiveData<CardBrand>
-    val cardExpiration: LiveData<CardExpiration?>
-    val isValid: LiveData<Boolean>
-    val cardNumberValid: LiveData<Boolean>
-    val cardExpirationValid: LiveData<Boolean>
-    val cardCvcValid: LiveData<Boolean>
-    val errorFetchAcceptedBrands: LiveData<OneOffValue<Throwable>>
-    val acceptedBrands: LiveData<OneOffValue<List<CardBrand>>>
-}
-
-internal interface CardFormViewModelInput {
-
-    fun inputCardNumber(input: String)
-
-    fun inputCardExpiration(input: String)
-
-    fun inputCardCvc(input: String)
-
-    fun inputCardHolderName(input: String)
-
-    fun updateCardHolderNameEnabled(enabled: Boolean)
-
-    fun validate()
-
-    fun createToken(): Task<Token>
-}
 
 /**
  * ViewModel for [PayjpCardFormFragment]
@@ -124,7 +90,7 @@ internal class CardFormViewModel(
     private val cardCvcInput = MutableLiveData<CardCvcInput>()
     private val cardHolderNameInput = MutableLiveData<CardHolderNameInput>()
     private val showErrorImmediately = MutableLiveData<Boolean>()
-    private var task: Task<AcceptedBrandsResponse>? = null
+    private var task: Task<CardBrandsAcceptedResponse>? = null
     private val brandObserver: Observer<CardBrand>
 
     init {
@@ -220,8 +186,8 @@ internal class CardFormViewModel(
     fun fetchAcceptedBrands() {
         if (cardNumberInputTransformer.acceptedBrands == null) {
             task = tokenService.getAcceptedBrands(tenantId)
-            task?.enqueue(object : Task.Callback<AcceptedBrandsResponse> {
-                override fun onSuccess(data: AcceptedBrandsResponse) {
+            task?.enqueue(object : Task.Callback<CardBrandsAcceptedResponse> {
+                override fun onSuccess(data: CardBrandsAcceptedResponse) {
                     cardNumberInputTransformer.acceptedBrands = data.brands
                     acceptedBrands.value = OneOffValue(data.brands)
                 }

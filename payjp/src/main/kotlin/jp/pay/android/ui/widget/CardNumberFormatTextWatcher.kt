@@ -25,7 +25,6 @@ package jp.pay.android.ui.widget
 import android.text.Editable
 import android.text.TextWatcher
 import jp.pay.android.model.CardBrand
-import jp.pay.android.model.numberLength
 
 internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWatcher {
 

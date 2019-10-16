@@ -25,13 +25,16 @@ package jp.pay.android.ui.widget
 import android.text.Editable
 import android.text.TextWatcher
 
-// card number max digits size
-private const val TOTAL_MAX_DIGITS = 4
-// digits + 3 delimiters
-private const val TOTAL_MAX_SYMBOLS = 5
-private const val DELIMITER_INDEX = 2
-
 internal class CardExpirationFormatTextWatcher(private val delimiter: Char) : TextWatcher {
+
+    companion object {
+        // card number max digits size
+        private const val TOTAL_MAX_DIGITS = 4
+        // digits + 3 delimiters
+        private const val TOTAL_MAX_SYMBOLS = 5
+        private const val DELIMITER_INDEX = 2
+    }
+
     private var ignoreChanges: Boolean = false
     private var latestChangeStart: Int = 0
     private var latestInsertionSize: Int = 0

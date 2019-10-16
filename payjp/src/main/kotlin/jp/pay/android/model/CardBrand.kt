@@ -30,14 +30,38 @@ import com.squareup.moshi.ToJson
  * CardBrand
  */
 enum class CardBrand(val rawValue: String) {
+    /**
+     * VISA
+     */
     VISA("Visa"),
+    /**
+     * Mastercard
+     */
     MASTER_CARD("MasterCard"),
+    /**
+     * JCB
+     */
     JCB("JCB"),
+    /**
+     * American Express
+     */
     AMEX("American Express"),
+    /**
+     * Diners Club
+     */
     DINERS_CLUB("Diners Club"),
+    /**
+     * Discover
+     */
     DISCOVER("Discover"),
+    /**
+     * Unknown brand
+     */
     UNKNOWN("Unknown");
 
+    /**
+     * Moshi json adapter for CardBrand
+     */
     class JsonAdapter {
 
         @ToJson
@@ -49,28 +73,39 @@ enum class CardBrand(val rawValue: String) {
                 ?: throw JsonDataException("unknown brand: $brand")
         }
     }
+
+    /**
+     * card number regular expression.
+     * Because we only check the lead several character,
+     * the regex has no size restriction.
+     */
+    val numberRegex: Regex
+        get() = when (this) {
+            VISA -> Regex("""\A4[0-9]*\z""")
+            MASTER_CARD -> Regex("""\A(?:5[1-5]|2[2-7])[0-9]*\z""")
+            JCB -> Regex("""\A(?:352[8-9]|35[3-8])[0-9]*\z""")
+            AMEX -> Regex("""\A3[47][0-9]*\z""")
+            DINERS_CLUB -> Regex("""\A3(?:0[0-5]|[68])[0-9]*\z""")
+            DISCOVER -> Regex("""\A6(?:011|5)[0-9]*\z""")
+            UNKNOWN -> Regex("""""")
+        }
+
+    /**
+     * valid length of the card number.
+     */
+    val numberLength: Int
+        get() = when (this) {
+            DINERS_CLUB -> 14
+            AMEX -> 15
+            else -> 16
+        }
+
+    /**
+     * valid length of the cvc number.
+     */
+    val cvcLength: Int
+        get() = when (this) {
+            AMEX, UNKNOWN -> 4
+            else -> 3
+        }
 }
-
-val CardBrand.numberRegex: Regex
-    get() = when (this) {
-        CardBrand.VISA -> Regex("""\A4[0-9]*\z""")
-        CardBrand.MASTER_CARD -> Regex("""\A(?:5[1-5]|2[2-7])[0-9]*\z""")
-        CardBrand.JCB -> Regex("""\A(?:352[8-9]|35[3-8])[0-9]*\z""")
-        CardBrand.AMEX -> Regex("""\A3[47][0-9]*\z""")
-        CardBrand.DINERS_CLUB -> Regex("""\A3(?:0[0-5]|[68])[0-9]*\z""")
-        CardBrand.DISCOVER -> Regex("""\A6(?:011|5)[0-9]*\z""")
-        CardBrand.UNKNOWN -> Regex("""""")
-    }
-
-val CardBrand.numberLength: Int
-    get() = when (this) {
-        CardBrand.DINERS_CLUB -> 14
-        CardBrand.AMEX -> 15
-        else -> 16
-    }
-
-val CardBrand.cvcLength: Int
-    get() = when (this) {
-        CardBrand.AMEX, CardBrand.UNKNOWN -> 4
-        else -> 3
-    }
