@@ -27,7 +27,7 @@ import android.text.TextWatcher
 
 // card number max digits size
 private const val TOTAL_MAX_DIGITS = 4
-// digits + 3 delimiters
+// digits + 1 delimiters
 private const val TOTAL_MAX_SYMBOLS = 5
 private const val DELIMITER_INDEX = 2
 
@@ -53,7 +53,7 @@ internal class CardExpirationFormatTextWatcher(private val delimiter: Char) : Te
         }
         if (!isInputCorrect(s)) {
             ignoreChanges = true
-            s.replace(0, s.length, buildCorrectString(createDigitArray(s)))
+            s.replace(0, s.length, buildCorrectString(createDigitArray(s), s))
             ignoreChanges = false
         }
     }
@@ -63,9 +63,9 @@ internal class CardExpirationFormatTextWatcher(private val delimiter: Char) : Te
         s.length > TOTAL_MAX_SYMBOLS -> false
         // When we add `1` from `1`, input should be `11/`.
         s.length == 2 && latestInsertionSize > 0 -> false
-        // When we delete 1 character from `11/`, input should be `1`.
+        // When we delete last 1 character from `11/`, input should be `1`.
         s.length == 2 && latestChangeStart == 2 && latestInsertionSize == 0 -> false
-        // When we delete 1 character from `12/1`, input should be `12`.
+        // When we delete last 1 character from `12/1`, input should be `12`.
         s.length == 3 && latestChangeStart == 3 && latestInsertionSize == 0 -> false
         else -> s.indices.all { i ->
             val c = s[i]
@@ -78,23 +78,36 @@ internal class CardExpirationFormatTextWatcher(private val delimiter: Char) : Te
         }
     }
 
-    private fun buildCorrectString(digits: CharArray): String {
+    private fun buildCorrectString(digits: CharArray, original: CharSequence): String {
         val formatted = StringBuilder()
-
+        // In these cases, skip insertion delimiter.
+        val deletionLastDelimiterOrNext = latestInsertionSize == 0 &&
+            // `12/`
+            //    ^ deletion from here
+            ((original.length == DELIMITER_INDEX && latestChangeStart == DELIMITER_INDEX) ||
+                // `12/1`
+                //     ^ deletion from here
+                (original.length == DELIMITER_INDEX + 1 && latestChangeStart == DELIMITER_INDEX + 1))
+        var index = 0
         for (i in digits.indices) {
             val c = digits[i]
-            var index = i
             if (i == 0 && c != '0' && c != '1') {
                 formatted.append('0')
                 index++
             }
             if (Character.isDigit(c)) {
                 formatted.append(c)
-                if (index < digits.size - 1 && index + 1 == DELIMITER_INDEX && latestInsertionSize > 0) {
+                if (index < digits.size - 1 && index + 1 == DELIMITER_INDEX && !deletionLastDelimiterOrNext) {
                     formatted.append(delimiter)
+                    index++
                 }
             }
+            index++
+            if (formatted.length >= TOTAL_MAX_SYMBOLS) {
+                break
+            }
         }
+        // if delete 1 character from `XY/`, remove one more character (like `X`).
         if (formatted.length == 2 && latestChangeStart == 2 && latestInsertionSize == 0) {
             formatted.delete(formatted.length - 1, formatted.length)
         }
