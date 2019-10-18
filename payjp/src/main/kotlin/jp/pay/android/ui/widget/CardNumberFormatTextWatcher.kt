@@ -53,7 +53,7 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
         }
         if (!isInputCorrect(s)) {
             ignoreChanges = true
-            s.replace(0, s.length, buildCorrectString(createDigitArray(s)))
+            s.replace(0, s.length, buildCorrectString(createDigitArray(s), s))
             ignoreChanges = false
         }
     }
@@ -78,7 +78,7 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
         }
     }
 
-    private fun buildCorrectString(digits: CharArray): String {
+    private fun buildCorrectString(digits: CharArray, original: CharSequence): String {
         val formatted = StringBuilder()
         val delimiterPositions = getDelimiterPositions()
 
@@ -87,11 +87,15 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
             if (Character.isDigit(c)) {
                 formatted.append(c)
                 val nextIndex = formatted.lastIndex + 1
+                // for Case C and D, skip insertion if delete delimiter which is last.
+                // ex. `4242-` or `4242-4` but not `4242-42`
+                //          ^           ^               ^
+                val deletionLastDelimiterOrNext = latestInsertionSize == 0 &&
+                    latestChangeStart in nextIndex..nextIndex + 1 &&
+                    latestChangeStart in original.length..original.length + 1
                 if (i < digits.size - 1 &&
                     nextIndex in delimiterPositions &&
-                    // for Case C and D
-                    (latestInsertionSize > 0 ||
-                        latestChangeStart !in nextIndex..nextIndex + 1)
+                    !deletionLastDelimiterOrNext
                 ) {
                     formatted.append(delimiter)
                 }
