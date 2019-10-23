@@ -141,7 +141,7 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
         return digits
     }
 
-    fun getAdjustedCursorPosition(original: String, formatted: String, cursor: Int): Int {
+    private fun getAdjustedCursorPosition(original: String, formatted: String, cursor: Int): Int {
         if (cursor == original.length) {
             return formatted.length
         }
