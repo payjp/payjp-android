@@ -26,12 +26,6 @@ import jp.pay.android.R
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput
 import jp.pay.android.model.FormInputError
-import jp.pay.android.model.cvcLength
-
-internal interface CardCvcInputTransformerService :
-    CardInputTransformer<CardComponentInput.CardCvcInput> {
-    var brand: CardBrand
-}
 
 internal class CardCvcInputTransformer : CardCvcInputTransformerService {
 

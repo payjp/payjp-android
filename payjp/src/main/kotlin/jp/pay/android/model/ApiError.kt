@@ -27,7 +27,7 @@ import com.squareup.moshi.JsonClass
 /**
  * Error
  *
- * cf. https://pay.jp/docs/api/#error
+ * cf. [https://pay.jp/docs/api/#error](https://pay.jp/docs/api/#error)
  *
  * @param code error code e.g. `invalid_number`
  * @param message system message (should not show to end user)

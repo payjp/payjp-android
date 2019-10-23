@@ -20,12 +20,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+@file:JvmName("PayjpCoroutine")
+
 package jp.pay.android.coroutine
 
 import jp.pay.android.PayjpTokenParam
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.Task
-import jp.pay.android.model.AcceptedBrandsResponse
+import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.ui.widget.PayjpCardFormView
@@ -67,7 +69,7 @@ suspend fun PayjpTokenService.getTokenSuspend(id: String): Token = getToken(id).
  * @return accepted brands
  * @see [PayjpTokenService.getAcceptedBrands]
  */
-suspend fun PayjpTokenService.getAcceptedBrandsSuspend(tenantId: TenantId? = null): AcceptedBrandsResponse =
+suspend fun PayjpTokenService.getAcceptedBrandsSuspend(tenantId: TenantId? = null): CardBrandsAcceptedResponse =
     getAcceptedBrands(tenantId).toSuspend()
 
 /**

@@ -25,7 +25,7 @@ package jp.pay.android.model
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Moshi
-import jp.pay.android.network.createMoshi
+import jp.pay.android.network.TokenApiClientFactory.createMoshi
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
 import org.junit.Test

@@ -83,7 +83,7 @@ internal class ResultCall<T>(
         delegate.enqueue(object : Callback<T> {
             override fun onResponse(call: Call<T>, response: Response<T>) {
 
-                callbackExecutor.execute({
+                callbackExecutor.execute {
                     when {
                         delegate.isCanceled -> callback.onFailure(
                             this@ResultCall,
@@ -92,13 +92,13 @@ internal class ResultCall<T>(
                         response.isSuccessful -> callback.onResponse(this@ResultCall, response)
                         else -> callback.onFailure(this@ResultCall, generateHttpError(response))
                     }
-                })
+                }
             }
 
             override fun onFailure(call: Call<T>, t: Throwable) {
-                callbackExecutor.execute({
+                callbackExecutor.execute {
                     callback.onFailure(this@ResultCall, t)
-                })
+                }
             }
         })
     }

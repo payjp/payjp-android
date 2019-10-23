@@ -25,25 +25,59 @@ package jp.pay.android
 import java.io.IOException
 
 /**
- * Async task
+ * Simple request invocation interface.
+ * It is mostly the same as `Retrofit.Call`.
  */
 interface Task<out T> {
 
+    /**
+     * Execute synchronously and return the result.
+     *
+     * @throws IOException if a problem occurred in execution.
+     * @return T result
+     */
     @Throws(IOException::class)
     fun run(): T
 
-    fun enqueue(callback: Task.Callback<T>)
+    /**
+     * Run task and notify callback of result or error.
+     *
+     * @param callback
+     */
+    fun enqueue(callback: Callback<T>)
 
+    /**
+     * True if [run] or [enqueue] was executed.
+     */
     fun isExecuted(): Boolean
 
+    /**
+     * Cancel the task.
+     */
     fun cancel()
 
+    /**
+     * True if [cancel] was called.
+     */
     fun isCanceled(): Boolean
 
+    /**
+     * Callback
+     */
     interface Callback<in T> {
 
+        /**
+         * Success
+         *
+         * @param data result of task
+         */
         fun onSuccess(data: T)
 
+        /**
+         * Error
+         *
+         * @param throwable error in task
+         */
         fun onError(throwable: Throwable)
     }
 }

@@ -25,6 +25,8 @@ package jp.pay.android.model
 /**
  * Tenant id
  *
- * @param id
+ * cf. [https://pay.jp/docs/api/#tenant-テナント](https://pay.jp/docs/api/#tenant-テナント)
+ *
+ * @param id identifier value
  */
 data class TenantId(val id: String)

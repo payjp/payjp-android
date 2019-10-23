@@ -31,44 +31,6 @@ import java.util.Calendar
  * Process card expiration from input.
  *
  */
-internal interface CardExpirationProcessorService {
-
-    /**
-     * Create month and year pair from input string.
-     * Validate input format, but do not check as date. (only format)
-     *
-     * @param input input string e.g. `01/25`
-     * @param delimiter e.g. `/` in `01/25`
-     * @return month and year `("12", "20")` if valid. null if invalid. month is nonnull, but year is nullable
-     *   because after input month and before year, we check only month not only format but also semantic.
-     */
-    fun processExpirationMonthYear(input: String, delimiter: Char): Pair<String, String?>?
-
-    /**
-     * Validate month string
-     *
-     * @param month input string month.
-     */
-    fun validateMonth(month: String): Boolean
-
-    /**
-     * Create card expiration value object as [CardExpiration] from month and year.
-     * Check month and year correctness and validity with the current time.
-     *
-     * @param monthYear two-digits month and year pair. e.g. ("12", "20").
-     * @param calendar calendar
-     * @return card expiration if valid. null if invalid.
-     */
-    fun processCardExpiration(
-        monthYear: Pair<String, String>,
-        calendar: Calendar = Calendar.getInstance()
-    ): CardExpiration?
-}
-
-/**
- * Process card expiration from input.
- *
- */
 internal object CardExpirationProcessor : CardExpirationProcessorService {
     override fun processExpirationMonthYear(
         input: String,

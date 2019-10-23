@@ -20,21 +20,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.util
+package jp.pay.android.ui.widget
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
+import jp.pay.android.Task
+import jp.pay.android.model.Token
 
-internal class RemappableMediatorLiveData<S1, T>(
-    private val source1: LiveData<S1>,
-    private val mapFunc: (s1: S1?) -> T
-) : MediatorLiveData<T>() {
+internal interface CardFormViewModelInput {
 
-    init {
-        addSource(source1) { remap() }
-    }
+    fun inputCardNumber(input: String)
 
-    fun remap() {
-        value = mapFunc(source1.value)
-    }
+    fun inputCardExpiration(input: String)
+
+    fun inputCardCvc(input: String)
+
+    fun inputCardHolderName(input: String)
+
+    fun updateCardHolderNameEnabled(enabled: Boolean)
+
+    fun validate()
+
+    fun createToken(): Task<Token>
 }

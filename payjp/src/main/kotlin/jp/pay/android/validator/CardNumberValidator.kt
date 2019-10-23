@@ -23,21 +23,7 @@
 package jp.pay.android.validator
 
 import jp.pay.android.model.CardBrand
-import jp.pay.android.model.numberLength
 import jp.pay.android.validator.CardNumberValidatorService.CardNumberLengthStatus
-
-internal interface CardNumberValidatorService {
-    fun isCardNumberLengthValid(
-        cardNumber: String,
-        brand: CardBrand = CardBrand.UNKNOWN
-    ): CardNumberLengthStatus
-
-    fun isLuhnValid(cardNumber: String): Boolean
-
-    enum class CardNumberLengthStatus {
-        MATCH, TOO_LONG, TOO_SHORT
-    }
-}
 
 internal object CardNumberValidator : CardNumberValidatorService {
 

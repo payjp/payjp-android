@@ -23,9 +23,9 @@
 package jp.pay.android.ui.widget
 
 import android.text.Editable
+import android.text.Selection
 import android.text.TextWatcher
 import jp.pay.android.model.CardBrand
-import jp.pay.android.model.numberLength
 
 internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWatcher {
 
@@ -53,7 +53,11 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
         }
         if (!isInputCorrect(s)) {
             ignoreChanges = true
-            s.replace(0, s.length, buildCorrectString(createDigitArray(s)))
+            val currentCursor = Selection.getSelectionStart(s)
+            val original = s.toString()
+            s.replace(0, s.length, buildCorrectString(createDigitArray(s), s))
+            val formatted = s.toString()
+            Selection.setSelection(s, getAdjustedCursorPosition(original, formatted, currentCursor))
             ignoreChanges = false
         }
     }
@@ -78,7 +82,7 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
         }
     }
 
-    private fun buildCorrectString(digits: CharArray): String {
+    private fun buildCorrectString(digits: CharArray, original: CharSequence): String {
         val formatted = StringBuilder()
         val delimiterPositions = getDelimiterPositions()
 
@@ -87,11 +91,15 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
             if (Character.isDigit(c)) {
                 formatted.append(c)
                 val nextIndex = formatted.lastIndex + 1
+                // for Case C and D, skip insertion if delete delimiter which is last.
+                // ex. `4242-` or `4242-4` but not `4242-42`
+                //          ^           ^               ^
+                val deletionLastDelimiterOrNext = latestInsertionSize == 0 &&
+                    latestChangeStart in nextIndex..nextIndex + 1 &&
+                    latestChangeStart in original.length..original.length + 1
                 if (i < digits.size - 1 &&
                     nextIndex in delimiterPositions &&
-                    // for Case C and D
-                    (latestInsertionSize > 0 ||
-                        latestChangeStart !in nextIndex..nextIndex + 1)
+                    !deletionLastDelimiterOrNext
                 ) {
                     formatted.append(delimiter)
                 }
@@ -130,5 +138,17 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
             i++
         }
         return digits
+    }
+
+    private fun getAdjustedCursorPosition(original: String, formatted: String, cursor: Int): Int {
+        if (cursor == original.length) {
+            return formatted.length
+        }
+        val delimitersOriginal = original.substring(0, cursor).count { it == delimiter }
+        val delimitersCorrect = getDelimiterPositions().count { it < cursor }
+        if (delimitersCorrect > delimitersOriginal) {
+            return cursor + (delimitersCorrect - delimitersOriginal)
+        }
+        return cursor
     }
 }
