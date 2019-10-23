@@ -23,13 +23,14 @@
 package jp.pay.android.ui.widget
 
 import android.view.inputmethod.EditorInfo
+import androidx.lifecycle.Observer
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.CardRobot
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.TestStubs
 import jp.pay.android.anyNullable
 import jp.pay.android.exception.PayjpInvalidCardFormException
-import jp.pay.android.model.AcceptedBrandsResponse
+import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput.CardCvcInput
 import jp.pay.android.model.CardComponentInput.CardExpirationInput
@@ -70,6 +71,8 @@ internal class CardFormViewModelTest {
     private lateinit var cardCvcInputTransformer: CardCvcInputTransformerService
     @Mock
     private lateinit var cardHolderNameInputTransformer: CardInputTransformer<CardHolderNameInput>
+    @Mock
+    private lateinit var cardNumberErrorObserver: Observer<in Int?>
 
     @Before
     fun setUp() {
@@ -100,6 +103,10 @@ internal class CardFormViewModelTest {
         cardNumberValid.observeForever { }
         cardExpirationValid.observeForever { }
         cardCvcValid.observeForever { }
+        errorFetchAcceptedBrands.observeForever { }
+        acceptedBrands.observeForever { }
+
+        cardNumberError.observeForever(cardNumberErrorObserver)
     }
 
     private fun mockCorrectInput(
@@ -124,13 +131,29 @@ internal class CardFormViewModelTest {
         `when`(mockTokenService.getAcceptedBrands(anyNullable()))
             .thenReturn(
                 Tasks.success(
-                    AcceptedBrandsResponse(brands = brands, livemode = true)
+                    CardBrandsAcceptedResponse(brands = brands, livemode = true)
                 )
             )
         `when`(cardNumberInputTransformer.acceptedBrands).thenReturn(null)
-        createViewModel().fetchAcceptedBrands()
+        val viewModel = createViewModel()
+        viewModel.fetchAcceptedBrands()
         verify(mockTokenService).getAcceptedBrands(null)
         verify(cardNumberInputTransformer).acceptedBrands = brands
+        assertThat(viewModel.acceptedBrands.value?.peek(), `is`(brands))
+        assertThat(viewModel.errorFetchAcceptedBrands.value?.peek(), `is`(nullValue()))
+    }
+
+    @Test
+    fun fetchAcceptedBrands_error() {
+        val error: Throwable = RuntimeException("omg")
+        `when`(mockTokenService.getAcceptedBrands(anyNullable()))
+            .thenReturn(Tasks.failure(error))
+        `when`(cardNumberInputTransformer.acceptedBrands).thenReturn(null)
+        val viewModel = createViewModel()
+        viewModel.fetchAcceptedBrands()
+        verify(cardNumberInputTransformer, never()).acceptedBrands = anyNullable()
+        assertThat(viewModel.acceptedBrands.value?.peek(), `is`(nullValue()))
+        assertThat(viewModel.errorFetchAcceptedBrands.value?.peek(), `is`(error))
     }
 
     @Test
@@ -148,7 +171,7 @@ internal class CardFormViewModelTest {
         `when`(mockTokenService.getAcceptedBrands(anyNullable()))
             .thenReturn(
                 Tasks.success(
-                    AcceptedBrandsResponse(brands = brands, livemode = true)
+                    CardBrandsAcceptedResponse(brands = brands, livemode = true)
                 )
             )
         `when`(cardNumberInputTransformer.acceptedBrands).thenReturn(null)
@@ -242,6 +265,25 @@ internal class CardFormViewModelTest {
             inputCardNumber("")
             assertThat(cardNumberError.value, `is`(errorId))
         }
+    }
+
+    @Test
+    fun cardNumberError_distinct() {
+        val errorId = 0
+        val formError = FormInputError(errorId, false)
+        // return error twice for input twice
+        `when`(cardNumberInputTransformer.transform(anyString()))
+            .thenReturn(CardNumberInput(null, null, formError, CardBrand.VISA))
+            .thenReturn(CardNumberInput(null, null, formError, CardBrand.VISA))
+        `when`(cardCvcInputTransformer.transform(anyString()))
+            .thenReturn(CardCvcInput(null, null, formError))
+        // input twice
+        createViewModel().run {
+            inputCardNumber("")
+            inputCardNumber("")
+        }
+        // call once
+        verify(cardNumberErrorObserver).onChanged(0)
     }
 
     @Test

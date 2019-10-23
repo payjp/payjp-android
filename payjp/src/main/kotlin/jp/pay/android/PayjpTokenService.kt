@@ -22,7 +22,7 @@
  */
 package jp.pay.android
 
-import jp.pay.android.model.AcceptedBrandsResponse
+import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 
@@ -72,7 +72,7 @@ interface PayjpTokenService {
      *
      * @return task to get accepted brands.
      */
-    fun getAcceptedBrands(): Task<AcceptedBrandsResponse> = getAcceptedBrands(tenantId = null)
+    fun getAcceptedBrands(): Task<CardBrandsAcceptedResponse> = getAcceptedBrands(tenantId = null)
 
     /**
      * get accepted brands with tenantId.
@@ -81,5 +81,5 @@ interface PayjpTokenService {
      * @param tenantId tenant id.
      * @return task to get accepted brands.
      */
-    fun getAcceptedBrands(tenantId: TenantId?): Task<AcceptedBrandsResponse>
+    fun getAcceptedBrands(tenantId: TenantId?): Task<CardBrandsAcceptedResponse>
 }

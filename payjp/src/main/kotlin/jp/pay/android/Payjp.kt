@@ -25,10 +25,10 @@ package jp.pay.android
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
-import jp.pay.android.model.AcceptedBrandsResponse
+import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
-import jp.pay.android.network.createApiClient
+import jp.pay.android.network.TokenApiClientFactory.createApiClient
 import jp.pay.android.plugin.CardScannerResolver
 import java.nio.charset.Charset
 import java.util.concurrent.Executor
@@ -37,12 +37,21 @@ import java.util.concurrent.Executor
  * Entry point for payjp-android
  *
  * We recommend use as singleton instance.
+ *
+ * @param configuration configuration
+ * @param payjpApi api
+ * @constructor create new Payjp instance.
  */
 class Payjp internal constructor(
     private val configuration: PayjpConfiguration,
     private val payjpApi: PayjpApi
 ) : PayjpTokenService {
 
+    /**
+     * Constructor for configuration.
+     *
+     * @param configuration create with configuration
+     */
     constructor(configuration: PayjpConfiguration) : this(
         configuration = configuration,
         payjpApi = createApiClient(
@@ -55,6 +64,11 @@ class Payjp internal constructor(
         CardScannerResolver.cardScannerPlugin = configuration.cardScannerPlugin
     }
 
+    /**
+     * Constructor for publicKey
+     *
+     * @param publicKey PAY.JP public key.
+     */
     constructor(publicKey: String) : this(PayjpConfiguration.Builder(publicKey).build())
 
     companion object {
@@ -77,7 +91,7 @@ class Payjp internal constructor(
         /**
          * Initialize managed-singleton instance.
          *
-         * @param publicKey public API Key
+         * @param publicKey public API Key. You must **NOT** use secret key.
          */
         @JvmStatic
         fun init(publicKey: String): Payjp {
@@ -127,7 +141,7 @@ class Payjp internal constructor(
      * @param tenantId tenant id (only for platformer)
      * @return task of accepted brands
      */
-    override fun getAcceptedBrands(tenantId: TenantId?): Task<AcceptedBrandsResponse> {
+    override fun getAcceptedBrands(tenantId: TenantId?): Task<CardBrandsAcceptedResponse> {
         return payjpApi.getAcceptedBrands(authorization, tenantId?.id)
     }
 
