@@ -36,11 +36,11 @@ internal data class OneOffValue<out T>(private val content: T) {
         content
     }
 
+    inline fun consume(consumer: (content: T) -> Unit) {
+        pop()?.let(consumer)
+    }
+
     override fun toString(): String {
         return "OneOffValue(consumed=" + this.consumed + ", content=" + this.content + ")"
     }
-}
-
-internal inline fun <T> OneOffValue<T>.consume(consumer: (content: T) -> Unit) {
-    pop()?.let(consumer)
 }

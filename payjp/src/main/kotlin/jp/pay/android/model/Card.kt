@@ -27,9 +27,10 @@ import com.squareup.moshi.JsonClass
 import java.util.Date
 
 /**
- * Card
- *
- * https://pay.jp/docs/api/#token-トークン
+ * PAY.JP card object.
+ * For security reasons, the card number is masked and you can get only last4 character.
+ * The full documentations are following.
+ * cf. [https://pay.jp/docs/api/#cardオブジェクト](https://pay.jp/docs/api/#cardオブジェクト)
  */
 @JsonClass(generateAdapter = true)
 data class Card(

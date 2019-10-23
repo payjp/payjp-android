@@ -22,7 +22,7 @@
  */
 package jp.pay.android
 
-import jp.pay.android.model.AcceptedBrandsResponse
+import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.Token
 import jp.pay.android.network.ResultCall
 import retrofit2.http.Field
@@ -62,5 +62,5 @@ internal interface PayjpApi {
     fun getAcceptedBrands(
         @Header("Authorization") authorization: String,
         @Query("tenant") tenant: String?
-    ): ResultCall<AcceptedBrandsResponse>
+    ): ResultCall<CardBrandsAcceptedResponse>
 }

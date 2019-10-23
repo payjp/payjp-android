@@ -30,7 +30,7 @@ import jp.pay.android.PayjpTokenService
 import jp.pay.android.TestStubs
 import jp.pay.android.anyNullable
 import jp.pay.android.exception.PayjpInvalidCardFormException
-import jp.pay.android.model.AcceptedBrandsResponse
+import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput.CardCvcInput
 import jp.pay.android.model.CardComponentInput.CardExpirationInput
@@ -131,7 +131,7 @@ internal class CardFormViewModelTest {
         `when`(mockTokenService.getAcceptedBrands(anyNullable()))
             .thenReturn(
                 Tasks.success(
-                    AcceptedBrandsResponse(brands = brands, livemode = true)
+                    CardBrandsAcceptedResponse(brands = brands, livemode = true)
                 )
             )
         `when`(cardNumberInputTransformer.acceptedBrands).thenReturn(null)
@@ -171,7 +171,7 @@ internal class CardFormViewModelTest {
         `when`(mockTokenService.getAcceptedBrands(anyNullable()))
             .thenReturn(
                 Tasks.success(
-                    AcceptedBrandsResponse(brands = brands, livemode = true)
+                    CardBrandsAcceptedResponse(brands = brands, livemode = true)
                 )
             )
         `when`(cardNumberInputTransformer.acceptedBrands).thenReturn(null)

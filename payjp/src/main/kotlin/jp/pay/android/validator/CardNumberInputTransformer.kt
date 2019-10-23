@@ -29,11 +29,6 @@ import jp.pay.android.model.CardBrandDetectorService
 import jp.pay.android.model.CardComponentInput
 import jp.pay.android.model.FormInputError
 
-internal interface CardNumberInputTransformerService :
-    CardInputTransformer<CardComponentInput.CardNumberInput> {
-    var acceptedBrands: List<CardBrand>?
-}
-
 internal class CardNumberInputTransformer(
     private val brandDetector: CardBrandDetectorService = CardBrandDetector,
     private val cardNumberValidator: CardNumberValidatorService = CardNumberValidator

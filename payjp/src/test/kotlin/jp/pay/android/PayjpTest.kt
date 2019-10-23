@@ -32,7 +32,7 @@ import jp.pay.android.fixtures.ERROR_INVALID_ID
 import jp.pay.android.fixtures.TOKEN_OK
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.TenantId
-import jp.pay.android.network.createApiClient
+import jp.pay.android.network.TokenApiClientFactory.createApiClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.hamcrest.Matchers.contains
