@@ -93,7 +93,8 @@ interface CardScannerPlugin {
     )
 
     /**
-     * CardScanOnResultListener
+     * Communicates the result of scan.
+     *
      */
     interface CardScanOnResultListener {
 
@@ -112,6 +113,10 @@ interface CardScannerPlugin {
      */
     interface CardScannerPermissionDelegate {
 
+        /**
+         * Call if a permission request was disallowed with "Never ask again".
+         *
+         */
         fun onNeverAskAgainCardScannerPermission()
     }
 }

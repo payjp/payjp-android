@@ -43,6 +43,14 @@ data class PayjpTokenParam(
     val tenantId: TenantId?
 ) {
 
+    /**
+     * Builder of [PayjpTokenParam]
+     *
+     * @param number card number
+     * @param cvc cvc
+     * @param expMonth expiration month
+     * @param expYear expiration year
+     */
     class Builder(
         private val number: String,
         private val cvc: String,

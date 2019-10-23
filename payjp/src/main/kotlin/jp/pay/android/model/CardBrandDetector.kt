@@ -22,17 +22,6 @@
  */
 package jp.pay.android.model
 
-internal interface CardBrandDetectorService {
-
-    /**
-     * detect brand from card number
-     *
-     * @param digits Card Number
-     * @return brand
-     */
-    fun detectWithDigits(digits: String): CardBrand
-}
-
 internal object CardBrandDetector : CardBrandDetectorService {
 
     override fun detectWithDigits(digits: String): CardBrand = CardBrand.values()

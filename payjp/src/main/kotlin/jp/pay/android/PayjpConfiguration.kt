@@ -78,7 +78,7 @@ class PayjpConfiguration private constructor(
          * set card scanner plugin
          * you also need to add `payjp-android-cardio`.
          *
-         * @see plugin plugin
+         * @param plugin plugin
          */
         fun setCardScannerPlugin(plugin: CardScannerPlugin?) = apply { cardScannerPlugin = plugin }
 

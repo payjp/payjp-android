@@ -46,9 +46,10 @@ def kotlinAndroidArtifactTasks() {
     }
 
     dokka {
-        outputFormat = 'html'
+        outputFormat = 'javadoc'
         outputDirectory = "$buildDir/docs/kdoc"
         sourceDirs = android.sourceSets.main.java.srcDirs
+        includeNonPublic = false
     }
 
     task docJar(type: Jar, dependsOn: dokka) {

@@ -27,7 +27,7 @@ import jp.pay.android.PayjpTokenParam
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.TestStubs
 import jp.pay.android.anyNullable
-import jp.pay.android.model.AcceptedBrandsResponse
+import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.CardBrand
 import jp.pay.android.ui.widget.PayjpCardFormView
 import jp.pay.android.util.Tasks
@@ -151,7 +151,7 @@ class PayjpCoroutineExtTest {
     fun getAcceptedBrandsSuspend_success() {
         val brands = listOf(CardBrand.VISA)
         `when`(payjpToken.getAcceptedBrands(anyNullable()))
-            .thenReturn(Tasks.success(AcceptedBrandsResponse(brands, true)))
+            .thenReturn(Tasks.success(CardBrandsAcceptedResponse(brands, true)))
         runBlocking {
             assertThat(payjpToken.getAcceptedBrandsSuspend(null).brands, `is`(brands))
         }
