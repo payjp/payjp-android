@@ -32,6 +32,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.Task
@@ -47,7 +48,6 @@ import jp.pay.android.model.CardExpiration
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.util.OneOffValue
-import jp.pay.android.util.RemappableMediatorLiveData
 import jp.pay.android.util.Tasks
 import jp.pay.android.validator.CardCvcInputTransformerService
 import jp.pay.android.validator.CardInputTransformer
@@ -70,10 +70,10 @@ internal class CardFormViewModel(
     holderNameEnabledDefault: Boolean
 ) : ViewModel(), CardFormViewModelOutput, CardFormViewModelInput, LifecycleObserver {
 
-    override val cardNumberError: RemappableMediatorLiveData<CardNumberInput, Int?>
-    override val cardExpirationError: RemappableMediatorLiveData<CardExpirationInput, Int?>
-    override val cardCvcError: RemappableMediatorLiveData<CardCvcInput, Int?>
-    override val cardHolderNameError: RemappableMediatorLiveData<CardHolderNameInput, Int?>
+    override val cardNumberError: LiveData<Int?>
+    override val cardExpirationError: LiveData<Int?>
+    override val cardCvcError: LiveData<Int?>
+    override val cardHolderNameError: LiveData<Int?>
     override val cardHolderNameEnabled = MutableLiveData<Boolean>()
     override val cvcImeOptions: LiveData<Int>
     override val cardNumberBrand: LiveData<CardBrand>
@@ -110,10 +110,10 @@ internal class CardFormViewModel(
             addSource(cardHolderNameEnabled) { value = checkValid() }
         }
         showErrorImmediately.value = false
-        cardNumberError = RemappableMediatorLiveData(cardNumberInput, this::retrieveError)
-        cardExpirationError = RemappableMediatorLiveData(cardExpirationInput, this::retrieveError)
-        cardCvcError = RemappableMediatorLiveData(cardCvcInput, this::retrieveError)
-        cardHolderNameError = RemappableMediatorLiveData(cardHolderNameInput, this::retrieveError)
+        cardNumberError = cardNumberInput.map(this::retrieveError).distinctUntilChanged()
+        cardExpirationError = cardExpirationInput.map(this::retrieveError).distinctUntilChanged()
+        cardCvcError = cardCvcInput.map(this::retrieveError).distinctUntilChanged()
+        cardHolderNameError = cardHolderNameInput.map(this::retrieveError).distinctUntilChanged()
         cardNumberBrand = cardNumberInput.map { it?.brand ?: CardBrand.UNKNOWN }
         cardExpiration = cardExpirationInput.map { it?.value }
         brandObserver = Observer {

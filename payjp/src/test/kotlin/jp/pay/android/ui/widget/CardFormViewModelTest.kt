@@ -23,6 +23,7 @@
 package jp.pay.android.ui.widget
 
 import android.view.inputmethod.EditorInfo
+import androidx.lifecycle.Observer
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.CardRobot
 import jp.pay.android.PayjpTokenService
@@ -70,6 +71,8 @@ internal class CardFormViewModelTest {
     private lateinit var cardCvcInputTransformer: CardCvcInputTransformerService
     @Mock
     private lateinit var cardHolderNameInputTransformer: CardInputTransformer<CardHolderNameInput>
+    @Mock
+    private lateinit var cardNumberErrorObserver: Observer<in Int?>
 
     @Before
     fun setUp() {
@@ -102,6 +105,8 @@ internal class CardFormViewModelTest {
         cardCvcValid.observeForever { }
         errorFetchAcceptedBrands.observeForever { }
         acceptedBrands.observeForever { }
+
+        cardNumberError.observeForever(cardNumberErrorObserver)
     }
 
     private fun mockCorrectInput(
@@ -260,6 +265,25 @@ internal class CardFormViewModelTest {
             inputCardNumber("")
             assertThat(cardNumberError.value, `is`(errorId))
         }
+    }
+
+    @Test
+    fun cardNumberError_distinct() {
+        val errorId = 0
+        val formError = FormInputError(errorId, false)
+        // return error twice for input twice
+        `when`(cardNumberInputTransformer.transform(anyString()))
+            .thenReturn(CardNumberInput(null, null, formError, CardBrand.VISA))
+            .thenReturn(CardNumberInput(null, null, formError, CardBrand.VISA))
+        `when`(cardCvcInputTransformer.transform(anyString()))
+            .thenReturn(CardCvcInput(null, null, formError))
+        // input twice
+        createViewModel().run {
+            inputCardNumber("")
+            inputCardNumber("")
+        }
+        // call once
+        verify(cardNumberErrorObserver).onChanged(0)
     }
 
     @Test
