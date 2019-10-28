@@ -31,6 +31,10 @@ implementation 'jp.pay:payjp-android-cardio:$latest_version'
 implementation 'jp.pay:payjp-android-coroutine:$latest_version'
 ```
 
+## リファレンス
+
+https://payjp.github.io/payjp-android/
+
 ## License
 
 PAY.JP Android SDK is available under the MIT license. See the LICENSE file for more info.
