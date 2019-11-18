@@ -22,6 +22,8 @@
  */
 package jp.pay.android
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
@@ -30,6 +32,8 @@ import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.network.TokenApiClientFactory.createApiClient
 import jp.pay.android.plugin.CardScannerResolver
+import jp.pay.android.ui.PayjpCardFormActivity
+import jp.pay.android.ui.PayjpCardFormResultCallback
 import java.nio.charset.Charset
 import java.util.concurrent.Executor
 
@@ -107,6 +111,29 @@ class Payjp internal constructor(
         fun init(configuration: PayjpConfiguration): Payjp {
             return factory.init { Payjp(configuration) }
         }
+
+        /**
+         * Start card form screen
+         *
+         * @param activity activity
+         * @param requestCode requestCode. The default is [PayjpCardFormActivity.DEFAULT_CARD_FORM_REQUEST_CODE]
+         * @param tenant tenant (only for platformer)
+         */
+        @JvmStatic
+        @JvmOverloads
+        fun startCardForm(activity: Activity, requestCode: Int? = null, tenant: TenantId? = null) =
+            PayjpCardFormActivity.start(activity = activity, requestCode = requestCode, tenant = tenant)
+
+        /**
+         * Handle the result from the activity which is started by [Payjp.startCardForm].
+         * Use this at [Activity.onActivityResult] in the activity that you call [Payjp.startCardForm].
+         *
+         * @param data the intent from [Activity.onActivityResult].
+         * @param callback you can get card token if it is success.
+         */
+        @JvmStatic
+        fun handleCardFormResult(data: Intent?, callback: PayjpCardFormResultCallback) =
+            PayjpCardFormActivity.onActivityResult(data = data, callback = callback)
     }
 
     private val authorization: String
