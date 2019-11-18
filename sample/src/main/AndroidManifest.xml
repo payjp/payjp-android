@@ -49,6 +49,9 @@
         <activity android:name=".CardFormViewSampleActivity" />
         <activity android:name=".CardFormViewSampleJavaActivity" />
         <activity android:name=".CoroutineSampleActivity" />
+        <activity
+            android:name="jp.pay.android.ui.PayjpCardFormActivity"
+            android:theme="@style/Material.Filled" />
     </application>
 
 </manifest>
