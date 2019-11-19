@@ -20,37 +20,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.model
 
-import android.os.Parcelable
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
-import kotlinx.android.parcel.Parcelize
-import java.util.Date
+package jp.pay.android.ui;
 
-/**
- * PAY.JP card object.
- * For security reasons, the card number is masked and you can get only last4 character.
- * The full documentations are following.
- * cf. [https://pay.jp/docs/api/#cardオブジェクト](https://pay.jp/docs/api/#cardオブジェクト)
- */
-@JsonClass(generateAdapter = true)
-@Parcelize
-data class Card(
-    val id: String,
-    val name: String?,
-    val last4: String,
-    val brand: CardBrand,
-    @Json(name = "exp_month") val expirationMonth: Int,
-    @Json(name = "exp_year") val expirationYear: Int,
-    val fingerprint: String,
-    val livemode: Boolean,
-    val created: Date
-) : Parcelable {
+import androidx.annotation.NonNull;
 
-    override fun hashCode(): Int = id.hashCode()
+public interface PayjpCardFormResultCallback {
 
-    override fun equals(other: Any?): Boolean {
-        return other === this || (other is Card && other.id == id)
-    }
+    void onResult(@NonNull PayjpCardFormResult result);
 }

@@ -28,10 +28,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import jp.pay.android.Payjp
+import jp.pay.android.ui.PayjpCardFormResultCallback
 import kotlinx.android.synthetic.main.activity_top.recycler_view
 
 typealias OnClickSample = (sample: TopActivity.Sample) -> Unit
@@ -40,6 +43,8 @@ class TopActivity : AppCompatActivity() {
 
     private val samples by lazy {
         listOf(
+            Sample("CardFormActivity Example",
+                null, this::startCardForm),
             Sample(
                 "CardFormView Example",
                 Intent(this, CardFormViewSampleActivity::class.java)
@@ -68,8 +73,21 @@ class TopActivity : AppCompatActivity() {
         setContentView(R.layout.activity_top)
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.adapter = TopAdapter(this, samples) { sample ->
-            startActivity(sample.intent)
+            sample.start(this)
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Payjp.handleCardFormResult(data, PayjpCardFormResultCallback { result ->
+            if (result.isSuccess()) {
+                Toast.makeText(this, "Token: ${result.retrieveToken()}", Toast.LENGTH_SHORT).show()
+            }
+        })
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun startCardForm() {
+        Payjp.startCardForm(this)
     }
 
     class TopAdapter(
@@ -117,5 +135,9 @@ class TopActivity : AppCompatActivity() {
         }
     }
 
-    data class Sample(val name: String, val intent: Intent)
+    data class Sample(val name: String, val intent: Intent?, val startable: (() -> Unit)? = null) {
+        fun start(activity: AppCompatActivity) {
+            startable?.invoke() ?: intent?.let { activity.startActivity(it) }
+        }
+    }
 }

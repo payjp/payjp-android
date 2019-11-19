@@ -20,37 +20,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.model
+package jp.pay.android.ui
 
-import android.os.Parcelable
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
-import kotlinx.android.parcel.Parcelize
-import java.util.Date
+import jp.pay.android.model.Token
 
-/**
- * PAY.JP card object.
- * For security reasons, the card number is masked and you can get only last4 character.
- * The full documentations are following.
- * cf. [https://pay.jp/docs/api/#cardオブジェクト](https://pay.jp/docs/api/#cardオブジェクト)
- */
-@JsonClass(generateAdapter = true)
-@Parcelize
-data class Card(
-    val id: String,
-    val name: String?,
-    val last4: String,
-    val brand: CardBrand,
-    @Json(name = "exp_month") val expirationMonth: Int,
-    @Json(name = "exp_year") val expirationYear: Int,
-    val fingerprint: String,
-    val livemode: Boolean,
-    val created: Date
-) : Parcelable {
+sealed class PayjpCardFormResult {
 
-    override fun hashCode(): Int = id.hashCode()
+    data class Success(val token: Token) : PayjpCardFormResult()
 
-    override fun equals(other: Any?): Boolean {
-        return other === this || (other is Card && other.id == id)
+    object Canceled : PayjpCardFormResult()
+
+    fun isSuccess(): Boolean = this is Success
+
+    fun isCanceled(): Boolean = this === Canceled
+
+    fun retrieveToken(): Token {
+        val success = this as? Success
+            ?: throw IllegalStateException("Cannot call retrieveToken() when it is not success")
+        return success.token
     }
 }
