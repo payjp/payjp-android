@@ -21,40 +21,92 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
   -->
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/container_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="16dp">
+        android:layout_height="match_parent">
 
-    <FrameLayout
-            android:id="@+id/card_form_view"
+    <LinearLayout
+            android:id="@+id/content_view"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent"
+            android:layout_margin="16dp">
 
-    <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            >
-
-        <Button
-                android:id="@+id/card_form_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="?android:buttonStyle"
-                android:layout_gravity="center"
-                android:text="カードを登録"
-                />
-
-        <ProgressBar
-                android:id="@+id/card_form_button_progress"
+        <jp.pay.android.ui.widget.PayjpAcceptedBrandsView
+                android:id="@+id/accepted_brands"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:padding="16dp"
+                android:layout_gravity="center_horizontal"
                 />
+
+        <FrameLayout
+                android:id="@+id/card_form_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp" />
+
+        <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                >
+
+            <Button
+                    android:id="@+id/card_form_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="?android:buttonStyle"
+                    android:layout_gravity="center"
+                    android:text="カードを登録"
+                    />
+
+            <ProgressBar
+                    android:id="@+id/card_form_button_progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <FrameLayout
+            android:id="@+id/loading_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+
+        <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
 
     </FrameLayout>
 
-</LinearLayout>
+    <FrameLayout
+            android:id="@+id/error_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="読み込みに失敗しました。" />
+
+        <Button
+                android:id="@+id/reload_content_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:buttonStyle"
+                android:layout_gravity="center"
+                android:layout_marginTop="80dp"
+                android:text="再読み込み" />
+
+    </FrameLayout>
+
+</FrameLayout>

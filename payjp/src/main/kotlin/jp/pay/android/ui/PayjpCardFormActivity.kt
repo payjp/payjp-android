@@ -26,15 +26,19 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.observe
+import jp.pay.android.Payjp
 import jp.pay.android.R
 import jp.pay.android.Task
+import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
+import jp.pay.android.ui.widget.PayjpAcceptedBrandsView
 import jp.pay.android.ui.widget.PayjpCardFormFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
 
@@ -70,18 +74,24 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
     }
 
     private lateinit var cardFormFragment: PayjpCardFormFragment
+    private lateinit var acceptedBrandsView: PayjpAcceptedBrandsView
     private val submitButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     private val submitButtonProgressVisibility: MutableLiveData<Int> = MutableLiveData(View.INVISIBLE)
+    private val contentViewVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    private val loadingViewVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    private val errorViewVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     private val submitButtonIsEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
     private val tenantId: TenantId? by lazy {
         intent?.getStringExtra(EXTRA_KEY_TENANT)?.let { TenantId(it) }
     }
     private var createTokenTask: Task<Token>? = null
+    private var getAcceptedBrandsTask: Task<CardBrandsAcceptedResponse>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = "カードを登録"
         findCardFormFragment()
+        acceptedBrandsView = findViewById(R.id.accepted_brands)
         val submitButton = findViewById<Button>(R.id.card_form_button)
         val submitButtonProgress = findViewById<ProgressBar>(R.id.card_form_button_progress)
         submitButton.setOnClickListener {
@@ -90,13 +100,26 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
             }
             createToken()
         }
+        val loadingView = findViewById<ViewGroup>(R.id.loading_view)
+        // intercept focus
+        loadingView.setOnClickListener { }
+        val errorView = findViewById<ViewGroup>(R.id.error_view)
+        findViewById<Button>(R.id.reload_content_button).setOnClickListener {
+            fetchAcceptedBrands()
+        }
+        val contentView = findViewById<ViewGroup>(R.id.content_view)
         submitButtonVisibility.observe(this, submitButton::setVisibility)
         submitButtonProgressVisibility.observe(this, submitButtonProgress::setVisibility)
         submitButtonIsEnabled.observe(this, submitButton::setEnabled)
+        loadingViewVisibility.observe(this, loadingView::setVisibility)
+        errorViewVisibility.observe(this, errorView::setVisibility)
+        contentViewVisibility.observe(this, contentView::setVisibility)
+        fetchAcceptedBrands()
     }
 
     override fun onDestroy() {
         createTokenTask?.cancel()
+        getAcceptedBrandsTask?.cancel()
         super.onDestroy()
     }
 
@@ -124,6 +147,30 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
         }
     }
 
+    private fun fetchAcceptedBrands() {
+        if (acceptedBrandsView.getAcceptedBrands().isEmpty()) {
+            loadingViewVisibility.value = View.VISIBLE
+            contentViewVisibility.value = View.GONE
+            errorViewVisibility.value = View.GONE
+            getAcceptedBrandsTask = Payjp.getInstance().getAcceptedBrands(tenantId)
+            getAcceptedBrandsTask?.enqueue(object : Task.Callback<CardBrandsAcceptedResponse> {
+                override fun onSuccess(data: CardBrandsAcceptedResponse) {
+                    acceptedBrandsView.setAcceptedBrands(data.brands)
+                    loadingViewVisibility.value = View.GONE
+                    contentViewVisibility.value = View.VISIBLE
+                    errorViewVisibility.value = View.GONE
+                }
+
+                override fun onError(throwable: Throwable) {
+                    // TODO: error message
+                    loadingViewVisibility.value = View.GONE
+                    contentViewVisibility.value = View.GONE
+                    errorViewVisibility.value = View.VISIBLE
+                }
+            })
+        }
+    }
+
     private fun createToken() {
         submitButtonVisibility.value = View.INVISIBLE
         submitButtonProgressVisibility.value = View.VISIBLE
@@ -138,6 +185,7 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
             override fun onError(throwable: Throwable) {
                 submitButtonProgressVisibility.value = View.INVISIBLE
                 submitButtonVisibility.value = View.VISIBLE
+                // TODO: エラー
             }
         })
     }
