@@ -23,7 +23,13 @@
 package jp.pay.android.model
 
 import jp.pay.android.R
-import jp.pay.android.model.CardBrand.*
+import jp.pay.android.model.CardBrand.AMEX
+import jp.pay.android.model.CardBrand.DINERS_CLUB
+import jp.pay.android.model.CardBrand.DISCOVER
+import jp.pay.android.model.CardBrand.JCB
+import jp.pay.android.model.CardBrand.MASTER_CARD
+import jp.pay.android.model.CardBrand.UNKNOWN
+import jp.pay.android.model.CardBrand.VISA
 import jp.pay.android.validator.CardCvcInputTransformer
 import jp.pay.android.validator.CardCvcInputTransformerService
 import org.hamcrest.Matchers.`is`
@@ -45,13 +51,48 @@ internal class CardCvcInputTest(
         @ParameterizedRobolectricTestRunner.Parameters
         fun data(): List<Array<out Any?>> {
             return listOf(
-                arrayOf(UNKNOWN, null, null, FormInputError(R.string.payjp_card_form_error_no_cvc, true)),
-                arrayOf(UNKNOWN, "", null, FormInputError(R.string.payjp_card_form_error_no_cvc, true)),
-                arrayOf(UNKNOWN, "abc", null, FormInputError(R.string.payjp_card_form_error_no_cvc, false)),
-                arrayOf(UNKNOWN, "12", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)),
-                arrayOf(UNKNOWN, "12abc", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)),
-                arrayOf(UNKNOWN, " 12 ", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)),
-                arrayOf(UNKNOWN, "12345", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)),
+                arrayOf(
+                    UNKNOWN,
+                    null,
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_no_cvc, true)
+                ),
+                arrayOf(
+                    UNKNOWN,
+                    "",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_no_cvc, true)
+                ),
+                arrayOf(
+                    UNKNOWN,
+                    "abc",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_no_cvc, false)
+                ),
+                arrayOf(
+                    UNKNOWN,
+                    "12",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)
+                ),
+                arrayOf(
+                    UNKNOWN,
+                    "12abc",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)
+                ),
+                arrayOf(
+                    UNKNOWN,
+                    " 12 ",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)
+                ),
+                arrayOf(
+                    UNKNOWN,
+                    "12345",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)
+                ),
                 arrayOf(VISA, "123", "123", null),
                 arrayOf(VISA, "123a", "123", null),
                 arrayOf(VISA, " 123 ", "123", null),
@@ -59,13 +100,48 @@ internal class CardCvcInputTest(
                 arrayOf(JCB, "123", "123", null),
                 arrayOf(DINERS_CLUB, "123", "123", null),
                 arrayOf(DISCOVER, "123", "123", null),
-                arrayOf(AMEX, "123", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)),
-                arrayOf(UNKNOWN, "123", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)),
-                arrayOf(VISA, "1234", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)),
-                arrayOf(MASTER_CARD, "1234", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)),
-                arrayOf(JCB, "1234", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)),
-                arrayOf(DINERS_CLUB, "1234", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)),
-                arrayOf(DISCOVER, "1234", null, FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)),
+                arrayOf(
+                    AMEX,
+                    "123",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)
+                ),
+                arrayOf(
+                    UNKNOWN,
+                    "123",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_cvc, true)
+                ),
+                arrayOf(
+                    VISA,
+                    "1234",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)
+                ),
+                arrayOf(
+                    MASTER_CARD,
+                    "1234",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)
+                ),
+                arrayOf(
+                    JCB,
+                    "1234",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)
+                ),
+                arrayOf(
+                    DINERS_CLUB,
+                    "1234",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)
+                ),
+                arrayOf(
+                    DISCOVER,
+                    "1234",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_cvc, false)
+                ),
                 arrayOf(AMEX, "1234", "1234", null),
                 arrayOf(UNKNOWN, "1234", "1234", null),
                 arrayOf(UNKNOWN, " 1234 ", "1234", null)

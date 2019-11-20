@@ -22,9 +22,9 @@
  */
 package jp.pay.android.network
 
+import java.util.Locale
 import okhttp3.Interceptor
 import okhttp3.Response
-import java.util.Locale
 
 /**
  * Request interceptor

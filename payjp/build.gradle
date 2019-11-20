@@ -51,9 +51,6 @@ android {
             includeAndroidResources = true
         }
     }
-    androidExtensions {
-        experimental = true
-    }
 }
 
 dependencies {

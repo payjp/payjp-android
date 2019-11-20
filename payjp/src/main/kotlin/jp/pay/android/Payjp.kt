@@ -27,6 +27,8 @@ import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
+import java.nio.charset.Charset
+import java.util.concurrent.Executor
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
@@ -34,8 +36,6 @@ import jp.pay.android.network.TokenApiClientFactory.createApiClient
 import jp.pay.android.plugin.CardScannerResolver
 import jp.pay.android.ui.PayjpCardFormActivity
 import jp.pay.android.ui.PayjpCardFormResultCallback
-import java.nio.charset.Charset
-import java.util.concurrent.Executor
 
 /**
  * Entry point for payjp-android

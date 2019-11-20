@@ -22,10 +22,10 @@
  */
 package jp.pay.android
 
+import java.util.Date
 import jp.pay.android.model.Card
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.Token
-import java.util.Date
 
 object TestStubs {
 

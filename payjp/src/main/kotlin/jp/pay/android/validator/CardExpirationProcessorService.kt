@@ -22,8 +22,8 @@
  */
 package jp.pay.android.validator
 
-import jp.pay.android.model.CardExpiration
 import java.util.Calendar
+import jp.pay.android.model.CardExpiration
 
 /**
  * Process card expiration from input.
