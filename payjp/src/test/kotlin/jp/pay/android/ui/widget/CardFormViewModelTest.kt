@@ -81,7 +81,8 @@ internal class CardFormViewModelTest {
 
     private fun createViewModel(
         tenantId: TenantId? = null,
-        holderNameEnabled: Boolean = true
+        holderNameEnabled: Boolean = true,
+        acceptedBrandList: List<CardBrand>? = null
     ) = CardFormViewModel(
         tokenService = mockTokenService,
         cardNumberInputTransformer = cardNumberInputTransformer,
@@ -89,7 +90,9 @@ internal class CardFormViewModelTest {
         cardCvcInputTransformer = cardCvcInputTransformer,
         cardHolderNameInputTransformer = cardHolderNameInputTransformer,
         tenantId = tenantId,
-        holderNameEnabledDefault = holderNameEnabled
+        holderNameEnabledDefault = holderNameEnabled,
+        acceptedBrandsPreset = acceptedBrandList
+
     ).apply {
         cardNumberError.observeForever { }
         cardExpirationError.observeForever { }
@@ -126,6 +129,13 @@ internal class CardFormViewModelTest {
     }
 
     @Test
+    fun acceptedBrands_injectAt_init() {
+        val brands = listOf(CardBrand.VISA, CardBrand.MASTER_CARD)
+        val viewModel = createViewModel(acceptedBrandList = brands)
+        verify(cardNumberInputTransformer).acceptedBrands = brands
+    }
+
+    @Test
     fun fetchAcceptedBrands_no_brands() {
         val brands = listOf(CardBrand.VISA, CardBrand.MASTER_CARD)
         `when`(mockTokenService.getAcceptedBrands(anyNullable()))
@@ -148,8 +158,10 @@ internal class CardFormViewModelTest {
         val error: Throwable = RuntimeException("omg")
         `when`(mockTokenService.getAcceptedBrands(anyNullable()))
             .thenReturn(Tasks.failure(error))
-        `when`(cardNumberInputTransformer.acceptedBrands).thenReturn(null)
         val viewModel = createViewModel()
+        // call `setAcceptedBrands` in init
+        reset(cardNumberInputTransformer)
+        `when`(cardNumberInputTransformer.acceptedBrands).thenReturn(null)
         viewModel.fetchAcceptedBrands()
         verify(cardNumberInputTransformer, never()).acceptedBrands = anyNullable()
         assertThat(viewModel.acceptedBrands.value?.peek(), `is`(nullValue()))

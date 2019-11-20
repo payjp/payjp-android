@@ -67,7 +67,8 @@ internal class CardFormViewModel(
     private val cardCvcInputTransformer: CardCvcInputTransformerService,
     private val cardHolderNameInputTransformer: CardInputTransformer<CardHolderNameInput>,
     private val tenantId: TenantId?,
-    holderNameEnabledDefault: Boolean
+    holderNameEnabledDefault: Boolean,
+    acceptedBrandsPreset: List<CardBrand>?
 ) : ViewModel(), CardFormViewModelOutput, CardFormViewModelInput, LifecycleObserver {
 
     override val cardNumberError: LiveData<Int?>
@@ -95,6 +96,7 @@ internal class CardFormViewModel(
 
     init {
         cardHolderNameEnabled.value = holderNameEnabledDefault
+        cardNumberInputTransformer.acceptedBrands = acceptedBrandsPreset
         cvcImeOptions = cardHolderNameEnabled.map {
             if (it) {
                 EditorInfo.IME_ACTION_NEXT
@@ -234,7 +236,8 @@ internal class CardFormViewModel(
         private val cardCvcInputTransformer: CardCvcInputTransformerService,
         private val cardHolderNameInputTransformer: CardInputTransformer<CardHolderNameInput>,
         private val tenantId: TenantId? = null,
-        private val holderNameEnabledDefault: Boolean = true
+        private val holderNameEnabledDefault: Boolean = true,
+        private val acceptedBrands: List<CardBrand>? = null
     ) : ViewModelProvider.NewInstanceFactory() {
 
         @Suppress("UNCHECKED_CAST")
@@ -246,7 +249,8 @@ internal class CardFormViewModel(
                 cardCvcInputTransformer = cardCvcInputTransformer,
                 cardHolderNameInputTransformer = cardHolderNameInputTransformer,
                 tenantId = tenantId,
-                holderNameEnabledDefault = holderNameEnabledDefault
+                holderNameEnabledDefault = holderNameEnabledDefault,
+                acceptedBrandsPreset = acceptedBrands
             ) as T
         }
     }

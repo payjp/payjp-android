@@ -35,6 +35,7 @@ import androidx.lifecycle.observe
 import jp.pay.android.Payjp
 import jp.pay.android.R
 import jp.pay.android.Task
+import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
@@ -73,7 +74,7 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
         }
     }
 
-    private lateinit var cardFormFragment: PayjpCardFormFragment
+    private var cardFormFragment: PayjpCardFormFragment? = null
     private lateinit var acceptedBrandsView: PayjpAcceptedBrandsView
     private val submitButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     private val submitButtonProgressVisibility: MutableLiveData<Int> = MutableLiveData(View.INVISIBLE)
@@ -90,12 +91,11 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = "カードを登録"
-        findCardFormFragment()
         acceptedBrandsView = findViewById(R.id.accepted_brands)
         val submitButton = findViewById<Button>(R.id.card_form_button)
         val submitButtonProgress = findViewById<ProgressBar>(R.id.card_form_button_progress)
         submitButton.setOnClickListener {
-            if (!cardFormFragment.isValid) {
+            if (cardFormFragment?.isValid != true) {
                 return@setOnClickListener
             }
             createToken()
@@ -127,23 +127,23 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
         submitButtonIsEnabled.value = isValid
     }
 
-    private fun findCardFormFragment() {
+    private fun findCardFormFragment(acceptedBrands: Array<CardBrand>) {
         supportFragmentManager.let { manager ->
             val f = manager.findFragmentByTag(FRAGMENT_CARD_FORM)
-            cardFormFragment = f as? PayjpCardFormFragment
+            val fragment = f as? PayjpCardFormFragment
                 ?: PayjpCardFormFragment.newInstance(
                     holderNameEnabled = true,
-                    tenantId = tenantId
+                    tenantId = tenantId,
+                    acceptedBrands = acceptedBrands
                 )
-            if (!cardFormFragment.isAdded) {
+            if (!fragment.isAdded) {
                 manager
                     .beginTransaction().apply {
-                        replace(R.id.card_form_view, cardFormFragment,
-                            FRAGMENT_CARD_FORM
-                        )
+                        replace(R.id.card_form_view, fragment, FRAGMENT_CARD_FORM)
                     }
                     .commit()
             }
+            cardFormFragment = fragment
         }
     }
 
@@ -156,6 +156,7 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
             getAcceptedBrandsTask?.enqueue(object : Task.Callback<CardBrandsAcceptedResponse> {
                 override fun onSuccess(data: CardBrandsAcceptedResponse) {
                     acceptedBrandsView.setAcceptedBrands(data.brands)
+                    findCardFormFragment(data.brands.toTypedArray())
                     loadingViewVisibility.value = View.GONE
                     contentViewVisibility.value = View.VISIBLE
                     errorViewVisibility.value = View.GONE
@@ -172,22 +173,24 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
     }
 
     private fun createToken() {
-        submitButtonVisibility.value = View.INVISIBLE
-        submitButtonProgressVisibility.value = View.VISIBLE
-        createTokenTask = cardFormFragment.createToken()
-        createTokenTask?.enqueue(object : Task.Callback<Token> {
-            override fun onSuccess(data: Token) {
-                submitButtonProgressVisibility.value = View.INVISIBLE
-                // TODO: サーバーに送信する
-                finishWithSuccess(data)
-            }
+        cardFormFragment?.let { cardForm ->
+            submitButtonVisibility.value = View.INVISIBLE
+            submitButtonProgressVisibility.value = View.VISIBLE
+            createTokenTask = cardForm.createToken()
+            createTokenTask?.enqueue(object : Task.Callback<Token> {
+                override fun onSuccess(data: Token) {
+                    submitButtonProgressVisibility.value = View.INVISIBLE
+                    // TODO: サーバーに送信する
+                    finishWithSuccess(data)
+                }
 
-            override fun onError(throwable: Throwable) {
-                submitButtonProgressVisibility.value = View.INVISIBLE
-                submitButtonVisibility.value = View.VISIBLE
-                // TODO: エラー
-            }
-        })
+                override fun onError(throwable: Throwable) {
+                    submitButtonProgressVisibility.value = View.INVISIBLE
+                    submitButtonVisibility.value = View.VISIBLE
+                    // TODO: エラー
+                }
+            })
+        }
     }
 
     private fun finishWithSuccess(token: Token) {
