@@ -30,8 +30,8 @@ import jp.pay.android.PayjpTokenService
 import jp.pay.android.TestStubs
 import jp.pay.android.anyNullable
 import jp.pay.android.exception.PayjpInvalidCardFormException
-import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.CardComponentInput.CardCvcInput
 import jp.pay.android.model.CardComponentInput.CardExpirationInput
 import jp.pay.android.model.CardComponentInput.CardHolderNameInput

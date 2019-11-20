@@ -24,14 +24,14 @@ package jp.pay.android.network
 
 import android.os.Build
 import android.util.Log
-import okhttp3.ConnectionSpec
-import okhttp3.OkHttpClient
-import okhttp3.TlsVersion
 import java.security.KeyStore
 import java.util.Arrays
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
+import okhttp3.ConnectionSpec
+import okhttp3.OkHttpClient
+import okhttp3.TlsVersion
 
 /**
  * Enable Tls ON Pre-Lollipop

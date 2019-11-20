@@ -22,8 +22,8 @@
  */
 package jp.pay.android
 
-import jp.pay.android.plugin.CardScannerPlugin
 import java.util.Locale
+import jp.pay.android.plugin.CardScannerPlugin
 
 /**
  * Configuration for Payjp
