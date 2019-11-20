@@ -81,4 +81,9 @@ dependencies {
 
     // card scan
     implementation "io.card:android-sdk:$cardio"
+
+    // debug
+    implementation 'com.facebook.flipper:flipper:0.28.0'
+    implementation 'com.facebook.flipper:flipper-network-plugin:0.28.0'
+    implementation 'com.facebook.soloader:soloader:0.8.0'
 }
