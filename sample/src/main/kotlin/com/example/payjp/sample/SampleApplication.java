@@ -77,7 +77,7 @@ public class SampleApplication extends Application {
 
         SampleSendTokenHandler sendTokenHandler = new SampleSendTokenHandler(backendService);
 
-        Payjp.init(new PayjpConfiguration.Builder("pk_test_07a0ddabc1d3d424fe5890be")
+        Payjp.init(new PayjpConfiguration.Builder("pk_test_0383a1b8f91e8a6e3ea0e2a9")
                 .setDebugEnabled(BuildConfig.DEBUG)
                 .setCardScannerPlugin(PayjpCardScannerPlugin.INSTANCE)
                 .setTokenBackgroundHandler(sendTokenHandler)
