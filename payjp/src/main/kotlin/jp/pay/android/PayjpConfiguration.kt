@@ -39,7 +39,8 @@ class PayjpConfiguration private constructor(
     val publicKey: String,
     val debugEnabled: Boolean,
     val locale: Locale,
-    val cardScannerPlugin: CardScannerPlugin?
+    val cardScannerPlugin: CardScannerPlugin?,
+    val tokenBackgroundHandler: PayjpTokenBackgroundHandler?
 ) {
 
     /**
@@ -58,6 +59,8 @@ class PayjpConfiguration private constructor(
         private var locale: Locale = Locale.getDefault()
 
         private var cardScannerPlugin: CardScannerPlugin? = null
+
+        private var tokenBackgroundHandler: PayjpTokenBackgroundHandler? = null
 
         /**
          * set debugEnabled
@@ -82,11 +85,21 @@ class PayjpConfiguration private constructor(
          */
         fun setCardScannerPlugin(plugin: CardScannerPlugin?) = apply { cardScannerPlugin = plugin }
 
+        fun setTokenBackgroundHandler(handler: PayjpTokenBackgroundHandler?) = apply {
+            tokenBackgroundHandler = handler
+        }
+
         /**
          * Build configuration.
          *
          * @return configuration
          */
-        fun build() = PayjpConfiguration(publicKey, debugEnabled, locale, cardScannerPlugin)
+        fun build() = PayjpConfiguration(
+            publicKey = publicKey,
+            debugEnabled = debugEnabled,
+            locale = locale,
+            cardScannerPlugin = cardScannerPlugin,
+            tokenBackgroundHandler = tokenBackgroundHandler
+        )
     }
 }

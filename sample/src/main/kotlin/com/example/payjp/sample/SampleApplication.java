@@ -23,9 +23,7 @@
 package com.example.payjp.sample;
 
 import android.app.Application;
-import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.facebook.flipper.android.AndroidFlipperClient;
@@ -69,11 +67,6 @@ public class SampleApplication extends Application {
             client.start();
         }
 
-        Payjp.init(new PayjpConfiguration.Builder("pk_test_07a0ddabc1d3d424fe5890be")
-                .setDebugEnabled(BuildConfig.DEBUG)
-                .setCardScannerPlugin(PayjpCardScannerPlugin.INSTANCE)
-                .build());
-
         // setup api
         backendService = new Retrofit.Builder()
                 .baseUrl(BACKEND_URL)
@@ -81,15 +74,13 @@ public class SampleApplication extends Application {
                 .addConverterFactory(MoshiConverterFactory.create(new Moshi.Builder().build()))
                 .build()
                 .create(SampleBackendService.class);
-    }
 
-    @NonNull
-    SampleBackendService getBackendService() {
-        assert backendService != null;
-        return backendService;
-    }
+        SampleSendTokenHandler sendTokenHandler = new SampleSendTokenHandler(backendService);
 
-    public static SampleApplication get(Context context) {
-        return (SampleApplication) context.getApplicationContext();
+        Payjp.init(new PayjpConfiguration.Builder("pk_test_07a0ddabc1d3d424fe5890be")
+                .setDebugEnabled(BuildConfig.DEBUG)
+                .setCardScannerPlugin(PayjpCardScannerPlugin.INSTANCE)
+                .setTokenBackgroundHandler(sendTokenHandler)
+                .build());
     }
 }

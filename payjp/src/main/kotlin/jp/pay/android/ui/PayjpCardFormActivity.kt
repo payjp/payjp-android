@@ -29,10 +29,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.observe
 import jp.pay.android.Payjp
+import jp.pay.android.PayjpTokenBackgroundHandler
 import jp.pay.android.R
 import jp.pay.android.Task
 import jp.pay.android.model.CardBrand
@@ -42,9 +44,15 @@ import jp.pay.android.model.Token
 import jp.pay.android.ui.widget.PayjpAcceptedBrandsView
 import jp.pay.android.ui.widget.PayjpCardFormFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activity),
-    PayjpCardFormView.OnValidateInputListener {
+    PayjpCardFormView.OnValidateInputListener, CoroutineScope by MainScope() {
 
     internal companion object {
         const val DEFAULT_CARD_FORM_REQUEST_CODE = 1
@@ -118,6 +126,7 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
     }
 
     override fun onDestroy() {
+        cancel()
         createTokenTask?.cancel()
         getAcceptedBrandsTask?.cancel()
         super.onDestroy()
@@ -179,18 +188,55 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
             createTokenTask = cardForm.createToken()
             createTokenTask?.enqueue(object : Task.Callback<Token> {
                 override fun onSuccess(data: Token) {
-                    submitButtonProgressVisibility.value = View.INVISIBLE
-                    // TODO: サーバーに送信する
-                    finishWithSuccess(data)
+                    handleToken(data)
                 }
 
                 override fun onError(throwable: Throwable) {
                     submitButtonProgressVisibility.value = View.INVISIBLE
                     submitButtonVisibility.value = View.VISIBLE
                     // TODO: エラー
+                    showErrorMessage("問題が発生しました。")
                 }
             })
         }
+    }
+
+    private fun handleToken(token: Token) = launch {
+        val handler = Payjp.getInstance().getTokenBackgroundHandler()
+        if (handler != null) {
+            try {
+                val status = withContext(Dispatchers.IO) {
+                    handler.handleTokenInBackground(token)
+                }
+                submitButtonProgressVisibility.value = View.INVISIBLE
+                when (status) {
+                    PayjpTokenBackgroundHandler.CardFormStatus.Complete -> {
+                        finishWithSuccess(token)
+                    }
+                    is PayjpTokenBackgroundHandler.CardFormStatus.Error -> {
+                        showErrorMessage(status.message)
+                        submitButtonVisibility.value = View.VISIBLE
+                    }
+                }
+            } catch (t: Throwable) {
+                // TODO:
+                showErrorMessage("問題が発生しました。")
+                submitButtonProgressVisibility.value = View.INVISIBLE
+                submitButtonVisibility.value = View.VISIBLE
+            }
+        } else {
+            submitButtonProgressVisibility.value = View.INVISIBLE
+            finishWithSuccess(token)
+        }
+    }
+
+    private fun showErrorMessage(message: CharSequence) {
+        AlertDialog.Builder(this)
+            .setTitle("エラー")
+            .setMessage(message)
+            .setNegativeButton("OK", null)
+            .create()
+            .show()
     }
 
     private fun finishWithSuccess(token: Token) {

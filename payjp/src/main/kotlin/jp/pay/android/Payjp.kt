@@ -48,7 +48,8 @@ import jp.pay.android.ui.PayjpCardFormResultCallback
  */
 class Payjp internal constructor(
     private val configuration: PayjpConfiguration,
-    private val payjpApi: PayjpApi
+    private val payjpApi: PayjpApi,
+    private val tokenBackgroundHandler: PayjpTokenBackgroundHandler? = null
 ) : PayjpTokenService {
 
     /**
@@ -63,7 +64,8 @@ class Payjp internal constructor(
             debuggable = configuration.debugEnabled,
             callbackExecutor = MainThreadExecutor(),
             locale = configuration.locale
-        )
+        ),
+        tokenBackgroundHandler = configuration.tokenBackgroundHandler
     ) {
         CardScannerResolver.cardScannerPlugin = configuration.cardScannerPlugin
     }
@@ -171,6 +173,8 @@ class Payjp internal constructor(
     override fun getAcceptedBrands(tenantId: TenantId?): Task<CardBrandsAcceptedResponse> {
         return payjpApi.getAcceptedBrands(authorization, tenantId?.id)
     }
+
+    override fun getTokenBackgroundHandler(): PayjpTokenBackgroundHandler? = tokenBackgroundHandler
 
     private class MainThreadExecutor : Executor {
         private val handler = Handler(Looper.getMainLooper())

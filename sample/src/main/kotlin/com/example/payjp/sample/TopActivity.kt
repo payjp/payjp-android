@@ -35,19 +35,12 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import jp.pay.android.Payjp
-import jp.pay.android.model.Token
 import jp.pay.android.ui.PayjpCardFormResultCallback
 import kotlinx.android.synthetic.main.activity_top.recycler_view
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 typealias OnClickSample = (sample: TopActivity.Sample) -> Unit
 
-class TopActivity : AppCompatActivity(), CoroutineScope by MainScope() {
+class TopActivity : AppCompatActivity() {
 
     private val samples by lazy {
         listOf(
@@ -85,18 +78,12 @@ class TopActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         }
     }
 
-    override fun onDestroy() {
-        cancel()
-        super.onDestroy()
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Payjp.handleCardFormResult(data, PayjpCardFormResultCallback { result ->
             if (result.isSuccess()) {
                 val token = result.retrieveToken()
                 Log.i("handleCardFormResult", "token => $token")
                 Toast.makeText(this, "Token: $token", Toast.LENGTH_SHORT).show()
-                saveCardToken(token)
             }
         })
         super.onActivityResult(requestCode, resultCode, data)
@@ -104,18 +91,6 @@ class TopActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private fun startCardForm() {
         Payjp.startCardForm(this)
-    }
-
-    private fun saveCardToken(token: Token) = launch {
-        val api = SampleApplication.get(this@TopActivity).getBackendService()
-        try {
-            withContext(Dispatchers.IO) {
-                api.saveCard(token.id)
-                Log.i("handleCardFormResult", "saved")
-            }
-        } catch (t: Throwable) {
-            Log.w("handleCardFormResult", "save card error", t)
-        }
     }
 
     class TopAdapter(

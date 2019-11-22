@@ -75,11 +75,19 @@ interface PayjpTokenService {
     fun getAcceptedBrands(): Task<CardBrandsAcceptedResponse> = getAcceptedBrands(tenantId = null)
 
     /**
-     * get accepted brands with tenantId.
-     * only for platform.
+     * Get accepted brands with tenantId.
+     * Only for platform.
      *
      * @param tenantId tenant id.
      * @return task to get accepted brands.
      */
     fun getAcceptedBrands(tenantId: TenantId?): Task<CardBrandsAcceptedResponse>
+
+    /**
+     * Get token background handler.
+     * If any handler did not set, return null.
+     *
+     * @return background handler
+     */
+    fun getTokenBackgroundHandler(): PayjpTokenBackgroundHandler?
 }
