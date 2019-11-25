@@ -95,4 +95,5 @@ dependencies {
     implementation 'com.facebook.flipper:flipper:0.28.0'
     implementation 'com.facebook.flipper:flipper-network-plugin:0.28.0'
     implementation 'com.facebook.soloader:soloader:0.8.0'
+    implementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-5'
 }

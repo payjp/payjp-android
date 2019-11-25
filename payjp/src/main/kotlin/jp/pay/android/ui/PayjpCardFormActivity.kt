@@ -23,40 +23,33 @@
 package jp.pay.android.ui
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.IBinder
 import android.view.KeyEvent
-import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
 import jp.pay.android.Payjp
-import jp.pay.android.PayjpTokenBackgroundHandler
 import jp.pay.android.R
-import jp.pay.android.Task
 import jp.pay.android.model.CardBrand
-import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
+import jp.pay.android.ui.extension.showWith
 import jp.pay.android.ui.widget.PayjpAcceptedBrandsView
 import jp.pay.android.ui.widget.PayjpCardFormFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activity),
     PayjpCardFormView.OnValidateInputListener,
-    PayjpCardFormView.CardFormEditorListener,
-    CoroutineScope by MainScope() {
+    PayjpCardFormView.CardFormEditorListener {
 
     internal companion object {
         const val DEFAULT_CARD_FORM_REQUEST_CODE = 1
@@ -86,56 +79,24 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
         }
     }
 
-    private var cardFormFragment: PayjpCardFormFragment? = null
-    private lateinit var acceptedBrandsView: PayjpAcceptedBrandsView
-    private val submitButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
-    private val submitButtonProgressVisibility: MutableLiveData<Int> =
-        MutableLiveData(View.INVISIBLE)
-    private val contentViewVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
-    private val loadingViewVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
-    private val errorViewVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
-    private val submitButtonIsEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
     private val tenantId: TenantId? by lazy {
         intent?.getStringExtra(EXTRA_KEY_TENANT)?.let { TenantId(it) }
     }
-    private var createTokenTask: Task<Token>? = null
-    private var getAcceptedBrandsTask: Task<CardBrandsAcceptedResponse>? = null
+    private val inputMethodManager: InputMethodManager by lazy {
+        getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    }
+    private var cardFormFragment: PayjpCardFormFragment? = null
+    private var viewModel: CardFormScreenViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = "カードを登録"
-        acceptedBrandsView = findViewById(R.id.accepted_brands)
-        val submitButton = findViewById<Button>(R.id.card_form_button)
-        val submitButtonProgress = findViewById<ProgressBar>(R.id.card_form_button_progress)
-        submitButton.setOnClickListener {
-            performSubmitButton()
-        }
-        val loadingView = findViewById<ViewGroup>(R.id.loading_view)
-        // intercept focus
-        loadingView.setOnClickListener { }
-        val errorView = findViewById<ViewGroup>(R.id.error_view)
-        findViewById<Button>(R.id.reload_content_button).setOnClickListener {
-            fetchAcceptedBrands()
-        }
-        val contentView = findViewById<ViewGroup>(R.id.content_view)
-        submitButtonVisibility.observe(this, submitButton::setVisibility)
-        submitButtonProgressVisibility.observe(this, submitButtonProgress::setVisibility)
-        submitButtonIsEnabled.observe(this, submitButton::setEnabled)
-        loadingViewVisibility.observe(this, loadingView::setVisibility)
-        errorViewVisibility.observe(this, errorView::setVisibility)
-        contentViewVisibility.observe(this, contentView::setVisibility)
-        fetchAcceptedBrands()
-    }
-
-    override fun onDestroy() {
-        cancel()
-        createTokenTask?.cancel()
-        getAcceptedBrandsTask?.cancel()
-        super.onDestroy()
+        title = "カードを登録" // TODO: localize
+        setUpUI()
+        cardFormFragment = findCardFormFragment()
     }
 
     override fun onValidateInput(view: PayjpCardFormView, isValid: Boolean) {
-        submitButtonIsEnabled.value = isValid
+        viewModel?.onValidateInput(isValid)
     }
 
     override fun onLastFormEditorActionDone(
@@ -143,110 +104,98 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
         textView: TextView,
         event: KeyEvent?
     ): Boolean {
-        performSubmitButton()
+        performSubmitButton(textView.windowToken)
         return true
     }
 
-    private fun findCardFormFragment(acceptedBrands: Array<CardBrand>) {
-        supportFragmentManager.let { manager ->
-            val f = manager.findFragmentByTag(FRAGMENT_CARD_FORM)
-            val fragment = f as? PayjpCardFormFragment
-                ?: PayjpCardFormFragment.newInstance(
-                    holderNameEnabled = true,
-                    tenantId = tenantId,
-                    acceptedBrands = acceptedBrands
-                )
-            if (!fragment.isAdded) {
+    private fun setUpUI() {
+        val acceptedBrandsView = findViewById<PayjpAcceptedBrandsView>(R.id.accepted_brands)
+        val submitButton = findViewById<Button>(R.id.card_form_button)
+        val submitButtonProgress = findViewById<ProgressBar>(R.id.card_form_button_progress)
+        submitButton.setOnClickListener {
+            performSubmitButton(it.windowToken)
+        }
+        val loadingView = findViewById<ViewGroup>(R.id.loading_view)
+        val errorView = findViewById<ViewGroup>(R.id.error_view)
+        findViewById<Button>(R.id.reload_content_button).setOnClickListener {
+            viewModel?.onClickReload()
+        }
+        val contentView = findViewById<ViewGroup>(R.id.content_view)
+
+        val vmFactory = CardFormScreenViewModel.Factory(
+            tokenService = Payjp.getInstance(),
+            tenantId = tenantId
+        )
+        viewModel = ViewModelProviders.of(this, vmFactory).get(CardFormScreenViewModel::class.java)
+            .also { vm ->
+                lifecycle.addObserver(vm)
+                vm.contentViewVisibility.observe(this, contentView::setVisibility)
+                vm.errorViewVisibility.observe(this, errorView::setVisibility)
+                vm.loadingViewVisibility.observe(this, loadingView::setVisibility)
+                vm.submitButtonVisibility.observe(this, submitButton::setVisibility)
+                vm.submitButtonProgressVisibility.observe(this, submitButtonProgress::setVisibility)
+                vm.submitButtonIsEnabled.observe(this, submitButton::setEnabled)
+                vm.acceptedBrands.observe(this) { oneOff ->
+                    oneOff.consume { brands ->
+                        acceptedBrandsView.setAcceptedBrands(brands)
+                        cardFormFragment = addCardFormFragment(brands.toTypedArray())
+                    }
+                }
+                vm.errorMessage.observe(this) { oneOff ->
+                    oneOff.consume(this::showErrorMessage)
+                }
+                vm.success.observe(this) { oneOff ->
+                    oneOff.consume(this::finishWithSuccess)
+                }
+            }
+    }
+
+    private fun addCardFormFragment(acceptedBrands: Array<CardBrand>): PayjpCardFormFragment? {
+        return supportFragmentManager.let { manager ->
+            PayjpCardFormFragment.newInstance(
+                holderNameEnabled = true,
+                tenantId = tenantId,
+                acceptedBrands = acceptedBrands
+            ).also { fragment ->
                 manager
                     .beginTransaction().apply {
                         replace(R.id.card_form_view, fragment, FRAGMENT_CARD_FORM)
                     }
                     .commit()
             }
-            cardFormFragment = fragment
         }
     }
 
-    private fun fetchAcceptedBrands() {
-        if (acceptedBrandsView.getAcceptedBrands().isEmpty()) {
-            loadingViewVisibility.value = View.VISIBLE
-            contentViewVisibility.value = View.GONE
-            errorViewVisibility.value = View.GONE
-            getAcceptedBrandsTask = Payjp.getInstance().getAcceptedBrands(tenantId)
-            getAcceptedBrandsTask?.enqueue(object : Task.Callback<CardBrandsAcceptedResponse> {
-                override fun onSuccess(data: CardBrandsAcceptedResponse) {
-                    acceptedBrandsView.setAcceptedBrands(data.brands)
-                    findCardFormFragment(data.brands.toTypedArray())
-                    loadingViewVisibility.value = View.GONE
-                    contentViewVisibility.value = View.VISIBLE
-                    errorViewVisibility.value = View.GONE
+    private fun findCardFormFragment(): PayjpCardFormFragment? {
+        return supportFragmentManager.let { manager ->
+            (manager.findFragmentByTag(FRAGMENT_CARD_FORM) as? PayjpCardFormFragment)?.also { f ->
+                if (!f.isAdded) {
+                    manager
+                        .beginTransaction().apply {
+                            replace(R.id.card_form_view, f, FRAGMENT_CARD_FORM)
+                        }
+                        .commit()
                 }
-
-                override fun onError(throwable: Throwable) {
-                    // TODO: error message
-                    loadingViewVisibility.value = View.GONE
-                    contentViewVisibility.value = View.GONE
-                    errorViewVisibility.value = View.VISIBLE
-                }
-            })
+            }
         }
     }
 
-    private fun performSubmitButton() {
-        if (cardFormFragment?.isValid == true) {
-            createToken()
-        }
-    }
-
-    private fun createToken() {
+    private fun performSubmitButton(windowToken: IBinder) {
+        inputMethodManager.hideSoftInputFromWindow(windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
         cardFormFragment?.let { cardForm ->
-            submitButtonVisibility.value = View.INVISIBLE
-            submitButtonProgressVisibility.value = View.VISIBLE
-            createTokenTask = cardForm.createToken()
-            createTokenTask?.enqueue(object : Task.Callback<Token> {
-                override fun onSuccess(data: Token) {
-                    handleToken(data)
-                }
-
-                override fun onError(throwable: Throwable) {
-                    submitButtonProgressVisibility.value = View.INVISIBLE
-                    submitButtonVisibility.value = View.VISIBLE
-                    // TODO: エラー
-                    showErrorMessage("問題が発生しました。")
-                }
-            })
-        }
-    }
-
-    private fun handleToken(token: Token) = launch {
-        val handler = Payjp.getInstance().getTokenBackgroundHandler()
-        if (handler != null) {
-            val status = withContext(Dispatchers.IO) {
-                handler.handleTokenInBackground(token)
+            if (cardForm.isValid) {
+                viewModel?.onCreateToken(cardForm.createToken())
             }
-            submitButtonProgressVisibility.value = View.INVISIBLE
-            when (status) {
-                is PayjpTokenBackgroundHandler.CardFormStatus.Complete -> {
-                    finishWithSuccess(token)
-                }
-                is PayjpTokenBackgroundHandler.CardFormStatus.Error -> {
-                    showErrorMessage(status.message)
-                    submitButtonVisibility.value = View.VISIBLE
-                }
-            }
-        } else {
-            submitButtonProgressVisibility.value = View.INVISIBLE
-            finishWithSuccess(token)
         }
     }
 
     private fun showErrorMessage(message: CharSequence) {
         AlertDialog.Builder(this)
-            .setTitle("エラー")
+            .setTitle("エラー") // TODO: localize
             .setMessage(message)
-            .setNegativeButton("OK", null)
+            .setNegativeButton("OK", null) // TODO: localize
             .create()
-            .show()
+            .showWith(this)
     }
 
     private fun finishWithSuccess(token: Token) {
