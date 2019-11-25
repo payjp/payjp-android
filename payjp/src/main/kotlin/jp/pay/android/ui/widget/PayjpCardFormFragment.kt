@@ -28,10 +28,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.text.InputFilter
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
@@ -102,6 +105,7 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
     private var viewModel: CardFormViewModel? = null
     private var onValidateInputListener: PayjpCardFormView.OnValidateInputListener? = null
     private var onFetchAcceptedBrandsListener: PayjpCardFormView.OnFetchAcceptedBrandsListener? = null
+    private var cardFormEditorListener: PayjpCardFormView.CardFormEditorListener? = null
     private val delimiterExpiration = PayjpConstants.CARD_FORM_DELIMITER_EXPIRATION
     private val cardNumberFormatter =
         CardNumberFormatTextWatcher(PayjpConstants.CARD_FORM_DELIMITER_NUMBER)
@@ -113,6 +117,9 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
         }
         if (context is PayjpCardFormView.OnFetchAcceptedBrandsListener) {
             this.onFetchAcceptedBrandsListener = context
+        }
+        if (context is PayjpCardFormView.CardFormEditorListener) {
+            this.cardFormEditorListener = context
         }
     }
 
@@ -223,7 +230,24 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
                 bridge.startScanActivity(this)
             }
         }
+        // editor
+        holderNameEditText.setOnEditorActionListener(this::onEditorAction)
+        cvcEditText.setOnEditorActionListener { v, actionId, event ->
+            if (viewModel?.cardHolderNameEnabled?.value == false) {
+                onEditorAction(v, actionId, event)
+            } else {
+                false
+            }
+        }
     }
+
+    private fun onEditorAction(view: TextView, actionId: Int, event: KeyEvent?): Boolean =
+        when (actionId) {
+            EditorInfo.IME_ACTION_DONE -> {
+                cardFormEditorListener?.onLastFormEditorActionDone(this, view, event) ?: false
+            }
+            else -> false
+        }
 
     private fun setUpViewModel() {
         val tenantId = arguments?.getString(ARGS_TENANT_ID)?.let { TenantId(it) }

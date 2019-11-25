@@ -25,10 +25,12 @@ package jp.pay.android.ui
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
@@ -52,7 +54,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activity),
-    PayjpCardFormView.OnValidateInputListener, CoroutineScope by MainScope() {
+    PayjpCardFormView.OnValidateInputListener,
+    PayjpCardFormView.CardFormEditorListener,
+    CoroutineScope by MainScope() {
 
     internal companion object {
         const val DEFAULT_CARD_FORM_REQUEST_CODE = 1
@@ -85,7 +89,8 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
     private var cardFormFragment: PayjpCardFormFragment? = null
     private lateinit var acceptedBrandsView: PayjpAcceptedBrandsView
     private val submitButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
-    private val submitButtonProgressVisibility: MutableLiveData<Int> = MutableLiveData(View.INVISIBLE)
+    private val submitButtonProgressVisibility: MutableLiveData<Int> =
+        MutableLiveData(View.INVISIBLE)
     private val contentViewVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     private val loadingViewVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     private val errorViewVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
@@ -103,10 +108,7 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
         val submitButton = findViewById<Button>(R.id.card_form_button)
         val submitButtonProgress = findViewById<ProgressBar>(R.id.card_form_button_progress)
         submitButton.setOnClickListener {
-            if (cardFormFragment?.isValid != true) {
-                return@setOnClickListener
-            }
-            createToken()
+            performSubmitButton()
         }
         val loadingView = findViewById<ViewGroup>(R.id.loading_view)
         // intercept focus
@@ -134,6 +136,15 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
 
     override fun onValidateInput(view: PayjpCardFormView, isValid: Boolean) {
         submitButtonIsEnabled.value = isValid
+    }
+
+    override fun onLastFormEditorActionDone(
+        view: PayjpCardFormView,
+        textView: TextView,
+        event: KeyEvent?
+    ): Boolean {
+        performSubmitButton()
+        return true
     }
 
     private fun findCardFormFragment(acceptedBrands: Array<CardBrand>) {
@@ -178,6 +189,12 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
                     errorViewVisibility.value = View.VISIBLE
                 }
             })
+        }
+    }
+
+    private fun performSubmitButton() {
+        if (cardFormFragment?.isValid == true) {
+            createToken()
         }
     }
 
