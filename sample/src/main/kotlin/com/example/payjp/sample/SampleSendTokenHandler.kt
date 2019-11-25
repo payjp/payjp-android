@@ -40,7 +40,7 @@ class SampleSendTokenHandler(
                 Log.i("SampleSendTokenHandler", "try to send token ${Thread.currentThread()}")
                 backendService.saveCard(token.id)
                 Log.i("SampleSendTokenHandler", "success")
-                PayjpTokenBackgroundHandler.CardFormStatus.Complete
+                PayjpTokenBackgroundHandler.CardFormStatus.Complete()
             } catch (e: IOException) {
                 Log.w("SampleSendTokenHandler", "network error", e)
                 // Network error will be here

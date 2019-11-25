@@ -59,7 +59,7 @@ interface PayjpTokenBackgroundHandler {
         /**
          * Complete status
          */
-        object Complete : CardFormStatus()
+        class Complete : CardFormStatus()
 
         /**
          * Error status

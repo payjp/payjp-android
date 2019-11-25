@@ -204,25 +204,18 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
     private fun handleToken(token: Token) = launch {
         val handler = Payjp.getInstance().getTokenBackgroundHandler()
         if (handler != null) {
-            try {
-                val status = withContext(Dispatchers.IO) {
-                    handler.handleTokenInBackground(token)
+            val status = withContext(Dispatchers.IO) {
+                handler.handleTokenInBackground(token)
+            }
+            submitButtonProgressVisibility.value = View.INVISIBLE
+            when (status) {
+                is PayjpTokenBackgroundHandler.CardFormStatus.Complete -> {
+                    finishWithSuccess(token)
                 }
-                submitButtonProgressVisibility.value = View.INVISIBLE
-                when (status) {
-                    PayjpTokenBackgroundHandler.CardFormStatus.Complete -> {
-                        finishWithSuccess(token)
-                    }
-                    is PayjpTokenBackgroundHandler.CardFormStatus.Error -> {
-                        showErrorMessage(status.message)
-                        submitButtonVisibility.value = View.VISIBLE
-                    }
+                is PayjpTokenBackgroundHandler.CardFormStatus.Error -> {
+                    showErrorMessage(status.message)
+                    submitButtonVisibility.value = View.VISIBLE
                 }
-            } catch (t: Throwable) {
-                // TODO:
-                showErrorMessage("問題が発生しました。")
-                submitButtonProgressVisibility.value = View.INVISIBLE
-                submitButtonVisibility.value = View.VISIBLE
             }
         } else {
             submitButtonProgressVisibility.value = View.INVISIBLE
