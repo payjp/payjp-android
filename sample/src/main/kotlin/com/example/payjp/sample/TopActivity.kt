@@ -25,6 +25,7 @@ package com.example.payjp.sample
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
@@ -80,7 +81,9 @@ class TopActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Payjp.handleCardFormResult(data, PayjpCardFormResultCallback { result ->
             if (result.isSuccess()) {
-                Toast.makeText(this, "Token: ${result.retrieveToken()}", Toast.LENGTH_SHORT).show()
+                val token = result.retrieveToken()
+                Log.i("handleCardFormResult", "token => $token")
+                Toast.makeText(this, "Token: $token", Toast.LENGTH_SHORT).show()
             }
         })
         super.onActivityResult(requestCode, resultCode, data)

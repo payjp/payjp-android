@@ -29,30 +29,45 @@ import com.facebook.flipper.android.utils.FlipperUtils;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
+import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
 import com.facebook.soloader.SoLoader;
 
 import jp.pay.android.Payjp;
 import jp.pay.android.PayjpConfiguration;
 import jp.pay.android.cardio.PayjpCardScannerPlugin;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 public class SampleApplication extends Application {
+
+    static final String BACKEND_URL = ""; // TODO: REPLACE WITH YOUR ENDPOINT URL
 
     @Override
     public void onCreate() {
         super.onCreate();
         SoLoader.init(this, false);
 
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
+                .addNetworkInterceptor(loggingInterceptor);
         if (BuildConfig.DEBUG && FlipperUtils.shouldEnableFlipper(this)) {
             final FlipperClient client = AndroidFlipperClient.getInstance(this);
             client.addPlugin(new InspectorFlipperPlugin(this, DescriptorMapping.withDefaults()));
-            client.addPlugin(new NetworkFlipperPlugin());
+            final NetworkFlipperPlugin networkFlipperPlugin = new NetworkFlipperPlugin();
+            okHttpClientBuilder.addNetworkInterceptor(new FlipperOkhttpInterceptor(networkFlipperPlugin));
+            client.addPlugin(networkFlipperPlugin);
             client.start();
         }
+
+        SampleSendTokenHandler sendTokenHandler = new SampleSendTokenHandler(
+                BACKEND_URL, okHttpClientBuilder.build());
 
         Payjp.init(new PayjpConfiguration.Builder("pk_test_0383a1b8f91e8a6e3ea0e2a9")
                 .setDebugEnabled(BuildConfig.DEBUG)
                 .setCardScannerPlugin(PayjpCardScannerPlugin.INSTANCE)
+                .setTokenBackgroundHandler(sendTokenHandler)
                 .build());
     }
 }
