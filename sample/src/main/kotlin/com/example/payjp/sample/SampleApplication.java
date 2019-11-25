@@ -24,8 +24,6 @@ package com.example.payjp.sample;
 
 import android.app.Application;
 
-import androidx.annotation.Nullable;
-
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.android.utils.FlipperUtils;
 import com.facebook.flipper.core.FlipperClient;
@@ -34,20 +32,16 @@ import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
 import com.facebook.soloader.SoLoader;
-import com.squareup.moshi.Moshi;
 
 import jp.pay.android.Payjp;
 import jp.pay.android.PayjpConfiguration;
 import jp.pay.android.cardio.PayjpCardScannerPlugin;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.converter.moshi.MoshiConverterFactory;
 
 public class SampleApplication extends Application {
 
-    static final String BACKEND_URL = ""; //:TODO REPLACE WITH YOUR ENDPOINT URL
-    @Nullable SampleBackendService backendService;
+    static final String BACKEND_URL = ""; // TODO: REPLACE WITH YOUR ENDPOINT URL
 
     @Override
     public void onCreate() {
@@ -67,15 +61,8 @@ public class SampleApplication extends Application {
             client.start();
         }
 
-        // setup api
-        backendService = new Retrofit.Builder()
-                .baseUrl(BACKEND_URL)
-                .client(okHttpClientBuilder.build())
-                .addConverterFactory(MoshiConverterFactory.create(new Moshi.Builder().build()))
-                .build()
-                .create(SampleBackendService.class);
-
-        SampleSendTokenHandler sendTokenHandler = new SampleSendTokenHandler(backendService);
+        SampleSendTokenHandler sendTokenHandler = new SampleSendTokenHandler(
+                BACKEND_URL, okHttpClientBuilder.build());
 
         Payjp.init(new PayjpConfiguration.Builder("pk_test_0383a1b8f91e8a6e3ea0e2a9")
                 .setDebugEnabled(BuildConfig.DEBUG)
