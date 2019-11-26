@@ -24,6 +24,7 @@ package jp.pay.android
 
 import java.util.Locale
 import jp.pay.android.plugin.CardScannerPlugin
+import jp.pay.android.validator.PublicKeyValidator
 
 /**
  * Configuration for Payjp
@@ -95,7 +96,7 @@ class PayjpConfiguration private constructor(
          * @return configuration
          */
         fun build() = PayjpConfiguration(
-            publicKey = publicKey,
+            publicKey = PublicKeyValidator.validate(publicKey),
             debugEnabled = debugEnabled,
             locale = locale,
             cardScannerPlugin = cardScannerPlugin,
