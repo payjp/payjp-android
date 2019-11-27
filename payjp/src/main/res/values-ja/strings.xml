@@ -46,6 +46,8 @@
     <string name="payjp_card_form_submit">カードを登録</string>
     <string name="payjp_card_form_reload">再読み込み</string>
     <string name="payjp_card_form_screen_error_loading">読み込みに失敗しました。</string>
+    <string name="payjp_card_form_screen_error_unknown">問題が発生しました。</string>
+    <string name="payjp_card_form_screen_error_network">通信に失敗しました。ネットワークの接続をご確認ください。</string>
     <string name="payjp_card_form_dialog_ok">OK</string>
     <string name="payjp_card_form_dialog_title_error">エラー</string>
 </resources>

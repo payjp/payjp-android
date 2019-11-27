@@ -124,7 +124,8 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
 
         val vmFactory = CardFormScreenViewModel.Factory(
             tokenService = Payjp.getInstance(),
-            tenantId = tenantId
+            tenantId = tenantId,
+            errorTranslator = ContextErrorTranslator(this)
         )
         viewModel = ViewModelProviders.of(this, vmFactory).get(CardFormScreenViewModel::class.java)
             .also { vm ->

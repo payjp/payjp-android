@@ -54,6 +54,8 @@ class CardFormScreenViewModelTest {
     private lateinit var mockTokenService: PayjpTokenService
     @Mock
     private lateinit var mockTokenHandlerExecutor: PayjpTokenHandlerExecutor
+    @Mock
+    private lateinit var mockErrorTranslator: ErrorTranslator
 
     @Before
     fun setUp() {
@@ -64,7 +66,9 @@ class CardFormScreenViewModelTest {
         tenantId: TenantId? = null
     ) = CardFormScreenViewModel(
         tokenService = mockTokenService,
-        tenantId = tenantId
+        tenantId = tenantId,
+        errorTranslator = mockErrorTranslator
+
     ).apply {
         contentViewVisibility.observeForever { }
         errorViewVisibility.observeForever { }
@@ -162,17 +166,22 @@ class CardFormScreenViewModelTest {
 
     @Test
     fun failure_onCreateToken_never_derive_executor_post() {
+        val error = RuntimeException("omg")
+        val message = "問題が発生しました"
         `when`(mockTokenService.getTokenHandlerExecutor())
             .thenReturn(mockTokenHandlerExecutor)
+        `when`(mockErrorTranslator.translate(error))
+            .thenReturn(message)
         val viewModel = createViewModel()
 
-        viewModel.onCreateToken(Tasks.failure(RuntimeException("omg")))
+        viewModel.onCreateToken(Tasks.failure(error))
         viewModel.run {
             assertThat(submitButtonVisibility.value, `is`(View.VISIBLE))
             assertThat(submitButtonProgressVisibility.value, `is`(View.GONE))
-            assertThat(errorMessage.value?.peek(), `is`("問題が発生しました" as CharSequence))
+            assertThat(errorMessage.value?.peek(), `is`(message as CharSequence))
         }
         verify(mockTokenHandlerExecutor, never()).post(anyNullable(), anyNullable())
+        verify(mockErrorTranslator).translate(error)
     }
 
     @Test
