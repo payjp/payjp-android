@@ -59,7 +59,7 @@
                     android:layout_height="wrap_content"
                     style="?android:buttonStyle"
                     android:layout_gravity="center"
-                    android:text="カードを登録"
+                    android:text="@string/payjp_card_form_submit"
                     />
 
             <ProgressBar
@@ -76,9 +76,7 @@
     <FrameLayout
             android:id="@+id/loading_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:focusable="true"
-            android:focusableInTouchMode="true">
+            android:layout_height="match_parent">
 
         <ProgressBar
                 android:layout_width="wrap_content"
@@ -93,10 +91,11 @@
             android:layout_height="match_parent">
 
         <TextView
+                android:id="@+id/error_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="読み込みに失敗しました。" />
+                android:text="@string/payjp_card_form_screen_error_loading" />
 
         <Button
                 android:id="@+id/reload_content_button"
@@ -105,7 +104,7 @@
                 style="?android:buttonStyle"
                 android:layout_gravity="center"
                 android:layout_marginTop="80dp"
-                android:text="再読み込み" />
+                android:text="@string/payjp_card_form_reload" />
 
     </FrameLayout>
 

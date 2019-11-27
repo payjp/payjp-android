@@ -191,9 +191,9 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
 
     private fun showErrorMessage(message: CharSequence) {
         AlertDialog.Builder(this)
-            .setTitle("エラー") // TODO: localize
+            .setTitle(R.string.payjp_card_form_dialog_title_error)
             .setMessage(message)
-            .setNegativeButton("OK", null) // TODO: localize
+            .setNegativeButton(R.string.payjp_card_form_dialog_ok, null)
             .create()
             .showWith(this)
     }

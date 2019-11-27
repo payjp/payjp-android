@@ -43,4 +43,9 @@
 ]]></string>
     <string name="payjp_card_scanner_permission_denied_setting">設定を確認</string>
     <string name="payjp_card_scanner_permission_denied_cancel">キャンセル</string>
+    <string name="payjp_card_form_submit">カードを登録</string>
+    <string name="payjp_card_form_reload">再読み込み</string>
+    <string name="payjp_card_form_screen_error_loading">読み込みに失敗しました。</string>
+    <string name="payjp_card_form_dialog_ok">OK</string>
+    <string name="payjp_card_form_dialog_title_error">エラー</string>
 </resources>

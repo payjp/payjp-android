@@ -43,4 +43,9 @@ Please make sure that the app permission in Settings app.
 ]]></string>
     <string name="payjp_card_scanner_permission_denied_setting">Settings</string>
     <string name="payjp_card_scanner_permission_denied_cancel">Cancel</string>
+    <string name="payjp_card_form_submit">Submit</string>
+    <string name="payjp_card_form_reload">Reload</string>
+    <string name="payjp_card_form_screen_error_loading">Unable to load the data.</string>
+    <string name="payjp_card_form_dialog_ok">OK</string>
+    <string name="payjp_card_form_dialog_title_error">Error</string>
 </resources>
