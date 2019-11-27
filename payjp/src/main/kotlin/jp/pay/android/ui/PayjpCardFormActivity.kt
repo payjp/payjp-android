@@ -90,7 +90,7 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = "カードを登録" // TODO: localize
+        setTitle(R.string.payjp_card_form_screen_title)
         setUpUI()
         cardFormFragment = findCardFormFragment()
     }
