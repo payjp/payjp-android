@@ -46,7 +46,7 @@ Please make sure that the app permission in Settings app.
     <string name="payjp_card_form_submit">Submit</string>
     <string name="payjp_card_form_reload">Reload</string>
     <string name="payjp_card_form_screen_error_unknown">Unknown error occurred.</string>
-    <string name="payjp_card_form_screen_error_network">Network is unavailable. Please check your internet connectivity.</string>
+    <string name="payjp_card_form_screen_error_network">Network is unavailable.\nPlease check your internet connectivity.</string>
     <string name="payjp_card_form_dialog_ok">OK</string>
     <string name="payjp_card_form_dialog_title_error">Error</string>
 </resources>

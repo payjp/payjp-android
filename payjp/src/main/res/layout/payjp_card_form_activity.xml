@@ -47,8 +47,8 @@
                     style="?android:buttonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="60dp"
                     android:layout_gravity="center"
+                    android:minHeight="60dp"
                     android:text="@string/payjp_card_form_submit" />
 
             <ProgressBar
@@ -107,16 +107,19 @@
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/error_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:padding="16dp">
 
         <TextView
                 android:id="@+id/error_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@string/payjp_card_form_screen_error_network" />
 
         <Button
                 android:id="@+id/reload_content_button"
@@ -128,8 +131,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintVertical_bias="0"
-                app:layout_constraintTop_toBottomOf="@id/error_message" />
+                app:layout_constraintTop_toBottomOf="@id/error_message"
+                app:layout_constraintVertical_bias="0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
