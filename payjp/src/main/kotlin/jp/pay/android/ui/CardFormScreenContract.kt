@@ -47,7 +47,8 @@ internal interface CardFormScreenContract {
         val submitButtonProgressVisibility: LiveData<Int>
         val submitButtonIsEnabled: LiveData<Boolean>
         val acceptedBrands: LiveData<OneOffValue<List<CardBrand>>>
-        val errorMessage: LiveData<OneOffValue<CharSequence>>
+        val errorDialogMessage: LiveData<OneOffValue<CharSequence>>
+        val errorViewText: LiveData<CharSequence>
         val success: LiveData<OneOffValue<Token>>
     }
 }

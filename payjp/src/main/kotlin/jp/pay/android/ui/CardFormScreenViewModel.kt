@@ -50,7 +50,8 @@ internal class CardFormScreenViewModel(
     override val submitButtonProgressVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     override val submitButtonIsEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
     override val acceptedBrands: MutableLiveData<OneOffValue<List<CardBrand>>> = MutableLiveData()
-    override val errorMessage: MutableLiveData<OneOffValue<CharSequence>> = MutableLiveData()
+    override val errorDialogMessage: MutableLiveData<OneOffValue<CharSequence>> = MutableLiveData()
+    override val errorViewText: MutableLiveData<CharSequence> = MutableLiveData()
     override val success: MutableLiveData<OneOffValue<Token>> = MutableLiveData()
     // private property
     private var fetchAcceptedBrandsTask: Task<CardBrandsAcceptedResponse>? = null
@@ -84,7 +85,7 @@ internal class CardFormScreenViewModel(
 
             override fun onError(throwable: Throwable) {
                 val message = errorTranslator.translate(throwable)
-                errorMessage.value = OneOffValue(message)
+                errorDialogMessage.value = OneOffValue(message)
                 submitButtonProgressVisibility.value = View.GONE
                 submitButtonVisibility.value = View.VISIBLE
                 tokenizeProcessing.value = false
@@ -115,6 +116,7 @@ internal class CardFormScreenViewModel(
                 }
 
                 override fun onError(throwable: Throwable) {
+                    errorViewText.value = errorTranslator.translate(throwable)
                     loadingViewVisibility.value = View.GONE
                     contentViewVisibility.value = View.GONE
                     errorViewVisibility.value = View.VISIBLE
@@ -139,7 +141,7 @@ internal class CardFormScreenViewModel(
                         success.value = OneOffValue(token)
                     }
                     is PayjpTokenBackgroundHandler.CardFormStatus.Error -> {
-                        errorMessage.value = OneOffValue(status.message)
+                        errorDialogMessage.value = OneOffValue(status.message)
                         submitButtonVisibility.value = View.VISIBLE
                     }
                 }

@@ -120,6 +120,7 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
         findViewById<Button>(R.id.reload_content_button).setOnClickListener {
             viewModel?.onClickReload()
         }
+        val errorMessageView = findViewById<TextView>(R.id.error_message)
         val contentView = findViewById<ViewGroup>(R.id.content_view)
 
         val vmFactory = CardFormScreenViewModel.Factory(
@@ -136,13 +137,14 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
                 vm.submitButtonVisibility.observe(this, submitButton::setVisibility)
                 vm.submitButtonProgressVisibility.observe(this, submitButtonProgress::setVisibility)
                 vm.submitButtonIsEnabled.observe(this, submitButton::setEnabled)
+                vm.errorViewText.observe(this, errorMessageView::setText)
                 vm.acceptedBrands.observe(this) { oneOff ->
                     oneOff.consume { brands ->
                         acceptedBrandsView.setAcceptedBrands(brands)
                         cardFormFragment = addCardFormFragment(brands.toTypedArray())
                     }
                 }
-                vm.errorMessage.observe(this) { oneOff ->
+                vm.errorDialogMessage.observe(this) { oneOff ->
                     oneOff.consume(this::showErrorMessage)
                 }
                 vm.success.observe(this) { oneOff ->
