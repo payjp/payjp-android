@@ -70,6 +70,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.1.0"
     kapt "androidx.lifecycle:lifecycle-common-java8:$lifecycle"
     implementation "com.google.android.material:material:$material"
+    implementation "androidx.constraintlayout:constraintlayout:$constraint"
 
     testImplementation "com.squareup.okhttp3:mockwebserver:$okHttp"
     testImplementation project(":common-test")

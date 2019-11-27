@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~
   ~ Copyright (c) 2019 PAY, Inc.
   ~
@@ -22,56 +21,76 @@
   ~ SOFTWARE.
   -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/container_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/content_view"
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="16dp">
-
-        <jp.pay.android.ui.widget.PayjpAcceptedBrandsView
-                android:id="@+id/accepted_brands"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:layout_gravity="center_horizontal"
-                />
+            android:layout_height="match_parent">
 
         <FrameLayout
-                android:id="@+id/card_form_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp" />
-
-        <FrameLayout
-                android:layout_width="match_parent"
+                android:id="@+id/button_layout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
-                >
+                android:padding="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
 
             <Button
                     android:id="@+id/card_form_button"
+                    style="?android:buttonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="?android:buttonStyle"
+                    android:minHeight="60dp"
                     android:layout_gravity="center"
-                    android:text="@string/payjp_card_form_submit"
-                    />
+                    android:text="@string/payjp_card_form_submit" />
 
             <ProgressBar
                     android:id="@+id/card_form_button_progress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    />
+                    android:layout_gravity="center" />
 
         </FrameLayout>
 
-    </LinearLayout>
+        <ScrollView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@id/button_layout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                <jp.pay.android.ui.widget.PayjpAcceptedBrandsView
+                        android:id="@+id/accepted_brands"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="16dp" />
+
+                <FrameLayout
+                        android:id="@+id/card_form_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
             android:id="@+id/loading_view"
@@ -85,7 +104,7 @@
 
     </FrameLayout>
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/error_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -94,18 +113,25 @@
                 android:id="@+id/error_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/payjp_card_form_screen_error_loading" />
+                android:text="@string/payjp_card_form_screen_error_loading"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         <Button
                 android:id="@+id/reload_content_button"
+                style="?android:buttonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="?android:buttonStyle"
-                android:layout_gravity="center"
-                android:layout_marginTop="80dp"
-                android:text="@string/payjp_card_form_reload" />
+                android:layout_marginTop="20dp"
+                android:text="@string/payjp_card_form_reload"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintVertical_bias="0"
+                app:layout_constraintTop_toBottomOf="@id/error_message" />
 
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>
