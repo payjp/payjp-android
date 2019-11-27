@@ -45,6 +45,8 @@ class ContextErrorTranslatorTest {
 
     private val mockErrorMessageUnknown = "unknown"
     private val mockErrorMessageNetwork = "network"
+    private val mockErrorMessageServer = "server"
+    private val mockErrorMessageApplication = "application"
 
     @Before
     fun setUp() {
@@ -55,15 +57,19 @@ class ContextErrorTranslatorTest {
             .thenReturn(mockErrorMessageUnknown)
         `when`(mockContext.getString(R.string.payjp_card_form_screen_error_network))
             .thenReturn(mockErrorMessageNetwork)
+        `when`(mockContext.getString(R.string.payjp_card_form_screen_error_server))
+            .thenReturn(mockErrorMessageServer)
+        `when`(mockContext.getString(R.string.payjp_card_form_screen_error_application))
+            .thenReturn(mockErrorMessageApplication)
     }
 
     @Test
-    fun error_api_error_to_own_message() {
+    fun translate_api_error_402_to_own_message() {
         val message = "omg"
         val error = PayjpApiException(
             message = message,
             cause = RuntimeException(),
-            httpStatusCode = 400,
+            httpStatusCode = 402,
             apiError = ApiError(
                 code = "invalid_number",
                 message = message,
@@ -75,7 +81,47 @@ class ContextErrorTranslatorTest {
     }
 
     @Test
-    fun error_network_error_to_fixed_message() {
+    fun translate_api_error_401_to_own_message() {
+        val message = "omg"
+        val error = PayjpApiException(
+            message = message,
+            cause = RuntimeException(),
+            httpStatusCode = 401,
+            apiError = ApiError(
+                code = "unauthorized",
+                message = message,
+                type = "client_error"
+            ),
+            source = ""
+        )
+        assertThat(
+            ContextErrorTranslator(mockContext).translate(error).toString(),
+            `is`(mockErrorMessageApplication)
+        )
+    }
+
+    @Test
+    fun translate_api_error_500_to_own_message() {
+        val message = "omg"
+        val error = PayjpApiException(
+            message = message,
+            cause = RuntimeException(),
+            httpStatusCode = 500,
+            apiError = ApiError(
+                code = "pg_wrong",
+                message = message,
+                type = "server_error"
+            ),
+            source = ""
+        )
+        assertThat(
+            ContextErrorTranslator(mockContext).translate(error).toString(),
+            `is`(mockErrorMessageServer)
+        )
+    }
+
+    @Test
+    fun translate_network_error_to_fixed_message() {
         val error = IOException("omg")
         assertThat(
             ContextErrorTranslator(mockContext).translate(error).toString(),
@@ -84,7 +130,7 @@ class ContextErrorTranslatorTest {
     }
 
     @Test
-    fun error_unknown_error_to_fixed_message() {
+    fun translate_unknown_error_to_fixed_message() {
         val error = java.lang.RuntimeException("omg")
         assertThat(
             ContextErrorTranslator(mockContext).translate(error).toString(),

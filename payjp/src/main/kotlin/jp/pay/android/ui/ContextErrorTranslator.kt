@@ -38,7 +38,13 @@ internal class ContextErrorTranslator(context: Context) : ErrorTranslator {
 
     override fun translate(throwable: Throwable): CharSequence {
         return when (throwable) {
-            is PayjpApiException -> throwable.apiError.message
+            is PayjpApiException -> when (throwable.httpStatusCode) {
+                // Use response message if status is 402 payment error.
+                // Other than that, use fixed message to avoid system message exposure.
+                402 -> throwable.apiError.message
+                in 500 until 600 -> context.getString(R.string.payjp_card_form_screen_error_server)
+                else -> context.getString(R.string.payjp_card_form_screen_error_application)
+            }
             is IOException -> context.getString(R.string.payjp_card_form_screen_error_network)
             else -> context.getString(R.string.payjp_card_form_screen_error_unknown)
         }
