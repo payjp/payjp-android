@@ -92,7 +92,6 @@ internal class CardFormViewModelTest {
         tenantId = tenantId,
         holderNameEnabledDefault = holderNameEnabled,
         acceptedBrandsPreset = acceptedBrandList
-
     ).apply {
         cardNumberError.observeForever { }
         cardExpirationError.observeForever { }

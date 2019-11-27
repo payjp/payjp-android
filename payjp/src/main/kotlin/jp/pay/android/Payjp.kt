@@ -29,6 +29,7 @@ import android.os.Looper
 import android.util.Base64
 import java.nio.charset.Charset
 import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
@@ -49,7 +50,7 @@ import jp.pay.android.ui.PayjpCardFormResultCallback
 class Payjp internal constructor(
     private val configuration: PayjpConfiguration,
     private val payjpApi: PayjpApi,
-    private val tokenBackgroundHandler: PayjpTokenBackgroundHandler? = null
+    private val tokenHandlerExecutor: PayjpTokenHandlerExecutor? = null
 ) : PayjpTokenService {
 
     /**
@@ -62,10 +63,20 @@ class Payjp internal constructor(
         payjpApi = createApiClient(
             baseUrl = PayjpConstants.API_ENDPOINT,
             debuggable = configuration.debugEnabled,
-            callbackExecutor = MainThreadExecutor(),
+            callbackExecutor = MainThreadExecutor,
             locale = configuration.locale
         ),
-        tokenBackgroundHandler = configuration.tokenBackgroundHandler
+        tokenHandlerExecutor = configuration.tokenBackgroundHandler?.let { handler ->
+            DefaultTokenHandlerExecutor(
+                handler = handler,
+                backgroundExecutor = Executors.newSingleThreadExecutor { r ->
+                    Thread(r, "payjp-android").apply {
+                        priority = Thread.MIN_PRIORITY
+                    }
+                },
+                callbackExecutor = MainThreadExecutor
+            )
+        }
     ) {
         CardScannerResolver.cardScannerPlugin = configuration.cardScannerPlugin
     }
@@ -174,9 +185,9 @@ class Payjp internal constructor(
         return payjpApi.getAcceptedBrands(authorization, tenantId?.id)
     }
 
-    override fun getTokenBackgroundHandler(): PayjpTokenBackgroundHandler? = tokenBackgroundHandler
+    override fun getTokenHandlerExecutor(): PayjpTokenHandlerExecutor? = tokenHandlerExecutor
 
-    private class MainThreadExecutor : Executor {
+    private object MainThreadExecutor : Executor {
         private val handler = Handler(Looper.getMainLooper())
 
         override fun execute(r: Runnable) {

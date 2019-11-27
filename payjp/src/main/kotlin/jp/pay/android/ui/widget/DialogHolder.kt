@@ -20,42 +20,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-@file:JvmName("ViewExtension")
-
-package jp.pay.android.ui.extension
+package jp.pay.android.ui.widget
 
 import android.app.Dialog
-import android.text.Editable
-import android.text.TextWatcher
-import android.widget.TextView
 import androidx.activity.ComponentActivity
-import com.google.android.material.textfield.TextInputLayout
-import jp.pay.android.ui.widget.DialogHolder
-
-internal fun TextInputLayout.setErrorOrNull(error: CharSequence?) {
-    this.isErrorEnabled = error.isNullOrEmpty().not()
-    this.error = error
-}
-
-internal fun TextView.addOnTextChanged(
-    onTextChanged: ((s: CharSequence, start: Int, before: Int, count: Int) -> Unit)?
-) {
-    addTextChangedListener(object : TextWatcher {
-        override fun afterTextChanged(s: Editable) = Unit
-
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
-
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) =
-            onTextChanged?.invoke(s, start, before, count) ?: Unit
-    })
-}
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 
 /**
- * show with lifecycle awareness of activity using [DialogHolder]
- *
- * @param activity host activity
- * @see DialogHolder
+ * Dismiss holding dialog onDestroy of observing Activity.
+ * (for avoiding memory leak)
  */
-fun Dialog.showWith(activity: ComponentActivity) {
-    DialogHolder(this).show(activity)
+internal class DialogHolder(private val dialog: Dialog) : LifecycleObserver {
+
+    fun show(activity: ComponentActivity) {
+        activity.lifecycle.addObserver(this)
+        dialog.show()
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun dismiss() {
+        dialog.dismiss()
+    }
 }
