@@ -61,4 +61,11 @@
         <!-- customize -->
     </style>
 
+    <!-- Customize CardForm -->
+<!--    <style name="Payjp.Theme.CardForm" parent="Payjp.Theme.BaseCardForm">-->
+<!--        <item name="colorPrimary">@color/primaryColor</item>-->
+<!--        <item name="colorPrimaryDark">@color/primaryDarkColor</item>-->
+<!--        <item name="colorSecondary">@color/secondaryColor</item>-->
+<!--    </style>-->
+
 </resources>
