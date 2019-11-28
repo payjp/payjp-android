@@ -24,6 +24,10 @@ package jp.pay.android.validator
 
 import android.util.Log
 
+/**
+ * Validate publicKey
+ *
+ */
 internal object PublicKeyValidator {
 
     fun validate(publicKey: String): String = publicKey.apply {

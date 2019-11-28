@@ -24,16 +24,38 @@ package jp.pay.android.ui
 
 import jp.pay.android.model.Token
 
+/**
+ * State represents of result from [jp.pay.android.ui.PayjpCardFormActivity].
+ *
+ */
 sealed class PayjpCardFormResult {
 
+    /**
+     *  Activity finished with data which include [jp.pay.android.model.Token].
+     *
+     *  @param token token the card form created.
+     */
     data class Success(val token: Token) : PayjpCardFormResult()
 
+    /**
+     * Activity finished with no data.
+     */
     object Canceled : PayjpCardFormResult()
 
+    /**
+     * Return it is success.
+     */
     fun isSuccess(): Boolean = this is Success
 
+    /**
+     * Return it is canceled.
+     */
     fun isCanceled(): Boolean = this === Canceled
 
+    /**
+     * Get out token from result. If it is not success, throw exception.
+     *
+     */
     fun retrieveToken(): Token {
         val success = this as? Success
             ?: throw IllegalStateException("Cannot call retrieveToken() when it is not success")

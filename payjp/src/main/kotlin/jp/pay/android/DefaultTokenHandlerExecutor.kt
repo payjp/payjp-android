@@ -25,6 +25,13 @@ package jp.pay.android
 import java.util.concurrent.Executor
 import jp.pay.android.model.Token
 
+/**
+ * Default implementation of [PayjpTokenHandlerExecutor]
+ *
+ * @param handler handler set in [jp.pay.android.PayjpConfiguration]
+ * @param backgroundExecutor executor which run handler
+ * @param callbackExecutor executor which run callback
+ */
 internal class DefaultTokenHandlerExecutor(
     private val handler: PayjpTokenBackgroundHandler,
     private val backgroundExecutor: Executor,

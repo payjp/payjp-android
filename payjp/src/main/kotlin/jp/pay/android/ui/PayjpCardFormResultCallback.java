@@ -25,7 +25,16 @@ package jp.pay.android.ui;
 
 import androidx.annotation.NonNull;
 
+/**
+ * Callback interface of {@link jp.pay.android.ui.PayjpCardFormResult}
+ *
+ */
 public interface PayjpCardFormResultCallback {
 
+    /**
+     * Callback result {@link jp.pay.android.ui.PayjpCardFormResult}
+     *
+     * @param result result
+     */
     void onResult(@NonNull PayjpCardFormResult result);
 }
