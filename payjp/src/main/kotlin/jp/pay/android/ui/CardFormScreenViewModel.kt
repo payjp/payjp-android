@@ -29,6 +29,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import java.io.IOException
 import jp.pay.android.PayjpTokenBackgroundHandler
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.Task
@@ -46,6 +47,7 @@ internal class CardFormScreenViewModel(
     override val contentViewVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     override val errorViewVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     override val loadingViewVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    override val reloadContentButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     override val submitButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     override val submitButtonProgressVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     override val submitButtonIsEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -117,6 +119,10 @@ internal class CardFormScreenViewModel(
 
                 override fun onError(throwable: Throwable) {
                     errorViewText.value = errorTranslator.translate(throwable)
+                    reloadContentButtonVisibility.value = when (throwable) {
+                        is IOException -> View.VISIBLE
+                        else -> View.GONE
+                    }
                     loadingViewVisibility.value = View.GONE
                     contentViewVisibility.value = View.GONE
                     errorViewVisibility.value = View.VISIBLE

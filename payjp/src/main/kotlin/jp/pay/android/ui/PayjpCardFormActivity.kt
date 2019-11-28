@@ -117,7 +117,8 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
         }
         val loadingView = findViewById<ViewGroup>(R.id.loading_view)
         val errorView = findViewById<ViewGroup>(R.id.error_view)
-        findViewById<Button>(R.id.reload_content_button).setOnClickListener {
+        val reloadContentButton = findViewById<Button>(R.id.reload_content_button)
+        reloadContentButton.setOnClickListener {
             viewModel?.onClickReload()
         }
         val errorMessageView = findViewById<TextView>(R.id.error_message)
@@ -134,6 +135,7 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
                 vm.contentViewVisibility.observe(this, contentView::setVisibility)
                 vm.errorViewVisibility.observe(this, errorView::setVisibility)
                 vm.loadingViewVisibility.observe(this, loadingView::setVisibility)
+                vm.reloadContentButtonVisibility.observe(this, reloadContentButton::setVisibility)
                 vm.submitButtonVisibility.observe(this, submitButton::setVisibility)
                 vm.submitButtonProgressVisibility.observe(this, submitButtonProgress::setVisibility)
                 vm.submitButtonIsEnabled.observe(this, submitButton::setEnabled)

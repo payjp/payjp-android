@@ -24,6 +24,7 @@ package jp.pay.android.ui
 
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import java.net.SocketTimeoutException
 import jp.pay.android.PayjpTokenBackgroundHandler
 import jp.pay.android.PayjpTokenHandlerExecutor
 import jp.pay.android.PayjpTokenService
@@ -73,6 +74,7 @@ class CardFormScreenViewModelTest {
         contentViewVisibility.observeForever { }
         errorViewVisibility.observeForever { }
         loadingViewVisibility.observeForever { }
+        reloadContentButtonVisibility.observeForever { }
         submitButtonVisibility.observeForever { }
         submitButtonProgressVisibility.observeForever { }
         submitButtonIsEnabled.observeForever { }
@@ -142,6 +144,23 @@ class CardFormScreenViewModelTest {
             assertThat(loadingViewVisibility.value, `is`(View.GONE))
             assertThat(errorViewVisibility.value, `is`(View.VISIBLE))
             assertThat(contentViewVisibility.value, `is`(View.GONE))
+            assertThat(reloadContentButtonVisibility.value, `is`(View.GONE))
+        }
+    }
+
+    @Test
+    fun failure_fetchAcceptedBrands_show_reload_if_network_error() {
+        val error = SocketTimeoutException("omg")
+        val message = "問題が発生しました"
+        `when`(mockTokenService.getAcceptedBrands(anyNullable()))
+            .thenReturn(Tasks.failure(error))
+        `when`(mockErrorTranslator.translate(error))
+            .thenReturn(message)
+
+        val viewModel = createViewModel()
+        viewModel.fetchAcceptedBrands()
+        viewModel.run {
+            assertThat(reloadContentButtonVisibility.value, `is`(View.VISIBLE))
         }
     }
 
