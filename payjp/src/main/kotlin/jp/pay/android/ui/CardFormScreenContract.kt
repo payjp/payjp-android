@@ -43,6 +43,7 @@ internal interface CardFormScreenContract {
         val contentViewVisibility: LiveData<Int>
         val errorViewVisibility: LiveData<Int>
         val loadingViewVisibility: LiveData<Int>
+        val reloadContentButtonVisibility: LiveData<Int>
         val submitButtonVisibility: LiveData<Int>
         val submitButtonProgressVisibility: LiveData<Int>
         val submitButtonIsEnabled: LiveData<Boolean>
