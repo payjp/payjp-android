@@ -24,6 +24,7 @@ package jp.pay.android.network
 
 import com.squareup.moshi.Moshi
 import java.io.IOException
+import java.lang.RuntimeException
 import java.util.concurrent.Executor
 import jp.pay.android.Task
 import jp.pay.android.exception.PayjpApiException
@@ -57,7 +58,7 @@ internal class ResultCall<T>(
                         )
                     }
             }
-            ?: IOException("unknown response", HttpException(response))
+            ?: RuntimeException("unknown response", HttpException(response))
     }
 
     override fun run(): T = execute().body()!!

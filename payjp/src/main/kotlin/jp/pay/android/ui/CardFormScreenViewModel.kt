@@ -40,7 +40,8 @@ import jp.pay.android.util.OneOffValue
 
 internal class CardFormScreenViewModel(
     private val tokenService: PayjpTokenService,
-    private val tenantId: TenantId?
+    private val tenantId: TenantId?,
+    private val errorTranslator: ErrorTranslator
 ) : ViewModel(), CardFormScreenContract.Input, CardFormScreenContract.Output, LifecycleObserver {
     override val contentViewVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     override val errorViewVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
@@ -49,7 +50,8 @@ internal class CardFormScreenViewModel(
     override val submitButtonProgressVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     override val submitButtonIsEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
     override val acceptedBrands: MutableLiveData<OneOffValue<List<CardBrand>>> = MutableLiveData()
-    override val errorMessage: MutableLiveData<OneOffValue<CharSequence>> = MutableLiveData()
+    override val errorDialogMessage: MutableLiveData<OneOffValue<CharSequence>> = MutableLiveData()
+    override val errorViewText: MutableLiveData<CharSequence> = MutableLiveData()
     override val success: MutableLiveData<OneOffValue<Token>> = MutableLiveData()
     // private property
     private var fetchAcceptedBrandsTask: Task<CardBrandsAcceptedResponse>? = null
@@ -82,8 +84,8 @@ internal class CardFormScreenViewModel(
             }
 
             override fun onError(throwable: Throwable) {
-                // TODO: エラーメッセージ
-                errorMessage.value = OneOffValue("問題が発生しました")
+                val message = errorTranslator.translate(throwable)
+                errorDialogMessage.value = OneOffValue(message)
                 submitButtonProgressVisibility.value = View.GONE
                 submitButtonVisibility.value = View.VISIBLE
                 tokenizeProcessing.value = false
@@ -114,6 +116,7 @@ internal class CardFormScreenViewModel(
                 }
 
                 override fun onError(throwable: Throwable) {
+                    errorViewText.value = errorTranslator.translate(throwable)
                     loadingViewVisibility.value = View.GONE
                     contentViewVisibility.value = View.GONE
                     errorViewVisibility.value = View.VISIBLE
@@ -138,7 +141,7 @@ internal class CardFormScreenViewModel(
                         success.value = OneOffValue(token)
                     }
                     is PayjpTokenBackgroundHandler.CardFormStatus.Error -> {
-                        errorMessage.value = OneOffValue(status.message)
+                        errorDialogMessage.value = OneOffValue(status.message)
                         submitButtonVisibility.value = View.VISIBLE
                     }
                 }
@@ -148,14 +151,16 @@ internal class CardFormScreenViewModel(
 
     internal class Factory(
         private val tokenService: PayjpTokenService,
-        private val tenantId: TenantId?
+        private val tenantId: TenantId?,
+        private val errorTranslator: ErrorTranslator
     ) : ViewModelProvider.NewInstanceFactory() {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return CardFormScreenViewModel(
                 tokenService = tokenService,
-                tenantId = tenantId
+                tenantId = tenantId,
+                errorTranslator = errorTranslator
             ) as T
         }
     }

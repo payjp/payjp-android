@@ -22,33 +22,15 @@
  */
 package jp.pay.android.ui
 
-import androidx.lifecycle.LiveData
-import jp.pay.android.Task
-import jp.pay.android.model.CardBrand
-import jp.pay.android.model.Token
-import jp.pay.android.util.OneOffValue
-
-internal interface CardFormScreenContract {
-
-    interface Input {
-
-        fun onValidateInput(isValid: Boolean)
-
-        fun onCreateToken(task: Task<Token>)
-
-        fun onClickReload()
-    }
-
-    interface Output {
-        val contentViewVisibility: LiveData<Int>
-        val errorViewVisibility: LiveData<Int>
-        val loadingViewVisibility: LiveData<Int>
-        val submitButtonVisibility: LiveData<Int>
-        val submitButtonProgressVisibility: LiveData<Int>
-        val submitButtonIsEnabled: LiveData<Boolean>
-        val acceptedBrands: LiveData<OneOffValue<List<CardBrand>>>
-        val errorDialogMessage: LiveData<OneOffValue<CharSequence>>
-        val errorViewText: LiveData<CharSequence>
-        val success: LiveData<OneOffValue<Token>>
-    }
+/**
+ * Error message translator.
+ */
+internal interface ErrorTranslator {
+    /**
+     * Convert error to message that human readable.
+     *
+     * @param throwable throwable
+     * @return message
+     */
+    fun translate(throwable: Throwable): CharSequence
 }

@@ -22,33 +22,31 @@
  */
 package jp.pay.android.ui
 
-import androidx.lifecycle.LiveData
-import jp.pay.android.Task
-import jp.pay.android.model.CardBrand
-import jp.pay.android.model.Token
-import jp.pay.android.util.OneOffValue
+import android.content.Context
+import java.io.IOException
+import jp.pay.android.R
+import jp.pay.android.exception.PayjpApiException
 
-internal interface CardFormScreenContract {
+/**
+ * Provide error message by context or from api response.
+ *
+ * @param context context
+ */
+internal class ContextErrorTranslator(context: Context) : ErrorTranslator {
 
-    interface Input {
+    private val context = context.applicationContext
 
-        fun onValidateInput(isValid: Boolean)
-
-        fun onCreateToken(task: Task<Token>)
-
-        fun onClickReload()
-    }
-
-    interface Output {
-        val contentViewVisibility: LiveData<Int>
-        val errorViewVisibility: LiveData<Int>
-        val loadingViewVisibility: LiveData<Int>
-        val submitButtonVisibility: LiveData<Int>
-        val submitButtonProgressVisibility: LiveData<Int>
-        val submitButtonIsEnabled: LiveData<Boolean>
-        val acceptedBrands: LiveData<OneOffValue<List<CardBrand>>>
-        val errorDialogMessage: LiveData<OneOffValue<CharSequence>>
-        val errorViewText: LiveData<CharSequence>
-        val success: LiveData<OneOffValue<Token>>
+    override fun translate(throwable: Throwable): CharSequence {
+        return when (throwable) {
+            is PayjpApiException -> when (throwable.httpStatusCode) {
+                // Use response message if status is 402 payment error.
+                // Other than that, use fixed message to avoid system message exposure.
+                402 -> throwable.apiError.message
+                in 500 until 600 -> context.getString(R.string.payjp_card_form_screen_error_server)
+                else -> context.getString(R.string.payjp_card_form_screen_error_application)
+            }
+            is IOException -> context.getString(R.string.payjp_card_form_screen_error_network)
+            else -> context.getString(R.string.payjp_card_form_screen_error_unknown)
+        }
     }
 }
