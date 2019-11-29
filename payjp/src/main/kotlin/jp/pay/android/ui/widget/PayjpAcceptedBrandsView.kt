@@ -80,7 +80,10 @@ class PayjpAcceptedBrandsView @JvmOverloads constructor(
 
         override fun onBindViewHolder(holder: AcceptedBrandViewHolder, position: Int) {
             val brand = list[position]
-            (holder.itemView as ImageView).setImageResource(brand.logoResourceId)
+            (holder.itemView as ImageView).run {
+                setImageResource(brand.logoResourceId)
+                contentDescription = brand.rawValue
+            }
         }
     }
 
