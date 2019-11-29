@@ -23,15 +23,12 @@
 package com.example.payjp.sample;
 
 import android.app.Application;
+import android.os.Build;
+import android.util.Log;
 
-import com.facebook.flipper.android.AndroidFlipperClient;
-import com.facebook.flipper.android.utils.FlipperUtils;
-import com.facebook.flipper.core.FlipperClient;
-import com.facebook.flipper.plugins.inspector.DescriptorMapping;
-import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
-import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
-import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
-import com.facebook.soloader.SoLoader;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.security.ProviderInstaller;
 
 import jp.pay.android.Payjp;
 import jp.pay.android.PayjpConfiguration;
@@ -46,28 +43,33 @@ public class SampleApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        SoLoader.init(this, false);
+
+        // For Modern TLS
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            try {
+                ProviderInstaller.installIfNeeded(this);
+            } catch (GooglePlayServicesRepairableException e) {
+                Log.e("payjp-android", "error ssl setup", e);
+            } catch (GooglePlayServicesNotAvailableException e) {
+                Log.e("payjp-android", "error ssl setup", e);
+            }
+        }
 
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
-        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
-                .addNetworkInterceptor(loggingInterceptor);
-        if (BuildConfig.DEBUG && FlipperUtils.shouldEnableFlipper(this)) {
-            final FlipperClient client = AndroidFlipperClient.getInstance(this);
-            client.addPlugin(new InspectorFlipperPlugin(this, DescriptorMapping.withDefaults()));
-            final NetworkFlipperPlugin networkFlipperPlugin = new NetworkFlipperPlugin();
-            okHttpClientBuilder.addNetworkInterceptor(new FlipperOkhttpInterceptor(networkFlipperPlugin));
-            client.addPlugin(networkFlipperPlugin);
-            client.start();
-        }
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addNetworkInterceptor(loggingInterceptor)
+                .build();
 
         SampleSendTokenHandler sendTokenHandler = new SampleSendTokenHandler(
-                BACKEND_URL, okHttpClientBuilder.build());
+                BACKEND_URL, okHttpClient);
 
         Payjp.init(new PayjpConfiguration.Builder("pk_test_0383a1b8f91e8a6e3ea0e2a9")
                 .setDebugEnabled(BuildConfig.DEBUG)
                 .setCardScannerPlugin(PayjpCardScannerPlugin.INSTANCE)
                 .setTokenBackgroundHandler(sendTokenHandler)
                 .build());
+
+
     }
 }

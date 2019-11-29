@@ -91,8 +91,14 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitle(R.string.payjp_card_form_screen_title)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setUpUI()
         cardFormFragment = findCardFormFragment()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return super.onSupportNavigateUp()
     }
 
     override fun onValidateInput(view: PayjpCardFormView, isValid: Boolean) {

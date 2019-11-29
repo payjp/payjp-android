@@ -1,6 +1,6 @@
 <!--
   ~
-  ~ Copyright (c) 2018 PAY, Inc.
+  ~ Copyright (c) 2019 PAY, Inc.
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -21,17 +21,15 @@
   ~ SOFTWARE.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="jp.pay.android">
-
-    <uses-permission android:name="android.permission.INTERNET" />
-
-    <application>
-        <activity
-                android:name=".ui.PayjpCardFormActivity"
-                android:theme="@style/Payjp.Theme.CardForm"
-                android:enabled="true"
-                android:exported="false" />
-    </application>
-
-</manifest>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="18dp"
+    android:height="16dp"
+    android:viewportWidth="18"
+    android:viewportHeight="16">
+  <path
+      android:pathData="M10.7667,2.3333L12.2917,4L15.6667,4L15.6667,14L2.3333,14L2.3333,4L5.7083,4L7.2333,2.3333L10.7667,2.3333L10.7667,2.3333ZM11.5,0.6667L6.5,0.6667L4.975,2.3333L2.3333,2.3333C1.4167,2.3333 0.6667,3.0833 0.6667,4L0.6667,14C0.6667,14.9167 1.4167,15.6667 2.3333,15.6667L15.6667,15.6667C16.5833,15.6667 17.3333,14.9167 17.3333,14L17.3333,4C17.3333,3.0833 16.5833,2.3333 15.6667,2.3333L13.025,2.3333L11.5,0.6667ZM9,6.5C10.375,6.5 11.5,7.625 11.5,9C11.5,10.375 10.375,11.5 9,11.5C7.625,11.5 6.5,10.375 6.5,9C6.5,7.625 7.625,6.5 9,6.5L9,6.5ZM9,4.8333C6.7,4.8333 4.8333,6.7 4.8333,9C4.8333,11.3 6.7,13.1667 9,13.1667C11.3,13.1667 13.1667,11.3 13.1667,9C13.1667,6.7 11.3,4.8333 9,4.8333Z"
+      android:strokeWidth="1"
+      android:fillColor="#212121"
+      android:fillType="nonZero"
+      android:strokeColor="#00000000"/>
+</vector>

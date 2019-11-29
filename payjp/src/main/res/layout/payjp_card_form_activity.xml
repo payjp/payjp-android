@@ -25,7 +25,9 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/container_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:context=".ui.PayjpCardFormActivity"
+        tools:theme="@style/Payjp.Theme.CardForm">
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/content_view"
@@ -44,11 +46,10 @@
 
             <Button
                     android:id="@+id/card_form_button"
-                    style="?android:buttonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:minHeight="60dp"
+                    android:minHeight="@dimen/payjp_card_form_submit_button_minheight"
                     android:text="@string/payjp_card_form_submit" />
 
             <ProgressBar
@@ -78,13 +79,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:padding="16dp" />
+                        android:padding="16dp"/>
 
                 <FrameLayout
                         android:id="@+id/card_form_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="24dp" />
+                        android:layout_marginTop="20dp" />
 
             </LinearLayout>
 
@@ -124,7 +125,6 @@
 
         <Button
                 android:id="@+id/reload_content_button"
-                style="?android:buttonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"

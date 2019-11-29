@@ -1,0 +1,65 @@
+<!--
+  ~
+  ~ Copyright (c) 2019 PAY, Inc.
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="27dp"
+    android:height="16dp"
+    android:viewportWidth="27"
+    android:viewportHeight="16">
+  <path
+      android:pathData="M26.3763,6.6131L26.3763,2.1221C26.3763,1.0378 25.4885,0.15 24.4042,0.15L2.1221,0.15C1.0378,0.15 0.15,1.0378 0.15,2.1221L0.15,6.6131L26.3763,6.6131Z"
+      android:strokeWidth="0.3"
+      android:fillColor="#E3E4E6"
+      android:fillType="nonZero"
+      android:strokeColor="#212121"/>
+  <path
+      android:pathData="M0.15,6.15L0.15,13.681C0.15,14.7653 1.0378,15.6531 2.1221,15.6531L24.4042,15.6531C25.4885,15.6531 26.3763,14.7653 26.3763,13.681L26.3763,6.15L0.15,6.15ZM13.6669,12.5163L3.1668,12.5163L3.0168,12.3663L3.0168,9.7137L3.1668,9.5637L13.6667,9.5637L13.8167,9.7137L13.8167,12.3663L13.6667,12.3663L13.6667,12.2163L13.6669,12.2163L13.6669,12.5163Z"
+      android:strokeWidth="0.3"
+      android:fillColor="#E3E4E6"
+      android:fillType="nonZero"
+      android:strokeColor="#212121"/>
+  <path
+      android:pathData="M0.3,6l25.9282,0l0,0.5l-25.9282,0z"
+      android:strokeWidth="1"
+      android:fillColor="#E3E4E6"
+      android:fillType="evenOdd"
+      android:strokeColor="#00000000"/>
+  <path
+      android:pathData="M2.8,9h11.5v4h-11.5z"
+      android:strokeWidth="1"
+      android:fillColor="#E3E4E6"
+      android:fillType="evenOdd"
+      android:strokeColor="#00000000"/>
+  <path
+      android:pathData="M12.484,6.604L11.803,5.923L11.923,5.8L12.607,6.484L13.285,5.803L13.408,5.923L12.727,6.604L13.411,7.285L13.288,7.405L12.604,6.724L11.92,7.408L11.8,7.288L12.484,6.604ZM15.544,6.604L14.863,5.923L14.983,5.8L15.667,6.484L16.345,5.803L16.468,5.923L15.787,6.604L16.471,7.285L16.348,7.405L15.664,6.724L14.98,7.408L14.86,7.288L15.544,6.604ZM18.604,6.604L17.923,5.923L18.043,5.8L18.727,6.484L19.405,5.803L19.528,5.923L18.847,6.604L19.531,7.285L19.408,7.405L18.724,6.724L18.04,7.408L17.92,7.288L18.604,6.604ZM21.664,6.604L20.983,5.923L21.103,5.8L21.787,6.484L22.465,5.803L22.588,5.923L21.907,6.604L22.591,7.285L22.468,7.405L21.784,6.724L21.1,7.408L20.98,7.288L21.664,6.604Z"
+      android:strokeWidth="1"
+      android:fillColor="#3E4853"
+      android:fillType="nonZero"
+      android:strokeColor="#00000000"/>
+  <path
+      android:pathData="M10.25,6.5a6.75,3.25 0,1 0,13.5 0a6.75,3.25 0,1 0,-13.5 0z"
+      android:strokeWidth="0.5"
+      android:fillColor="#00000000"
+      android:strokeColor="#0063F0"
+      android:fillType="evenOdd"/>
+</vector>

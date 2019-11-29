@@ -65,6 +65,7 @@ dependencies {
 
     implementation "androidx.fragment:fragment:$fragment"
     implementation "androidx.appcompat:appcompat:$appcompat"
+    implementation "androidx.recyclerview:recyclerview:$recyclerview"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.1.0"
