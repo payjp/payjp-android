@@ -36,6 +36,11 @@ cache_step:
       key: *primary_cache_key_gem
 
 shared_build_steps:
+  - run: &set_env
+      command: |
+        echo "export REPOSITORY_ROOT=$(git rev-parse --show-toplevel)" >> $BASH_ENV
+        echo "source scripts/bash.source" >> $BASH_ENV
+        source $BASH_ENV
   - run: &update_sdk
       name: Update Android SDK
       command: |
@@ -53,6 +58,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - run: *set_env
       - run: *update_sdk
       - run: *generate_cache_key
       - restore_cache: *restore_cache_gem
@@ -68,10 +74,24 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - run: *set_env
       - restore_cache: *restore_cache_gem
       - run: *bundle_install
       - save_cache: *save_cache_gem
       - run: bundle exec fastlane android create_pr_to_public
+  firebase_test_lab_robo:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: *set_env
+      - run: *update_sdk
+      - run: *generate_cache_key
+      - restore_cache: *restore_cache_gem
+      - run: *bundle_install
+      - save_cache: *save_cache_gem
+      - restore_cache: *restore_cache_gradle
+      - run: ./gradlew androidDependencies
+      - run: bundle exec fastlane android test_robo_sample
 
 workflows:
   version: 2
@@ -84,3 +104,9 @@ workflows:
           filters:
             branches:
               only: master
+      - firebase_test_lab_robo:
+          requires:
+            - build
+          filters:
+            branches:
+              only: develop
