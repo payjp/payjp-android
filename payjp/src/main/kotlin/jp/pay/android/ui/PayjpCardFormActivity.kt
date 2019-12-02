@@ -138,6 +138,7 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
         viewModel = ViewModelProviders.of(this, vmFactory).get(CardFormScreenViewModel::class.java)
             .also { vm ->
                 lifecycle.addObserver(vm)
+                vm.acceptedBrands.value?.peek()?.let(acceptedBrandsView::setAcceptedBrands)
                 vm.contentViewVisibility.observe(this, contentView::setVisibility)
                 vm.errorViewVisibility.observe(this, errorView::setVisibility)
                 vm.loadingViewVisibility.observe(this, loadingView::setVisibility)
