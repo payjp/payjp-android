@@ -50,7 +50,7 @@ import jp.pay.android.ui.PayjpCardFormResultCallback
 class Payjp internal constructor(
     private val configuration: PayjpConfiguration,
     private val payjpApi: PayjpApi,
-    private val tokenHandlerExecutor: PayjpTokenHandlerExecutor? = null
+    private val tokenHandlerExecutor: TokenHandlerExecutor? = null
 ) : PayjpTokenService {
 
     /**
@@ -67,7 +67,7 @@ class Payjp internal constructor(
             locale = configuration.locale
         ),
         tokenHandlerExecutor = configuration.tokenBackgroundHandler?.let { handler ->
-            DefaultTokenHandlerExecutor(
+            TokenHandlerExecutorImpl(
                 handler = handler,
                 backgroundExecutor = Executors.newSingleThreadExecutor { r ->
                     Thread(r, "payjp-android").apply {
@@ -185,7 +185,13 @@ class Payjp internal constructor(
         return payjpApi.getAcceptedBrands(authorization, tenantId?.id)
     }
 
-    override fun getTokenHandlerExecutor(): PayjpTokenHandlerExecutor? = tokenHandlerExecutor
+    /**
+     * Get token background handler executor.
+     * If any handler did not set, return null.
+     *
+     * @return background handler executor
+     */
+    internal fun getTokenHandlerExecutor(): TokenHandlerExecutor? = tokenHandlerExecutor
 
     private object MainThreadExecutor : Executor {
         private val handler = Handler(Looper.getMainLooper())

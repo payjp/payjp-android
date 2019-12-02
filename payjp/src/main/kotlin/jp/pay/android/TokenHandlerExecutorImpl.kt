@@ -26,17 +26,17 @@ import java.util.concurrent.Executor
 import jp.pay.android.model.Token
 
 /**
- * Default implementation of [PayjpTokenHandlerExecutor]
+ * Default implementation of [TokenHandlerExecutor]
  *
  * @param handler handler set in [jp.pay.android.PayjpConfiguration]
  * @param backgroundExecutor executor which run handler
  * @param callbackExecutor executor which run callback
  */
-internal class DefaultTokenHandlerExecutor(
+internal class TokenHandlerExecutorImpl(
     private val handler: PayjpTokenBackgroundHandler,
     private val backgroundExecutor: Executor,
     private val callbackExecutor: Executor
-) : PayjpTokenHandlerExecutor {
+) : TokenHandlerExecutor {
 
     private var pendingCallback: ((PayjpTokenBackgroundHandler.CardFormStatus) -> Unit)? = null
 

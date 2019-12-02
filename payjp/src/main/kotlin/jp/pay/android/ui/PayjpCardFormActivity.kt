@@ -47,7 +47,11 @@ import jp.pay.android.ui.widget.PayjpAcceptedBrandsView
 import jp.pay.android.ui.widget.PayjpCardFormFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
 
-class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activity),
+/**
+ * PayjpCardFormActivity show card form.
+ *
+ */
+internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activity),
     PayjpCardFormView.OnValidateInputListener,
     PayjpCardFormView.CardFormEditorListener {
 
@@ -133,7 +137,8 @@ class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_form_activit
         val vmFactory = CardFormScreenViewModel.Factory(
             tokenService = Payjp.getInstance(),
             tenantId = tenantId,
-            errorTranslator = ContextErrorTranslator(this)
+            errorTranslator = ContextErrorTranslator(this),
+            tokenHandlerExecutor = Payjp.getInstance().getTokenHandlerExecutor()
         )
         viewModel = ViewModelProviders.of(this, vmFactory).get(CardFormScreenViewModel::class.java)
             .also { vm ->

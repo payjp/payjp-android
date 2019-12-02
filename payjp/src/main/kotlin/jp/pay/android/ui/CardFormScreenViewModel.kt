@@ -33,6 +33,7 @@ import java.io.IOException
 import jp.pay.android.PayjpTokenBackgroundHandler
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.Task
+import jp.pay.android.TokenHandlerExecutor
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
@@ -42,7 +43,8 @@ import jp.pay.android.util.OneOffValue
 internal class CardFormScreenViewModel(
     private val tokenService: PayjpTokenService,
     private val tenantId: TenantId?,
-    private val errorTranslator: ErrorTranslator
+    private val errorTranslator: ErrorTranslator,
+    private val tokenHandlerExecutor: TokenHandlerExecutor?
 ) : ViewModel(), CardFormScreenContract.Input, CardFormScreenContract.Output, LifecycleObserver {
     override val contentViewVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     override val errorViewVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
@@ -66,7 +68,7 @@ internal class CardFormScreenViewModel(
         fetchAcceptedBrandsTask = null
         createTokenTask?.cancel()
         createTokenTask = null
-        tokenService.getTokenHandlerExecutor()?.cancel()
+        tokenHandlerExecutor?.cancel()
     }
 
     override fun onValidateInput(isValid: Boolean) {
@@ -133,13 +135,12 @@ internal class CardFormScreenViewModel(
     }
 
     private fun onSuccessCreateToken(token: Token) {
-        val executor = tokenService.getTokenHandlerExecutor()
-        if (executor == null) {
+        if (tokenHandlerExecutor == null) {
             submitButtonProgressVisibility.value = View.GONE
             success.value = OneOffValue(token)
             tokenizeProcessing.value = false
         } else {
-            executor.post(token) { status ->
+            tokenHandlerExecutor.post(token) { status ->
                 submitButtonProgressVisibility.value = View.GONE
                 tokenizeProcessing.value = false
                 when (status) {
@@ -158,7 +159,8 @@ internal class CardFormScreenViewModel(
     internal class Factory(
         private val tokenService: PayjpTokenService,
         private val tenantId: TenantId?,
-        private val errorTranslator: ErrorTranslator
+        private val errorTranslator: ErrorTranslator,
+        private val tokenHandlerExecutor: TokenHandlerExecutor?
     ) : ViewModelProvider.NewInstanceFactory() {
 
         @Suppress("UNCHECKED_CAST")
@@ -166,7 +168,8 @@ internal class CardFormScreenViewModel(
             return CardFormScreenViewModel(
                 tokenService = tokenService,
                 tenantId = tenantId,
-                errorTranslator = errorTranslator
+                errorTranslator = errorTranslator,
+                tokenHandlerExecutor = tokenHandlerExecutor
             ) as T
         }
     }

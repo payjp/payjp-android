@@ -25,7 +25,7 @@ package jp.pay.android.ui
 import jp.pay.android.model.Token
 
 /**
- * State represents of result from [jp.pay.android.ui.PayjpCardFormActivity].
+ * State represents of result from the Activity that has card form.
  *
  */
 sealed class PayjpCardFormResult {

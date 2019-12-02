@@ -26,9 +26,9 @@ import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.net.SocketTimeoutException
 import jp.pay.android.PayjpTokenBackgroundHandler
-import jp.pay.android.PayjpTokenHandlerExecutor
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.TestStubs
+import jp.pay.android.TokenHandlerExecutor
 import jp.pay.android.anyNullable
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardBrandsAcceptedResponse
@@ -54,7 +54,7 @@ class CardFormScreenViewModelTest {
     @Mock
     private lateinit var mockTokenService: PayjpTokenService
     @Mock
-    private lateinit var mockTokenHandlerExecutor: PayjpTokenHandlerExecutor
+    private lateinit var mockTokenHandlerExecutor: TokenHandlerExecutor
     @Mock
     private lateinit var mockErrorTranslator: ErrorTranslator
 
@@ -64,12 +64,13 @@ class CardFormScreenViewModelTest {
     }
 
     private fun createViewModel(
-        tenantId: TenantId? = null
+        tenantId: TenantId? = null,
+        tokenHandlerExecutor: TokenHandlerExecutor? = null
     ) = CardFormScreenViewModel(
         tokenService = mockTokenService,
         tenantId = tenantId,
-        errorTranslator = mockErrorTranslator
-
+        errorTranslator = mockErrorTranslator,
+        tokenHandlerExecutor = tokenHandlerExecutor
     ).apply {
         contentViewVisibility.observeForever { }
         errorViewVisibility.observeForever { }
@@ -177,9 +178,7 @@ class CardFormScreenViewModelTest {
 
     @Test
     fun success_onCreateToken_derive_executor_post() {
-        `when`(mockTokenService.getTokenHandlerExecutor())
-            .thenReturn(mockTokenHandlerExecutor)
-        val viewModel = createViewModel()
+        val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
         val token = TestStubs.newToken()
 
         viewModel.onCreateToken(Tasks.success(token))
@@ -192,11 +191,9 @@ class CardFormScreenViewModelTest {
     fun failure_onCreateToken_never_derive_executor_post() {
         val error = RuntimeException("omg")
         val message = "問題が発生しました"
-        `when`(mockTokenService.getTokenHandlerExecutor())
-            .thenReturn(mockTokenHandlerExecutor)
         `when`(mockErrorTranslator.translate(error))
             .thenReturn(message)
-        val viewModel = createViewModel()
+        val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
 
         viewModel.onCreateToken(Tasks.failure(error))
         viewModel.run {
@@ -210,10 +207,7 @@ class CardFormScreenViewModelTest {
 
     @Test
     fun skip_executor_post_if_executor_isNull() {
-        `when`(mockTokenService.getTokenHandlerExecutor())
-            .thenReturn(null)
-
-        val viewModel = createViewModel()
+        val viewModel = createViewModel(tokenHandlerExecutor = null)
         val token = TestStubs.newToken()
 
         viewModel.onCreateToken(Tasks.success(token))
@@ -227,9 +221,7 @@ class CardFormScreenViewModelTest {
     @Test
     fun success_executor_post() {
         val handlerExecutor = RecordingHandlerExecutor()
-        `when`(mockTokenService.getTokenHandlerExecutor())
-            .thenReturn(handlerExecutor)
-        val viewModel = createViewModel()
+        val viewModel = createViewModel(tokenHandlerExecutor = handlerExecutor)
         val token = TestStubs.newToken()
 
         viewModel.onCreateToken(Tasks.success(token))
@@ -241,9 +233,7 @@ class CardFormScreenViewModelTest {
     @Test
     fun failure_executor_post() {
         val handlerExecutor = RecordingHandlerExecutor()
-        `when`(mockTokenService.getTokenHandlerExecutor())
-            .thenReturn(handlerExecutor)
-        val viewModel = createViewModel()
+        val viewModel = createViewModel(tokenHandlerExecutor = handlerExecutor)
         val token = TestStubs.newToken()
         val message = "error message"
 
@@ -257,7 +247,7 @@ class CardFormScreenViewModelTest {
         }
     }
 
-    class RecordingHandlerExecutor : PayjpTokenHandlerExecutor {
+    class RecordingHandlerExecutor : TokenHandlerExecutor {
 
         var token: Token? = null
         var callback: ((status: PayjpTokenBackgroundHandler.CardFormStatus) -> Unit)? = null
