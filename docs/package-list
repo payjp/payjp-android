@@ -4,6 +4,7 @@ jp.pay.android.coroutine
 jp.pay.android.exception
 jp.pay.android.model
 jp.pay.android.plugin
+jp.pay.android.ui
 jp.pay.android.ui.extension
 jp.pay.android.ui.widget
 jp.pay.android.util

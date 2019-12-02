@@ -113,7 +113,7 @@ public interface PayjpCardFormView {
          * params is from {@link android.widget.TextView.OnEditorActionListener#onEditorAction(TextView, int, KeyEvent)}.
          *
          * @param view view
-         * @param textView textview
+         * @param textView TextView
          * @param event event
          * @return handle or not
          */

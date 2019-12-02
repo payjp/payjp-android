@@ -51,11 +51,10 @@ internal fun TextView.addOnTextChanged(
 }
 
 /**
- * show with lifecycle awareness of activity using [DialogHolder]
+ * Show with lifecycle awareness of activity using [jp.pay.android.ui.widget.DialogHolder].
  *
  * @param activity host activity
- * @see DialogHolder
  */
-fun Dialog.showWith(activity: ComponentActivity) {
+internal fun Dialog.showWith(activity: ComponentActivity) {
     DialogHolder(this).show(activity)
 }

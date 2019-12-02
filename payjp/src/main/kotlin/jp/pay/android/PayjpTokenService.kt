@@ -82,12 +82,4 @@ interface PayjpTokenService {
      * @return task to get accepted brands.
      */
     fun getAcceptedBrands(tenantId: TenantId?): Task<CardBrandsAcceptedResponse>
-
-    /**
-     * Get token background handler executor.
-     * If any handler did not set, return null.
-     *
-     * @return background handler executor
-     */
-    fun getTokenHandlerExecutor(): PayjpTokenHandlerExecutor?
 }

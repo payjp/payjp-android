@@ -28,7 +28,7 @@ import jp.pay.android.model.Token
  * Executor for [PayjpTokenBackgroundHandler].
  * A handler works in background thread, and pass a result status to the callback.
  */
-interface PayjpTokenHandlerExecutor {
+internal interface TokenHandlerExecutor {
 
     /**
      * Invoke handler with token and callback.

@@ -40,7 +40,7 @@ import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
 
 @RunWith(AndroidJUnit4::class)
-class DefaultTokenHandlerExecutorTest {
+class TokenHandlerExecutorImplTest {
 
     @Mock
     private lateinit var mockHandler: PayjpTokenBackgroundHandler
@@ -55,7 +55,7 @@ class DefaultTokenHandlerExecutorTest {
         val complete = CardFormStatus.Complete()
         `when`(mockHandler.handleTokenInBackground(anyNullable()))
             .thenReturn(complete)
-        val handlerExecutor = DefaultTokenHandlerExecutor(
+        val handlerExecutor = TokenHandlerExecutorImpl(
             handler = mockHandler,
             backgroundExecutor = CurrentThreadExecutor(),
             callbackExecutor = CurrentThreadExecutor()
@@ -76,7 +76,7 @@ class DefaultTokenHandlerExecutorTest {
         val error = CardFormStatus.Error(errorMessage)
         `when`(mockHandler.handleTokenInBackground(anyNullable()))
             .thenReturn(error)
-        val handlerExecutor = DefaultTokenHandlerExecutor(
+        val handlerExecutor = TokenHandlerExecutorImpl(
             handler = mockHandler,
             backgroundExecutor = CurrentThreadExecutor(),
             callbackExecutor = CurrentThreadExecutor()
@@ -98,7 +98,7 @@ class DefaultTokenHandlerExecutorTest {
         `when`(mockHandler.handleTokenInBackground(anyNullable()))
             .thenReturn(complete)
         val backgroundHandler = ResumeCurrentThreadExecutor()
-        val handlerExecutor = DefaultTokenHandlerExecutor(
+        val handlerExecutor = TokenHandlerExecutorImpl(
             handler = mockHandler,
             backgroundExecutor = backgroundHandler,
             callbackExecutor = CurrentThreadExecutor()
