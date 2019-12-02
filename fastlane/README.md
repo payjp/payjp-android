@@ -26,6 +26,11 @@ Runs all the tests
 fastlane android create_pr_to_public
 ```
 Create GitHub PR to `payjp/payjp-android` from internal repo. (internal only)
+### android test_robo_sample
+```
+fastlane android test_robo_sample
+```
+Run robo test on Firebase Test Lab
 
 ----
 
