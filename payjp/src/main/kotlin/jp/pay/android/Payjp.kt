@@ -27,6 +27,7 @@ import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
+import androidx.fragment.app.Fragment
 import java.nio.charset.Charset
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
@@ -126,7 +127,7 @@ class Payjp internal constructor(
         }
 
         /**
-         * Start card form screen
+         * Start card form screen from Activity.
          *
          * @param activity activity
          * @param requestCode requestCode. The default is [PayjpCardFormActivity.DEFAULT_CARD_FORM_REQUEST_CODE]
@@ -136,6 +137,18 @@ class Payjp internal constructor(
         @JvmOverloads
         fun startCardForm(activity: Activity, requestCode: Int? = null, tenant: TenantId? = null) =
             PayjpCardFormActivity.start(activity = activity, requestCode = requestCode, tenant = tenant)
+
+        /**
+         * Start card form screen from Fragment.
+         *
+         * @param fragment fragment
+         * @param requestCode requestCode. The default is [PayjpCardFormActivity.DEFAULT_CARD_FORM_REQUEST_CODE]
+         * @param tenant tenant (only for platformer)
+         */
+        @JvmStatic
+        @JvmOverloads
+        fun startCardForm(fragment: Fragment, requestCode: Int? = null, tenant: TenantId? = null) =
+            PayjpCardFormActivity.start(fragment = fragment, requestCode = requestCode, tenant = tenant)
 
         /**
          * Handle the result from the activity which is started by [Payjp.startCardForm].
