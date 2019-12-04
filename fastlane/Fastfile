@@ -70,10 +70,7 @@ platform :android do
       "text:text_card_exp_month=11",
       "text:text_card_exp_year=2030",
       "text:text_card_name=JOHNDOE",
-      "click:sign_in_button=",
-      "click:button_create_token=",
-      "click:button_create_token_with_validate=",
-      "click:button_get_token="
+      "click:card_form_button="
     ].join(",")
     # Upload to Firebase Test Lab
     firebase_test_lab_android(
