@@ -35,6 +35,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
 import jp.pay.android.Payjp
@@ -64,6 +65,17 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
         fun start(activity: Activity, requestCode: Int?, tenant: TenantId?) {
             activity.startActivityForResult(
                 Intent(activity, PayjpCardFormActivity::class.java).apply {
+                    if (tenant != null) {
+                        putExtra(EXTRA_KEY_TENANT, tenant.id)
+                    }
+                },
+                requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
+            )
+        }
+
+        fun start(fragment: Fragment, requestCode: Int?, tenant: TenantId?) {
+            fragment.startActivityForResult(
+                Intent(fragment.requireContext(), PayjpCardFormActivity::class.java).apply {
                     if (tenant != null) {
                         putExtra(EXTRA_KEY_TENANT, tenant.id)
                     }
