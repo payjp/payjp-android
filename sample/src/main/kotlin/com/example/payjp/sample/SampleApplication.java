@@ -38,7 +38,18 @@ import okhttp3.logging.HttpLoggingInterceptor;
 
 public class SampleApplication extends Application {
 
-    static final String BACKEND_URL = ""; // TODO: REPLACE WITH YOUR ENDPOINT URL
+    /**
+     * TODO: REPLACE WITH YOUR ENDPOINT URL
+     *
+     * You can set up sample server api with following repo.
+     * https://github.com/payjp/example-tokenize-backend
+     *
+     * (If you deploy the sample server app to Heroku, the url will be like
+     * `https://[your_app_name].herokuapp.com/save_card`)
+     *
+     * See the link above for more details.
+     */
+    static final String BACKEND_URL = "";
 
     @Override
     public void onCreate() {
