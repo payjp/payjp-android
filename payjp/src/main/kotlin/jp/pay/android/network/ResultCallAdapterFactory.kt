@@ -24,12 +24,12 @@ package jp.pay.android.network
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types.getRawType
-import retrofit2.Call
-import retrofit2.CallAdapter
-import retrofit2.Retrofit
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.util.concurrent.Executor
+import retrofit2.Call
+import retrofit2.CallAdapter
+import retrofit2.Retrofit
 
 /**
  * ResultCallAdapterFactory

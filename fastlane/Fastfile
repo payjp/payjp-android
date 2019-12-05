@@ -46,4 +46,60 @@ platform :android do
       success: true
     )
   end
+
+  desc "Run robo test on Firebase Test Lab"
+  lane :test_robo_sample do
+    unless ENV['GCLOUD_SERVICE_KEY'] 
+      UI.user_error!("no gcloud service key.")
+    end
+    # Restore credential
+    sh("#{ENV["REPOSITORY_ROOT"]}/scripts/restore_gcloud_credential.sh")
+
+    # Assemble sample
+    gradle(task: 'sample:assemble')
+    
+    sample_apk = "#{ENV["REPOSITORY_ROOT"]}/sample/build/outputs/apk/release/sample-release.apk"
+    # Directives
+    directives = [
+      "text:input_edit_number=4242424242424242",
+      "text:input_edit_expiration=1250",
+      "text:input_edit_cvc=123",
+      "text:input_edit_holder_name=YAMADATARO",
+      "text:text_card_number=4000000000000002",
+      "text:text_card_cvc=000",
+      "text:text_card_exp_month=11",
+      "text:text_card_exp_year=2030",
+      "text:text_card_name=JOHNDOE",
+      "click:card_form_button="
+    ].join(",")
+    # Upload to Firebase Test Lab
+    firebase_test_lab_android(
+      project_id: "payjp-mobile-sdk",                                 # Your Firebase project name.
+      gcloud_service_key_file: "fastlane/gcloud-client-secret.json",  # File path containing the gcloud auth key.
+      type: "robo",                                                   # Optional: Test type (robo/instrumentation).
+      devices: [                                                      # Devices
+        {
+          model: "m0", # PHYSICAL
+          version: "18",
+          locale: "ja_JP",
+          orientation: "portrait"
+        },
+        {
+          model: "Pixel2", # VIRTUAL
+          version: "28",
+          locale: "ja_JP",
+          orientation: "portrait"
+        }
+      ],
+      app_apk: sample_apk,                                            # The path for your android app apk.
+      # app_test_apk: "app-test.apk",                                 # The path for your android instrumentation test apk.
+      # use_orchestrator: false,                                      # If you use orchestrator when set instrumentation test.
+      console_log_file_name: "fastlane/console_output.log",           
+      timeout: "3m",                                                  
+      firebase_test_lab_results_bucket: "test-lab-zfsurikx9y03a-w4bfb1h3dij22",  # If you want to naming bucket of GCS 
+      # firebase_test_lab_results_dir: "firebase_cats_test_dir",      # If you want to naming results of GCS. (Maybe don't need it.) 
+      slack_url: ENV["SLACK_URL"],                                    # If you want notify to Slack.
+      extra_options: "--robo-directives #{directives}"
+    )
+  end
 end

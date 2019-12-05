@@ -24,20 +24,20 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.3.50'
+    ext.kotlin_version = '1.3.61'
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.1'
+        classpath 'com.android.tools.build:gradle:3.5.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.18"
     }
 }
 
 plugins {
-    id "com.diffplug.gradle.spotless" version "3.23.1"
+    id "com.diffplug.gradle.spotless" version "3.26.0"
 }
 
 subprojects {
@@ -45,7 +45,7 @@ subprojects {
     spotless {
         kotlin {
             target "**/*.kt"
-            ktlint("0.33.0")
+            ktlint("0.35.0")
             licenseHeaderFile project.rootProject.file('spotless/Copyright.kt')
         }
     }
@@ -58,13 +58,15 @@ ext {
 
     okHttp = "3.12.3"
     moshi = "1.8.0"
-    retrofit = "2.6.1"
+    retrofit = "2.6.2"
     lifecycle = "2.1.0"
     mockito = "2.28.2"
     coroutine = "1.3.1"
     appcompat = "1.1.0"
     fragment = "1.1.0"
-    material = "1.1.0-alpha10"
+    material = "1.2.0-alpha02"
+    constraint = "2.0.0-beta3"
+    recyclerview = "1.1.0"
     cardio = "5.5.1"
 }
 

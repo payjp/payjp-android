@@ -35,8 +35,6 @@
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/secondaryColor</item>
-        <item name="android:textColorPrimary">@color/primaryTextColor</item>
-        <item name="android:textColorSecondary">@color/secondaryTextColor</item>
     </style>
 
     <style name="Material.Outline">
@@ -62,5 +60,12 @@
     <style name="MaterialTextFieldFilledDense" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">
         <!-- customize -->
     </style>
+
+    <!-- Customize CardForm -->
+<!--    <style name="Payjp.Theme.CardForm" parent="Payjp.Theme.BaseCardForm">-->
+<!--        <item name="colorPrimary">@color/primaryColor</item>-->
+<!--        <item name="colorPrimaryDark">@color/primaryDarkColor</item>-->
+<!--        <item name="colorSecondary">@color/secondaryColor</item>-->
+<!--    </style>-->
 
 </resources>

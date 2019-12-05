@@ -49,6 +49,10 @@
         <activity android:name=".CardFormViewSampleActivity" />
         <activity android:name=".CardFormViewSampleJavaActivity" />
         <activity android:name=".CoroutineSampleActivity" />
+
+        <activity
+            android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"
+            android:exported="true"/>
     </application>
 
 </manifest>

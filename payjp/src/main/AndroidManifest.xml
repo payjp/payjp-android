@@ -21,7 +21,17 @@
   ~ SOFTWARE.
   -->
 
-<manifest package="jp.pay.android"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+        package="jp.pay.android">
+
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <application>
+        <activity
+                android:name=".ui.PayjpCardFormActivity"
+                android:theme="@style/Payjp.Theme.CardForm"
+                android:enabled="true"
+                android:exported="false" />
+    </application>
+
 </manifest>

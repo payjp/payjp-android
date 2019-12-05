@@ -1,0 +1,47 @@
+<!--
+  ~
+  ~ Copyright (c) 2019 PAY, Inc.
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="27dp"
+    android:height="16dp"
+    android:viewportWidth="27"
+    android:viewportHeight="16">
+  <path
+      android:pathData="M26.85,4.6131L26.85,2.1221C26.85,1.0384 25.9457,0.15 24.84,0.15L2.16,0.15C1.0543,0.15 0.15,1.0384 0.15,2.1221L0.15,4.6131L26.85,4.6131Z"
+      android:strokeWidth="0.3"
+      android:fillColor="#E3E4E6"
+      android:fillType="nonZero"
+      android:strokeColor="#212121"/>
+  <path
+      android:pathData="M0.15,4.15h26.7v2.5421h-26.7z"
+      android:strokeWidth="0.3"
+      android:fillColor="#A7A5A6"
+      android:strokeColor="#212121"
+      android:fillType="evenOdd"/>
+  <path
+      android:pathData="M0.15,6.15L0.15,13.681C0.15,14.7647 1.0543,15.6531 2.16,15.6531L24.84,15.6531C25.9457,15.6531 26.85,14.7647 26.85,13.681L26.85,6.15L0.15,6.15ZM14.9288,12.5163L4.2412,12.5163L4.0912,12.3663L4.0912,9.7137L4.2412,9.5637L14.9286,9.5637L15.0786,9.7137L15.0786,12.3663L14.9286,12.3663L14.9286,12.2163L14.9288,12.2163L14.9288,12.5163ZM22.7588,12.5163L19.1813,12.5163L19.0313,12.3663L19.0313,9.7137L19.1813,9.5637L22.7588,9.5637L22.9088,9.7137L22.9088,12.3663L22.7588,12.5163Z"
+      android:strokeWidth="0.3"
+      android:fillColor="#E3E4E6"
+      android:fillType="nonZero"
+      android:strokeColor="#212121"/>
+</vector>

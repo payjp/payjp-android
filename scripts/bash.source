@@ -1,0 +1,5 @@
+if [[ -z "$REPOSITORY_ROOT" ]]; then
+    export REPOSITORY_ROOT="$(git rev-parse --show-toplevel)"
+fi
+
+export GCLOUD_CREDENTIAL_JSON_PATH=$REPOSITORY_ROOT/fastlane/gcloud-client-secret.json

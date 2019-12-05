@@ -28,18 +28,22 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.text.InputFilter
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
 import androidx.transition.TransitionManager
 import com.google.android.material.textfield.TextInputLayout
-import jp.pay.android.PayjpConstants
+import java.lang.ref.WeakReference
 import jp.pay.android.Payjp
+import jp.pay.android.PayjpConstants
 import jp.pay.android.R
 import jp.pay.android.Task
 import jp.pay.android.exception.PayjpInvalidCardFormException
@@ -57,7 +61,6 @@ import jp.pay.android.validator.CardCvcInputTransformer
 import jp.pay.android.validator.CardExpirationInputTransformer
 import jp.pay.android.validator.CardHolderNameInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformer
-import java.lang.ref.WeakReference
 
 class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
     CardScannerPlugin.CardScanOnResultListener, CardScannerPlugin.CardScannerPermissionDelegate {
@@ -65,23 +68,27 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
     companion object {
         private const val ARGS_HOLDER_NAME_ENABLED = "ARGS_HOLDER_NAME_ENABLED"
         private const val ARGS_TENANT_ID = "ARGS_TENANT_ID"
+        private const val ARGS_ACCEPTED_BRANDS = "ARGS_ACCEPTED_BRANDS"
 
         /**
          * Create new fragment instance with args
          *
          * @param holderNameEnabled a option it require card holder name or not.
          * @param tenantId a option for platform tenant.
+         * @param acceptedBrands accepted brands. if it is null, the fragment try to get them.
          * @return fragment
          */
         @JvmStatic
         fun newInstance(
             holderNameEnabled: Boolean = true,
-            tenantId: TenantId? = null
+            tenantId: TenantId? = null,
+            acceptedBrands: Array<CardBrand>? = null
         ): PayjpCardFormFragment =
             PayjpCardFormFragment().apply {
                 arguments = Bundle().apply {
                     putBoolean(ARGS_HOLDER_NAME_ENABLED, holderNameEnabled)
                     putString(ARGS_TENANT_ID, tenantId?.id)
+                    putParcelableArray(ARGS_ACCEPTED_BRANDS, acceptedBrands)
                 }
             }
     }
@@ -98,6 +105,7 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
     private var viewModel: CardFormViewModel? = null
     private var onValidateInputListener: PayjpCardFormView.OnValidateInputListener? = null
     private var onFetchAcceptedBrandsListener: PayjpCardFormView.OnFetchAcceptedBrandsListener? = null
+    private var cardFormEditorListener: PayjpCardFormView.CardFormEditorListener? = null
     private val delimiterExpiration = PayjpConstants.CARD_FORM_DELIMITER_EXPIRATION
     private val cardNumberFormatter =
         CardNumberFormatTextWatcher(PayjpConstants.CARD_FORM_DELIMITER_NUMBER)
@@ -109,6 +117,9 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
         }
         if (context is PayjpCardFormView.OnFetchAcceptedBrandsListener) {
             this.onFetchAcceptedBrandsListener = context
+        }
+        if (context is PayjpCardFormView.CardFormEditorListener) {
+            this.cardFormEditorListener = context
         }
     }
 
@@ -219,11 +230,29 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
                 bridge.startScanActivity(this)
             }
         }
+        // editor
+        holderNameEditText.setOnEditorActionListener(this::onEditorAction)
+        cvcEditText.setOnEditorActionListener { v, actionId, event ->
+            if (viewModel?.cardHolderNameEnabled?.value == false) {
+                onEditorAction(v, actionId, event)
+            } else {
+                false
+            }
+        }
     }
+
+    private fun onEditorAction(view: TextView, actionId: Int, event: KeyEvent?): Boolean =
+        when (actionId) {
+            EditorInfo.IME_ACTION_DONE -> {
+                cardFormEditorListener?.onLastFormEditorActionDone(this, view, event) ?: false
+            }
+            else -> false
+        }
 
     private fun setUpViewModel() {
         val tenantId = arguments?.getString(ARGS_TENANT_ID)?.let { TenantId(it) }
         val holderNameEnabled = arguments?.getBoolean(ARGS_HOLDER_NAME_ENABLED) ?: true
+        val acceptedBrandArray = arguments?.getParcelableArray(ARGS_ACCEPTED_BRANDS)
         val factory = CardFormViewModel.Factory(
             tokenService = Payjp.getInstance(),
             cardNumberInputTransformer = CardNumberInputTransformer(),
@@ -231,7 +260,8 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
             cardCvcInputTransformer = CardCvcInputTransformer(),
             cardHolderNameInputTransformer = CardHolderNameInputTransformer,
             tenantId = tenantId,
-            holderNameEnabledDefault = holderNameEnabled
+            holderNameEnabledDefault = holderNameEnabled,
+            acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>()
         )
         viewModel =
             ViewModelProviders.of(requireActivity(), factory).get(CardFormViewModel::class.java)
