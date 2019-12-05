@@ -24,10 +24,13 @@
 
 package jp.pay.android.ui.extension
 
+import android.app.Dialog
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.TextView
+import androidx.activity.ComponentActivity
 import com.google.android.material.textfield.TextInputLayout
+import jp.pay.android.ui.widget.DialogHolder
 
 internal fun TextInputLayout.setErrorOrNull(error: CharSequence?) {
     this.isErrorEnabled = error.isNullOrEmpty().not()
@@ -45,4 +48,13 @@ internal fun TextView.addOnTextChanged(
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) =
             onTextChanged?.invoke(s, start, before, count) ?: Unit
     })
+}
+
+/**
+ * Show with lifecycle awareness of activity using [jp.pay.android.ui.widget.DialogHolder].
+ *
+ * @param activity host activity
+ */
+internal fun Dialog.showWith(activity: ComponentActivity) {
+    DialogHolder(this).show(activity)
 }

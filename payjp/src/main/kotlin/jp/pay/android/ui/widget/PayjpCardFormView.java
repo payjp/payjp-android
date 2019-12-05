@@ -24,7 +24,11 @@
 package jp.pay.android.ui.widget;
 
 
+import android.view.KeyEvent;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.List;
 
@@ -97,5 +101,25 @@ public interface PayjpCardFormView {
          * @param error error
          */
         void onErrorFetchAcceptedBrands(@NonNull Throwable error);
+    }
+
+    /**
+     * listener for editor events.
+     */
+    interface CardFormEditorListener {
+
+        /**
+         * listener for the last part form editor action {@link android.view.inputmethod.EditorInfo#IME_ACTION_DONE}.
+         * params is from {@link android.widget.TextView.OnEditorActionListener#onEditorAction(TextView, int, KeyEvent)}.
+         *
+         * @param view view
+         * @param textView TextView
+         * @param event event
+         * @return handle or not
+         */
+        boolean onLastFormEditorActionDone(
+                @NonNull PayjpCardFormView view,
+                @NonNull TextView textView,
+                @Nullable KeyEvent event);
     }
 }

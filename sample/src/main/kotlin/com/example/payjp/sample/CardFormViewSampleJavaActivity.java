@@ -109,7 +109,7 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
         if (f instanceof PayjpCardFormFragment) {
             cardFormFragment = (PayjpCardFormFragment) f;
         } else {
-            cardFormFragment = PayjpCardFormFragment.newInstance(false, null);
+            cardFormFragment = PayjpCardFormFragment.newInstance(false, null, null);
         }
         if (!cardFormFragment.isAdded()) {
             fm.beginTransaction()

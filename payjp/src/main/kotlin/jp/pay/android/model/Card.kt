@@ -22,9 +22,11 @@
  */
 package jp.pay.android.model
 
+import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import java.util.Date
+import kotlinx.android.parcel.Parcelize
 
 /**
  * PAY.JP card object.
@@ -33,6 +35,7 @@ import java.util.Date
  * cf. [https://pay.jp/docs/api/#cardオブジェクト](https://pay.jp/docs/api/#cardオブジェクト)
  */
 @JsonClass(generateAdapter = true)
+@Parcelize
 data class Card(
     val id: String,
     val name: String?,
@@ -43,7 +46,7 @@ data class Card(
     val fingerprint: String,
     val livemode: Boolean,
     val created: Date
-) {
+) : Parcelable {
 
     override fun hashCode(): Int = id.hashCode()
 

@@ -23,6 +23,8 @@
 package jp.pay.android.network
 
 import com.squareup.moshi.Moshi
+import java.util.Locale
+import java.util.concurrent.Executor
 import jp.pay.android.PayjpApi
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.DateUnixTimeJsonAdapter
@@ -31,8 +33,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.util.Locale
-import java.util.concurrent.Executor
 
 /**
  * ApiClient factory

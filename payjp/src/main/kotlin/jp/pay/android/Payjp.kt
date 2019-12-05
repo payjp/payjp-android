@@ -22,16 +22,22 @@
  */
 package jp.pay.android
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
+import androidx.fragment.app.Fragment
+import java.nio.charset.Charset
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.network.TokenApiClientFactory.createApiClient
 import jp.pay.android.plugin.CardScannerResolver
-import java.nio.charset.Charset
-import java.util.concurrent.Executor
+import jp.pay.android.ui.PayjpCardFormActivity
+import jp.pay.android.ui.PayjpCardFormResultCallback
 
 /**
  * Entry point for payjp-android
@@ -44,7 +50,8 @@ import java.util.concurrent.Executor
  */
 class Payjp internal constructor(
     private val configuration: PayjpConfiguration,
-    private val payjpApi: PayjpApi
+    private val payjpApi: PayjpApi,
+    private val tokenHandlerExecutor: TokenHandlerExecutor? = null
 ) : PayjpTokenService {
 
     /**
@@ -57,9 +64,20 @@ class Payjp internal constructor(
         payjpApi = createApiClient(
             baseUrl = PayjpConstants.API_ENDPOINT,
             debuggable = configuration.debugEnabled,
-            callbackExecutor = MainThreadExecutor(),
+            callbackExecutor = MainThreadExecutor,
             locale = configuration.locale
-        )
+        ),
+        tokenHandlerExecutor = configuration.tokenBackgroundHandler?.let { handler ->
+            TokenHandlerExecutorImpl(
+                handler = handler,
+                backgroundExecutor = Executors.newSingleThreadExecutor { r ->
+                    Thread(r, "payjp-android").apply {
+                        priority = Thread.MIN_PRIORITY
+                    }
+                },
+                callbackExecutor = MainThreadExecutor
+            )
+        }
     ) {
         CardScannerResolver.cardScannerPlugin = configuration.cardScannerPlugin
     }
@@ -107,6 +125,41 @@ class Payjp internal constructor(
         fun init(configuration: PayjpConfiguration): Payjp {
             return factory.init { Payjp(configuration) }
         }
+
+        /**
+         * Start card form screen from Activity.
+         *
+         * @param activity activity
+         * @param requestCode requestCode. The default is [PayjpCardFormActivity.DEFAULT_CARD_FORM_REQUEST_CODE]
+         * @param tenant tenant (only for platformer)
+         */
+        @JvmStatic
+        @JvmOverloads
+        fun startCardForm(activity: Activity, requestCode: Int? = null, tenant: TenantId? = null) =
+            PayjpCardFormActivity.start(activity = activity, requestCode = requestCode, tenant = tenant)
+
+        /**
+         * Start card form screen from Fragment.
+         *
+         * @param fragment fragment
+         * @param requestCode requestCode. The default is [PayjpCardFormActivity.DEFAULT_CARD_FORM_REQUEST_CODE]
+         * @param tenant tenant (only for platformer)
+         */
+        @JvmStatic
+        @JvmOverloads
+        fun startCardForm(fragment: Fragment, requestCode: Int? = null, tenant: TenantId? = null) =
+            PayjpCardFormActivity.start(fragment = fragment, requestCode = requestCode, tenant = tenant)
+
+        /**
+         * Handle the result from the activity which is started by [Payjp.startCardForm].
+         * Use this at [Activity.onActivityResult] in the activity that you call [Payjp.startCardForm].
+         *
+         * @param data the intent from [Activity.onActivityResult].
+         * @param callback you can get card token if it is success.
+         */
+        @JvmStatic
+        fun handleCardFormResult(data: Intent?, callback: PayjpCardFormResultCallback) =
+            PayjpCardFormActivity.onActivityResult(data = data, callback = callback)
     }
 
     private val authorization: String
@@ -145,7 +198,15 @@ class Payjp internal constructor(
         return payjpApi.getAcceptedBrands(authorization, tenantId?.id)
     }
 
-    private class MainThreadExecutor : Executor {
+    /**
+     * Get token background handler executor.
+     * If any handler did not set, return null.
+     *
+     * @return background handler executor
+     */
+    internal fun getTokenHandlerExecutor(): TokenHandlerExecutor? = tokenHandlerExecutor
+
+    private object MainThreadExecutor : Executor {
         private val handler = Handler(Looper.getMainLooper())
 
         override fun execute(r: Runnable) {

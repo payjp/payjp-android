@@ -23,6 +23,10 @@
 package jp.pay.android
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import java.io.IOException
+import java.nio.charset.Charset
+import java.util.Locale
+import java.util.concurrent.Executor
 import jp.pay.android.exception.PayjpApiException
 import jp.pay.android.fixtures.ACCEPTED_BRANDS_EMPTY
 import jp.pay.android.fixtures.ACCEPTED_BRANDS_FULL
@@ -45,10 +49,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import retrofit2.HttpException
-import java.io.IOException
-import java.nio.charset.Charset
-import java.util.Locale
-import java.util.concurrent.Executor
 
 /**
  * [Payjp]

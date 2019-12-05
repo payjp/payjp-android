@@ -43,4 +43,13 @@ Please make sure that the app permission in Settings app.
 ]]></string>
     <string name="payjp_card_scanner_permission_denied_setting">Settings</string>
     <string name="payjp_card_scanner_permission_denied_cancel">Cancel</string>
+    <string name="payjp_card_form_submit">Submit</string>
+    <string name="payjp_card_form_reload">Reload</string>
+    <string name="payjp_card_form_screen_title">Add Credit Card</string>
+    <string name="payjp_card_form_screen_error_application">Application error occurred.</string>
+    <string name="payjp_card_form_screen_error_server">Server is unavailable.\nPlease try it again later.</string>
+    <string name="payjp_card_form_screen_error_unknown">Unknown error occurred.</string>
+    <string name="payjp_card_form_screen_error_network">Network is unavailable.\nPlease check your internet connectivity.</string>
+    <string name="payjp_card_form_dialog_ok">OK</string>
+    <string name="payjp_card_form_dialog_title_error">Error</string>
 </resources>

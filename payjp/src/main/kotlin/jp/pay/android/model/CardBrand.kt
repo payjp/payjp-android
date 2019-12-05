@@ -22,14 +22,17 @@
  */
 package jp.pay.android.model
 
+import android.os.Parcelable
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.ToJson
+import kotlinx.android.parcel.Parcelize
 
 /**
  * CardBrand
  */
-enum class CardBrand(val rawValue: String) {
+@Parcelize
+enum class CardBrand(val rawValue: String) : Parcelable {
     /**
      * VISA
      */
