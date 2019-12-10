@@ -27,4 +27,6 @@ internal object PayjpConstants {
 
     const val CARD_FORM_DELIMITER_NUMBER = '-'
     const val CARD_FORM_DELIMITER_EXPIRATION = '/'
+
+    const val TAG_FOR_LOG = "payjp-android"
 }

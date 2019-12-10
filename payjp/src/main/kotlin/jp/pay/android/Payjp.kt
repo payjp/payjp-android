@@ -70,12 +70,10 @@ class Payjp internal constructor(
         tokenHandlerExecutor = configuration.tokenBackgroundHandler?.let { handler ->
             TokenHandlerExecutorImpl(
                 handler = handler,
-                backgroundExecutor = Executors.newSingleThreadExecutor { r ->
-                    Thread(r, "payjp-android").apply {
-                        priority = Thread.MIN_PRIORITY
-                    }
-                },
-                callbackExecutor = MainThreadExecutor
+                backgroundExecutor = newBackgroundExecutor(),
+                futureExecutor = newBackgroundExecutor(),
+                callbackExecutor = MainThreadExecutor,
+                debugEnabled = configuration.debugEnabled
             )
         }
     ) {
@@ -160,6 +158,12 @@ class Payjp internal constructor(
         @JvmStatic
         fun handleCardFormResult(data: Intent?, callback: PayjpCardFormResultCallback) =
             PayjpCardFormActivity.onActivityResult(data = data, callback = callback)
+
+        private fun newBackgroundExecutor() = Executors.newSingleThreadExecutor { r ->
+            Thread(r, "payjp-android").apply {
+                priority = Thread.MIN_PRIORITY
+            }
+        }
     }
 
     private val authorization: String
