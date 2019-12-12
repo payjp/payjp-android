@@ -29,6 +29,7 @@ import java.util.Arrays
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
+import jp.pay.android.PayjpConstants
 import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import okhttp3.TlsVersion
@@ -75,11 +76,11 @@ internal object OkHttpTlsHelper {
                     )
                 )
                 if (debuggable) {
-                    Log.v("payjp-android", "apply TLSv1.2 for pre-Lollipop")
+                    Log.v(PayjpConstants.TAG_FOR_LOG, "apply TLSv1.2 for pre-Lollipop")
                 }
             } catch (e: Exception) {
                 if (debuggable) {
-                    Log.e("payjp-android", "error while setting TLS 1.2", e)
+                    Log.e(PayjpConstants.TAG_FOR_LOG, "error while setting TLS 1.2", e)
                 }
             }
         } ?: builder

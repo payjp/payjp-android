@@ -45,7 +45,7 @@ public class SampleApplication extends Application {
      * https://github.com/payjp/example-tokenize-backend
      *
      * (If you deploy the sample server app to Heroku, the url will be like
-     * `https://[your_app_name].herokuapp.com/save_card`)
+     * `https://[your_app_name].herokuapp.com/`)
      *
      * See the link above for more details.
      */
