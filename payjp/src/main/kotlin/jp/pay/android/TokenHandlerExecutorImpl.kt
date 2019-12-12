@@ -22,7 +22,13 @@
  */
 package jp.pay.android
 
+import android.util.Log
+import java.util.concurrent.CancellationException
 import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Future
+import java.util.concurrent.atomic.AtomicReference
+import jp.pay.android.PayjpTokenBackgroundHandler.CardFormStatus
 import jp.pay.android.model.Token
 
 /**
@@ -30,31 +36,50 @@ import jp.pay.android.model.Token
  *
  * @param handler handler set in [jp.pay.android.PayjpConfiguration]
  * @param backgroundExecutor executor which run handler
+ * @param futureExecutor executor which run [Future.get] which backgroundExecutor submitted.
  * @param callbackExecutor executor which run callback
  */
 internal class TokenHandlerExecutorImpl(
     private val handler: PayjpTokenBackgroundHandler,
-    private val backgroundExecutor: Executor,
-    private val callbackExecutor: Executor
+    private val backgroundExecutor: ExecutorService,
+    private val futureExecutor: Executor,
+    private val callbackExecutor: Executor,
+    private val debugEnabled: Boolean = false
 ) : TokenHandlerExecutor {
 
-    private var pendingCallback: ((PayjpTokenBackgroundHandler.CardFormStatus) -> Unit)? = null
+    private var pendingCallback: AtomicReference<(CardFormStatus) -> Unit> = AtomicReference()
+    private var currentFuture: Future<Unit>? = null
 
     override fun post(
         token: Token,
-        callback: (status: PayjpTokenBackgroundHandler.CardFormStatus) -> Unit
+        callback: (status: CardFormStatus) -> Unit
     ) {
-        pendingCallback = callback
-        backgroundExecutor.execute {
+        pendingCallback.set(callback)
+        currentFuture = backgroundExecutor.submit<Unit> {
             val status = handler.handleTokenInBackground(token)
             callbackExecutor.execute {
-                pendingCallback?.invoke(status)
-                pendingCallback = null
+                pendingCallback.get()?.invoke(status)
+                pendingCallback.set(null)
+            }
+        }
+        futureExecutor.execute {
+            try {
+                currentFuture?.takeIf { !it.isCancelled }?.get()
+            } catch (e: Exception) {
+                when (e) {
+                    is CancellationException, is InterruptedException -> {
+                        if (debugEnabled) {
+                            Log.d(PayjpConstants.TAG_FOR_LOG, "task was canceled.")
+                        }
+                    }
+                    else -> throw e
+                }
             }
         }
     }
 
     override fun cancel() {
-        pendingCallback = null
+        currentFuture?.takeIf { !it.isDone && !it.isCancelled }?.cancel(true)
+        pendingCallback.set(null)
     }
 }

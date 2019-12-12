@@ -23,8 +23,8 @@
 package jp.pay.android
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import java.util.concurrent.AbstractExecutorService
 import java.util.concurrent.CountDownLatch
-import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 import jp.pay.android.PayjpTokenBackgroundHandler.CardFormStatus
 import org.hamcrest.Matchers.`is`
@@ -36,6 +36,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
+import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
 
@@ -58,6 +59,7 @@ class TokenHandlerExecutorImplTest {
         val handlerExecutor = TokenHandlerExecutorImpl(
             handler = mockHandler,
             backgroundExecutor = CurrentThreadExecutor(),
+            futureExecutor = CurrentThreadExecutor(),
             callbackExecutor = CurrentThreadExecutor()
         )
         val token = TestStubs.newToken()
@@ -79,6 +81,7 @@ class TokenHandlerExecutorImplTest {
         val handlerExecutor = TokenHandlerExecutorImpl(
             handler = mockHandler,
             backgroundExecutor = CurrentThreadExecutor(),
+            futureExecutor = CurrentThreadExecutor(),
             callbackExecutor = CurrentThreadExecutor()
         )
         val token = TestStubs.newToken()
@@ -93,14 +96,15 @@ class TokenHandlerExecutorImplTest {
     }
 
     @Test
-    fun cancel_never_invoke_callback() {
+    fun cancel_never_invoke_handler() {
         val complete = CardFormStatus.Complete()
         `when`(mockHandler.handleTokenInBackground(anyNullable()))
             .thenReturn(complete)
-        val backgroundHandler = ResumeCurrentThreadExecutor()
+        val backgroundExecutor = ResumeCurrentThreadExecutor()
         val handlerExecutor = TokenHandlerExecutorImpl(
             handler = mockHandler,
-            backgroundExecutor = backgroundHandler,
+            backgroundExecutor = backgroundExecutor,
+            futureExecutor = backgroundExecutor,
             callbackExecutor = CurrentThreadExecutor()
         )
         val token = TestStubs.newToken()
@@ -108,20 +112,60 @@ class TokenHandlerExecutorImplTest {
             fail("The callback should not be invoked after cancelled.")
         }
         handlerExecutor.cancel()
-        backgroundHandler.resume()
+        backgroundExecutor.resume()
+        verify(mockHandler, never()).handleTokenInBackground(token)
+    }
+
+    @Test
+    fun cancel_never_invoke_callback() {
+        val complete = CardFormStatus.Complete()
+        `when`(mockHandler.handleTokenInBackground(anyNullable()))
+            .thenReturn(complete)
+        val backgroundExecutor = ResumeCurrentThreadExecutor()
+        val handlerExecutor = TokenHandlerExecutorImpl(
+            handler = mockHandler,
+            backgroundExecutor = CurrentThreadExecutor(),
+            futureExecutor = CurrentThreadExecutor(),
+            callbackExecutor = backgroundExecutor
+        )
+        val token = TestStubs.newToken()
+        handlerExecutor.post(token) {
+            fail("The callback should not be invoked after cancelled.")
+        }
+        handlerExecutor.cancel()
+        backgroundExecutor.resume()
         verify(mockHandler).handleTokenInBackground(token)
     }
 
     /**
      * Executor run in current thread.
      */
-    class CurrentThreadExecutor : Executor {
+    class CurrentThreadExecutor : AbstractExecutorService() {
+        @Volatile private var terminated = false
+
         override fun execute(r: Runnable) {
             r.run()
         }
+
+        override fun isTerminated(): Boolean = terminated
+
+        override fun shutdown() {
+            terminated = true
+        }
+
+        override fun shutdownNow(): MutableList<Runnable> {
+            return mutableListOf()
+        }
+
+        override fun isShutdown(): Boolean = terminated
+
+        override fun awaitTermination(timeout: Long, unit: TimeUnit): Boolean {
+            shutdown()
+            return terminated
+        }
     }
 
-    class ResumeCurrentThreadExecutor : Executor {
+    class ResumeCurrentThreadExecutor : AbstractExecutorService() {
         var pending: Runnable? = null
 
         override fun execute(r: Runnable) {
@@ -130,6 +174,25 @@ class TokenHandlerExecutorImplTest {
 
         fun resume() {
             pending?.run()
+        }
+
+        @Volatile private var terminated = false
+
+        override fun isTerminated(): Boolean = terminated
+
+        override fun shutdown() {
+            terminated = true
+        }
+
+        override fun shutdownNow(): MutableList<Runnable> {
+            return mutableListOf()
+        }
+
+        override fun isShutdown(): Boolean = terminated
+
+        override fun awaitTermination(timeout: Long, unit: TimeUnit): Boolean {
+            shutdown()
+            return terminated
         }
     }
 }
