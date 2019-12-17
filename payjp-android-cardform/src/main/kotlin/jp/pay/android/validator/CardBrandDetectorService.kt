@@ -20,28 +20,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'org.jetbrains.dokka-android'
+package jp.pay.android.validator
 
-android {
-    compileSdkVersion rootProject.sdkVersion
+import jp.pay.android.model.CardBrand
 
-    defaultConfig {
-        minSdkVersion rootProject.minSdkVersion
-    }
-}
+internal interface CardBrandDetectorService {
 
-dokka {
-    moduleName = rootProject.name
-    outputFormat = 'javadoc'
-    outputDirectory = rootProject.file('docs')
-    sourceDirs = [
-            rootProject.file("payjp-android-core/src/main/kotlin"),
-            rootProject.file("payjp-android-cardform/src/main/kotlin"),
-            rootProject.file("payjp-android-main/src/main/kotlin"),
-            rootProject.file("payjp-android-cardio/src/main/kotlin"),
-            rootProject.file("payjp-android-coroutine/src/main/kotlin")
-    ]
-    includeNonPublic = false
+    /**
+     * detect brand from card number
+     *
+     * @param digits Card Number
+     * @return brand
+     */
+    fun detectWithDigits(digits: String): CardBrand
 }

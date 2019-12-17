@@ -42,6 +42,10 @@ android {
         java.srcDirs += "src/${name}/kotlin"
     }
 
+    libraryVariants.all {
+        it.generateBuildConfig.enabled = false
+    }
+
     testOptions {
         unitTests {
             returnDefaultValues = true
@@ -53,7 +57,7 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutine"
-    api project(':payjp')
+    api project(':payjp-android-main')
 
     testImplementation project(":common-test")
 }

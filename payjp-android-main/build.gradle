@@ -20,9 +20,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka-android'
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
 
 android {
     compileSdkVersion rootProject.sdkVersion
@@ -30,18 +33,18 @@ android {
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
     }
+
+    libraryVariants.all {
+        it.generateBuildConfig.enabled = false
+    }
+
+    sourceSets.all {
+        java.srcDirs += "src/${name}/kotlin"
+    }
 }
 
-dokka {
-    moduleName = rootProject.name
-    outputFormat = 'javadoc'
-    outputDirectory = rootProject.file('docs')
-    sourceDirs = [
-            rootProject.file("payjp-android-core/src/main/kotlin"),
-            rootProject.file("payjp-android-cardform/src/main/kotlin"),
-            rootProject.file("payjp-android-main/src/main/kotlin"),
-            rootProject.file("payjp-android-cardio/src/main/kotlin"),
-            rootProject.file("payjp-android-coroutine/src/main/kotlin")
-    ]
-    includeNonPublic = false
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    api project(':payjp-android-core')
+    api project(':payjp-android-cardform')
 }

@@ -75,7 +75,7 @@ public class GenerateTokenSampleJavaActivity extends AppCompatActivity {
             final String expYear = textCardExpYear.getText().toString();
             final String name = textCardName.getText().toString();
 
-            createToken = Payjp.getInstance().createToken(
+            createToken = Payjp.token().createToken(
                     new PayjpTokenParam.Builder(number, cvc, expMonth, expYear)
                             .name(name)
                             .build()
@@ -104,7 +104,7 @@ public class GenerateTokenSampleJavaActivity extends AppCompatActivity {
             progressBar.setVisibility(View.VISIBLE);
             textTokenContent.setVisibility(View.INVISIBLE);
 
-            getToken = Payjp.getInstance().getToken(textTokenId.getText().toString());
+            getToken = Payjp.token().getToken(textTokenId.getText().toString());
             getToken.enqueue(new Task.Callback<Token>() {
                 @Override
                 public void onSuccess(Token data) {

@@ -96,7 +96,7 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
         progress_bar.visibility = View.VISIBLE
         text_token_content.visibility = View.INVISIBLE
         try {
-            val token = withContext(Dispatchers.IO) { Payjp.getInstance().getTokenSuspend(id) }
+            val token = withContext(Dispatchers.IO) { Payjp.token().getTokenSuspend(id) }
             updateSuccessUI(token)
         } catch (t: Throwable) {
             updateErrorUI(t, "failure retrieving token")
@@ -123,7 +123,7 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
     private fun findCardFormFragment() {
         supportFragmentManager.let { manager ->
             val f = manager.findFragmentByTag(FRAGMENT_CARD_FORM)
-            cardFormFragment = f as? PayjpCardFormFragment ?: PayjpCardFormFragment.newInstance()
+            cardFormFragment = f as? PayjpCardFormFragment ?: Payjp.cardForm().newFragment()
             if (!cardFormFragment.isAdded) {
                 manager
                     .beginTransaction().apply {
