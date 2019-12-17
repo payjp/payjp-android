@@ -30,9 +30,7 @@ import jp.pay.android.model.Token
 import jp.pay.android.network.TokenApiClientFactory.createApiClient
 
 /**
- * Entry point for payjp-android
- *
- * We recommend use as singleton instance.
+ * Payjp token client
  *
  * @param configuration configuration
  * @param payjpApi api

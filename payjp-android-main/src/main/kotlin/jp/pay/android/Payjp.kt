@@ -22,6 +22,10 @@
  */
 package jp.pay.android
 
+/**
+ * Entry point for payjp-android
+ *
+ */
 object Payjp {
 
     private var tokenService: PayjpTokenService? = null
@@ -57,11 +61,20 @@ object Payjp {
         return this
     }
 
+    /**
+     * Return [PayjpTokenService] instance.
+     * You must call `Payjp.init(configuration)` first.
+     *
+     */
     @JvmStatic
     fun token() = checkNotNull(tokenService) {
         "You must call Payjp.init(publicKey)"
     }
 
+    /**
+     * Return [PayjpCardForm] instance.
+     * You must call `Payjp.init(configuration)` first.
+     */
     @JvmStatic
     fun cardForm() = PayjpCardForm
 }

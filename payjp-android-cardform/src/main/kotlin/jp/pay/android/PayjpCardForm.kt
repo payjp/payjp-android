@@ -35,6 +35,9 @@ import jp.pay.android.ui.PayjpCardFormActivity
 import jp.pay.android.ui.PayjpCardFormResultCallback
 import jp.pay.android.ui.widget.PayjpCardFormFragment
 
+/**
+ * Card form client.
+ */
 object PayjpCardForm {
 
     internal const val CARD_FORM_DELIMITER_NUMBER = '-'
