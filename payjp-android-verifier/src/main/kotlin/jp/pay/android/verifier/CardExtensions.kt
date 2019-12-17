@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 PAY, Inc.
+ * Copyright (c) 2019 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,13 +20,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package jp.pay.android.verifier
 
-include ':payjp-android-core',
-        ':payjp-android-cardform',
-        ':payjp-android-verifier',
-        ':payjp-android-main',
-        ':payjp-android-cardio',
-        ':payjp-android-coroutine',
-        ':common-test',
-        ':documentation',
-        ':sample'
+import android.net.Uri
+import jp.pay.android.model.Card
+
+private fun Card.getTdsBaseUri(): Uri = Uri.Builder()
+    .scheme("https")
+    .authority(PayjpVerifier.VERIFY_WEB_ENDPOINT_HOST)
+    .appendEncodedPath("v1/3ds")
+    .appendPath(id)
+    .build()
+
+internal fun Card.getTdsEntryUri(): Uri = getTdsBaseUri()
+    .buildUpon()
+    .appendPath("start")
+    .build()
+
+internal fun Card.getTdsFinishUri(): Uri = getTdsBaseUri()
+    .buildUpon()
+    .appendPath("finish")
+    .build()

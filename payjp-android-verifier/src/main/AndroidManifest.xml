@@ -22,20 +22,11 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="jp.pay.android">
+        package="jp.pay.android.verifier">
 
     <application>
-        <activity
-                android:name=".ui.PayjpCardFormActivity"
-                android:theme="@style/Payjp.Theme.CardForm"
-                android:enabled="true"
-                android:exported="false" />
 
-        <activity
-                android:name=".verifier.ui.PayjpCardVerifyWebActivity"
-                android:theme="@style/Payjp.Theme.CardForm"
-                android:enabled="true"
-                android:exported="false" />
+        
     </application>
 
 </manifest>

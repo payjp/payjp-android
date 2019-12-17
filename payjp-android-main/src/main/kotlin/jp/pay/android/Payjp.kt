@@ -22,6 +22,8 @@
  */
 package jp.pay.android
 
+import jp.pay.android.verifier.PayjpVerifier
+
 /**
  * Entry point for payjp-android
  *
@@ -58,6 +60,7 @@ object Payjp {
             handler = configuration.tokenBackgroundHandler,
             callbackExecutor = configuration.callbackExecutor
         )
+        PayjpVerifier.debugEnabled = configuration.debugEnabled
         return this
     }
 

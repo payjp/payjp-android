@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~
   ~ Copyright (c) 2019 PAY, Inc.
@@ -21,21 +22,13 @@
   ~ SOFTWARE.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="jp.pay.android">
-
-    <application>
-        <activity
-                android:name=".ui.PayjpCardFormActivity"
-                android:theme="@style/Payjp.Theme.CardForm"
-                android:enabled="true"
-                android:exported="false" />
-
-        <activity
-                android:name=".verifier.ui.PayjpCardVerifyWebActivity"
-                android:theme="@style/Payjp.Theme.CardForm"
-                android:enabled="true"
-                android:exported="false" />
-    </application>
-
-</manifest>
+<resources>
+    <string name="payjp_verifier_error_message">読み込みに失敗しました。\n再読み込みするには画面を下に引っ張ってください。</string>
+    <string name="payjp_verifier_ssl_error_title">SSL接続エラー</string>
+    <string name="payjp_verifier_ssl_error_head">サイトのセキュリティ証明書が信頼できません。\n\nエラーの原因\n</string>
+    <string name="payjp_verifier_ssl_error_expired">証明書の有効期限が切れています。\n\n終了時刻=</string>
+    <string name="payjp_verifier_ssl_error_mismatch">ホスト名が一致しません。\n\nCN=</string>
+    <string name="payjp_verifier_ssl_error_not_yet_valid">証明書はまだ有効ではありません\n\n開始時刻=</string>
+    <string name="payjp_verifier_ssl_error_untrusted">証明書を発行した認証局が信頼できません\n\n認証局\n</string>
+    <string name="payjp_verifier_ssl_error_unknown">原因不明のエラーが発生しました</string>
+</resources>

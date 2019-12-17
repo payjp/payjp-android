@@ -21,21 +21,13 @@
   ~ SOFTWARE.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="jp.pay.android">
-
-    <application>
-        <activity
-                android:name=".ui.PayjpCardFormActivity"
-                android:theme="@style/Payjp.Theme.CardForm"
-                android:enabled="true"
-                android:exported="false" />
-
-        <activity
-                android:name=".verifier.ui.PayjpCardVerifyWebActivity"
-                android:theme="@style/Payjp.Theme.CardForm"
-                android:enabled="true"
-                android:exported="false" />
-    </application>
-
-</manifest>
+<resources>
+    <string name="payjp_verifier_error_message">Failed to read.\nPlease swipe down the screen to reload.</string>
+    <string name="payjp_verifier_ssl_error_title">SSL Connection Error</string>
+    <string name="payjp_verifier_ssl_error_head">The security certificate of the website is not trusted.\n\nCause of error\n</string>
+    <string name="payjp_verifier_ssl_error_expired">The certificate has expired.\n\nexpired at=</string>
+    <string name="payjp_verifier_ssl_error_mismatch">The host name does not match.\n\nCN=</string>
+    <string name="payjp_verifier_ssl_error_not_yet_valid">Th certificate is not yet valid.\n\nvalid not before=</string>
+    <string name="payjp_verifier_ssl_error_untrusted">The Certification Authority that issued the certificate is not trusted.\n\nCA\n</string>
+    <string name="payjp_verifier_ssl_error_unknown">An unknown error has occurred</string>
+</resources>

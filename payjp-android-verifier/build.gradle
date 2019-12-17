@@ -34,16 +34,14 @@ android {
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
+        versionName VERSION_NAME
 
+        consumerProguardFiles 'consumer-rules.pro'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     sourceSets.all {
         java.srcDirs += "src/${name}/kotlin"
-    }
-
-    libraryVariants.all {
-        it.generateBuildConfig.enabled = false
     }
 
     testOptions {
@@ -52,26 +50,24 @@ android {
             includeAndroidResources = true
         }
     }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation project(':payjp-android-core')
-    api project(':payjp-android-verifier')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    api project(':payjp-android-core')
 
     implementation "androidx.fragment:fragment:$fragment"
     implementation "androidx.appcompat:appcompat:$appcompat"
     implementation "androidx.recyclerview:recyclerview:$recyclerview"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.1.0"
     kapt "androidx.lifecycle:lifecycle-common-java8:$lifecycle"
     implementation "com.google.android.material:material:$material"
     implementation "androidx.constraintlayout:constraintlayout:$constraint"
+
+    implementation "androidx.webkit:webkit:1.1.0"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha03"
 
     testImplementation project(":common-test")
 }

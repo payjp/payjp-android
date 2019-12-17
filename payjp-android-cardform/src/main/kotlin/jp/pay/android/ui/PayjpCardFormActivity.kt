@@ -77,7 +77,7 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
 
         fun start(fragment: Fragment, requestCode: Int?, tenant: TenantId?) {
             fragment.startActivityForResult(
-                Intent(fragment.requireContext(), PayjpCardFormActivity::class.java)
+                Intent(fragment.requireActivity(), PayjpCardFormActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                     .apply {
                         if (tenant != null) {

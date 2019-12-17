@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 PAY, Inc.
+ * Copyright (c) 2019 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,12 +21,20 @@
  * SOFTWARE.
  */
 
-include ':payjp-android-core',
-        ':payjp-android-cardform',
-        ':payjp-android-verifier',
-        ':payjp-android-main',
-        ':payjp-android-cardio',
-        ':payjp-android-coroutine',
-        ':common-test',
-        ':documentation',
-        ':sample'
+package jp.pay.android.verifier.ui;
+
+import androidx.annotation.NonNull;
+
+/**
+ * Callback interface of {@link jp.pay.android.verifier.ui.PayjpCardWebVerifyResult}
+ *
+ */
+public interface PayjpCardWebVerifyResultCallback {
+
+    /**
+     * Callback result {@link jp.pay.android.verifier.ui.PayjpCardWebVerifyResult}
+     *
+     * @param result result
+     */
+    void onResult(@NonNull PayjpCardWebVerifyResult result);
+}

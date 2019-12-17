@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 PAY, Inc.
+ * Copyright (c) 2019 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,13 +20,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package jp.pay.android.verifier
 
-include ':payjp-android-core',
-        ':payjp-android-cardform',
-        ':payjp-android-verifier',
-        ':payjp-android-main',
-        ':payjp-android-cardio',
-        ':payjp-android-coroutine',
-        ':common-test',
-        ':documentation',
-        ':sample'
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import jp.pay.android.TestStubs
+import org.hamcrest.Matchers.`is`
+import org.junit.Assert.assertThat
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+class CardExtensionsTest {
+
+    @Test
+    fun getTdsEntryUri() {
+        val id = "car_xxx"
+        val card = TestStubs.newCard(id = id)
+        assertThat(card.getTdsEntryUri().toString(),
+            `is`("https://${PayjpVerifier.VERIFY_WEB_ENDPOINT_HOST}/v1/3ds/$id/start"))
+    }
+
+    @Test
+    fun getTdsFinishUri() {
+        val id = "car_xxx"
+        val card = TestStubs.newCard(id = id)
+        assertThat(card.getTdsFinishUri().toString(),
+            `is`("https://${PayjpVerifier.VERIFY_WEB_ENDPOINT_HOST}/v1/3ds/$id/finish"))
+    }
+}

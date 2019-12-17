@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 PAY, Inc.
+ * Copyright (c) 2019 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,13 +20,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package jp.pay.android.verifier.ui
 
-include ':payjp-android-core',
-        ':payjp-android-cardform',
-        ':payjp-android-verifier',
-        ':payjp-android-main',
-        ':payjp-android-cardio',
-        ':payjp-android-coroutine',
-        ':common-test',
-        ':documentation',
-        ':sample'
+/**
+ * State represents of result form the activity that verify card on web.
+ */
+sealed class PayjpCardWebVerifyResult {
+
+    object Success : PayjpCardWebVerifyResult()
+
+    object Canceled : PayjpCardWebVerifyResult()
+}
