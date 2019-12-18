@@ -20,28 +20,53 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'org.jetbrains.dokka-android'
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+apply from: rootProject.file("gradle/dependencies-test.gradle")
 
 android {
     compileSdkVersion rootProject.sdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    sourceSets.all {
+        java.srcDirs += "src/${name}/kotlin"
+    }
+
+    libraryVariants.all {
+        it.generateBuildConfig.enabled = false
+    }
+
+    testOptions {
+        unitTests {
+            returnDefaultValues = true
+            includeAndroidResources = true
+        }
     }
 }
 
-dokka {
-    moduleName = rootProject.name
-    outputFormat = 'javadoc'
-    outputDirectory = rootProject.file('docs')
-    sourceDirs = [
-            rootProject.file("payjp-android-core/src/main/kotlin"),
-            rootProject.file("payjp-android-cardform/src/main/kotlin"),
-            rootProject.file("payjp-android-main/src/main/kotlin"),
-            rootProject.file("payjp-android-cardio/src/main/kotlin"),
-            rootProject.file("payjp-android-coroutine/src/main/kotlin")
-    ]
-    includeNonPublic = false
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation project(':payjp-android-core')
+
+    implementation "androidx.fragment:fragment:$fragment"
+    implementation "androidx.appcompat:appcompat:$appcompat"
+    implementation "androidx.recyclerview:recyclerview:$recyclerview"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.1.0"
+    kapt "androidx.lifecycle:lifecycle-common-java8:$lifecycle"
+    implementation "com.google.android.material:material:$material"
+    implementation "androidx.constraintlayout:constraintlayout:$constraint"
+
+    testImplementation project(":common-test")
 }

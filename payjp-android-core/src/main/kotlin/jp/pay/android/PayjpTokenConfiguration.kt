@@ -20,28 +20,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'org.jetbrains.dokka-android'
+package jp.pay.android
 
-android {
-    compileSdkVersion rootProject.sdkVersion
+import java.util.Locale
+import java.util.concurrent.Executor
+import jp.pay.android.validator.PublicKeyValidator
 
-    defaultConfig {
-        minSdkVersion rootProject.minSdkVersion
+/**
+ * Configuration for Payjp
+ *
+ * use `Configuration.Builder`
+ *
+ * @param publicKey public key `pk_xxxxxxxxxxxxxxxxx`
+ * @param debugEnabled is debug enabled or not
+ * @param locale locale of request header
+ */
+class PayjpTokenConfiguration constructor(
+    val publicKey: String,
+    val debugEnabled: Boolean,
+    val locale: Locale,
+    val callbackExecutor: Executor
+) {
+
+    init {
+        PublicKeyValidator.validate(publicKey)
     }
-}
-
-dokka {
-    moduleName = rootProject.name
-    outputFormat = 'javadoc'
-    outputDirectory = rootProject.file('docs')
-    sourceDirs = [
-            rootProject.file("payjp-android-core/src/main/kotlin"),
-            rootProject.file("payjp-android-cardform/src/main/kotlin"),
-            rootProject.file("payjp-android-main/src/main/kotlin"),
-            rootProject.file("payjp-android-cardio/src/main/kotlin"),
-            rootProject.file("payjp-android-coroutine/src/main/kotlin")
-    ]
-    includeNonPublic = false
 }

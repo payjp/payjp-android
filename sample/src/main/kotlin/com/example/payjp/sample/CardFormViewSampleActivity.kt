@@ -151,7 +151,7 @@ class CardFormViewSampleActivity : AppCompatActivity(),
         progress_bar.visibility = View.VISIBLE
         text_token_content.visibility = View.INVISIBLE
         // get token
-        getToken = Payjp.getInstance().getToken(id)
+        getToken = Payjp.token().getToken(id)
         getToken?.enqueue(object : Task.Callback<Token> {
             override fun onSuccess(data: Token) {
                 Log.i("CardFormViewSample", "token => $data")
@@ -174,7 +174,7 @@ class CardFormViewSampleActivity : AppCompatActivity(),
     private fun findCardFormFragment() {
         supportFragmentManager.let { manager ->
             val f = manager.findFragmentByTag(FRAGMENT_CARD_FORM)
-            cardFormFragment = f as? PayjpCardFormFragment ?: PayjpCardFormFragment.newInstance()
+            cardFormFragment = f as? PayjpCardFormFragment ?: Payjp.cardForm().newFragment()
             if (!cardFormFragment.isAdded) {
                 manager
                     .beginTransaction().apply {

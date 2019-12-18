@@ -20,28 +20,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'org.jetbrains.dokka-android'
 
-android {
-    compileSdkVersion rootProject.sdkVersion
+package jp.pay.android.ui;
 
-    defaultConfig {
-        minSdkVersion rootProject.minSdkVersion
-    }
-}
+import androidx.annotation.NonNull;
 
-dokka {
-    moduleName = rootProject.name
-    outputFormat = 'javadoc'
-    outputDirectory = rootProject.file('docs')
-    sourceDirs = [
-            rootProject.file("payjp-android-core/src/main/kotlin"),
-            rootProject.file("payjp-android-cardform/src/main/kotlin"),
-            rootProject.file("payjp-android-main/src/main/kotlin"),
-            rootProject.file("payjp-android-cardio/src/main/kotlin"),
-            rootProject.file("payjp-android-coroutine/src/main/kotlin")
-    ]
-    includeNonPublic = false
+/**
+ * Callback interface of {@link PayjpCardFormResult}
+ *
+ */
+public interface PayjpCardFormResultCallback {
+
+    /**
+     * Callback result {@link PayjpCardFormResult}
+     *
+     * @param result result
+     */
+    void onResult(@NonNull PayjpCardFormResult result);
 }

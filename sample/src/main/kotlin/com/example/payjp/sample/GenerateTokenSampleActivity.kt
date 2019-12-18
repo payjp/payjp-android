@@ -59,7 +59,7 @@ class GenerateTokenSampleActivity : AppCompatActivity() {
             val expYear = text_card_exp_year.text.toString()
             val name = text_card_name.text.toString()
 
-            createToken = Payjp.getInstance().createToken(
+            createToken = Payjp.token().createToken(
                 number = number, cvc = cvc,
                 expMonth = expMonth, expYear = expYear, name = name
             )
@@ -86,7 +86,7 @@ class GenerateTokenSampleActivity : AppCompatActivity() {
             text_token_content.visibility = View.INVISIBLE
 
             // get token
-            getToken = Payjp.getInstance().getToken(text_token_id.text.toString())
+            getToken = Payjp.token().getToken(text_token_id.text.toString())
             getToken?.enqueue(object : Task.Callback<Token> {
                 override fun onSuccess(data: Token) {
                     Log.i("GenerateTokenSample", "token => $data")

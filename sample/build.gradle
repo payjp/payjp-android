@@ -66,7 +66,7 @@ android {
 
 dependencies {
 
-    implementation project(':payjp')
+    implementation project(':payjp-android-main')
     implementation project(':payjp-android-cardio')
     implementation project(':payjp-android-coroutine')
 //    implementation "jp.pay:payjp-android:$VERSION_NAME"
