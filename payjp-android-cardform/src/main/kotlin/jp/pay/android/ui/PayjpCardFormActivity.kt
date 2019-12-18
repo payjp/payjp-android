@@ -64,22 +64,26 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
 
         fun start(activity: Activity, requestCode: Int?, tenant: TenantId?) {
             activity.startActivityForResult(
-                Intent(activity, PayjpCardFormActivity::class.java).apply {
-                    if (tenant != null) {
-                        putExtra(EXTRA_KEY_TENANT, tenant.id)
-                    }
-                },
+                Intent(activity, PayjpCardFormActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    .apply {
+                        if (tenant != null) {
+                            putExtra(EXTRA_KEY_TENANT, tenant.id)
+                        }
+                    },
                 requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
             )
         }
 
         fun start(fragment: Fragment, requestCode: Int?, tenant: TenantId?) {
             fragment.startActivityForResult(
-                Intent(fragment.requireContext(), PayjpCardFormActivity::class.java).apply {
-                    if (tenant != null) {
-                        putExtra(EXTRA_KEY_TENANT, tenant.id)
-                    }
-                },
+                Intent(fragment.requireContext(), PayjpCardFormActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    .apply {
+                        if (tenant != null) {
+                            putExtra(EXTRA_KEY_TENANT, tenant.id)
+                        }
+                    },
                 requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
             )
         }
