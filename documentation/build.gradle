@@ -37,7 +37,9 @@ dokka {
     outputFormat = 'javadoc'
     outputDirectory = rootProject.file('docs')
     sourceDirs = [
-            rootProject.file("payjp/src/main/kotlin"),
+            rootProject.file("payjp-android-core/src/main/kotlin"),
+            rootProject.file("payjp-android-cardform/src/main/kotlin"),
+            rootProject.file("payjp-android-main/src/main/kotlin"),
             rootProject.file("payjp-android-cardio/src/main/kotlin"),
             rootProject.file("payjp-android-coroutine/src/main/kotlin")
     ]

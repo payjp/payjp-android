@@ -109,7 +109,7 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
         if (f instanceof PayjpCardFormFragment) {
             cardFormFragment = (PayjpCardFormFragment) f;
         } else {
-            cardFormFragment = PayjpCardFormFragment.newInstance(false, null, null);
+            cardFormFragment = Payjp.cardForm().newFragment();
         }
         if (!cardFormFragment.isAdded()) {
             fm.beginTransaction()
@@ -149,7 +149,7 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
         layoutButtons.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
         textTokenContent.setVisibility(View.INVISIBLE);
-        getToken = Payjp.getInstance().getToken(id);
+        getToken = Payjp.token().getToken(id);
         getToken.enqueue(new Task.Callback<Token>() {
             @Override
             public void onSuccess(Token data) {
