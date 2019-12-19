@@ -79,7 +79,7 @@ class TopActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Payjp.handleCardFormResult(data, PayjpCardFormResultCallback { result ->
+        Payjp.cardForm().handleResult(data, PayjpCardFormResultCallback { result ->
             if (result.isSuccess()) {
                 val token = result.retrieveToken()
                 Log.i("handleCardFormResult", "token => $token")
@@ -90,7 +90,7 @@ class TopActivity : AppCompatActivity() {
     }
 
     private fun startCardForm() {
-        Payjp.startCardForm(this)
+        Payjp.cardForm().start(this)
     }
 
     class TopAdapter(
