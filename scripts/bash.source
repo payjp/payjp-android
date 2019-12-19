@@ -2,4 +2,5 @@ if [[ -z "$REPOSITORY_ROOT" ]]; then
     export REPOSITORY_ROOT="$(git rev-parse --show-toplevel)"
 fi
 
-export GCLOUD_CREDENTIAL_JSON_PATH=$REPOSITORY_ROOT/fastlane/gcloud-client-secret.json
+export GOOGLE_APPLICATION_CREDENTIALS=$REPOSITORY_ROOT/fastlane/gcloud-client-secret.json
+export SAMPLE_GOOGLE_SERVICES_JSON=$REPOSITORY_ROOT/sample/google-services.json

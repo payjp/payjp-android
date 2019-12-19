@@ -47,6 +47,17 @@ platform :android do
     )
   end
 
+  desc "Distribute Sample App with Firebase App Distribution"
+  lane :distribute_sample_app do
+    sh("#{ENV["REPOSITORY_ROOT"]}/scripts/restore_sample_firebase_config.sh")
+    gradle(task: "sample:assembleDebug")
+    gradle(task: "sample:appDistributionUploadDebug")
+    slack(
+      message: ":bullettrain_side: New SDK app has been updated!",
+      success: true
+    )
+  end
+
   desc "Run robo test on Firebase Test Lab"
   lane :test_robo_sample do
     unless ENV['GCLOUD_SERVICE_KEY'] 
