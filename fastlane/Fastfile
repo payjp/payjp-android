@@ -49,6 +49,8 @@ platform :android do
 
   desc "Distribute Sample App with Firebase App Distribution"
   lane :distribute_sample_app do
+    # restore credentials
+    sh("#{ENV["REPOSITORY_ROOT"]}/scripts/restore_gcloud_credential.sh")
     sh("#{ENV["REPOSITORY_ROOT"]}/scripts/restore_sample_firebase_config.sh")
     gradle(task: "sample:assembleDebug")
     gradle(task: "sample:appDistributionUploadDebug")
