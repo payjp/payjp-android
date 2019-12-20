@@ -16,7 +16,7 @@ android:
 before_install:
   - export TERM=dumb
   - export REPOSITORY_ROOT={TRAVIS_BUILD_DIR}
-  - source scripts/bash.source
+  - source $REPOSITORY_ROOT/scripts/bash.source
   - bundle install --path=vendor/bundle --clean
   - mkdir "$ANDROID_HOME/licenses" || true
   - cp ./.android-sdk-license "$ANDROID_HOME/licenses/android-sdk-license"
