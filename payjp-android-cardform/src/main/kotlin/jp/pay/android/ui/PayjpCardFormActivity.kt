@@ -33,11 +33,13 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
+import com.google.android.material.snackbar.Snackbar
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
 import jp.pay.android.model.CardBrand
@@ -47,6 +49,8 @@ import jp.pay.android.ui.extension.showWith
 import jp.pay.android.ui.widget.PayjpAcceptedBrandsView
 import jp.pay.android.ui.widget.PayjpCardFormFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
+import jp.pay.android.verifier.PayjpVerifier
+import jp.pay.android.verifier.ui.PayjpCardWebVerifyResultCallback
 
 /**
  * PayjpCardFormActivity show card form.
@@ -116,6 +120,13 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
         cardFormFragment = findCardFormFragment()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        PayjpVerifier.handleWebVerifyResult(data, PayjpCardWebVerifyResultCallback { result ->
+            viewModel?.onCompleteCardVerify(result)
+        })
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return super.onSupportNavigateUp()
@@ -182,6 +193,12 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
                 vm.success.observe(this) { oneOff ->
                     oneOff.consume(this::finishWithSuccess)
                 }
+                vm.startVerify.observe(this) { oneOff ->
+                    oneOff.consume(this::startVerify)
+                }
+                vm.snackBarMessage.observe(this) { oneOff ->
+                    oneOff.consume(this::showSnackBarMessage)
+                }
             }
     }
 
@@ -224,6 +241,10 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
         }
     }
 
+    private fun showSnackBarMessage(@StringRes message: Int) {
+        Snackbar.make(findViewById(R.id.content_view), message, Snackbar.LENGTH_SHORT).show()
+    }
+
     private fun showErrorMessage(message: CharSequence) {
         AlertDialog.Builder(this)
             .setTitle(R.string.payjp_card_form_dialog_title_error)
@@ -237,5 +258,9 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
         val data = Intent().putExtra(CARD_FORM_EXTRA_KEY_TOKEN, token)
         setResult(Activity.RESULT_OK, data)
         finish()
+    }
+
+    private fun startVerify(token: Token) {
+        PayjpVerifier.startWebVerify(token, this)
     }
 }

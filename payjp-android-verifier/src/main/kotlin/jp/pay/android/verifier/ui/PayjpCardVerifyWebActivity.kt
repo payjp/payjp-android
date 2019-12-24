@@ -37,6 +37,7 @@ import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import jp.pay.android.PayjpLogger
 import jp.pay.android.model.Card
+import jp.pay.android.model.Token
 import jp.pay.android.verifier.PayjpVerifier
 import jp.pay.android.verifier.R
 import jp.pay.android.verifier.getTdsEntryUri
@@ -53,6 +54,17 @@ class PayjpCardVerifyWebActivity : AppCompatActivity(R.layout.payjp_card_verify_
         const val DEFAULT_CARD_TDS_1_REQUEST_CODE = 10
         private const val EXTRA_KEY_SUCCESS = "EXTRA_KEY_SUCCESS"
         private const val EXTRA_KEY_CARD = "EXTRA_KEY_CARD"
+        private const val EXTRA_KEY_TOKEN_ID = "EXTRA_KEY_TOKEN_ID"
+
+        fun start(activity: Activity, token: Token, requestCode: Int?) {
+            activity.startActivityForResult(
+                Intent(activity, PayjpCardVerifyWebActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    .putExtra(EXTRA_KEY_CARD, token.card)
+                    .putExtra(EXTRA_KEY_TOKEN_ID, token.id),
+                requestCode ?: DEFAULT_CARD_TDS_1_REQUEST_CODE
+            )
+        }
 
         fun start(activity: Activity, card: Card, requestCode: Int?) {
             activity.startActivityForResult(
@@ -74,8 +86,9 @@ class PayjpCardVerifyWebActivity : AppCompatActivity(R.layout.payjp_card_verify_
 
         fun onActivityResult(data: Intent?, callback: PayjpCardWebVerifyResultCallback) {
             val success = data?.getBooleanExtra(EXTRA_KEY_SUCCESS, false) ?: false
+            val tokenId = data?.getStringExtra(EXTRA_KEY_TOKEN_ID)
             val result = if (success) {
-                PayjpCardWebVerifyResult.Success
+                PayjpCardWebVerifyResult.Success(tokenId)
             } else {
                 PayjpCardWebVerifyResult.Canceled
             }
@@ -86,12 +99,16 @@ class PayjpCardVerifyWebActivity : AppCompatActivity(R.layout.payjp_card_verify_
     private val card: Card by lazy {
         intent?.getParcelableExtra(EXTRA_KEY_CARD) as Card
     }
+    private val tokenId: String? by lazy {
+        intent?.getStringExtra(EXTRA_KEY_TOKEN_ID)
+    }
     private lateinit var webView: CardVerifyWebView
     private val logger: PayjpLogger = PayjpVerifier.logger
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setTitle(R.string.payjp_verifier_web_verify_title)
         setUpUI()
         lifecycle.addObserver(this)
     }
@@ -185,7 +202,11 @@ class PayjpCardVerifyWebActivity : AppCompatActivity(R.layout.payjp_card_verify_
     }
 
     private fun finishWithSuccess() {
-        val data = Intent().putExtra(EXTRA_KEY_SUCCESS, true)
+        val data = Intent().putExtra(EXTRA_KEY_SUCCESS, true).apply {
+            if (!tokenId.isNullOrEmpty()) {
+                putExtra(EXTRA_KEY_TOKEN_ID, tokenId)
+            }
+        }
         setResult(Activity.RESULT_OK, data)
         finish()
     }

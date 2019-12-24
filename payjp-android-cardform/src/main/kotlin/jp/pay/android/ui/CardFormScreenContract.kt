@@ -27,6 +27,7 @@ import jp.pay.android.Task
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.Token
 import jp.pay.android.util.OneOffValue
+import jp.pay.android.verifier.ui.PayjpCardWebVerifyResult
 
 internal interface CardFormScreenContract {
 
@@ -37,6 +38,8 @@ internal interface CardFormScreenContract {
         fun onCreateToken(task: Task<Token>)
 
         fun onClickReload()
+
+        fun onCompleteCardVerify(result: PayjpCardWebVerifyResult)
     }
 
     interface Output {
@@ -51,5 +54,7 @@ internal interface CardFormScreenContract {
         val errorDialogMessage: LiveData<OneOffValue<CharSequence>>
         val errorViewText: LiveData<CharSequence>
         val success: LiveData<OneOffValue<Token>>
+        val startVerify: LiveData<OneOffValue<Token>>
+        val snackBarMessage: LiveData<OneOffValue<Int>>
     }
 }

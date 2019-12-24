@@ -28,6 +28,7 @@ import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import jp.pay.android.PayjpLogger
 import jp.pay.android.model.Card
+import jp.pay.android.model.Token
 import jp.pay.android.verifier.ui.PayjpCardVerifyWebActivity
 import jp.pay.android.verifier.ui.PayjpCardWebVerifyResultCallback
 
@@ -36,6 +37,11 @@ object PayjpVerifier {
     internal const val VERIFY_WEB_ENDPOINT_HOST = "api.pay-stage.com" // TODO
 
     var logger: PayjpLogger = PayjpLogger.None
+
+    @MainThread
+    fun startWebVerify(token: Token, activity: Activity, requestCode: Int? = null) {
+        PayjpCardVerifyWebActivity.start(activity, token, requestCode)
+    }
 
     @MainThread
     fun startWebVerify(card: Card, activity: Activity, requestCode: Int? = null) {

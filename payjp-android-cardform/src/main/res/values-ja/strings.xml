@@ -52,4 +52,5 @@
     <string name="payjp_card_form_screen_error_network">通信に失敗しました。\nネットワークの接続をご確認ください。</string>
     <string name="payjp_card_form_dialog_ok">OK</string>
     <string name="payjp_card_form_dialog_title_error">エラー</string>
+    <string name="payjp_card_form_message_cancel_verification">本人認証をキャンセルしました。</string>
 </resources>

@@ -23,6 +23,7 @@
   -->
 
 <resources>
+    <string name="payjp_verifier_web_verify_title">本人認証</string>
     <string name="payjp_verifier_error_message">読み込みに失敗しました。\n再読み込みするには画面を下に引っ張ってください。</string>
     <string name="payjp_verifier_ssl_error_title">SSL接続エラー</string>
     <string name="payjp_verifier_ssl_error_head">サイトのセキュリティ証明書が信頼できません。\n\nエラーの原因\n</string>

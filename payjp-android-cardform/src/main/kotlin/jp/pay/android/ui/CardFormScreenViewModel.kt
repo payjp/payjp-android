@@ -30,15 +30,19 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import java.io.IOException
+import java.lang.IllegalStateException
 import jp.pay.android.PayjpTokenBackgroundHandler
 import jp.pay.android.PayjpTokenService
+import jp.pay.android.R
 import jp.pay.android.Task
 import jp.pay.android.TokenHandlerExecutor
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
+import jp.pay.android.model.ThreeDSecureStatus
 import jp.pay.android.model.Token
 import jp.pay.android.util.OneOffValue
+import jp.pay.android.verifier.ui.PayjpCardWebVerifyResult
 
 internal class CardFormScreenViewModel(
     private val tokenService: PayjpTokenService,
@@ -57,17 +61,22 @@ internal class CardFormScreenViewModel(
     override val errorDialogMessage: MutableLiveData<OneOffValue<CharSequence>> = MutableLiveData()
     override val errorViewText: MutableLiveData<CharSequence> = MutableLiveData()
     override val success: MutableLiveData<OneOffValue<Token>> = MutableLiveData()
+    override val startVerify: MutableLiveData<OneOffValue<Token>> = MutableLiveData()
+    override val snackBarMessage: MutableLiveData<OneOffValue<Int>> = MutableLiveData()
     // private property
     private var fetchAcceptedBrandsTask: Task<CardBrandsAcceptedResponse>? = null
     private var createTokenTask: Task<Token>? = null
-    private var fetchBrandsProcessing: MutableLiveData<Boolean> = MutableLiveData(false)
-    private var tokenizeProcessing: MutableLiveData<Boolean> = MutableLiveData(false)
+    private var fetchTokenTask: Task<Token>? = null
+    private var fetchBrandsProcessing: Boolean = false
+    private var tokenizeProcessing: Boolean = false
 
     override fun onCleared() {
         fetchAcceptedBrandsTask?.cancel()
         fetchAcceptedBrandsTask = null
         createTokenTask?.cancel()
         createTokenTask = null
+        fetchTokenTask?.cancel()
+        fetchTokenTask = null
         tokenHandlerExecutor?.cancel()
     }
 
@@ -76,25 +85,11 @@ internal class CardFormScreenViewModel(
     }
 
     override fun onCreateToken(task: Task<Token>) {
-        if (tokenizeProcessing.value == true) {
+        if (tokenizeProcessing) {
             return
         }
-        tokenizeProcessing.value = true
-        submitButtonVisibility.value = View.INVISIBLE
-        submitButtonProgressVisibility.value = View.VISIBLE
-        task.enqueue(object : Task.Callback<Token> {
-            override fun onSuccess(data: Token) {
-                onSuccessCreateToken(data)
-            }
-
-            override fun onError(throwable: Throwable) {
-                val message = errorTranslator.translate(throwable)
-                errorDialogMessage.value = OneOffValue(message)
-                submitButtonProgressVisibility.value = View.GONE
-                submitButtonVisibility.value = View.VISIBLE
-                tokenizeProcessing.value = false
-            }
-        })
+        tokenizeProcessing = true
+        enqueueTokenTask(task)
         createTokenTask = task
     }
 
@@ -102,10 +97,21 @@ internal class CardFormScreenViewModel(
         fetchAcceptedBrands()
     }
 
+    override fun onCompleteCardVerify(result: PayjpCardWebVerifyResult) {
+        if (result is PayjpCardWebVerifyResult.Success && !result.tokenId.isNullOrEmpty()) {
+            tokenizeProcessing = true
+            fetchToken(checkNotNull(result.tokenId))
+        } else {
+            snackBarMessage.value = OneOffValue(R.string.payjp_card_form_message_cancel_verification)
+            setSubmitButtonVisible(true)
+            tokenizeProcessing = false
+        }
+    }
+
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun fetchAcceptedBrands() {
-        if (acceptedBrands.value == null && fetchBrandsProcessing.value == false) {
-            fetchBrandsProcessing.value = true
+        if (acceptedBrands.value == null && !fetchBrandsProcessing) {
+            fetchBrandsProcessing = true
             loadingViewVisibility.value = View.VISIBLE
             errorViewVisibility.value = View.GONE
             contentViewVisibility.value = View.GONE
@@ -116,7 +122,7 @@ internal class CardFormScreenViewModel(
                     loadingViewVisibility.value = View.GONE
                     contentViewVisibility.value = View.VISIBLE
                     errorViewVisibility.value = View.GONE
-                    fetchBrandsProcessing.value = false
+                    fetchBrandsProcessing = false
                 }
 
                 override fun onError(throwable: Throwable) {
@@ -128,31 +134,80 @@ internal class CardFormScreenViewModel(
                     loadingViewVisibility.value = View.GONE
                     contentViewVisibility.value = View.GONE
                     errorViewVisibility.value = View.VISIBLE
-                    fetchBrandsProcessing.value = false
+                    fetchBrandsProcessing = false
                 }
             })
         }
     }
 
-    private fun onSuccessCreateToken(token: Token) {
+    private fun fetchToken(id: String) {
+        fetchTokenTask = tokenService.getToken(id).also {
+            enqueueTokenTask(it, afterVerify = true)
+        }
+    }
+
+    private fun enqueueTokenTask(task: Task<Token>, afterVerify: Boolean = false) {
+        setSubmitButtonVisible(false)
+        task.enqueue(object : Task.Callback<Token> {
+            override fun onSuccess(data: Token) {
+                validateThreeDSecure(data, afterVerify)
+            }
+
+            override fun onError(throwable: Throwable) {
+                showTokenError(throwable)
+            }
+        })
+    }
+
+    private fun validateThreeDSecure(token: Token, afterVerify: Boolean) {
+        if (token.card.threeDSecureStatus == ThreeDSecureStatus.UNVERIFIED) {
+            // if already tried to verify, something wrong with token.
+            if (afterVerify) {
+                showTokenError(
+                    IllegalStateException("The verification is success, but we can't find verified card.")
+                )
+            } else {
+                startVerify.value = OneOffValue(token)
+            }
+        } else {
+            postTokenHandlerOrComplete(token)
+        }
+    }
+
+    private fun postTokenHandlerOrComplete(token: Token) {
         if (tokenHandlerExecutor == null) {
-            submitButtonProgressVisibility.value = View.GONE
             success.value = OneOffValue(token)
-            tokenizeProcessing.value = false
+            tokenizeProcessing = false
         } else {
             tokenHandlerExecutor.post(token) { status ->
-                submitButtonProgressVisibility.value = View.GONE
-                tokenizeProcessing.value = false
+                tokenizeProcessing = false
                 when (status) {
                     is PayjpTokenBackgroundHandler.CardFormStatus.Complete -> {
                         success.value = OneOffValue(token)
                     }
                     is PayjpTokenBackgroundHandler.CardFormStatus.Error -> {
                         errorDialogMessage.value = OneOffValue(status.message)
-                        submitButtonVisibility.value = View.VISIBLE
+                        setSubmitButtonVisible(true)
                     }
                 }
             }
+        }
+    }
+
+    private fun showTokenError(throwable: Throwable) {
+        val message = errorTranslator.translate(throwable)
+        errorDialogMessage.value = OneOffValue(message)
+        setSubmitButtonVisible(true)
+        tokenizeProcessing = false
+    }
+
+    private fun setSubmitButtonVisible(visible: Boolean) {
+        if (visible) {
+            submitButtonProgressVisibility.value = View.GONE
+            submitButtonVisibility.value = View.VISIBLE
+        } else {
+            submitButtonVisibility.value = View.INVISIBLE
+            submitButtonProgressVisibility.value = View.VISIBLE
         }
     }
 

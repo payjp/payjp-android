@@ -22,6 +22,7 @@
   -->
 
 <resources>
+    <string name="payjp_verifier_web_verify_title">Identity Verification</string>
     <string name="payjp_verifier_error_message">Failed to read.\nPlease swipe down the screen to reload.</string>
     <string name="payjp_verifier_ssl_error_title">SSL Connection Error</string>
     <string name="payjp_verifier_ssl_error_head">The security certificate of the website is not trusted.\n\nCause of error\n</string>

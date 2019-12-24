@@ -27,7 +27,7 @@ package jp.pay.android.verifier.ui
  */
 sealed class PayjpCardWebVerifyResult {
 
-    object Success : PayjpCardWebVerifyResult()
+    data class Success(val tokenId: String?) : PayjpCardWebVerifyResult()
 
     object Canceled : PayjpCardWebVerifyResult()
 }
