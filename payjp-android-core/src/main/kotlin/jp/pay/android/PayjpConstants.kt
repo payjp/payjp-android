@@ -24,6 +24,4 @@ package jp.pay.android
 
 internal object PayjpConstants {
     const val API_ENDPOINT = "https://api.pay.jp/v1/"
-
-    const val TAG_FOR_LOG = "payjp-android"
 }

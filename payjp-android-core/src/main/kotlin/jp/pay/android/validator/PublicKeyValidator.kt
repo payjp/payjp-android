@@ -22,8 +22,7 @@
  */
 package jp.pay.android.validator
 
-import android.util.Log
-import jp.pay.android.PayjpConstants
+import jp.pay.android.PayjpLogger
 
 /**
  * Validate publicKey
@@ -40,10 +39,8 @@ internal object PublicKeyValidator {
                 "You can find **public** key like `pk_xxxxxx` in https://pay.jp/d/settings ."
         }
         if (startsWith("pk_test")) {
-            Log.w(
-                PayjpConstants.TAG_FOR_LOG, "PAY.JP now use **TEST** mode key." +
-                    "In production, you should use livemode key like `pk_live_xxxx`."
-            )
+            PayjpLogger.Debug.w("PAY.JP now use **TEST** mode key." +
+                "In production, you should use livemode key like `pk_live_xxxx`.")
         }
     }
 }

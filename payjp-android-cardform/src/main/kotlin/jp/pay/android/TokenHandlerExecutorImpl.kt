@@ -22,7 +22,6 @@
  */
 package jp.pay.android
 
-import android.util.Log
 import java.util.concurrent.CancellationException
 import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
@@ -44,7 +43,7 @@ internal class TokenHandlerExecutorImpl(
     private val backgroundExecutor: ExecutorService,
     private val futureExecutor: Executor,
     private val callbackExecutor: Executor,
-    private val debugEnabled: Boolean = false
+    private val logger: PayjpLogger = PayjpLogger.None
 ) : TokenHandlerExecutor {
 
     private var pendingCallback: AtomicReference<(CardFormStatus) -> Unit> = AtomicReference()
@@ -68,9 +67,7 @@ internal class TokenHandlerExecutorImpl(
             } catch (e: Exception) {
                 when (e) {
                     is CancellationException, is InterruptedException -> {
-                        if (debugEnabled) {
-                            Log.d(PayjpCardForm.TAG_FOR_LOG, "task was canceled.")
-                        }
+                        logger.d("task was canceled.")
                     }
                     else -> throw e
                 }

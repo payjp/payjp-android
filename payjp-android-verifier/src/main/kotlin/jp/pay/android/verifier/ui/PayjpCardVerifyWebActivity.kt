@@ -26,7 +26,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.webkit.URLUtil
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -36,6 +35,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
+import jp.pay.android.PayjpLogger
 import jp.pay.android.model.Card
 import jp.pay.android.verifier.PayjpVerifier
 import jp.pay.android.verifier.R
@@ -87,6 +87,7 @@ class PayjpCardVerifyWebActivity : AppCompatActivity(R.layout.payjp_card_verify_
         intent?.getParcelableExtra(EXTRA_KEY_CARD) as Card
     }
     private lateinit var webView: CardVerifyWebView
+    private val logger: PayjpLogger = PayjpVerifier.logger
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,14 +114,14 @@ class PayjpCardVerifyWebActivity : AppCompatActivity(R.layout.payjp_card_verify_
         if (WebViewFeature.isFeatureSupported(WebViewFeature.START_SAFE_BROWSING)) {
             WebViewCompat.startSafeBrowsing(this) { success ->
                 if (success) {
-                    Log.i(PayjpVerifier.TAG_FOR_LOG, "Initialized Safe Browsing.")
+                    logger.i("Initialized Safe Browsing.")
                 } else {
-                    Log.w(PayjpVerifier.TAG_FOR_LOG, "Unable to initialize Safe Browsing.")
+                    logger.w("Unable to initialize Safe Browsing.")
                 }
                 startLoad()
             }
         } else {
-            Log.w(PayjpVerifier.TAG_FOR_LOG, "Safe Browsing is not supported.")
+            logger.w("Safe Browsing is not supported.")
             startLoad()
         }
     }
@@ -137,11 +138,8 @@ class PayjpCardVerifyWebActivity : AppCompatActivity(R.layout.payjp_card_verify_
     private fun setUpUI() {
         webView = findViewById(R.id.web_view)
         val swipeRefresh = findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
-        webView.debugEnabled = PayjpVerifier.debugEnabled
         webView.addInterceptor { uri ->
-            if (PayjpVerifier.debugEnabled) {
-                Log.d(PayjpVerifier.TAG_FOR_LOG, "interceptor uri: $uri")
-            }
+            logger.d("interceptor uri: $uri")
             if (!URLUtil.isNetworkUrl(uri.toString())) {
                 openExternal(uri)
                 true
@@ -158,6 +156,7 @@ class PayjpCardVerifyWebActivity : AppCompatActivity(R.layout.payjp_card_verify_
             }
         }
         webView.addLoadStateWatcher(WebViewLoadingDelegate(
+            logger = logger,
             errorView = findViewById(R.id.error_view),
             progressBar = findViewById(R.id.progress_bar),
             swipeRefresh = swipeRefresh
@@ -179,9 +178,7 @@ class PayjpCardVerifyWebActivity : AppCompatActivity(R.layout.payjp_card_verify_
         } else {
             Intent(Intent.ACTION_VIEW, uri)
         }
-        if (PayjpVerifier.debugEnabled) {
-            Log.d(PayjpVerifier.TAG_FOR_LOG, "intent: $intent")
-        }
+        logger.d("intent: $intent")
         if (intent.resolveActivity(packageManager) != null) {
             startActivity(intent)
         }

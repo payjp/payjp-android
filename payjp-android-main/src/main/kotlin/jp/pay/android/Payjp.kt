@@ -51,16 +51,17 @@ object Payjp {
     @JvmStatic
     fun init(configuration: PayjpConfiguration): Payjp {
         this.configuration = configuration
+        val logger = PayjpLogger.get(configuration.debugEnabled)
         val payjpToken = PayjpToken(configuration.tokenConfiguration())
         this.tokenService = payjpToken
         PayjpCardForm.configure(
-            debugEnabled = configuration.debugEnabled,
+            logger = logger,
             tokenService = payjpToken,
             cardScannerPlugin = configuration.cardScannerPlugin,
             handler = configuration.tokenBackgroundHandler,
             callbackExecutor = configuration.callbackExecutor
         )
-        PayjpVerifier.debugEnabled = configuration.debugEnabled
+        PayjpVerifier.logger = logger
         return this
     }
 

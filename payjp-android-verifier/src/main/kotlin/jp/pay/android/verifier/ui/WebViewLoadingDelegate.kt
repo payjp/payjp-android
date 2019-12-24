@@ -23,16 +23,16 @@
 package jp.pay.android.verifier.ui
 
 import android.net.http.SslError
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.webkit.WebView
 import android.widget.ProgressBar
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import jp.pay.android.verifier.PayjpVerifier
+import jp.pay.android.PayjpLogger
 
 internal class WebViewLoadingDelegate(
+    private val logger: PayjpLogger,
     private val errorView: ViewGroup,
     private val progressBar: ProgressBar,
     private val swipeRefresh: SwipeRefreshLayout
@@ -42,18 +42,14 @@ internal class WebViewLoadingDelegate(
     }
 
     override fun onStarted(webView: WebView, url: String) {
-        if (PayjpVerifier.debugEnabled) {
-            Log.d(PayjpVerifier.TAG_FOR_LOG, "onStarted: $url")
-        }
+        logger.d("onStarted: $url")
         progressBar.clearAnimation()
         progressBar.visibility = View.VISIBLE
         errorView.visibility = View.GONE
     }
 
     override fun onFinished(webView: WebView, url: String) {
-        if (PayjpVerifier.debugEnabled) {
-            Log.d(PayjpVerifier.TAG_FOR_LOG, "onFinished: $url")
-        }
+        logger.d("onFinished: $url")
         progressBar.startAnimation(animation)
         webView.visibility = View.VISIBLE
         errorView.visibility = View.GONE
@@ -67,9 +63,7 @@ internal class WebViewLoadingDelegate(
         description: String?,
         failingUrl: String
     ) {
-        if (PayjpVerifier.debugEnabled) {
-            Log.d(PayjpVerifier.TAG_FOR_LOG, "onError: $errorCode, $description, $failingUrl")
-        }
+        logger.d("onError: $errorCode, $description, $failingUrl")
         progressBar.visibility = View.GONE
         errorView.visibility = View.VISIBLE
         webView.visibility = View.INVISIBLE
@@ -77,9 +71,7 @@ internal class WebViewLoadingDelegate(
     }
 
     override fun onSslError(webView: WebView, sslError: SslError) {
-        if (PayjpVerifier.debugEnabled) {
-            Log.d(PayjpVerifier.TAG_FOR_LOG, "onSslError: $sslError")
-        }
+        logger.d("onSslError: $sslError")
         progressBar.visibility = View.GONE
         swipeRefresh.isRefreshing = false
     }

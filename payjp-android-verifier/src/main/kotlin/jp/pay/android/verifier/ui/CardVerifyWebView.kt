@@ -29,7 +29,6 @@ import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.webkit.JsResult
 import android.webkit.SslErrorHandler
@@ -45,6 +44,7 @@ import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import java.text.SimpleDateFormat
 import java.util.Locale
+import jp.pay.android.PayjpLogger
 import jp.pay.android.verifier.PayjpVerifier
 import jp.pay.android.verifier.R
 
@@ -54,9 +54,9 @@ internal class CardVerifyWebView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : WebView(context, attrs, defStyleAttr) {
 
-    val interceptors: MutableList<Interceptor> = mutableListOf()
-    val loadStateWatchers: MutableList<LoadStateWatcher> = mutableListOf()
-    var debugEnabled: Boolean = false
+    private val interceptors: MutableList<Interceptor> = mutableListOf()
+    private val loadStateWatchers: MutableList<LoadStateWatcher> = mutableListOf()
+    private val logger: PayjpLogger = PayjpVerifier.logger
 
     init {
         webViewClient = CardVerifyWebViewClient()
@@ -147,9 +147,9 @@ internal class CardVerifyWebView @JvmOverloads constructor(
     }
 
     private fun configureSettings() {
-        if (debugEnabled) {
+        if (logger.debuggable()) {
             val webViewPackageInfo = WebViewCompat.getCurrentWebViewPackage(context)
-            Log.d(PayjpVerifier.TAG_FOR_LOG, "WebView version: ${webViewPackageInfo?.versionName}")
+            logger.d("WebView version: ${webViewPackageInfo?.versionName}")
         }
         settings.apply {
             allowFileAccess = false

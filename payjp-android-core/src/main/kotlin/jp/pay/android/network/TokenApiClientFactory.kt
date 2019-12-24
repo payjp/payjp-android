@@ -26,6 +26,7 @@ import com.squareup.moshi.Moshi
 import java.util.Locale
 import java.util.concurrent.Executor
 import jp.pay.android.PayjpApi
+import jp.pay.android.PayjpLogger
 import jp.pay.android.model.BundleJsonAdapter
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ClientInfo
@@ -58,7 +59,7 @@ internal object TokenApiClientFactory {
                 }
             }
             .let {
-                OkHttpTlsHelper.enableTls12OnPreLollipop(it, debuggable)
+                OkHttpTlsHelper.enableTls12OnPreLollipop(it, PayjpLogger.get(debuggable))
             }
             .dispatcher(Dispatcher(NetworkExecutorFactory.create()))
             .build()
