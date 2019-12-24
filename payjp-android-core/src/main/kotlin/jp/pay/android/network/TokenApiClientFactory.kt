@@ -31,6 +31,7 @@ import jp.pay.android.model.BundleJsonAdapter
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ClientInfo
 import jp.pay.android.model.DateUnixTimeJsonAdapter
+import jp.pay.android.model.ThreeDSecureStatus
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -46,6 +47,7 @@ internal object TokenApiClientFactory {
             .add(CardBrand.JsonAdapter())
             .add(DateUnixTimeJsonAdapter())
             .add(BundleJsonAdapter())
+            .add(ThreeDSecureStatus.JsonAdapter())
             .build()
     }
 
