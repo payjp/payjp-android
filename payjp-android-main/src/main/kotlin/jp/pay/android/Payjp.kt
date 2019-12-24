@@ -81,4 +81,11 @@ object Payjp {
      */
     @JvmStatic
     fun cardForm() = PayjpCardForm
+
+    /**
+     * Return [PayjpVerifier] instance.
+     * You must call `Payjp.init(configuration)` first.
+     */
+    @JvmStatic
+    fun verifier() = PayjpVerifier
 }
