@@ -56,7 +56,7 @@ internal class VerifyCardWebView @JvmOverloads constructor(
 
     private val interceptors: MutableList<Interceptor> = mutableListOf()
     private val loadStateWatchers: MutableList<LoadStateWatcher> = mutableListOf()
-    private val logger: PayjpLogger = PayjpVerifier.logger
+    private val logger: PayjpLogger = PayjpVerifier.logger()
 
     init {
         webViewClient = CardVerifyWebViewClient()

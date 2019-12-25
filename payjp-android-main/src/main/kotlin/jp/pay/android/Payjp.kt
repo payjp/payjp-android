@@ -61,7 +61,10 @@ object Payjp {
             handler = configuration.tokenBackgroundHandler,
             callbackExecutor = configuration.callbackExecutor
         )
-        PayjpVerifier.logger = logger
+        PayjpVerifier.configure(
+            logger = logger,
+            tokenService = payjpToken
+        )
         return this
     }
 

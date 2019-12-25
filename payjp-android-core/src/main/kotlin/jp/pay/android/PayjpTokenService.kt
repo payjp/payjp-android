@@ -31,6 +31,8 @@ import jp.pay.android.model.Token
  */
 interface PayjpTokenService {
 
+    fun getAuthorization(): String
+
     /**
      * Create token from card information.
      *

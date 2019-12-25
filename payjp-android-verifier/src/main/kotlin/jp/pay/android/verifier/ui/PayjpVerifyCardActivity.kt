@@ -103,7 +103,7 @@ class PayjpVerifyCardActivity : AppCompatActivity(R.layout.payjp_verify_card_act
         intent?.getStringExtra(EXTRA_KEY_TOKEN_ID)
     }
     private lateinit var webView: VerifyCardWebView
-    private val logger: PayjpLogger = PayjpVerifier.logger
+    private val logger: PayjpLogger = PayjpVerifier.logger()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -149,7 +149,11 @@ class PayjpVerifyCardActivity : AppCompatActivity(R.layout.payjp_verify_card_act
     }
 
     private fun startLoad() {
-        webView.loadUrl(card.getTdsEntryUri().toString())
+        val authorization: String = PayjpVerifier.tokenService().getAuthorization()
+        webView.loadUrl(
+            card.getTdsEntryUri().toString(),
+            mutableMapOf("Authorization" to authorization)
+        )
     }
 
     private fun setUpUI() {

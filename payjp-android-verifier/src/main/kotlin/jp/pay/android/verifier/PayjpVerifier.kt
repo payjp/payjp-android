@@ -27,6 +27,7 @@ import android.content.Intent
 import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import jp.pay.android.PayjpLogger
+import jp.pay.android.PayjpTokenService
 import jp.pay.android.model.Card
 import jp.pay.android.model.Token
 import jp.pay.android.verifier.ui.PayjpVerifyCardActivity
@@ -36,7 +37,22 @@ object PayjpVerifier {
 
     internal const val VERIFY_WEB_ENDPOINT_HOST = "api.pay-stage.com" // TODO
 
-    var logger: PayjpLogger = PayjpLogger.None
+    private var logger: PayjpLogger = PayjpLogger.None
+    private var tokenService: PayjpTokenService? = null
+
+    fun configure(
+        logger: PayjpLogger,
+        tokenService: PayjpTokenService
+    ) {
+        this.logger = logger
+        this.tokenService = tokenService
+    }
+
+    internal fun logger(): PayjpLogger = logger
+
+    internal fun tokenService(): PayjpTokenService = checkNotNull(tokenService) {
+        "You must initialize Payjp first"
+    }
 
     @MainThread
     fun startWebVerify(token: Token, activity: Activity, requestCode: Int? = null) {
