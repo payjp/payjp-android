@@ -20,14 +20,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.verifier.ui
+
+package jp.pay.android.verifier.ui;
+
+import androidx.annotation.NonNull;
 
 /**
- * State represents of result form the activity that verify card on web.
+ * Callback interface of {@link jp.pay.android.verifier.ui.PayjpVerifyCardResult}
+ *
  */
-sealed class PayjpCardWebVerifyResult {
+public interface PayjpVerifyCardResultCallback {
 
-    data class Success(val tokenId: String?) : PayjpCardWebVerifyResult()
-
-    object Canceled : PayjpCardWebVerifyResult()
+    /**
+     * Callback result {@link jp.pay.android.verifier.ui.PayjpVerifyCardResult}
+     *
+     * @param result result
+     */
+    void onResult(@NonNull PayjpVerifyCardResult result);
 }

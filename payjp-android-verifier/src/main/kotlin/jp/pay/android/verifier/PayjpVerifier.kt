@@ -29,8 +29,8 @@ import androidx.fragment.app.Fragment
 import jp.pay.android.PayjpLogger
 import jp.pay.android.model.Card
 import jp.pay.android.model.Token
-import jp.pay.android.verifier.ui.PayjpCardVerifyWebActivity
-import jp.pay.android.verifier.ui.PayjpCardWebVerifyResultCallback
+import jp.pay.android.verifier.ui.PayjpVerifyCardActivity
+import jp.pay.android.verifier.ui.PayjpVerifyCardResultCallback
 
 object PayjpVerifier {
 
@@ -40,21 +40,21 @@ object PayjpVerifier {
 
     @MainThread
     fun startWebVerify(token: Token, activity: Activity, requestCode: Int? = null) {
-        PayjpCardVerifyWebActivity.start(activity, token, requestCode)
+        PayjpVerifyCardActivity.start(activity, token, requestCode)
     }
 
     @MainThread
     fun startWebVerify(card: Card, activity: Activity, requestCode: Int? = null) {
-        PayjpCardVerifyWebActivity.start(activity, card, requestCode)
+        PayjpVerifyCardActivity.start(activity, card, requestCode)
     }
 
     @MainThread
     fun startWebVerify(card: Card, fragment: Fragment, requestCode: Int? = null) {
-        PayjpCardVerifyWebActivity.start(fragment, card, requestCode)
+        PayjpVerifyCardActivity.start(fragment, card, requestCode)
     }
 
     @MainThread
-    fun handleWebVerifyResult(data: Intent?, callback: PayjpCardWebVerifyResultCallback) {
-        PayjpCardVerifyWebActivity.onActivityResult(data, callback)
+    fun handleWebVerifyResult(data: Intent?, callback: PayjpVerifyCardResultCallback) {
+        PayjpVerifyCardActivity.onActivityResult(data, callback)
     }
 }

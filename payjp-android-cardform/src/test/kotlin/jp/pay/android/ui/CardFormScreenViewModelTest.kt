@@ -38,7 +38,7 @@ import jp.pay.android.model.ThreeDSecureStatus
 import jp.pay.android.model.Token
 import jp.pay.android.util.OneOffValue
 import jp.pay.android.util.Tasks
-import jp.pay.android.verifier.ui.PayjpCardWebVerifyResult
+import jp.pay.android.verifier.ui.PayjpVerifyCardResult
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.nullValue
 import org.junit.Assert.assertThat
@@ -273,7 +273,7 @@ class CardFormScreenViewModelTest {
         val card = TestStubs.newCard(threeDSecureStatus = ThreeDSecureStatus.UNVERIFIED)
         val token = TestStubs.newToken(card = card)
         viewModel.onCreateToken(Tasks.success(token))
-        viewModel.onCompleteCardVerify(PayjpCardWebVerifyResult.Canceled)
+        viewModel.onCompleteCardVerify(PayjpVerifyCardResult.Canceled)
 
         viewModel.run {
             assertThat(submitButtonVisibility.value, `is`(View.VISIBLE))
@@ -292,7 +292,7 @@ class CardFormScreenViewModelTest {
         val card = TestStubs.newCard(threeDSecureStatus = ThreeDSecureStatus.UNVERIFIED)
         val token = TestStubs.newToken(card = card)
         viewModel.onCreateToken(Tasks.success(token))
-        viewModel.onCompleteCardVerify(PayjpCardWebVerifyResult.Success(null))
+        viewModel.onCompleteCardVerify(PayjpVerifyCardResult.Success(null))
 
         viewModel.run {
             assertThat(submitButtonVisibility.value, `is`(View.VISIBLE))
@@ -317,7 +317,7 @@ class CardFormScreenViewModelTest {
         val viewModel = createViewModel(tokenHandlerExecutor = handlerExecutor)
 
         viewModel.onCreateToken(Tasks.success(token))
-        viewModel.onCompleteCardVerify(PayjpCardWebVerifyResult.Success(tokenId))
+        viewModel.onCompleteCardVerify(PayjpVerifyCardResult.Success(tokenId))
 
         viewModel.run {
             assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
@@ -343,7 +343,7 @@ class CardFormScreenViewModelTest {
         val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
 
         viewModel.onCreateToken(Tasks.success(token))
-        viewModel.onCompleteCardVerify(PayjpCardWebVerifyResult.Success(tokenId))
+        viewModel.onCompleteCardVerify(PayjpVerifyCardResult.Success(tokenId))
 
         viewModel.run {
             assertThat(submitButtonVisibility.value, `is`(View.VISIBLE))
@@ -367,7 +367,7 @@ class CardFormScreenViewModelTest {
         val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
 
         viewModel.onCreateToken(Tasks.success(token))
-        viewModel.onCompleteCardVerify(PayjpCardWebVerifyResult.Success(tokenId))
+        viewModel.onCompleteCardVerify(PayjpVerifyCardResult.Success(tokenId))
 
         viewModel.run {
             assertThat(submitButtonVisibility.value, `is`(View.VISIBLE))

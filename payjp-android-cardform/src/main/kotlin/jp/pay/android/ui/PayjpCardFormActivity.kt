@@ -50,7 +50,7 @@ import jp.pay.android.ui.widget.PayjpAcceptedBrandsView
 import jp.pay.android.ui.widget.PayjpCardFormFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
 import jp.pay.android.verifier.PayjpVerifier
-import jp.pay.android.verifier.ui.PayjpCardWebVerifyResultCallback
+import jp.pay.android.verifier.ui.PayjpVerifyCardResultCallback
 
 /**
  * PayjpCardFormActivity show card form.
@@ -121,9 +121,10 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        PayjpVerifier.handleWebVerifyResult(data, PayjpCardWebVerifyResultCallback { result ->
-            viewModel?.onCompleteCardVerify(result)
-        })
+        PayjpVerifier.handleWebVerifyResult(data,
+            PayjpVerifyCardResultCallback { result ->
+                viewModel?.onCompleteCardVerify(result)
+            })
         super.onActivityResult(requestCode, resultCode, data)
     }
 

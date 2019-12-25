@@ -27,7 +27,7 @@ import jp.pay.android.Task
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.Token
 import jp.pay.android.util.OneOffValue
-import jp.pay.android.verifier.ui.PayjpCardWebVerifyResult
+import jp.pay.android.verifier.ui.PayjpVerifyCardResult
 
 internal interface CardFormScreenContract {
 
@@ -39,7 +39,7 @@ internal interface CardFormScreenContract {
 
         fun onClickReload()
 
-        fun onCompleteCardVerify(result: PayjpCardWebVerifyResult)
+        fun onCompleteCardVerify(result: PayjpVerifyCardResult)
     }
 
     interface Output {

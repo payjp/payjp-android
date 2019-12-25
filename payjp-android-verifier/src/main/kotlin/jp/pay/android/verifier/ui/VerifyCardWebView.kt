@@ -48,7 +48,7 @@ import jp.pay.android.PayjpLogger
 import jp.pay.android.verifier.PayjpVerifier
 import jp.pay.android.verifier.R
 
-internal class CardVerifyWebView @JvmOverloads constructor(
+internal class VerifyCardWebView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -184,7 +184,7 @@ internal class CardVerifyWebView @JvmOverloads constructor(
         }
 
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-            return (view as? CardVerifyWebView)?.intercept(Uri.parse(url)) ?: false
+            return (view as? VerifyCardWebView)?.intercept(Uri.parse(url)) ?: false
         }
 
         @RequiresApi(21)
@@ -212,7 +212,7 @@ internal class CardVerifyWebView @JvmOverloads constructor(
         ) {
             super.onReceivedError(view, errorCode, description, failingUrl)
             loadingState = LoadingState.ERROR
-            (view as? CardVerifyWebView)?.loadStateWatchers?.forEach {
+            (view as? VerifyCardWebView)?.loadStateWatchers?.forEach {
                 it.onError(view, errorCode, description, failingUrl)
             }
         }
@@ -221,7 +221,7 @@ internal class CardVerifyWebView @JvmOverloads constructor(
             super.onPageStarted(view, url, favicon)
             if (loadingState === LoadingState.STOPPED) {
                 loadingState = LoadingState.LOADING
-                (view as? CardVerifyWebView)?.loadStateWatchers?.forEach {
+                (view as? VerifyCardWebView)?.loadStateWatchers?.forEach {
                     it.onStarted(view, url)
                     it.onProgressChanged(view, 20)
                 }
@@ -231,7 +231,7 @@ internal class CardVerifyWebView @JvmOverloads constructor(
         override fun onPageFinished(view: WebView, url: String) {
             super.onPageFinished(view, url)
             if (loadingState === LoadingState.LOADING) {
-                (view as? CardVerifyWebView)?.loadStateWatchers?.forEach {
+                (view as? VerifyCardWebView)?.loadStateWatchers?.forEach {
                     it.onFinished(view, url)
                 }
             }
@@ -245,7 +245,7 @@ internal class CardVerifyWebView @JvmOverloads constructor(
         ) {
             loadingState = LoadingState.ERROR
             createSslErrorDialog(view.context, handler, error).show()
-            (view as? CardVerifyWebView)?.loadStateWatchers?.forEach {
+            (view as? VerifyCardWebView)?.loadStateWatchers?.forEach {
                 it.onSslError(view, error)
             }
         }
@@ -344,7 +344,7 @@ internal class CardVerifyWebView @JvmOverloads constructor(
         }
 
         override fun onProgressChanged(view: WebView, newProgress: Int) {
-            (view as? CardVerifyWebView)?.loadStateWatchers?.forEach {
+            (view as? VerifyCardWebView)?.loadStateWatchers?.forEach {
                 if (newProgress > 20) {
                     it.onProgressChanged(view, newProgress)
                 }

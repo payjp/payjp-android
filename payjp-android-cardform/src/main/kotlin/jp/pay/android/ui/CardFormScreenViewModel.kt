@@ -42,7 +42,7 @@ import jp.pay.android.model.TenantId
 import jp.pay.android.model.ThreeDSecureStatus
 import jp.pay.android.model.Token
 import jp.pay.android.util.OneOffValue
-import jp.pay.android.verifier.ui.PayjpCardWebVerifyResult
+import jp.pay.android.verifier.ui.PayjpVerifyCardResult
 
 internal class CardFormScreenViewModel(
     private val tokenService: PayjpTokenService,
@@ -97,8 +97,8 @@ internal class CardFormScreenViewModel(
         fetchAcceptedBrands()
     }
 
-    override fun onCompleteCardVerify(result: PayjpCardWebVerifyResult) {
-        if (result is PayjpCardWebVerifyResult.Success && !result.tokenId.isNullOrEmpty()) {
+    override fun onCompleteCardVerify(result: PayjpVerifyCardResult) {
+        if (result is PayjpVerifyCardResult.Success && !result.tokenId.isNullOrEmpty()) {
             tokenizeProcessing = true
             fetchToken(checkNotNull(result.tokenId))
         } else {

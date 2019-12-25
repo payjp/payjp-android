@@ -47,7 +47,7 @@ import jp.pay.android.verifier.getTdsFinishUri
  * PayjpCardVerifyActivity
  *
  */
-class PayjpCardVerifyWebActivity : AppCompatActivity(R.layout.payjp_card_verify_web_activity),
+class PayjpVerifyCardActivity : AppCompatActivity(R.layout.payjp_verify_card_activity),
     LifecycleObserver {
 
     companion object {
@@ -58,7 +58,7 @@ class PayjpCardVerifyWebActivity : AppCompatActivity(R.layout.payjp_card_verify_
 
         fun start(activity: Activity, token: Token, requestCode: Int?) {
             activity.startActivityForResult(
-                Intent(activity, PayjpCardVerifyWebActivity::class.java)
+                Intent(activity, PayjpVerifyCardActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                     .putExtra(EXTRA_KEY_CARD, token.card)
                     .putExtra(EXTRA_KEY_TOKEN_ID, token.id),
@@ -68,7 +68,7 @@ class PayjpCardVerifyWebActivity : AppCompatActivity(R.layout.payjp_card_verify_
 
         fun start(activity: Activity, card: Card, requestCode: Int?) {
             activity.startActivityForResult(
-                Intent(activity, PayjpCardVerifyWebActivity::class.java)
+                Intent(activity, PayjpVerifyCardActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                     .putExtra(EXTRA_KEY_CARD, card),
                 requestCode ?: DEFAULT_CARD_TDS_1_REQUEST_CODE
@@ -77,20 +77,20 @@ class PayjpCardVerifyWebActivity : AppCompatActivity(R.layout.payjp_card_verify_
 
         fun start(fragment: Fragment, card: Card, requestCode: Int?) {
             fragment.startActivityForResult(
-                Intent(fragment.requireActivity(), PayjpCardVerifyWebActivity::class.java)
+                Intent(fragment.requireActivity(), PayjpVerifyCardActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                     .putExtra(EXTRA_KEY_CARD, card),
                 requestCode ?: DEFAULT_CARD_TDS_1_REQUEST_CODE
             )
         }
 
-        fun onActivityResult(data: Intent?, callback: PayjpCardWebVerifyResultCallback) {
+        fun onActivityResult(data: Intent?, callback: PayjpVerifyCardResultCallback) {
             val success = data?.getBooleanExtra(EXTRA_KEY_SUCCESS, false) ?: false
             val tokenId = data?.getStringExtra(EXTRA_KEY_TOKEN_ID)
             val result = if (success) {
-                PayjpCardWebVerifyResult.Success(tokenId)
+                PayjpVerifyCardResult.Success(tokenId)
             } else {
-                PayjpCardWebVerifyResult.Canceled
+                PayjpVerifyCardResult.Canceled
             }
             callback.onResult(result)
         }
@@ -102,13 +102,13 @@ class PayjpCardVerifyWebActivity : AppCompatActivity(R.layout.payjp_card_verify_
     private val tokenId: String? by lazy {
         intent?.getStringExtra(EXTRA_KEY_TOKEN_ID)
     }
-    private lateinit var webView: CardVerifyWebView
+    private lateinit var webView: VerifyCardWebView
     private val logger: PayjpLogger = PayjpVerifier.logger
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        setTitle(R.string.payjp_verifier_web_verify_title)
+        setTitle(R.string.payjp_verifier_card_verify_title)
         setUpUI()
         lifecycle.addObserver(this)
     }

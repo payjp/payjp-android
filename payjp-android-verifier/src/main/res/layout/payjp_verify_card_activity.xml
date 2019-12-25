@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <jp.pay.android.verifier.ui.CardVerifyWebView
+        <jp.pay.android.verifier.ui.VerifyCardWebView
                 android:id="@+id/web_view"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
