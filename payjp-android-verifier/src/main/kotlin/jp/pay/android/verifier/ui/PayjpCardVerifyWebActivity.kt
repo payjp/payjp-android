@@ -164,14 +164,6 @@ class PayjpCardVerifyWebActivity : AppCompatActivity(R.layout.payjp_card_verify_
                 false
             }
         }
-        webView.addInterceptor {
-            if (it == card.getTdsFinishUri()) {
-                finishWithSuccess()
-                true
-            } else {
-                false
-            }
-        }
         webView.addLoadStateWatcher(WebViewLoadingDelegate(
             logger = logger,
             errorView = findViewById(R.id.error_view),
