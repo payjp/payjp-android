@@ -55,6 +55,7 @@ data class Card(
     @Json(name = "address_zip") val addressZip: String?,
     @Json(name = "address_zip_check") val addressZipCheck: String,
     val customer: String?,
+    @Json(name = "cvc_check") val cvcCheck: String,
     val metadata: Bundle
 ) : Parcelable {
 

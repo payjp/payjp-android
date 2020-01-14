@@ -39,6 +39,14 @@ import retrofit2.converter.moshi.MoshiConverterFactory
  * ApiClient factory
  */
 internal object TokenApiClientFactory {
+    val moshi: Moshi by lazy {
+        Moshi.Builder()
+            .add(CardBrand.JsonAdapter())
+            .add(DateUnixTimeJsonAdapter())
+            .add(BundleJsonAdapter())
+            .build()
+    }
+
     fun createOkHttp(locale: Locale, debuggable: Boolean = false): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(CustomHeaderInterceptor(locale))
@@ -54,26 +62,16 @@ internal object TokenApiClientFactory {
             .dispatcher(Dispatcher(NetworkExecutorFactory.create()))
             .build()
 
-    fun createMoshi(): Moshi =
-        Moshi.Builder()
-            .add(CardBrand.JsonAdapter())
-            .add(DateUnixTimeJsonAdapter())
-            .add(BundleJsonAdapter())
-            .build()
-
     fun createApiClient(
         baseUrl: String,
         debuggable: Boolean = false,
         callbackExecutor: Executor,
         locale: Locale
-    ): PayjpApi =
-        createMoshi().let { moshi ->
-            Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .client(createOkHttp(locale, debuggable))
-                .addCallAdapterFactory(ResultCallAdapterFactory(moshi, callbackExecutor))
-                .addConverterFactory(MoshiConverterFactory.create(moshi))
-                .build()
-                .create(PayjpApi::class.java)
-        }
+    ): PayjpApi = Retrofit.Builder()
+        .baseUrl(baseUrl)
+        .client(createOkHttp(locale, debuggable))
+        .addCallAdapterFactory(ResultCallAdapterFactory(moshi, callbackExecutor))
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .build()
+        .create(PayjpApi::class.java)
 }
