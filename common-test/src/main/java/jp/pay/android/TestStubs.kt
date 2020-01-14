@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 PAY, Inc.
+ * Copyright (c) 2020 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +22,7 @@
  */
 package jp.pay.android
 
+import android.os.Bundle
 import java.util.Date
 import jp.pay.android.model.Card
 import jp.pay.android.model.CardBrand
@@ -39,7 +40,16 @@ object TestStubs {
         expirationYear: Int = 2020,
         fingerprint: String = "fingerprint_$seed",
         livemode: Boolean = true,
-        created: Date = Date(seed.toLong())
+        created: Date = Date(seed.toLong()),
+        addressCity: String? = null,
+        addressLine1: String? = null,
+        addressLine2: String? = null,
+        addressState: String? = null,
+        addressZip: String? = null,
+        addressZipCheck: String = "unchecked",
+        country: String? = null,
+        customer: String? = null,
+        metadata: Bundle = Bundle.EMPTY
     ): Card = Card(
         id = id,
         name = name,
@@ -49,7 +59,16 @@ object TestStubs {
         expirationYear = expirationYear,
         fingerprint = fingerprint,
         livemode = livemode,
-        created = created
+        created = created,
+        addressCity = addressCity,
+        addressLine1 = addressLine1,
+        addressLine2 = addressLine2,
+        addressState = addressState,
+        addressZip = addressZip,
+        addressZipCheck = addressZipCheck,
+        country = country,
+        customer = customer,
+        metadata = metadata
     )
 
     fun newToken(
