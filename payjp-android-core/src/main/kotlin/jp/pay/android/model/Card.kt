@@ -22,6 +22,7 @@
  */
 package jp.pay.android.model
 
+import android.os.Bundle
 import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -45,7 +46,16 @@ data class Card(
     @Json(name = "exp_year") val expirationYear: Int,
     val fingerprint: String,
     val livemode: Boolean,
-    val created: Date
+    val created: Date,
+    @Json(name = "address_state") val addressState: String?,
+    @Json(name = "address_city") val addressCity: String?,
+    @Json(name = "address_line1") val addressLine1: String?,
+    @Json(name = "address_line2") val addressLine2: String?,
+    val country: String?,
+    @Json(name = "address_zip") val addressZip: String?,
+    @Json(name = "address_zip_check") val addressZipCheck: String,
+    val customer: String?,
+    val metadata: Bundle
 ) : Parcelable {
 
     override fun hashCode(): Int = id.hashCode()
