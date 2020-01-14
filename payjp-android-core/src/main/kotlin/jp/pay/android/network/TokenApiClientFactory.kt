@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 PAY, Inc.
+ * Copyright (c) 2020 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ import com.squareup.moshi.Moshi
 import java.util.Locale
 import java.util.concurrent.Executor
 import jp.pay.android.PayjpApi
+import jp.pay.android.model.BundleJsonAdapter
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.DateUnixTimeJsonAdapter
 import okhttp3.Dispatcher
@@ -57,6 +58,7 @@ internal object TokenApiClientFactory {
         Moshi.Builder()
             .add(CardBrand.JsonAdapter())
             .add(DateUnixTimeJsonAdapter())
+            .add(BundleJsonAdapter())
             .build()
 
     fun createApiClient(

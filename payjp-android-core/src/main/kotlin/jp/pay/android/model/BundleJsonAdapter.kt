@@ -20,13 +20,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.exception
+package jp.pay.android.model
 
-/**
- * Exception for card form error
- *
- * @param message message
- */
-class PayjpInvalidCardFormException(
-    override val message: String
-) : RuntimeException(message)
+import android.os.Bundle
+import com.squareup.moshi.FromJson
+import com.squareup.moshi.ToJson
+
+internal class BundleJsonAdapter {
+
+    @FromJson
+    fun fromJson(data: Map<String, Any?>): Bundle = Bundle().apply {
+        data.entries.forEach { (k, v) ->
+            when (v) {
+                null -> {}
+                is String -> putString(k, v)
+                is Boolean -> putBoolean(k, v)
+                else -> putString(k, v.toString())
+            }
+        }
+    }
+
+    @ToJson
+    fun toJson(data: Bundle): Map<String, Any?> = data.keySet().associateWith { k -> data.get(k) }
+}
