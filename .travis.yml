@@ -15,7 +15,7 @@ android:
 
 before_install:
   - export TERM=dumb
-  - export REPOSITORY_ROOT={TRAVIS_BUILD_DIR}
+  - export REPOSITORY_ROOT=$TRAVIS_BUILD_DIR
   - source $REPOSITORY_ROOT/scripts/bash.source
   - bundle install --path=vendor/bundle --clean
   - mkdir "$ANDROID_HOME/licenses" || true
