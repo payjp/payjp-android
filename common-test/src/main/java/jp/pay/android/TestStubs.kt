@@ -49,6 +49,7 @@ object TestStubs {
         addressZipCheck: String = "unchecked",
         country: String? = null,
         customer: String? = null,
+        cvcCheck: String = "unchecked",
         metadata: Bundle = Bundle.EMPTY
     ): Card = Card(
         id = id,
@@ -68,6 +69,7 @@ object TestStubs {
         addressZipCheck = addressZipCheck,
         country = country,
         customer = customer,
+        cvcCheck = cvcCheck,
         metadata = metadata
     )
 
