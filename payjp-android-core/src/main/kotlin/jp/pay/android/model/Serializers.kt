@@ -30,10 +30,10 @@ fun Card.toJson(): String =
         .toJson(this)
 
 @Suppress("UNCHECKED_CAST")
-fun Card.toJsonValue(): Map<String, Any> =
+fun Card.toJsonValue(): Map<String, Any?> =
     TokenApiClientFactory.moshi.adapter<Card>(Card::class.java)
         .serializeNulls()
-        .toJsonValue(this) as? Map<String, Any> ?: emptyMap()
+        .toJsonValue(this) as? Map<String, Any?> ?: emptyMap()
 
 fun Token.toJson(): String =
     TokenApiClientFactory.moshi.adapter<Token>(Token::class.java)
@@ -41,7 +41,7 @@ fun Token.toJson(): String =
         .toJson(this)
 
 @Suppress("UNCHECKED_CAST")
-fun Token.toJsonValue(): Map<String, Any> =
+fun Token.toJsonValue(): Map<String, Any?> =
     TokenApiClientFactory.moshi.adapter<Token>(Token::class.java)
         .serializeNulls()
-        .toJsonValue(this) as? Map<String, Any> ?: emptyMap()
+        .toJsonValue(this) as? Map<String, Any?> ?: emptyMap()
