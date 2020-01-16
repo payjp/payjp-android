@@ -24,16 +24,16 @@ package jp.pay.android.fixtures
 
 const val CARD_OK = """
 {
-    "address_city": null,
-    "address_line1": null,
-    "address_line2": null,
-    "address_state": null,
-    "address_zip": null,
+    "address_city": "city",
+    "address_line1": "line1",
+    "address_line2": "line2",
+    "address_state": "Japan",
+    "address_zip": "1234567",
     "address_zip_check": "unchecked",
     "brand": "Visa",
-    "country": null,
+    "country": "JP",
     "created": 1442290383,
-    "customer": null,
+    "customer": "cus_xxxxx",
     "cvc_check": "passed",
     "exp_month": 2,
     "exp_year": 2020,
