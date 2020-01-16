@@ -29,7 +29,7 @@ import java.util.Date
 import jp.pay.android.fixtures.CARD_HAS_METADATA
 import jp.pay.android.fixtures.CARD_ID_NULL
 import jp.pay.android.fixtures.CARD_OK
-import jp.pay.android.network.TokenApiClientFactory.createMoshi
+import jp.pay.android.network.TokenApiClientFactory
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
 import org.junit.Test
@@ -41,9 +41,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class CardTest {
 
-    private val moshi: Moshi by lazy {
-        createMoshi()
-    }
+    private val moshi: Moshi = TokenApiClientFactory.moshi
 
     @Test
     fun json_to_properties() {
@@ -59,6 +57,16 @@ class CardTest {
                 assertEquals(fingerprint, "e1d8225886e3a7211127df751c86787f")
                 assertEquals(livemode, false)
                 assertEquals(created, Date(1442290383L * 1000))
+                assertEquals(addressCity, "city")
+                assertEquals(addressLine1, "line1")
+                assertEquals(addressLine2, "line2")
+                assertEquals(addressState, "Japan")
+                assertEquals(addressZip, "1234567")
+                assertEquals(addressZipCheck, "unchecked")
+                assertEquals(country, "JP")
+                assertEquals(customer, "cus_xxxxx")
+                assertEquals(cvcCheck, "passed")
+                assertEquals(metadata.isEmpty, true)
             } ?: fail("card is null")
     }
 
