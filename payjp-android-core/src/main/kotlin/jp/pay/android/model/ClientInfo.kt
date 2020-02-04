@@ -20,16 +20,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.network
 
-import jp.pay.android.model.ClientInfo
+package jp.pay.android.model
 
-/**
- * UserAgent
- */
-internal object UserAgent {
+import android.os.Build
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
+import jp.pay.android.BuildConfig
 
-    fun create(client: ClientInfo): String {
-        return "${client.bindingName}/${client.bindingVersion}; ${client.uname}"
-    }
-}
+@JsonClass(generateAdapter = true)
+data class ClientInfo(
+    @Json(name = "binding_name") val bindingName: String = "jp.pay.android",
+    @Json(name = "binding_version") val bindingVersion: String = BuildConfig.VERSION_NAME,
+    val uname: String = "Android/${Build.VERSION.RELEASE}; ${Build.DEVICE}; ${Build.BRAND}; ${Build.MODEL}",
+    val platform: String = "android",
+    val publisher: String = "payjp"
+)

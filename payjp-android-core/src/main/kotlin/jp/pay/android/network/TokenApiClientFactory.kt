@@ -28,6 +28,7 @@ import java.util.concurrent.Executor
 import jp.pay.android.PayjpApi
 import jp.pay.android.model.BundleJsonAdapter
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.ClientInfo
 import jp.pay.android.model.DateUnixTimeJsonAdapter
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
@@ -47,9 +48,9 @@ internal object TokenApiClientFactory {
             .build()
     }
 
-    fun createOkHttp(locale: Locale, debuggable: Boolean = false): OkHttpClient =
+    fun createOkHttp(locale: Locale, debuggable: Boolean, clientInfo: ClientInfo): OkHttpClient =
         OkHttpClient.Builder()
-            .addInterceptor(CustomHeaderInterceptor(locale))
+            .addInterceptor(CustomHeaderInterceptor(locale, clientInfo, moshi))
             .apply {
                 if (debuggable) {
                     addNetworkInterceptor(HttpLoggingInterceptor()
@@ -66,10 +67,11 @@ internal object TokenApiClientFactory {
         baseUrl: String,
         debuggable: Boolean = false,
         callbackExecutor: Executor,
-        locale: Locale
+        locale: Locale,
+        clientInfo: ClientInfo
     ): PayjpApi = Retrofit.Builder()
         .baseUrl(baseUrl)
-        .client(createOkHttp(locale, debuggable))
+        .client(createOkHttp(locale, debuggable, clientInfo))
         .addCallAdapterFactory(ResultCallAdapterFactory(moshi, callbackExecutor))
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()

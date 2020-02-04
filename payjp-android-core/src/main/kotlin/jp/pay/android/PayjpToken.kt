@@ -52,7 +52,8 @@ class PayjpToken internal constructor(
             baseUrl = PayjpConstants.API_ENDPOINT,
             debuggable = configuration.debugEnabled,
             callbackExecutor = configuration.callbackExecutor,
-            locale = configuration.locale
+            locale = configuration.locale,
+            clientInfo = configuration.clientInfo
         )
     )
 

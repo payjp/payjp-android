@@ -22,6 +22,8 @@
  */
 package jp.pay.android.network
 
+import com.squareup.moshi.Moshi
+import jp.pay.android.model.ClientInfo
 import java.util.Locale
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -29,14 +31,20 @@ import okhttp3.Response
 /**
  * Request interceptor
  */
-internal class CustomHeaderInterceptor(private val locale: Locale) : Interceptor {
+internal class CustomHeaderInterceptor(
+    private val locale: Locale,
+    client: ClientInfo,
+    moshi: Moshi
+) : Interceptor {
 
-    private val userAgent = UserAgent.create()
+    private val userAgent = UserAgent.create(client)
+    private val clientInfoJson = moshi.adapter<ClientInfo>(ClientInfo::class.java).toJson(client)
 
     override fun intercept(chain: Interceptor.Chain?): Response {
         val newRequest = chain!!.request().newBuilder()
             .header("user-agent", userAgent)
             .header("locale", locale.language)
+            .header("X-Payjp-Client-User-Agent", clientInfoJson)
             .build()
 
         return chain.proceed(newRequest)
