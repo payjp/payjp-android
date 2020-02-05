@@ -30,6 +30,6 @@ import jp.pay.android.model.ClientInfo
 internal object UserAgent {
 
     fun create(client: ClientInfo): String {
-        return "${client.bindingName}/${client.bindingVersion}; ${client.uname}"
+        return "${client.getBindingInfo()}; ${client.uname}"
     }
 }

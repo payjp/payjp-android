@@ -78,7 +78,7 @@ class PayjpConfiguration private constructor(
 
         private var executor: Executor = MainThreadExecutor
 
-        private var clientInfo: ClientInfo = ClientInfo()
+        private var clientInfo: ClientInfo = ClientInfo.Builder().build()
 
         /**
          * set debugEnabled

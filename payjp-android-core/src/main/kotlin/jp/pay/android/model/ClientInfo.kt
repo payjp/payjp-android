@@ -25,13 +25,51 @@ package jp.pay.android.model
 import android.os.Build
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import java.lang.StringBuilder
 import jp.pay.android.BuildConfig
 
 @JsonClass(generateAdapter = true)
-data class ClientInfo(
-    @Json(name = "binding_name") val bindingName: String = "jp.pay.android",
-    @Json(name = "binding_version") val bindingVersion: String = BuildConfig.VERSION_NAME,
-    val uname: String = "Android/${Build.VERSION.RELEASE}; ${Build.DEVICE}; ${Build.BRAND}; ${Build.MODEL}",
-    val platform: String = "android",
-    val publisher: String = "payjp"
-)
+class ClientInfo internal constructor(
+    @Json(name = "binding_name") val bindingName: String,
+    @Json(name = "binding_version") val bindingVersion: String,
+    @Json(name = "plugin_name") val bindingPlugin: String?,
+    val uname: String,
+    val platform: String,
+    val publisher: String
+) {
+    fun getBindingInfo(): String = StringBuilder().apply {
+        append(bindingName)
+        append("/")
+        append(bindingVersion)
+        if (!bindingPlugin.isNullOrEmpty()) {
+            append("@")
+            append(bindingPlugin)
+        }
+    }.toString()
+
+    class Builder {
+        private val bindingName: String = "jp.pay.android"
+        private val bindingVersion: String = BuildConfig.VERSION_NAME
+        private val uname: String = "Android/${Build.VERSION.RELEASE}; ${Build.DEVICE}; ${Build.BRAND}; ${Build.MODEL}"
+        private val platform: String = "android"
+        private var publisher: String = "payjp"
+        private var bindingPlugin: String? = null
+
+        fun build(): ClientInfo = ClientInfo(
+            bindingName = bindingName,
+            bindingVersion = bindingVersion,
+            uname = uname,
+            platform = platform,
+            publisher = publisher,
+            bindingPlugin = bindingPlugin
+        )
+
+        fun setPublisher(publisher: String) = apply {
+            this.publisher = publisher
+        }
+
+        fun setPlugin(plugin: String?) = apply {
+            this.bindingPlugin = plugin
+        }
+    }
+}

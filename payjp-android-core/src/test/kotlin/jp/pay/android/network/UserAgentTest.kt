@@ -23,8 +23,8 @@
 package jp.pay.android.network
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.hamcrest.Matchers.not
-import org.hamcrest.Matchers.startsWith
+import jp.pay.android.model.ClientInfo
+import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,12 +33,15 @@ import org.junit.runner.RunWith
 class UserAgentTest {
 
     @Test
-    fun startWithId() {
-        assertThat(UserAgent.create(), startsWith("jp.pay.android/"))
-    }
-
-    @Test
-    fun versionIsNotEmpty() {
-        assertThat(UserAgent.create(), not(startsWith("jp.pay.android/;")))
+    fun create() {
+        val clientInfo = ClientInfo(
+            bindingName = "jp.pay.android",
+            bindingVersion = "1.1.0",
+            bindingPlugin = "plugin/1.0.0",
+            uname = "Android/10",
+            platform = "android",
+            publisher = "payjp"
+        )
+        assertThat(UserAgent.create(clientInfo), `is`("jp.pay.android/1.1.0@plugin/1.0.0; Android/10"))
     }
 }
