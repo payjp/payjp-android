@@ -36,6 +36,7 @@ import jp.pay.android.fixtures.ERROR_CARD_DECLINED
 import jp.pay.android.fixtures.ERROR_INVALID_ID
 import jp.pay.android.fixtures.TOKEN_OK
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.ClientInfo
 import jp.pay.android.model.TenantId
 import jp.pay.android.network.TokenApiClientFactory.createApiClient
 import okhttp3.mockwebserver.MockResponse
@@ -81,7 +82,15 @@ class PayjpTokenTest {
         publicKey = "pk_test_0383a1b8f91e8a6e3ea0e2a9",
         debugEnabled = true,
         locale = Locale.getDefault(),
-        callbackExecutor = Executors.newSingleThreadExecutor()
+        callbackExecutor = Executors.newSingleThreadExecutor(),
+        clientInfo = ClientInfo.Builder().build()
+    )
+
+    private fun createApi() = createApiClient(
+        baseUrl = mockWebServer.url("/").toString(),
+        callbackExecutor = CurrentThreadExecutor(),
+        locale = Locale.US,
+        clientInfo = ClientInfo.Builder().build()
     )
 
     @Test
@@ -90,10 +99,7 @@ class PayjpTokenTest {
 
         PayjpToken(
             configuration = configuration,
-            payjpApi = createApiClient(
-                baseUrl = mockWebServer.url("/").toString(),
-                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
-            )
+            payjpApi = createApi()
         )
             .createToken(
                 number = "4242424242424242",
@@ -131,10 +137,7 @@ class PayjpTokenTest {
 
         PayjpToken(
             configuration = configuration,
-            payjpApi = createApiClient(
-                baseUrl = mockWebServer.url("/").toString(),
-                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
-            )
+            payjpApi = createApi()
         )
             .createToken(
                 number = "4242424242424242",
@@ -157,10 +160,7 @@ class PayjpTokenTest {
 
         PayjpToken(
             configuration = configuration,
-            payjpApi = createApiClient(
-                baseUrl = mockWebServer.url("/").toString(),
-                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
-            )
+            payjpApi = createApi()
         )
             .createToken(
                 number = "4242424242424242",
@@ -184,10 +184,7 @@ class PayjpTokenTest {
 
         val task = PayjpToken(
             configuration = configuration,
-            payjpApi = createApiClient(
-                baseUrl = mockWebServer.url("/").toString(),
-                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
-            )
+            payjpApi = createApi()
         )
             .createToken(
                 number = "4242424242424242",
@@ -213,10 +210,7 @@ class PayjpTokenTest {
 
         val task = PayjpToken(
             configuration = configuration,
-            payjpApi = createApiClient(
-                baseUrl = mockWebServer.url("/").toString(),
-                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
-            )
+            payjpApi = createApi()
         )
             .createToken(
                 number = "4242424242424242",
@@ -242,10 +236,7 @@ class PayjpTokenTest {
 
         val task = PayjpToken(
             configuration = configuration,
-            payjpApi = createApiClient(
-                baseUrl = mockWebServer.url("/").toString(),
-                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
-            )
+            payjpApi = createApi()
         )
             .createToken(
                 number = "4242424242424242",
@@ -265,10 +256,7 @@ class PayjpTokenTest {
 
         PayjpToken(
             configuration = configuration,
-            payjpApi = createApiClient(
-                baseUrl = mockWebServer.url("/").toString(),
-                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
-            )
+            payjpApi = createApi()
         )
             .getToken("tok_5ca06b51685e001723a2c3b4aeb4")
             .run()
@@ -295,10 +283,7 @@ class PayjpTokenTest {
 
         val task = PayjpToken(
             configuration = configuration,
-            payjpApi = createApiClient(
-                baseUrl = mockWebServer.url("/").toString(),
-                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
-            )
+            payjpApi = createApi()
         )
             .getToken("tok_5ca06b51685e001723a2c3b4aeb4")
 
@@ -321,10 +306,7 @@ class PayjpTokenTest {
 
         val task = PayjpToken(
             configuration = configuration,
-            payjpApi = createApiClient(
-                baseUrl = mockWebServer.url("/").toString(),
-                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
-            )
+            payjpApi = createApi()
         )
             .getToken("tok_587af2665fdced4742e5fbb3ecfcaa")
 
@@ -347,10 +329,7 @@ class PayjpTokenTest {
 
         val task = PayjpToken(
             configuration = configuration,
-            payjpApi = createApiClient(
-                baseUrl = mockWebServer.url("/").toString(),
-                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
-            )
+            payjpApi = createApi()
         )
             .getToken("tok_5ca06b51685e001723a2c3b4aeb4")
 
@@ -367,10 +346,7 @@ class PayjpTokenTest {
 
         PayjpToken(
             configuration = configuration,
-            payjpApi = createApiClient(
-                baseUrl = mockWebServer.url("/").toString(),
-                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
-            )
+            payjpApi = createApi()
         )
             .getAcceptedBrands()
             .run()
@@ -402,10 +378,7 @@ class PayjpTokenTest {
 
         PayjpToken(
             configuration = configuration,
-            payjpApi = createApiClient(
-                baseUrl = mockWebServer.url("/").toString(),
-                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
-            )
+            payjpApi = createApi()
         )
             .getAcceptedBrands()
             .run()
@@ -431,10 +404,7 @@ class PayjpTokenTest {
 
         PayjpToken(
             configuration = configuration,
-            payjpApi = createApiClient(
-                baseUrl = mockWebServer.url("/").toString(),
-                callbackExecutor = CurrentThreadExecutor(), locale = Locale.US
-            )
+            payjpApi = createApi()
         )
             .getAcceptedBrands(TenantId("foobar"))
             .run()
