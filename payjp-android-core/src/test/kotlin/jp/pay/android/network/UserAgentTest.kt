@@ -35,9 +35,9 @@ class UserAgentTest {
     @Test
     fun create() {
         val clientInfo = ClientInfo(
-            bindingName = "jp.pay.android",
-            bindingVersion = "1.1.0",
-            bindingPlugin = "plugin/1.0.0",
+            bindingsName = "jp.pay.android",
+            bindingsVersion = "1.1.0",
+            bindingsPlugin = "plugin/1.0.0",
             uname = "Android/10",
             platform = "android",
             publisher = "payjp"

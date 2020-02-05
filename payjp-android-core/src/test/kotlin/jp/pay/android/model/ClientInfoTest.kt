@@ -36,7 +36,7 @@ class ClientInfoTest {
     @Test
     fun defaultValue() {
         val clientInfo = ClientInfo.Builder().build()
-        assertThat(clientInfo.bindingName, `is`("jp.pay.android"))
+        assertThat(clientInfo.bindingsName, `is`("jp.pay.android"))
         assertThat(clientInfo.uname, startsWith("Android/"))
         assertThat(clientInfo.platform, `is`("android"))
         assertThat(clientInfo.publisher, `is`("payjp"))
@@ -49,15 +49,15 @@ class ClientInfoTest {
             .setPlugin("jp.pay.kitagawa/1.0.0")
             .build()
         assertThat(clientInfo.publisher, `is`("kitagawa"))
-        assertThat(clientInfo.bindingPlugin, `is`("jp.pay.kitagawa/1.0.0"))
+        assertThat(clientInfo.bindingsPlugin, `is`("jp.pay.kitagawa/1.0.0"))
     }
 
     @Test
     fun bindingInfo() {
         val clientInfo = ClientInfo(
-            bindingName = "jp.pay.android",
-            bindingVersion = "1.1.0",
-            bindingPlugin = null,
+            bindingsName = "jp.pay.android",
+            bindingsVersion = "1.1.0",
+            bindingsPlugin = null,
             uname = "Android/10",
             platform = "android",
             publisher = "payjp"
@@ -68,9 +68,9 @@ class ClientInfoTest {
     @Test
     fun bindingInfo_withPlugin() {
         val clientInfo = ClientInfo(
-            bindingName = "jp.pay.android",
-            bindingVersion = "1.1.0",
-            bindingPlugin = "jp.pay.kitagawa/1.0.0",
+            bindingsName = "jp.pay.android",
+            bindingsVersion = "1.1.0",
+            bindingsPlugin = "jp.pay.kitagawa/1.0.0",
             uname = "Android/10",
             platform = "android",
             publisher = "payjp"
@@ -81,9 +81,9 @@ class ClientInfoTest {
     @Test
     fun toJson() {
         val clientInfo = ClientInfo(
-            bindingName = "jp.pay.android",
-            bindingVersion = "1.1.0",
-            bindingPlugin = "jp.pay.kitagawa/1.0.0",
+            bindingsName = "jp.pay.android",
+            bindingsVersion = "1.1.0",
+            bindingsPlugin = "jp.pay.kitagawa/1.0.0",
             uname = "Android/10",
             platform = "android",
             publisher = "payjp"
@@ -92,9 +92,9 @@ class ClientInfoTest {
             .toJson(clientInfo)
         assertThat(json, `is`("""
 {
-  "binding_name": "jp.pay.android",
-  "binding_version": "1.1.0",
-  "plugin_name": "jp.pay.kitagawa/1.0.0",
+  "bindings_name": "jp.pay.android",
+  "bindings_version": "1.1.0",
+  "bindings_plugin": "jp.pay.kitagawa/1.0.0",
   "uname": "Android/10",
   "platform": "android",
   "publisher": "payjp"

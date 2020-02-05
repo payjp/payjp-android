@@ -30,38 +30,38 @@ import jp.pay.android.BuildConfig
 
 @JsonClass(generateAdapter = true)
 class ClientInfo internal constructor(
-    @Json(name = "binding_name") val bindingName: String,
-    @Json(name = "binding_version") val bindingVersion: String,
-    @Json(name = "plugin_name") val bindingPlugin: String?,
+    @Json(name = "bindings_name") val bindingsName: String,
+    @Json(name = "bindings_version") val bindingsVersion: String,
+    @Json(name = "bindings_plugin") val bindingsPlugin: String?,
     val uname: String,
     val platform: String,
     val publisher: String
 ) {
     fun getBindingInfo(): String = StringBuilder().apply {
-        append(bindingName)
+        append(bindingsName)
         append("/")
-        append(bindingVersion)
-        if (!bindingPlugin.isNullOrEmpty()) {
+        append(bindingsVersion)
+        if (!bindingsPlugin.isNullOrEmpty()) {
             append("@")
-            append(bindingPlugin)
+            append(bindingsPlugin)
         }
     }.toString()
 
     class Builder {
-        private val bindingName: String = "jp.pay.android"
-        private val bindingVersion: String = BuildConfig.VERSION_NAME
+        private val bindingsName: String = "jp.pay.android"
+        private val bindingsVersion: String = BuildConfig.VERSION_NAME
         private val uname: String = "Android/${Build.VERSION.RELEASE}; ${Build.DEVICE}; ${Build.BRAND}; ${Build.MODEL}"
         private val platform: String = "android"
         private var publisher: String = "payjp"
-        private var bindingPlugin: String? = null
+        private var bindingsPlugin: String? = null
 
         fun build(): ClientInfo = ClientInfo(
-            bindingName = bindingName,
-            bindingVersion = bindingVersion,
+            bindingsName = bindingsName,
+            bindingsVersion = bindingsVersion,
             uname = uname,
             platform = platform,
             publisher = publisher,
-            bindingPlugin = bindingPlugin
+            bindingsPlugin = bindingsPlugin
         )
 
         fun setPublisher(publisher: String) = apply {
@@ -69,7 +69,7 @@ class ClientInfo internal constructor(
         }
 
         fun setPlugin(plugin: String?) = apply {
-            this.bindingPlugin = plugin
+            this.bindingsPlugin = plugin
         }
     }
 }
