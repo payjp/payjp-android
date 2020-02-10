@@ -24,6 +24,7 @@ package jp.pay.android
 
 import java.util.Locale
 import java.util.concurrent.Executor
+import jp.pay.android.model.ClientInfo
 import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.util.MainThreadExecutor
 
@@ -43,6 +44,7 @@ class PayjpConfiguration private constructor(
     val debugEnabled: Boolean,
     val locale: Locale,
     val callbackExecutor: Executor,
+    val clientInfo: ClientInfo,
     val cardScannerPlugin: CardScannerPlugin?,
     val tokenBackgroundHandler: PayjpTokenBackgroundHandler?
 ) {
@@ -51,7 +53,8 @@ class PayjpConfiguration private constructor(
         publicKey = publicKey,
         debugEnabled = debugEnabled,
         locale = locale,
-        callbackExecutor = callbackExecutor
+        callbackExecutor = callbackExecutor,
+        clientInfo = clientInfo
     )
 
     /**
@@ -74,6 +77,8 @@ class PayjpConfiguration private constructor(
         private var tokenBackgroundHandler: PayjpTokenBackgroundHandler? = null
 
         private var executor: Executor = MainThreadExecutor
+
+        private var clientInfo: ClientInfo = ClientInfo.Builder().build()
 
         /**
          * set debugEnabled
@@ -102,8 +107,12 @@ class PayjpConfiguration private constructor(
             tokenBackgroundHandler = handler
         }
 
-        fun setCallbackExecutor(executor: Executor) {
+        fun setCallbackExecutor(executor: Executor) = apply {
             this.executor = executor
+        }
+
+        fun setClientInfo(clientInfo: ClientInfo) = apply {
+            this.clientInfo = clientInfo
         }
 
         /**
@@ -116,6 +125,7 @@ class PayjpConfiguration private constructor(
             debugEnabled = debugEnabled,
             locale = locale,
             callbackExecutor = executor,
+            clientInfo = clientInfo,
             cardScannerPlugin = cardScannerPlugin,
             tokenBackgroundHandler = tokenBackgroundHandler
         )

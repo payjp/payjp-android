@@ -22,16 +22,14 @@
  */
 package jp.pay.android.network
 
-import android.os.Build
-import jp.pay.android.BuildConfig
+import jp.pay.android.model.ClientInfo
 
 /**
  * UserAgent
  */
 internal object UserAgent {
 
-    fun create(): String {
-        return "jp.pay.android/${BuildConfig.VERSION_NAME}; " +
-            "Android/${Build.VERSION.RELEASE}; ${Build.DEVICE}; ${Build.BRAND}; ${Build.MODEL}"
+    fun create(client: ClientInfo): String {
+        return "${client.getBindingInfo()}; ${client.uname}"
     }
 }
