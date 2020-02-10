@@ -24,6 +24,7 @@ package jp.pay.android
 
 import java.util.Locale
 import java.util.concurrent.Executor
+import jp.pay.android.model.ClientInfo
 import jp.pay.android.validator.PublicKeyValidator
 
 /**
@@ -39,7 +40,8 @@ class PayjpTokenConfiguration constructor(
     val publicKey: String,
     val debugEnabled: Boolean,
     val locale: Locale,
-    val callbackExecutor: Executor
+    val callbackExecutor: Executor,
+    val clientInfo: ClientInfo
 ) {
 
     init {
