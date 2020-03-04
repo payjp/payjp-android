@@ -43,7 +43,8 @@ const val CARD_OK = """
     "metadata": {},
     "last4": "4242",
     "name": null,
-    "object": "card"
+    "object": "card",
+    "three_d_secure_status": "verified"
 }
         """
 
@@ -68,7 +69,8 @@ const val CARD_ID_NULL = """
     "metadata": {},
     "last4": "4242",
     "name": null,
-    "object": "card"
+    "object": "card",
+    "three_d_secure_status": "verified"
 }
 """
 
