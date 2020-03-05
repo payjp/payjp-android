@@ -37,7 +37,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import com.google.android.material.snackbar.Snackbar
 import jp.pay.android.PayjpCardForm
@@ -170,7 +170,7 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
             errorTranslator = ContextErrorTranslator(this),
             tokenHandlerExecutor = PayjpCardForm.tokenHandlerExecutor()
         )
-        viewModel = ViewModelProviders.of(this, vmFactory).get(CardFormScreenViewModel::class.java)
+        viewModel = ViewModelProvider(this, vmFactory).get(CardFormScreenViewModel::class.java)
             .also { vm ->
                 lifecycle.addObserver(vm)
                 vm.acceptedBrands.value?.peek()?.let(acceptedBrandsView::setAcceptedBrands)
