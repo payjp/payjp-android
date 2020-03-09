@@ -28,23 +28,24 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
+import jp.pay.android.verifier.util.CustomTabsHelper
 
 internal sealed class WebBrowser {
 
     abstract fun canResolveComponent(context: Context, uri: Uri): Boolean
 
-    abstract fun createIntent(context: Context, uri: Uri): Intent
+    abstract fun createIntent(context: Context, uri: Uri, callbackUri: Uri): Intent
 
     internal object ChromeTab : WebBrowser() {
         override fun canResolveComponent(context: Context, uri: Uri): Boolean {
-            return TODO()
+            return CustomTabsHelper.getPackageNameToUse(context)?.isNotEmpty() ?: false
         }
 
-        override fun createIntent(context: Context, uri: Uri): Intent {
+        override fun createIntent(context: Context, uri: Uri, callbackUri: Uri): Intent {
             return CustomTabsIntent.Builder()
                 .setShowTitle(true)
                 .build().intent
-                .setPackage(TODO())
+                .setPackage(CustomTabsHelper.getPackageNameToUse(context))
                 .setData(uri)
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
@@ -62,7 +63,7 @@ internal sealed class WebBrowser {
             return resolves?.isNotEmpty() ?: false
         }
 
-        override fun createIntent(context: Context, uri: Uri): Intent {
+        override fun createIntent(context: Context, uri: Uri, callbackUri: Uri): Intent {
             // implicit intent
             return Intent(Intent.ACTION_VIEW, uri)
                 .addCategory(Intent.CATEGORY_DEFAULT)
