@@ -32,7 +32,7 @@
                 android:exported="false" />
 
         <activity
-                android:name=".verifier.ui.PayjpVerifyCardActivity"
+                android:name=".verifier.ui.PayjpWebActivity"
                 android:theme="@style/Payjp.Theme.CardForm"
                 android:enabled="true"
                 android:exported="false" />

@@ -20,7 +20,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package jp.pay.android.verifier
 
 import android.content.Context
@@ -28,6 +27,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
+import jp.pay.android.verifier.ui.PayjpWebActivity
 import jp.pay.android.verifier.util.CustomTabsHelper
 
 internal sealed class WebBrowser {
@@ -70,6 +70,21 @@ internal sealed class WebBrowser {
                 .addCategory(Intent.CATEGORY_BROWSABLE)
                 .setPackage(null)
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
+    }
+
+    internal object InAppWeb : WebBrowser() {
+        override fun canResolveComponent(context: Context, uri: Uri): Boolean {
+            return true
+        }
+
+        override fun createIntent(context: Context, uri: Uri, callbackUri: Uri): Intent {
+            return PayjpWebActivity.createIntent(
+                    context = context,
+                    startUri = uri,
+                    callbackUri = callbackUri
+                )
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
     }
 }
