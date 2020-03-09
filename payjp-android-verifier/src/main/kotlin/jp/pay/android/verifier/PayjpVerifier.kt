@@ -25,18 +25,24 @@ package jp.pay.android.verifier
 import android.app.Activity
 import android.content.Intent
 import androidx.annotation.MainThread
-import androidx.fragment.app.Fragment
 import jp.pay.android.PayjpLogger
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.verifier.ui.PayjpVerifyCardResult
 import jp.pay.android.verifier.ui.PayjpVerifyCardResultCallback
-import jp.pay.android.verifier.ui.PayjpWebActivity
 
 object PayjpVerifier {
 
+    internal const val VERIFY_WEB_ENDPOINT_HOST = "api.pay-stage.com" // TODO
+    private const val REQUEST_CODE_VERIFY = 10
+
     private var logger: PayjpLogger = PayjpLogger.None
     private var tokenService: PayjpTokenService? = null
+    private val webBrowserResolver = WebBrowserResolver(
+        WebBrowser.ChromeTab,
+        WebBrowser.AnyBrowsable,
+        WebBrowser.InAppWeb
+    )
 
     fun configure(
         logger: PayjpLogger,
@@ -53,13 +59,17 @@ object PayjpVerifier {
     }
 
     @MainThread
-    fun startWebVerify(tdsToken: ThreeDSecureToken, activity: Activity, requestCode: Int? = null) {
-        // TODO
-    }
-
-    @MainThread
-    fun startWebVerify(tdsToken: ThreeDSecureToken, fragment: Fragment, requestCode: Int? = null) {
-        // TODO
+    fun startWebVerify(tdsToken: ThreeDSecureToken, activity: Activity, requestCode: Int = REQUEST_CODE_VERIFY) {
+        val intent = webBrowserResolver.resolve(
+            context = activity,
+            uri = tdsToken.getTdsEntryUri(),
+            callbackUri = tdsToken.getTdsFinishUri()
+        )
+        if (intent == null) {
+            logger.w("Any activity which open Web not found.")
+        } else {
+            activity.startActivityForResult(intent, requestCode)
+        }
     }
 
     @MainThread
