@@ -26,6 +26,16 @@
 
     <application>
 
+        <activity android:name=".ui.PayjpVerifierRedirectActivity"
+                android:enabled="false"
+                android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="tds" />
+            </intent-filter>
+        </activity>
         
     </application>
 

@@ -28,6 +28,7 @@ import androidx.annotation.MainThread
 import jp.pay.android.PayjpLogger
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.model.ThreeDSecureToken
+import jp.pay.android.verifier.ui.PayjpVerifierRedirectActivity
 import jp.pay.android.verifier.ui.PayjpVerifyCardResult
 import jp.pay.android.verifier.ui.PayjpVerifyCardResultCallback
 
@@ -68,6 +69,7 @@ object PayjpVerifier {
         if (intent == null) {
             logger.w("Any activity which open Web not found.")
         } else {
+            PayjpVerifierRedirectActivity.setEnabled(activity, true)
             activity.startActivityForResult(intent, requestCode)
         }
     }
