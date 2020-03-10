@@ -23,6 +23,7 @@
 package jp.pay.android.verifier
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import androidx.annotation.MainThread
 import jp.pay.android.PayjpLogger
@@ -75,7 +76,12 @@ object PayjpVerifier {
     }
 
     @MainThread
-    fun handleWebVerifyResult(data: Intent?, callback: PayjpVerifyCardResultCallback) {
+    fun handleWebVerifyResult(
+        context: Context,
+        data: Intent?,
+        callback: PayjpVerifyCardResultCallback
+    ) {
+        PayjpVerifierRedirectActivity.setEnabled(context, false)
         // TODO check deeplink activity
         callback.onResult(PayjpVerifyCardResult.Canceled)
     }

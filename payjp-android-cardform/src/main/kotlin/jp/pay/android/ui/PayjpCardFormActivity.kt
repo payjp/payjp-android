@@ -123,7 +123,7 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        PayjpVerifier.handleWebVerifyResult(data,
+        PayjpVerifier.handleWebVerifyResult(this, data,
             PayjpVerifyCardResultCallback { result ->
                 viewModel?.onCompleteCardVerify(result)
             })
