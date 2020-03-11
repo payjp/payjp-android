@@ -22,6 +22,10 @@
  */
 package jp.pay.android.ui.widget
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.text.InputFilter
 import android.view.View
@@ -30,6 +34,9 @@ import android.widget.EditText
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.transition.TransitionManager
+import com.google.android.material.shape.AbsoluteCornerSize
+import com.google.android.material.shape.MaterialShapeDrawable
+import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.textfield.TextInputLayout
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
@@ -134,6 +141,58 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
             } else {
                 false
             }
+        }
+
+        // display
+
+        val cardDisplayFront = view.findViewById<ViewGroup>(R.id.card_display_front)
+        val cardDisplayBack = view.findViewById<ViewGroup>(R.id.card_display_back)
+
+        // https://developer.android.com/reference/android/view/View#setCameraDistance(float)
+        val defaultDistance = 1280
+        val scale = resources.displayMetrics.density
+        (defaultDistance * scale * 5).let {
+            cardDisplayFront.cameraDistance = it
+            cardDisplayBack.cameraDistance = it
+        }
+
+        val cardBackModel = ShapeAppearanceModel.Builder()
+            .setAllCornerSizes(AbsoluteCornerSize(16f))
+            .build()
+        cardDisplayFront.background = MaterialShapeDrawable(cardBackModel).apply {
+            fillColor = ColorStateList.valueOf(Color.RED)
+            setPadding(12, 12, 12, 12)
+        }
+        cardDisplayBack.background = MaterialShapeDrawable(cardBackModel).apply {
+            fillColor = ColorStateList.valueOf(Color.BLUE)
+            setPadding(12, 12, 12, 12)
+        }
+
+        val flipDuration = 1500L
+        val flipInAlphaIn = ObjectAnimator.ofFloat(cardDisplayBack, "alpha", 0f, 1f).apply {
+            duration = 0
+        }
+        val flipInAlphaOut = ObjectAnimator.ofFloat(cardDisplayBack, "alpha", 1f, 0f).apply {
+            duration = 0
+        }
+        val flipInRotationIn = ObjectAnimator.ofFloat(cardDisplayBack, "rotationY", -180f, 0f).apply {
+            duration = flipDuration
+        }
+        val flipOutAlphaOut = ObjectAnimator.ofFloat(cardDisplayFront, "alpha", 1f, 0f).apply {
+            duration = 0
+        }
+        val flipOutRotationOut = ObjectAnimator.ofFloat(cardDisplayFront, "rotationY", 0f, 180f).apply {
+            duration = flipDuration
+        }
+        val frontToBack = AnimatorSet().apply {
+            play(flipInAlphaOut).with(flipInRotationIn)
+            play(flipInAlphaIn).after(flipInAlphaOut).after(flipDuration / 2)
+            play(flipOutRotationOut).with(flipInAlphaOut)
+            play(flipOutAlphaOut).after(flipInAlphaOut).after(flipDuration / 2)
+        }
+
+        cardDisplayFront.setOnClickListener {
+            frontToBack.start()
         }
     }
 

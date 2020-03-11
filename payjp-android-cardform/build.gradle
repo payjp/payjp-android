@@ -78,6 +78,7 @@ dependencies {
     kapt "androidx.lifecycle:lifecycle-common-java8:$lifecycle"
     implementation "com.google.android.material:material:$material"
     implementation "androidx.constraintlayout:constraintlayout:$constraint"
+    implementation 'com.google.android.gms:play-services-base:17.1.0'
 
     testImplementation project(":common-test")
 }
