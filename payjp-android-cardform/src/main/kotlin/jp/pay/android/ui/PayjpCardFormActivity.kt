@@ -198,7 +198,7 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
 
     private fun addCardFormFragment(acceptedBrands: Array<CardBrand>): PayjpCardFormAbstractFragment? {
         return supportFragmentManager.let { manager ->
-            PayjpCardForm.newFragment(
+            PayjpCardForm.newFragment2(
                 holderNameEnabled = true,
                 tenantId = tenantId,
                 acceptedBrands = acceptedBrands

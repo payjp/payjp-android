@@ -33,8 +33,8 @@ import jp.pay.android.model.TenantId
 import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.ui.PayjpCardFormActivity
 import jp.pay.android.ui.PayjpCardFormResultCallback
-import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
 import jp.pay.android.ui.widget.PayjpCardFormFragment
+import jp.pay.android.ui.widget.PayjpCardFormFragment2
 
 /**
  * Card form client.
@@ -130,6 +130,14 @@ object PayjpCardForm {
         holderNameEnabled: Boolean = true,
         tenantId: TenantId? = null,
         acceptedBrands: Array<CardBrand>? = null
-    ): PayjpCardFormAbstractFragment =
+    ): PayjpCardFormFragment =
         PayjpCardFormFragment.newInstance(holderNameEnabled, tenantId, acceptedBrands)
+
+    @JvmOverloads
+    fun newFragment2(
+        holderNameEnabled: Boolean = true,
+        tenantId: TenantId? = null,
+        acceptedBrands: Array<CardBrand>? = null
+    ): PayjpCardFormFragment2 =
+        PayjpCardFormFragment2.newInstance(holderNameEnabled, tenantId, acceptedBrands)
 }
