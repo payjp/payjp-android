@@ -41,6 +41,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.transition.TransitionManager
 import com.google.android.material.textfield.TextInputLayout
+import java.lang.ref.WeakReference
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
 import jp.pay.android.Task
@@ -58,7 +59,6 @@ import jp.pay.android.validator.CardCvcInputTransformer
 import jp.pay.android.validator.CardExpirationInputTransformer
 import jp.pay.android.validator.CardHolderNameInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformer
-import java.lang.ref.WeakReference
 
 class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
     CardScannerPlugin.CardScanOnResultListener, CardScannerPlugin.CardScannerPermissionDelegate {
