@@ -48,7 +48,7 @@ import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.ui.extension.showWith
 import jp.pay.android.ui.widget.PayjpAcceptedBrandsView
-import jp.pay.android.ui.widget.PayjpCardFormFragment
+import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
 import jp.pay.android.util.nonNull
 import jp.pay.android.verifier.PayjpVerifier
@@ -111,7 +111,7 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
     private val inputMethodManager: InputMethodManager by lazy {
         getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     }
-    private var cardFormFragment: PayjpCardFormFragment? = null
+    private var cardFormFragment: PayjpCardFormAbstractFragment? = null
     private var viewModel: CardFormScreenViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -196,7 +196,7 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
             }
     }
 
-    private fun addCardFormFragment(acceptedBrands: Array<CardBrand>): PayjpCardFormFragment? {
+    private fun addCardFormFragment(acceptedBrands: Array<CardBrand>): PayjpCardFormAbstractFragment? {
         return supportFragmentManager.let { manager ->
             PayjpCardForm.newFragment(
                 holderNameEnabled = true,
@@ -212,9 +212,9 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
         }
     }
 
-    private fun findCardFormFragment(): PayjpCardFormFragment? {
+    private fun findCardFormFragment(): PayjpCardFormAbstractFragment? {
         return supportFragmentManager.let { manager ->
-            (manager.findFragmentByTag(FRAGMENT_CARD_FORM) as? PayjpCardFormFragment)?.also { f ->
+            (manager.findFragmentByTag(FRAGMENT_CARD_FORM) as? PayjpCardFormAbstractFragment)?.also { f ->
                 if (!f.isAdded) {
                     manager
                         .beginTransaction().apply {

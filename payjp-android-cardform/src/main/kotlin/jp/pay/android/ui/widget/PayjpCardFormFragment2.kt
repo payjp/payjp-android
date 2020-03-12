@@ -44,7 +44,7 @@ import jp.pay.android.validator.CardExpirationInputTransformer
 import jp.pay.android.validator.CardHolderNameInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformer
 
-class PayjpCardFormFragment : PayjpCardFormAbstractFragment(R.layout.payjp_card_form_view) {
+class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card_form_view_2) {
 
     companion object {
         private const val ARGS_HOLDER_NAME_ENABLED = "ARGS_HOLDER_NAME_ENABLED"
@@ -64,8 +64,8 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment(R.layout.payjp_card_
             holderNameEnabled: Boolean = true,
             tenantId: TenantId? = null,
             acceptedBrands: Array<CardBrand>? = null
-        ): PayjpCardFormFragment =
-            PayjpCardFormFragment().apply {
+        ): PayjpCardFormFragment2 =
+            PayjpCardFormFragment2().apply {
                 arguments = Bundle().apply {
                     putBoolean(ARGS_HOLDER_NAME_ENABLED, holderNameEnabled)
                     putString(ARGS_TENANT_ID, tenantId?.id)
@@ -175,7 +175,7 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment(R.layout.payjp_card_
                     }
                     cvcImeOptions.observe(viewLifecycleOwner, cvcEditText::setImeOptions)
                     isValid.observe(viewLifecycleOwner) {
-                        onValidateInputListener?.onValidateInput(this@PayjpCardFormFragment, it)
+                        onValidateInputListener?.onValidateInput(this@PayjpCardFormFragment2, it)
                     }
                     cardNumberBrand.observe(viewLifecycleOwner) {
                         cardNumberFormatter.brand = it
@@ -218,7 +218,7 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment(R.layout.payjp_card_
                     expirationEditText.addOnTextChanged { s, _, _, _ -> inputCardExpiration(s.toString()) }
                     cvcEditText.addOnTextChanged { s, _, _, _ -> inputCardCvc(s.toString()) }
                     holderNameEditText.addOnTextChanged { s, _, _, _ -> inputCardHolderName(s.toString()) }
-                    this@PayjpCardFormFragment.lifecycle.addObserver(this)
+                    this@PayjpCardFormFragment2.lifecycle.addObserver(this)
                 }
     }
 }
