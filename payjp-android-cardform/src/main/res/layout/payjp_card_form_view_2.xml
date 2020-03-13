@@ -81,6 +81,27 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_holder_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/payjp_card_form_margin"
+            android:hint="@string/payjp_card_form_holder_name_label">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input_edit_holder_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="name"
+                android:imeOptions="flagNoExtractUi|actionNext"
+                android:inputType="textCapCharacters"
+                android:maxLines="1"
+                android:nextFocusForward="@id/input_edit_cvc"
+                tools:targetApi="o"
+                tools:text="TARO YAMADA" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_cvc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -95,32 +116,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="creditCardSecurityCode"
-                android:imeOptions="flagNoExtractUi|actionNext"
+                android:imeOptions="flagNoExtractUi|actionDone"
                 android:inputType="numberPassword"
                 android:maxLines="1"
-                android:nextFocusForward="@id/input_edit_holder_name"
                 tools:targetApi="o"
                 tools:text="123" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_layout_holder_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/payjp_card_form_margin"
-            android:hint="@string/payjp_card_form_holder_name_label">
-
-        <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_edit_holder_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:autofillHints="name"
-                android:imeOptions="flagNoExtractUi|actionDone"
-                android:inputType="textCapCharacters"
-                android:maxLines="1"
-                tools:targetApi="o"
-                tools:text="TARO YAMADA" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

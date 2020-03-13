@@ -47,27 +47,23 @@ import jp.pay.android.validator.CardNumberInputTransformer
 class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card_form_view_2) {
 
     companion object {
-        private const val ARGS_HOLDER_NAME_ENABLED = "ARGS_HOLDER_NAME_ENABLED"
         private const val ARGS_TENANT_ID = "ARGS_TENANT_ID"
         private const val ARGS_ACCEPTED_BRANDS = "ARGS_ACCEPTED_BRANDS"
 
         /**
          * Create new fragment instance with args
          *
-         * @param holderNameEnabled a option it require card holder name or not.
          * @param tenantId a option for platform tenant.
          * @param acceptedBrands accepted brands. if it is null, the fragment try to get them.
          * @return fragment
          */
         @JvmStatic
         fun newInstance(
-            holderNameEnabled: Boolean = true,
             tenantId: TenantId? = null,
             acceptedBrands: Array<CardBrand>? = null
         ): PayjpCardFormFragment2 =
             PayjpCardFormFragment2().apply {
                 arguments = Bundle().apply {
-                    putBoolean(ARGS_HOLDER_NAME_ENABLED, holderNameEnabled)
                     putString(ARGS_TENANT_ID, tenantId?.id)
                     putParcelableArray(ARGS_ACCEPTED_BRANDS, acceptedBrands)
                 }
@@ -86,7 +82,7 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
 
     private val delimiterExpiration = PayjpCardForm.CARD_FORM_DELIMITER_EXPIRATION
     private val cardNumberFormatter =
-        CardNumberFormatTextWatcher(PayjpCardForm.CARD_FORM_DELIMITER_NUMBER)
+        CardNumberFormatTextWatcher(PayjpCardForm.CARD_FORM_DELIMITER_NUMBER_DISPLAY)
 
     override fun onScanResult(cardNumber: String?) {
         cardNumber?.let(numberEditText::setText)
@@ -94,13 +90,7 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
     }
 
     override fun setCardHolderNameInputEnabled(enabled: Boolean) {
-        if (viewModel == null) {
-            arguments = Bundle(arguments).apply {
-                putBoolean(ARGS_HOLDER_NAME_ENABLED, enabled)
-            }
-        } else {
-            viewModel?.updateCardHolderNameEnabled(enabled)
-        }
+        // no-op
     }
 
     override fun setUpUI(view: ViewGroup) {
@@ -129,20 +119,7 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
             }
         }
         // editor
-        holderNameEditText.setOnEditorActionListener(this::onEditorAction)
-        cvcEditText.setOnEditorActionListener { v, actionId, event ->
-            if (viewModel?.cardHolderNameEnabled?.value == false) {
-                onEditorAction(v, actionId, event)
-            } else {
-                false
-            }
-        }
-
-        // display
-        cardDisplay.setOnClickListener {
-            (it as? PayjpCardDisplayView)?.flipToBack()
-        }
-        numberEditText.addOnTextChanged { s, _, _, _ -> cardDisplay.setCardNumber(s) }
+        cvcEditText.setOnEditorActionListener(this::onEditorAction)
 
         viewModel?.apply {
             cardHolderNameEnabled.observe(viewLifecycleOwner) {
@@ -151,9 +128,8 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
                 } else {
                     View.GONE
                 }
-                TransitionManager.beginDelayedTransition(view as ViewGroup)
+                TransitionManager.beginDelayedTransition(view)
             }
-            cvcImeOptions.observe(viewLifecycleOwner, cvcEditText::setImeOptions)
             cardNumberBrand.observe(viewLifecycleOwner) {
                 cardNumberFormatter.brand = it
                 cvcEditText.filters =
@@ -183,14 +159,26 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
             }
             cardExpirationValid.observe(viewLifecycleOwner) { valid ->
                 if (valid && expirationEditText.hasFocus()) {
-                    cvcEditText.requestFocusFromTouch()
-                }
-            }
-            cardCvcValid.observe(viewLifecycleOwner) { valid ->
-                if (valid && cvcEditText.hasFocus() && holderNameLayout.visibility == View.VISIBLE) {
                     holderNameEditText.requestFocusFromTouch()
                 }
             }
+            // DisplayView
+            cardNumberBrand.observe(viewLifecycleOwner) { brand ->
+                cardDisplay.setBrand(brand)
+            }
+            cardNumberInput.observe(viewLifecycleOwner) { cardNumber ->
+                cardDisplay.setCardNumber(cardNumber.input.orEmpty())
+            }
+            cardExpirationInput.observe(viewLifecycleOwner) { expiration ->
+                cardDisplay.setCardExpiration(expiration.input.orEmpty())
+            }
+            cardHolderNameInput.observe(viewLifecycleOwner) { holderName ->
+                cardDisplay.setCardHolderName(holderName.input.orEmpty())
+            }
+            cardCvcInput.observe(viewLifecycleOwner) { cvc ->
+                cardDisplay.setCardCvcInputLength(cvc.input?.length ?: 0)
+            }
+
             numberEditText.addOnTextChanged { s, _, _, _ -> inputCardNumber(s.toString()) }
             expirationEditText.addOnTextChanged { s, _, _, _ -> inputCardExpiration(s.toString()) }
             cvcEditText.addOnTextChanged { s, _, _, _ -> inputCardCvc(s.toString()) }
@@ -200,7 +188,6 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
 
     override fun createViewModel(): CardFormViewModel {
         val tenantId = arguments?.getString(ARGS_TENANT_ID)?.let { TenantId(it) }
-        val holderNameEnabled = arguments?.getBoolean(ARGS_HOLDER_NAME_ENABLED) ?: true
         val acceptedBrandArray = arguments?.getParcelableArray(ARGS_ACCEPTED_BRANDS)
         val factory = CardFormViewModel.Factory(
             tokenService = checkNotNull(PayjpCardForm.tokenService()) {
@@ -211,7 +198,7 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
             cardCvcInputTransformer = CardCvcInputTransformer(),
             cardHolderNameInputTransformer = CardHolderNameInputTransformer,
             tenantId = tenantId,
-            holderNameEnabledDefault = holderNameEnabled,
+            holderNameEnabledDefault = true,
             acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>()
         )
         return ViewModelProvider(requireActivity(), factory).get(CardFormViewModel::class.java)

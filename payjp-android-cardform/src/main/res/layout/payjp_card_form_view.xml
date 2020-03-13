@@ -29,6 +29,7 @@
         android:importantForAutofill="no"
         android:orientation="vertical"
         tools:theme="@style/Payjp.Theme.CardForm"
+        android:layout_marginTop="20dp"
         tools:targetApi="o">
 
     <com.google.android.material.textfield.TextInputLayout

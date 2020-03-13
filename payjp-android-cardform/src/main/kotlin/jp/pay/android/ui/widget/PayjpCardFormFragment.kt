@@ -143,7 +143,7 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment(R.layout.payjp_card_
                 } else {
                     View.GONE
                 }
-                TransitionManager.beginDelayedTransition(view as ViewGroup)
+                TransitionManager.beginDelayedTransition(view)
             }
             cvcImeOptions.observe(viewLifecycleOwner, cvcEditText::setImeOptions)
             cardNumberBrand.observe(viewLifecycleOwner) {

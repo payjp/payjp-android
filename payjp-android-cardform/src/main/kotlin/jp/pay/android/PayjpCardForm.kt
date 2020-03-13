@@ -42,6 +42,7 @@ import jp.pay.android.ui.widget.PayjpCardFormFragment2
 object PayjpCardForm {
 
     internal const val CARD_FORM_DELIMITER_NUMBER = '-'
+    internal const val CARD_FORM_DELIMITER_NUMBER_DISPLAY = ' '
     internal const val CARD_FORM_DELIMITER_EXPIRATION = '/'
 
     private var cardScannerPlugin: CardScannerPlugin? = null
@@ -139,5 +140,5 @@ object PayjpCardForm {
         tenantId: TenantId? = null,
         acceptedBrands: Array<CardBrand>? = null
     ): PayjpCardFormFragment2 =
-        PayjpCardFormFragment2.newInstance(holderNameEnabled, tenantId, acceptedBrands)
+        PayjpCardFormFragment2.newInstance(tenantId, acceptedBrands)
 }

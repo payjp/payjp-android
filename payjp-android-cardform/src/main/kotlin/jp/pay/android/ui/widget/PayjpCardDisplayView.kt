@@ -39,8 +39,9 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import jp.pay.android.R
 import jp.pay.android.model.CardBrand
+import kotlin.math.min
 
-class PayjpCardDisplayView @JvmOverloads constructor(
+internal class PayjpCardDisplayView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
@@ -93,10 +94,26 @@ class PayjpCardDisplayView @JvmOverloads constructor(
 
     fun setBrand(brand: CardBrand) {
         this.brand = brand
+        // TODO
     }
 
     fun setCardNumber(cardNumber: CharSequence) {
-        this.numberDisplay.text = cardNumber.padEnd(16, 'X')
+        // TODO highlight input character
+        val allMask = "XXXX XXXX XXXX XXXX"
+        this.numberDisplay.text = allMask.replaceRange(0 until min(cardNumber.length, allMask.length), cardNumber)
+    }
+
+    fun setCardExpiration(cardExpiration: CharSequence) {
+        val allMask = "XX/XX"
+        this.expirationDisplay.text = allMask.replaceRange(0 until min(cardExpiration.length, allMask.length), cardExpiration)
+    }
+
+    fun setCardHolderName(cardHolderName: CharSequence) {
+        this.holderDisplay.text = cardHolderName.ifEmpty { "NAME" }
+    }
+
+    fun setCardCvcInputLength(length: Int) {
+        // TODO
     }
 
     private fun createFlipAnimator(front: View, back: View, flipDuration: Long): AnimatorSet {

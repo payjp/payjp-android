@@ -71,9 +71,12 @@ internal class CardFormViewModel(
     acceptedBrandsPreset: List<CardBrand>?
 ) : ViewModel(), CardFormViewModelOutput, CardFormViewModelInput, LifecycleObserver {
 
+    override val cardNumberInput = MutableLiveData<CardNumberInput>()
     override val cardNumberError: LiveData<Int?>
+    override val cardExpirationInput = MutableLiveData<CardExpirationInput>()
     override val cardExpirationError: LiveData<Int?>
     override val cardCvcError: LiveData<Int?>
+    override val cardHolderNameInput = MutableLiveData<CardHolderNameInput>()
     override val cardHolderNameError: LiveData<Int?>
     override val cardHolderNameEnabled = MutableLiveData<Boolean>()
     override val cvcImeOptions: LiveData<Int>
@@ -82,14 +85,10 @@ internal class CardFormViewModel(
     override val isValid: LiveData<Boolean>
     override val cardNumberValid: LiveData<Boolean>
     override val cardExpirationValid: LiveData<Boolean>
+    override val cardCvcInput = MutableLiveData<CardCvcInput>()
     override val cardCvcValid: LiveData<Boolean>
     override val errorFetchAcceptedBrands: MutableLiveData<OneOffValue<Throwable>> = MutableLiveData()
     override val acceptedBrands: MutableLiveData<OneOffValue<List<CardBrand>>> = MutableLiveData()
-
-    private val cardNumberInput = MutableLiveData<CardNumberInput>()
-    private val cardExpirationInput = MutableLiveData<CardExpirationInput>()
-    private val cardCvcInput = MutableLiveData<CardCvcInput>()
-    private val cardHolderNameInput = MutableLiveData<CardHolderNameInput>()
     private val showErrorImmediately = MutableLiveData<Boolean>()
     private var task: Task<CardBrandsAcceptedResponse>? = null
     private val brandObserver: Observer<CardBrand>
