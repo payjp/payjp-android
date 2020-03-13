@@ -34,6 +34,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.observe
 import java.lang.ref.WeakReference
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
@@ -82,14 +83,31 @@ abstract class PayjpCardFormAbstractFragment(layoutId: Int) : Fragment(layoutId)
         super.onDetach()
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = createViewModel().apply {
+            lifecycle.addObserver(this)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpUI(view as ViewGroup)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = createViewModel()
+        viewModel?.apply {
+            acceptedBrands.observe(viewLifecycleOwner) { oneOff ->
+                oneOff.consume {
+                    onFetchAcceptedBrandsListener?.onSuccessFetchAcceptedBrands(it)
+                }
+            }
+            errorFetchAcceptedBrands.observe(viewLifecycleOwner) { oneOff ->
+                oneOff.consume {
+                    onFetchAcceptedBrandsListener?.onErrorFetchAcceptedBrands(it)
+                }
+            }
+            isValid.observe(viewLifecycleOwner) {
+                onValidateInputListener?.onValidateInput(this@PayjpCardFormAbstractFragment, it)
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

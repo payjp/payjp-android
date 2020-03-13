@@ -135,6 +135,59 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment(R.layout.payjp_card_
                 false
             }
         }
+
+        viewModel?.apply {
+            cardHolderNameEnabled.observe(viewLifecycleOwner) {
+                holderNameLayout.visibility = if (it) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
+                TransitionManager.beginDelayedTransition(view as ViewGroup)
+            }
+            cvcImeOptions.observe(viewLifecycleOwner, cvcEditText::setImeOptions)
+            cardNumberBrand.observe(viewLifecycleOwner) {
+                cardNumberFormatter.brand = it
+                cvcEditText.filters =
+                    arrayOf<InputFilter>(InputFilter.LengthFilter(it.cvcLength))
+                cvcLayout.setEndIconDrawable(it.cvcIconResourceId)
+                numberLayout.setStartIconDrawable(it.logoResourceId)
+            }
+            cardExpiration.observe(viewLifecycleOwner) {
+                expirationEditText.expiration = it
+            }
+            cardNumberError.observe(viewLifecycleOwner) { resId ->
+                numberLayout.setErrorOrNull(resId?.let { getString(it) })
+            }
+            cardExpirationError.observe(viewLifecycleOwner) { resId ->
+                expirationLayout.setErrorOrNull(resId?.let { getString(it) })
+            }
+            cardCvcError.observe(viewLifecycleOwner) { resId ->
+                cvcLayout.setErrorOrNull(resId?.let { getString(it) })
+            }
+            cardHolderNameError.observe(viewLifecycleOwner) { resId ->
+                holderNameLayout.setErrorOrNull(resId?.let { getString(it) })
+            }
+            cardNumberValid.observe(viewLifecycleOwner) { valid ->
+                if (valid && numberEditText.hasFocus()) {
+                    expirationEditText.requestFocusFromTouch()
+                }
+            }
+            cardExpirationValid.observe(viewLifecycleOwner) { valid ->
+                if (valid && expirationEditText.hasFocus()) {
+                    cvcEditText.requestFocusFromTouch()
+                }
+            }
+            cardCvcValid.observe(viewLifecycleOwner) { valid ->
+                if (valid && cvcEditText.hasFocus() && holderNameLayout.visibility == View.VISIBLE) {
+                    holderNameEditText.requestFocusFromTouch()
+                }
+            }
+            numberEditText.addOnTextChanged { s, _, _, _ -> inputCardNumber(s.toString()) }
+            expirationEditText.addOnTextChanged { s, _, _, _ -> inputCardExpiration(s.toString()) }
+            cvcEditText.addOnTextChanged { s, _, _, _ -> inputCardCvc(s.toString()) }
+            holderNameEditText.addOnTextChanged { s, _, _, _ -> inputCardHolderName(s.toString()) }
+        }
     }
 
     override fun createViewModel(): CardFormViewModel {
@@ -154,71 +207,5 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment(R.layout.payjp_card_
             acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>()
         )
         return ViewModelProvider(requireActivity(), factory).get(CardFormViewModel::class.java)
-                .apply {
-                    acceptedBrands.observe(viewLifecycleOwner) { oneOff ->
-                        oneOff.consume {
-                            onFetchAcceptedBrandsListener?.onSuccessFetchAcceptedBrands(it)
-                        }
-                    }
-                    errorFetchAcceptedBrands.observe(viewLifecycleOwner) { oneOff ->
-                        oneOff.consume {
-                            onFetchAcceptedBrandsListener?.onErrorFetchAcceptedBrands(it)
-                        }
-                    }
-                    cardHolderNameEnabled.observe(viewLifecycleOwner) {
-                        holderNameLayout.visibility = if (it) {
-                            View.VISIBLE
-                        } else {
-                            View.GONE
-                        }
-                        TransitionManager.beginDelayedTransition(view as ViewGroup)
-                    }
-                    cvcImeOptions.observe(viewLifecycleOwner, cvcEditText::setImeOptions)
-                    isValid.observe(viewLifecycleOwner) {
-                        onValidateInputListener?.onValidateInput(this@PayjpCardFormFragment, it)
-                    }
-                    cardNumberBrand.observe(viewLifecycleOwner) {
-                        cardNumberFormatter.brand = it
-                        cvcEditText.filters =
-                            arrayOf<InputFilter>(InputFilter.LengthFilter(it.cvcLength))
-                        cvcLayout.setEndIconDrawable(it.cvcIconResourceId)
-                        numberLayout.setStartIconDrawable(it.logoResourceId)
-                    }
-                    cardExpiration.observe(viewLifecycleOwner) {
-                        expirationEditText.expiration = it
-                    }
-                    cardNumberError.observe(viewLifecycleOwner) { resId ->
-                        numberLayout.setErrorOrNull(resId?.let { getString(it) })
-                    }
-                    cardExpirationError.observe(viewLifecycleOwner) { resId ->
-                        expirationLayout.setErrorOrNull(resId?.let { getString(it) })
-                    }
-                    cardCvcError.observe(viewLifecycleOwner) { resId ->
-                        cvcLayout.setErrorOrNull(resId?.let { getString(it) })
-                    }
-                    cardHolderNameError.observe(viewLifecycleOwner) { resId ->
-                        holderNameLayout.setErrorOrNull(resId?.let { getString(it) })
-                    }
-                    cardNumberValid.observe(viewLifecycleOwner) { valid ->
-                        if (valid && numberEditText.hasFocus()) {
-                            expirationEditText.requestFocusFromTouch()
-                        }
-                    }
-                    cardExpirationValid.observe(viewLifecycleOwner) { valid ->
-                        if (valid && expirationEditText.hasFocus()) {
-                            cvcEditText.requestFocusFromTouch()
-                        }
-                    }
-                    cardCvcValid.observe(viewLifecycleOwner) { valid ->
-                        if (valid && cvcEditText.hasFocus() && holderNameLayout.visibility == View.VISIBLE) {
-                            holderNameEditText.requestFocusFromTouch()
-                        }
-                    }
-                    numberEditText.addOnTextChanged { s, _, _, _ -> inputCardNumber(s.toString()) }
-                    expirationEditText.addOnTextChanged { s, _, _, _ -> inputCardExpiration(s.toString()) }
-                    cvcEditText.addOnTextChanged { s, _, _, _ -> inputCardCvc(s.toString()) }
-                    holderNameEditText.addOnTextChanged { s, _, _, _ -> inputCardHolderName(s.toString()) }
-                    this@PayjpCardFormFragment.lifecycle.addObserver(this)
-                }
     }
 }
