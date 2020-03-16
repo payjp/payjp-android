@@ -32,13 +32,15 @@ import androidx.activity.ComponentActivity
 import com.google.android.material.textfield.TextInputLayout
 import jp.pay.android.ui.widget.DialogHolder
 
+internal typealias TextViewOnTextChanged = ((s: CharSequence, start: Int, before: Int, count: Int) -> Unit)
+
 internal fun TextInputLayout.setErrorOrNull(error: CharSequence?) {
     this.isErrorEnabled = error.isNullOrEmpty().not()
     this.error = error
 }
 
 internal fun TextView.addOnTextChanged(
-    onTextChanged: ((s: CharSequence, start: Int, before: Int, count: Int) -> Unit)?
+    onTextChanged: TextViewOnTextChanged?
 ) {
     addTextChangedListener(object : TextWatcher {
         override fun afterTextChanged(s: Editable) = Unit

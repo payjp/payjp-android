@@ -47,4 +47,5 @@ internal interface CardFormViewModelOutput {
     val cardCvcValid: LiveData<Boolean>
     val errorFetchAcceptedBrands: LiveData<OneOffValue<Throwable>>
     val acceptedBrands: LiveData<OneOffValue<List<CardBrand>>>
+    val showErrorImmediately: LiveData<Boolean>
 }

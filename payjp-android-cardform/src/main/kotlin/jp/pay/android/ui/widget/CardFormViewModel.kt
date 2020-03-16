@@ -89,7 +89,7 @@ internal class CardFormViewModel(
     override val cardCvcValid: LiveData<Boolean>
     override val errorFetchAcceptedBrands: MutableLiveData<OneOffValue<Throwable>> = MutableLiveData()
     override val acceptedBrands: MutableLiveData<OneOffValue<List<CardBrand>>> = MutableLiveData()
-    private val showErrorImmediately = MutableLiveData<Boolean>()
+    override val showErrorImmediately = MutableLiveData<Boolean>()
     private var task: Task<CardBrandsAcceptedResponse>? = null
     private val brandObserver: Observer<CardBrand>
 

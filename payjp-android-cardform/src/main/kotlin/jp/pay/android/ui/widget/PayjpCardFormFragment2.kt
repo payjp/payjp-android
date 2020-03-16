@@ -23,22 +23,17 @@
 package jp.pay.android.ui.widget
 
 import android.os.Bundle
-import android.text.InputFilter
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
+import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
-import androidx.transition.TransitionManager
-import com.google.android.material.textfield.TextInputLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.TenantId
-import jp.pay.android.ui.extension.addOnTextChanged
-import jp.pay.android.ui.extension.cvcIconResourceId
-import jp.pay.android.ui.extension.logoResourceId
-import jp.pay.android.ui.extension.setErrorOrNull
 import jp.pay.android.validator.CardCvcInputTransformer
 import jp.pay.android.validator.CardExpirationInputTransformer
 import jp.pay.android.validator.CardHolderNameInputTransformer
@@ -70,23 +65,16 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
             }
     }
 
-    private lateinit var numberLayout: TextInputLayout
-    private lateinit var expirationLayout: TextInputLayout
-    private lateinit var cvcLayout: TextInputLayout
-    private lateinit var holderNameLayout: TextInputLayout
-    private lateinit var numberEditText: EditText
-    private lateinit var expirationEditText: CardExpirationEditText
-    private lateinit var cvcEditText: EditText
-    private lateinit var holderNameEditText: EditText
+    private lateinit var formElementsView: RecyclerView
     private lateinit var cardDisplay: PayjpCardDisplayView
+    private lateinit var adapter: CardFormElementAdapter
 
     private val delimiterExpiration = PayjpCardForm.CARD_FORM_DELIMITER_EXPIRATION
-    private val cardNumberFormatter =
-        CardNumberFormatTextWatcher(PayjpCardForm.CARD_FORM_DELIMITER_NUMBER_DISPLAY)
 
     override fun onScanResult(cardNumber: String?) {
-        cardNumber?.let(numberEditText::setText)
-        expirationEditText.requestFocusFromTouch()
+        cardNumber?.let { number ->
+            viewModel?.inputCardNumber(number)
+        }
     }
 
     override fun setCardHolderNameInputEnabled(enabled: Boolean) {
@@ -94,73 +82,52 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
     }
 
     override fun setUpUI(view: ViewGroup) {
-        numberLayout = view.findViewById(R.id.input_layout_number)
-        numberEditText = view.findViewById(R.id.input_edit_number)
-        expirationLayout = view.findViewById(R.id.input_layout_expiration)
-        expirationEditText = view.findViewById(R.id.input_edit_expiration)
-        cvcLayout = view.findViewById(R.id.input_layout_cvc)
-        cvcEditText = view.findViewById(R.id.input_edit_cvc)
-        holderNameLayout = view.findViewById(R.id.input_layout_holder_name)
-        holderNameEditText = view.findViewById(R.id.input_edit_holder_name)
+        formElementsView = view.findViewById(R.id.form_element_recycler_view)
         cardDisplay = view.findViewById(R.id.card_display)
 
-        // add formatter
-        numberEditText.addTextChangedListener(cardNumberFormatter)
-        expirationEditText.addTextChangedListener(
-            CardExpirationFormatTextWatcher(delimiterExpiration)
+        adapter = CardFormElementAdapter(
+            cardNumberFormatter = CardNumberFormatTextWatcher(PayjpCardForm.CARD_FORM_DELIMITER_NUMBER_DISPLAY),
+            cardExpirationFormatter = CardExpirationFormatTextWatcher(delimiterExpiration),
+            scannerPlugin = PayjpCardForm.cardScannerPlugin(),
+            onClickScannerIcon = View.OnClickListener {
+                PayjpCardForm.cardScannerPlugin()?.startScanActivity(this)
+            },
+            onCvcEditorActionListener = TextView.OnEditorActionListener { v, actionId, event ->
+                onEditorAction(v, actionId, event)
+            },
+            onTextChangedNumber = { s, _, _, _ -> viewModel?.inputCardNumber(s.toString()) },
+            onTextChangedExpiration = { s, _, _, _ -> viewModel?.inputCardExpiration(s.toString()) },
+            onTextChangedHolderName = { s, _, _, _ -> viewModel?.inputCardHolderName(s.toString()) },
+            onTextChangedCvc = { s, _, _, _ -> viewModel?.inputCardCvc(s.toString()) }
         )
-        // default cvc length
-        cvcEditText.filters =
-            arrayOf<InputFilter>(InputFilter.LengthFilter(CardBrand.UNKNOWN.cvcLength))
-        PayjpCardForm.cardScannerPlugin()?.let { bridge ->
-            numberLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
-            numberLayout.setEndIconOnClickListener {
-                bridge.startScanActivity(this)
-            }
-        }
-        // editor
-        cvcEditText.setOnEditorActionListener(this::onEditorAction)
+        formElementsView.adapter = adapter
+        formElementsView.layoutManager = LinearLayoutManager(requireContext())
+        formElementsView.itemAnimator = null
 
         viewModel?.apply {
-            cardHolderNameEnabled.observe(viewLifecycleOwner) {
-                holderNameLayout.visibility = if (it) {
-                    View.VISIBLE
-                } else {
-                    View.GONE
-                }
-                TransitionManager.beginDelayedTransition(view)
+            // value
+            cardNumberInput.observe(viewLifecycleOwner) { cardNumber ->
+                adapter.cardNumberInput = cardNumber
+                adapter.notifyDataSetChanged()
             }
-            cardNumberBrand.observe(viewLifecycleOwner) {
-                cardNumberFormatter.brand = it
-                cvcEditText.filters =
-                    arrayOf<InputFilter>(InputFilter.LengthFilter(it.cvcLength))
-                cvcLayout.setEndIconDrawable(it.cvcIconResourceId)
-                numberLayout.setStartIconDrawable(it.logoResourceId)
+            cardExpirationInput.observe(viewLifecycleOwner) { expiration ->
+                adapter.cardExpirationInput = expiration
+                adapter.notifyDataSetChanged()
             }
-            cardExpiration.observe(viewLifecycleOwner) {
-                expirationEditText.expiration = it
+            cardHolderNameInput.observe(viewLifecycleOwner) { holderName ->
+                adapter.cardHolderNameInput = holderName
+                adapter.notifyDataSetChanged()
             }
-            cardNumberError.observe(viewLifecycleOwner) { resId ->
-                numberLayout.setErrorOrNull(resId?.let { getString(it) })
+            cardCvcInput.observe(viewLifecycleOwner) { cvc ->
+                adapter.cardCvcInput = cvc
+                adapter.notifyDataSetChanged()
             }
-            cardExpirationError.observe(viewLifecycleOwner) { resId ->
-                expirationLayout.setErrorOrNull(resId?.let { getString(it) })
+            cardNumberBrand.observe(viewLifecycleOwner) { brand ->
+                adapter.brand = brand
+                adapter.notifyDataSetChanged()
             }
-            cardCvcError.observe(viewLifecycleOwner) { resId ->
-                cvcLayout.setErrorOrNull(resId?.let { getString(it) })
-            }
-            cardHolderNameError.observe(viewLifecycleOwner) { resId ->
-                holderNameLayout.setErrorOrNull(resId?.let { getString(it) })
-            }
-            cardNumberValid.observe(viewLifecycleOwner) { valid ->
-                if (valid && numberEditText.hasFocus()) {
-                    expirationEditText.requestFocusFromTouch()
-                }
-            }
-            cardExpirationValid.observe(viewLifecycleOwner) { valid ->
-                if (valid && expirationEditText.hasFocus()) {
-                    holderNameEditText.requestFocusFromTouch()
-                }
+            showErrorImmediately.observe(viewLifecycleOwner) {
+                adapter.showErrorImmediately = it
             }
             // DisplayView
             cardNumberBrand.observe(viewLifecycleOwner) { brand ->
@@ -178,11 +145,6 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
             cardCvcInput.observe(viewLifecycleOwner) { cvc ->
                 cardDisplay.setCardCvcInputLength(cvc.input?.length ?: 0)
             }
-
-            numberEditText.addOnTextChanged { s, _, _, _ -> inputCardNumber(s.toString()) }
-            expirationEditText.addOnTextChanged { s, _, _, _ -> inputCardExpiration(s.toString()) }
-            cvcEditText.addOnTextChanged { s, _, _, _ -> inputCardCvc(s.toString()) }
-            holderNameEditText.addOnTextChanged { s, _, _, _ -> inputCardHolderName(s.toString()) }
         }
     }
 

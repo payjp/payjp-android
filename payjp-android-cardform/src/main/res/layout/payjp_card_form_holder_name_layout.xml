@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~
-  ~ Copyright (c) 2019 PAY, Inc.
+  ~ Copyright (c) 2020 PAY, Inc.
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -21,24 +22,29 @@
   ~ SOFTWARE.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:importantForAutofill="no"
-        android:orientation="vertical"
-        tools:theme="@style/Payjp.Theme.CardForm"
-        tools:targetApi="o">
+        xmlns:tools="http://schemas.android.com/tools">
 
-    <jp.pay.android.ui.widget.PayjpCardDisplayView
-            android:id="@+id/card_display"
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_holder_name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/payjp_card_form_margin"
+            android:hint="@string/payjp_card_form_holder_name_label">
 
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/form_element_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input_edit_holder_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="name"
+                android:imeOptions="flagNoExtractUi|actionNext"
+                android:inputType="textCapCharacters"
+                android:maxLines="1"
+                tools:targetApi="o"
+                tools:text="TARO YAMADA" />
 
-</LinearLayout>
+    </com.google.android.material.textfield.TextInputLayout>
+
+</FrameLayout>
