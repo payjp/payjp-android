@@ -24,14 +24,15 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/payjp_card_form_element_margin"
+        android:layout_marginRight="@dimen/payjp_card_form_element_margin"
         xmlns:tools="http://schemas.android.com/tools">
 
     <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_holder_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/payjp_card_form_margin"
             android:hint="@string/payjp_card_form_holder_name_label">
 
         <com.google.android.material.textfield.TextInputEditText

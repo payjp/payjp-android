@@ -23,13 +23,16 @@
 package jp.pay.android.ui.widget
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.CompositePageTransformer
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.textfield.TextInputEditText
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
 import jp.pay.android.model.CardBrand
@@ -38,6 +41,7 @@ import jp.pay.android.validator.CardCvcInputTransformer
 import jp.pay.android.validator.CardExpirationInputTransformer
 import jp.pay.android.validator.CardHolderNameInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformer
+import kotlin.math.abs
 
 class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card_form_view_2) {
 
@@ -65,7 +69,7 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
             }
     }
 
-    private lateinit var formElementsView: RecyclerView
+    private lateinit var formElementsPager: ViewPager2
     private lateinit var cardDisplay: PayjpCardDisplayView
     private lateinit var adapter: CardFormElementAdapter
 
@@ -82,7 +86,7 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
     }
 
     override fun setUpUI(view: ViewGroup) {
-        formElementsView = view.findViewById(R.id.form_element_recycler_view)
+        formElementsPager = view.findViewById(R.id.form_element_pager)
         cardDisplay = view.findViewById(R.id.card_display)
 
         adapter = CardFormElementAdapter(
@@ -92,7 +96,19 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
             onClickScannerIcon = View.OnClickListener {
                 PayjpCardForm.cardScannerPlugin()?.startScanActivity(this)
             },
-            onCvcEditorActionListener = TextView.OnEditorActionListener { v, actionId, event ->
+            onEditorActionListenerNumber = OnEditorNextActionListener(
+                formElementsPager,
+                CardFormElementAdapter.ITEM_EXPIRATION_ELEMENT
+            ),
+            onEditorActionListenerExpiration = OnEditorNextActionListener(
+                formElementsPager,
+                CardFormElementAdapter.ITEM_HOLDER_NAME_ELEMENT
+            ),
+            onEditorActionListenerHolderName = OnEditorNextActionListener(
+                formElementsPager,
+                CardFormElementAdapter.ITEM_CVC_ELEMENT
+            ),
+            onEditorActionListenerCvc = TextView.OnEditorActionListener { v, actionId, event ->
                 onEditorAction(v, actionId, event)
             },
             onTextChangedNumber = { s, _, _, _ -> viewModel?.inputCardNumber(s.toString()) },
@@ -100,9 +116,37 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
             onTextChangedHolderName = { s, _, _, _ -> viewModel?.inputCardHolderName(s.toString()) },
             onTextChangedCvc = { s, _, _, _ -> viewModel?.inputCardCvc(s.toString()) }
         )
-        formElementsView.adapter = adapter
-        formElementsView.layoutManager = LinearLayoutManager(requireContext())
-        formElementsView.itemAnimator = null
+        formElementsPager.adapter = adapter
+        formElementsPager.offscreenPageLimit = 2
+        formElementsPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                val item = (formElementsPager.getChildAt(0) as? ViewGroup)?.getChildAt(position)
+                formElementsPager.post {
+                    // TODO: fix hard code
+                    val id = when (position) {
+                        CardFormElementAdapter.ITEM_NUMBER_ELEMENT -> R.id.input_edit_number
+                        CardFormElementAdapter.ITEM_EXPIRATION_ELEMENT -> R.id.input_edit_expiration
+                        CardFormElementAdapter.ITEM_HOLDER_NAME_ELEMENT -> R.id.input_edit_holder_name
+                        CardFormElementAdapter.ITEM_CVC_ELEMENT -> R.id.input_edit_cvc
+                        else -> View.NO_ID
+                    }
+                    item?.findViewById<TextInputEditText>(id)?.requestFocusFromTouch()
+                }
+            }
+        })
+
+        val pagerMargin = resources.getDimensionPixelOffset(R.dimen.payjp_card_form_pager_margin)
+        val offset = resources.getDimensionPixelOffset(R.dimen.payjp_card_form_element_offset)
+        formElementsPager.setPageTransformer(CompositePageTransformer().apply {
+            addTransformer { page, position ->
+                page.translationX = position * (2 * offset + pagerMargin) * -1
+            }
+            addTransformer { page, position ->
+                val scale = 1 - (abs(position) / 6)
+                page.scaleX = scale
+                page.scaleY = scale
+            }
+        })
 
         viewModel?.apply {
             // value
@@ -164,5 +208,18 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
             acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>()
         )
         return ViewModelProvider(requireActivity(), factory).get(CardFormViewModel::class.java)
+    }
+
+    private class OnEditorNextActionListener(val pager: ViewPager2, val nextItem: Int) :
+        TextView.OnEditorActionListener {
+        override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+            return when (actionId) {
+                EditorInfo.IME_ACTION_NEXT -> {
+                    pager.setCurrentItem(nextItem, true)
+                    true
+                }
+                else -> false
+            }
+        }
     }
 }

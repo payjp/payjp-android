@@ -41,7 +41,10 @@ internal class CardFormElementAdapter(
     private val cardExpirationFormatter: TextWatcher,
     private val scannerPlugin: CardScannerPlugin?,
     private val onClickScannerIcon: View.OnClickListener?,
-    private val onCvcEditorActionListener: TextView.OnEditorActionListener,
+    private val onEditorActionListenerNumber: TextView.OnEditorActionListener,
+    private val onEditorActionListenerExpiration: TextView.OnEditorActionListener,
+    private val onEditorActionListenerHolderName: TextView.OnEditorActionListener,
+    private val onEditorActionListenerCvc: TextView.OnEditorActionListener,
     private val onTextChangedNumber: TextViewOnTextChanged? = null,
     private val onTextChangedExpiration: TextViewOnTextChanged? = null,
     private val onTextChangedHolderName: TextViewOnTextChanged? = null,
@@ -76,18 +79,24 @@ internal class CardFormElementAdapter(
                 onTextChangedNumber,
                 cardNumberFormatter,
                 scannerPlugin,
-                onClickScannerIcon
+                onClickScannerIcon,
+                onEditorActionListenerNumber
             )
             ITEM_EXPIRATION_ELEMENT -> CardFormExpirationElement(
                 parent,
                 onTextChangedExpiration,
-                cardExpirationFormatter
+                cardExpirationFormatter,
+                onEditorActionListenerExpiration
             )
-            ITEM_HOLDER_NAME_ELEMENT -> CardFormHolderNameElement(parent, onTextChangedHolderName)
+            ITEM_HOLDER_NAME_ELEMENT -> CardFormHolderNameElement(
+                parent,
+                onTextChangedHolderName,
+                onEditorActionListenerHolderName
+            )
             ITEM_CVC_ELEMENT -> CardFormCvcElement(
                 parent,
                 onTextChangedCvc,
-                onCvcEditorActionListener
+                onEditorActionListenerCvc
             )
             else -> throw IllegalArgumentException("Unexpected viewType $viewType")
         }
@@ -96,8 +105,14 @@ internal class CardFormElementAdapter(
     override fun onBindViewHolder(holder: CardFormElementViewHolder, position: Int) {
         when (holder) {
             is CardFormNumberElement -> holder.bindData(cardNumberInput, showErrorImmediately)
-            is CardFormExpirationElement -> holder.bindData(cardExpirationInput, showErrorImmediately)
-            is CardFormHolderNameElement -> holder.bindData(cardHolderNameInput, showErrorImmediately)
+            is CardFormExpirationElement -> holder.bindData(
+                cardExpirationInput,
+                showErrorImmediately
+            )
+            is CardFormHolderNameElement -> holder.bindData(
+                cardHolderNameInput,
+                showErrorImmediately
+            )
             is CardFormCvcElement -> holder.bindData(cardCvcInput, brand, showErrorImmediately)
         }
     }

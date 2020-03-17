@@ -86,7 +86,8 @@ internal sealed class CardFormElementViewHolder(
         textViewOnTextChanged: TextViewOnTextChanged?,
         private val cardNumberFormatter: CardNumberFormatTextWatcher,
         scannerPlugin: CardScannerPlugin?,
-        onClickScannerIcon: View.OnClickListener?
+        onClickScannerIcon: View.OnClickListener?,
+        onEditorActionListener: TextView.OnEditorActionListener
     ) :
         CardFormElementViewHolder(
             parent,
@@ -107,6 +108,7 @@ internal sealed class CardFormElementViewHolder(
 
         init {
             editText.addTextChangedListener(cardNumberFormatter)
+            editText.setOnEditorActionListener(onEditorActionListener)
             scannerPlugin?.run {
                 inputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
                 onClickScannerIcon?.let {
@@ -125,7 +127,8 @@ internal sealed class CardFormElementViewHolder(
     class CardFormExpirationElement(
         parent: ViewGroup,
         textViewOnTextChanged: TextViewOnTextChanged?,
-        expirationFormatter: TextWatcher
+        expirationFormatter: TextWatcher,
+        onEditorActionListener: TextView.OnEditorActionListener
     ) :
         CardFormElementViewHolder(
             parent, R.layout.payjp_card_form_expiration_layout,
@@ -136,6 +139,7 @@ internal sealed class CardFormElementViewHolder(
 
         init {
             editText.addTextChangedListener(expirationFormatter)
+            editText.setOnEditorActionListener(onEditorActionListener)
         }
 
         fun bindData(
@@ -150,7 +154,8 @@ internal sealed class CardFormElementViewHolder(
 
     class CardFormHolderNameElement(
         parent: ViewGroup,
-        textViewOnTextChanged: TextViewOnTextChanged?
+        textViewOnTextChanged: TextViewOnTextChanged?,
+        onEditorActionListener: TextView.OnEditorActionListener
     ) :
         CardFormElementViewHolder(
             parent,
@@ -159,6 +164,10 @@ internal sealed class CardFormElementViewHolder(
             R.id.input_edit_holder_name,
             textViewOnTextChanged
         ) {
+
+        init {
+            editText.setOnEditorActionListener(onEditorActionListener)
+        }
 
         fun bindData(
             input: CardComponentInput.CardHolderNameInput?,
