@@ -25,7 +25,7 @@
 <resources>
     <dimen name="payjp_card_form_margin">16dp</dimen>
     <dimen name="payjp_card_form_submit_button_minheight">60dp</dimen>
-    <dimen name="payjp_card_form_element_offset">32dp</dimen>
-    <dimen name="payjp_card_form_pager_margin">8dp</dimen>
-    <dimen name="payjp_card_form_element_margin">40dp</dimen>
+    <dimen name="payjp_card_form_element_offset">48dp</dimen>
+    <dimen name="payjp_card_form_pager_margin">4dp</dimen>
+    <dimen name="payjp_card_form_element_margin">52dp</dimen>
 </resources>

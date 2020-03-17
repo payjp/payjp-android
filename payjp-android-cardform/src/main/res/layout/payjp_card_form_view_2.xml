@@ -39,6 +39,7 @@
             android:id="@+id/form_element_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="16dp"
             android:orientation="horizontal"/>
 
 </LinearLayout>

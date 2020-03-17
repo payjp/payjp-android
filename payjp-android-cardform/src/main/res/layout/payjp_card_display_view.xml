@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~
   ~ Copyright (c) 2020 PAY, Inc.
   ~
@@ -25,76 +24,136 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:clipToPadding="false"
-        android:layout_width="300dp"
-        android:layout_height="210dp"
+        android:layout_width="220dp"
+        android:layout_height="150dp"
         android:layout_gravity="center_horizontal"
-        android:padding="20dp"
+        android:clipToPadding="false"
+        android:padding="12dp"
         android:theme="@style/Payjp.Theme.CardForm.Display">
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/card_display_back"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:elevation="8dp"
+            tools:background="@color/payjp_card_display_background"
             tools:targetApi="lollipop">
 
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ura"
-                android:layout_gravity="center" />
+        <View
+                android:id="@+id/display_magnetic"
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="20dp"
+                android:background="#2b2b2b"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    </FrameLayout>
+        <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="52dp"
+                android:background="#fff"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/display_magnetic">
+
+            <TextView
+                    android:id="@+id/display_cvc_default"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:minWidth="24dp"
+                    android:layout_marginEnd="8dp"
+                    android:textSize="12sp"
+                    tools:text="•••" />
+
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/card_display_front"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:background="#ccc"
+            android:elevation="8dp"
+            tools:background="@color/payjp_card_display_background"
             tools:targetApi="lollipop">
 
         <TextView
                 android:id="@+id/display_pan"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:text="XXXX XXXX XXXX XXXX"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0"
+                android:layout_margin="12dp"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:textSize="18sp" />
+                android:text="XXXX XXXX XXXX XXXX"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
                 android:id="@+id/display_expiration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:text="XX/XX"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/display_holder"
-                app:layout_constraintHorizontal_bias="1"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="12dp"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:textSize="16sp" />
+                android:text="XX/XX"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1"
+                app:layout_constraintStart_toEndOf="@id/display_holder" />
 
         <TextView
                 android:id="@+id/display_holder"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:text="NAME"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/display_expiration"
-                app:layout_constraintHorizontal_bias="0"
+                android:layout_marginStart="12dp"
+                android:layout_marginBottom="12dp"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:textSize="16sp" />
+                android:text="NAME"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/display_expiration"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+                android:id="@+id/display_cvc_amex"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@id/display_pan"
+                app:layout_constraintEnd_toEndOf="@id/display_pan"
+                android:layout_marginBottom="4dp"
+                android:layout_marginEnd="12dp"
+                android:minWidth="30dp"
+                android:textSize="12sp"
+                android:visibility="invisible"
+                tools:text="••••" />
+
+        <ImageView
+                android:id="@+id/display_brand_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/display_pan"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                tools:src="@drawable/logo_visa"
+                app:layout_constraintHorizontal_bias="0"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

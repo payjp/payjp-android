@@ -44,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="creditCardSecurityCode"
-                android:imeOptions="flagNoExtractUi|actionDone"
+                android:imeOptions="flagNoExtractUi|actionNext"
                 android:inputType="numberPassword"
                 android:maxLines="1"
                 tools:targetApi="o"

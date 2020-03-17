@@ -40,8 +40,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="name"
-                android:imeOptions="flagNoExtractUi|actionNext"
-                android:inputType="textCapCharacters"
+                android:imeOptions="flagNoExtractUi|actionDone|flagNoAccessoryAction"
+                android:inputType="textVisiblePassword"
                 android:maxLines="1"
                 tools:targetApi="o"
                 tools:text="TARO YAMADA" />

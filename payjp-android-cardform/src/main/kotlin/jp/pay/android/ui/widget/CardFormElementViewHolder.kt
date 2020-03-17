@@ -25,6 +25,7 @@ package jp.pay.android.ui.widget
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,17 +37,23 @@ import jp.pay.android.R
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput
 import jp.pay.android.plugin.CardScannerPlugin
-import jp.pay.android.ui.extension.TextViewOnTextChanged
 import jp.pay.android.ui.extension.cvcIconResourceId
 import jp.pay.android.ui.extension.logoResourceId
 import jp.pay.android.ui.extension.setErrorOrNull
 
+internal typealias OnCardFormElementTextChanged = (type: CardFormElementType, s: CharSequence, start: Int, before: Int, count: Int) -> Unit
+internal typealias OnCardFormElementEditorAction = (type: CardFormElementType, v: TextView, actionId: Int, event: KeyEvent?) -> Boolean
+internal typealias OnCardFormElementFocusChanged = (type: CardFormElementType, view: View, hasFocus: Boolean) -> Unit
+
 internal sealed class CardFormElementViewHolder(
+    type: CardFormElementType,
     parent: ViewGroup,
     layoutId: Int,
     inputLayoutId: Int,
     inputEditTextId: Int,
-    private val textViewOnTextChanged: TextViewOnTextChanged?
+    onTextChanged: OnCardFormElementTextChanged,
+    onEditorAction: OnCardFormElementEditorAction,
+    onFocusChanged: OnCardFormElementFocusChanged
 ) : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(layoutId, parent, false)) {
 
     private val inputTextWatcher = object : TextWatcher {
@@ -55,7 +62,7 @@ internal sealed class CardFormElementViewHolder(
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            textViewOnTextChanged?.invoke(s, start, before, count)
+            onTextChanged.invoke(type, s, start, before, count)
         }
     }
     protected val inputLayout: TextInputLayout = itemView.findViewById(inputLayoutId)
@@ -63,6 +70,12 @@ internal sealed class CardFormElementViewHolder(
 
     init {
         editText.addTextChangedListener(inputTextWatcher)
+        editText.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+            onFocusChanged.invoke(type, v, hasFocus)
+        }
+        editText.setOnEditorActionListener { v, actionId, event ->
+            onEditorAction.invoke(type, v, actionId, event)
+        }
     }
 
     protected fun setTextDisablingInputWatcher(input: CardComponentInput<*>?) {
@@ -83,18 +96,22 @@ internal sealed class CardFormElementViewHolder(
 
     class CardFormNumberElement(
         parent: ViewGroup,
-        textViewOnTextChanged: TextViewOnTextChanged?,
         private val cardNumberFormatter: CardNumberFormatTextWatcher,
         scannerPlugin: CardScannerPlugin?,
         onClickScannerIcon: View.OnClickListener?,
-        onEditorActionListener: TextView.OnEditorActionListener
+        onTextChanged: OnCardFormElementTextChanged,
+        onEditorAction: OnCardFormElementEditorAction,
+        onFocusChanged: OnCardFormElementFocusChanged
     ) :
         CardFormElementViewHolder(
+            CardFormElementType.Number,
             parent,
             R.layout.payjp_card_form_number_layout,
             R.id.input_layout_number,
             R.id.input_edit_number,
-            textViewOnTextChanged
+            onTextChanged,
+            onEditorAction,
+            onFocusChanged
         ) {
 
         private var brand: CardBrand = CardBrand.UNKNOWN
@@ -108,7 +125,6 @@ internal sealed class CardFormElementViewHolder(
 
         init {
             editText.addTextChangedListener(cardNumberFormatter)
-            editText.setOnEditorActionListener(onEditorActionListener)
             scannerPlugin?.run {
                 inputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
                 onClickScannerIcon?.let {
@@ -126,20 +142,23 @@ internal sealed class CardFormElementViewHolder(
 
     class CardFormExpirationElement(
         parent: ViewGroup,
-        textViewOnTextChanged: TextViewOnTextChanged?,
         expirationFormatter: TextWatcher,
-        onEditorActionListener: TextView.OnEditorActionListener
+        onTextChanged: OnCardFormElementTextChanged,
+        onEditorAction: OnCardFormElementEditorAction,
+        onFocusChanged: OnCardFormElementFocusChanged
     ) :
         CardFormElementViewHolder(
+            CardFormElementType.Expiration,
             parent, R.layout.payjp_card_form_expiration_layout,
             R.id.input_layout_expiration,
             R.id.input_edit_expiration,
-            textViewOnTextChanged
+            onTextChanged,
+            onEditorAction,
+            onFocusChanged
         ) {
 
         init {
             editText.addTextChangedListener(expirationFormatter)
-            editText.setOnEditorActionListener(onEditorActionListener)
         }
 
         fun bindData(
@@ -154,20 +173,20 @@ internal sealed class CardFormElementViewHolder(
 
     class CardFormHolderNameElement(
         parent: ViewGroup,
-        textViewOnTextChanged: TextViewOnTextChanged?,
-        onEditorActionListener: TextView.OnEditorActionListener
+        onTextChanged: OnCardFormElementTextChanged,
+        onEditorAction: OnCardFormElementEditorAction,
+        onFocusChanged: OnCardFormElementFocusChanged
     ) :
         CardFormElementViewHolder(
+            CardFormElementType.HolderName,
             parent,
             R.layout.payjp_card_form_holder_name_layout,
             R.id.input_layout_holder_name,
             R.id.input_edit_holder_name,
-            textViewOnTextChanged
+            onTextChanged,
+            onEditorAction,
+            onFocusChanged
         ) {
-
-        init {
-            editText.setOnEditorActionListener(onEditorActionListener)
-        }
 
         fun bindData(
             input: CardComponentInput.CardHolderNameInput?,
@@ -180,15 +199,19 @@ internal sealed class CardFormElementViewHolder(
 
     class CardFormCvcElement(
         parent: ViewGroup,
-        textViewOnTextChanged: TextViewOnTextChanged?,
-        onEditorActionListener: TextView.OnEditorActionListener
+        onTextChanged: OnCardFormElementTextChanged,
+        onEditorAction: OnCardFormElementEditorAction,
+        onFocusChanged: OnCardFormElementFocusChanged
     ) :
         CardFormElementViewHolder(
+            CardFormElementType.Cvc,
             parent,
             R.layout.payjp_card_form_cvc_layout,
             R.id.input_layout_cvc,
             R.id.input_edit_cvc,
-            textViewOnTextChanged
+            onTextChanged,
+            onEditorAction,
+            onFocusChanged
         ) {
         private var brand: CardBrand = CardBrand.UNKNOWN
             set(value) {
@@ -199,10 +222,6 @@ internal sealed class CardFormElementViewHolder(
                 }
                 field = value
             }
-
-        init {
-            editText.setOnEditorActionListener(onEditorActionListener)
-        }
 
         fun bindData(
             input: CardComponentInput.CardCvcInput?,

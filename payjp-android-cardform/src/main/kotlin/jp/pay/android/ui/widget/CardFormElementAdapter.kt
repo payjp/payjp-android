@@ -25,12 +25,12 @@ package jp.pay.android.ui.widget
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.annotation.IdRes
 import androidx.recyclerview.widget.RecyclerView
+import jp.pay.android.R
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput
 import jp.pay.android.plugin.CardScannerPlugin
-import jp.pay.android.ui.extension.TextViewOnTextChanged
 import jp.pay.android.ui.widget.CardFormElementViewHolder.CardFormCvcElement
 import jp.pay.android.ui.widget.CardFormElementViewHolder.CardFormExpirationElement
 import jp.pay.android.ui.widget.CardFormElementViewHolder.CardFormHolderNameElement
@@ -41,21 +41,21 @@ internal class CardFormElementAdapter(
     private val cardExpirationFormatter: TextWatcher,
     private val scannerPlugin: CardScannerPlugin?,
     private val onClickScannerIcon: View.OnClickListener?,
-    private val onEditorActionListenerNumber: TextView.OnEditorActionListener,
-    private val onEditorActionListenerExpiration: TextView.OnEditorActionListener,
-    private val onEditorActionListenerHolderName: TextView.OnEditorActionListener,
-    private val onEditorActionListenerCvc: TextView.OnEditorActionListener,
-    private val onTextChangedNumber: TextViewOnTextChanged? = null,
-    private val onTextChangedExpiration: TextViewOnTextChanged? = null,
-    private val onTextChangedHolderName: TextViewOnTextChanged? = null,
-    private val onTextChangedCvc: TextViewOnTextChanged? = null
+    private val onElementTextChanged: OnCardFormElementTextChanged,
+    private val onElementEditorAction: OnCardFormElementEditorAction,
+    private val onElementFocusChanged: OnCardFormElementFocusChanged
 ) : RecyclerView.Adapter<CardFormElementViewHolder>() {
 
     companion object {
-        const val ITEM_NUMBER_ELEMENT = 0
-        const val ITEM_EXPIRATION_ELEMENT = 1
-        const val ITEM_HOLDER_NAME_ELEMENT = 2
-        const val ITEM_CVC_ELEMENT = 3
+        const val ITEM_SIZE_AFTER_NUMBER = 4
+        const val ITEM_SIZE_BEFORE_NUMBER = 1
+
+        @IdRes fun findEditTextId(element: CardFormElementType): Int = when (element) {
+            CardFormElementType.Number -> R.id.input_edit_number
+            CardFormElementType.Expiration -> R.id.input_edit_expiration
+            CardFormElementType.Cvc -> R.id.input_edit_cvc
+            CardFormElementType.HolderName -> R.id.input_edit_holder_name
+        }
     }
 
     var cardNumberInput: CardComponentInput.CardNumberInput? = null
@@ -69,36 +69,47 @@ internal class CardFormElementAdapter(
         setHasStableIds(true)
     }
 
+    fun getPositionForElementType(cardFormElementType: CardFormElementType): Int {
+        return cardFormElementType.ordinal
+    }
+
+    fun notifyCardFormElementChanged(cardFormElementType: CardFormElementType) {
+        notifyItemChanged(cardFormElementType.ordinal)
+    }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): CardFormElementViewHolder {
-        return when (viewType) {
-            ITEM_NUMBER_ELEMENT -> CardFormNumberElement(
+        return when (CardFormElementType.values()[viewType]) {
+            CardFormElementType.Number -> CardFormNumberElement(
                 parent,
-                onTextChangedNumber,
                 cardNumberFormatter,
                 scannerPlugin,
                 onClickScannerIcon,
-                onEditorActionListenerNumber
+                onElementTextChanged,
+                onElementEditorAction,
+                onElementFocusChanged
             )
-            ITEM_EXPIRATION_ELEMENT -> CardFormExpirationElement(
+            CardFormElementType.Expiration -> CardFormExpirationElement(
                 parent,
-                onTextChangedExpiration,
                 cardExpirationFormatter,
-                onEditorActionListenerExpiration
+                onElementTextChanged,
+                onElementEditorAction,
+                onElementFocusChanged
             )
-            ITEM_HOLDER_NAME_ELEMENT -> CardFormHolderNameElement(
+            CardFormElementType.Cvc -> CardFormCvcElement(
                 parent,
-                onTextChangedHolderName,
-                onEditorActionListenerHolderName
+                onElementTextChanged,
+                onElementEditorAction,
+                onElementFocusChanged
             )
-            ITEM_CVC_ELEMENT -> CardFormCvcElement(
+            CardFormElementType.HolderName -> CardFormHolderNameElement(
                 parent,
-                onTextChangedCvc,
-                onEditorActionListenerCvc
+                onElementTextChanged,
+                onElementEditorAction,
+                onElementFocusChanged
             )
-            else -> throw IllegalArgumentException("Unexpected viewType $viewType")
         }
     }
 
@@ -109,23 +120,20 @@ internal class CardFormElementAdapter(
                 cardExpirationInput,
                 showErrorImmediately
             )
+            is CardFormCvcElement -> holder.bindData(cardCvcInput, brand, showErrorImmediately)
             is CardFormHolderNameElement -> holder.bindData(
                 cardHolderNameInput,
                 showErrorImmediately
             )
-            is CardFormCvcElement -> holder.bindData(cardCvcInput, brand, showErrorImmediately)
         }
     }
 
-    override fun getItemViewType(position: Int): Int = when (position) {
-        0 -> ITEM_NUMBER_ELEMENT
-        1 -> ITEM_EXPIRATION_ELEMENT
-        2 -> ITEM_HOLDER_NAME_ELEMENT
-        3 -> ITEM_CVC_ELEMENT
-        else -> throw IllegalArgumentException("Unexpected position $position")
-    }
+    override fun getItemViewType(position: Int): Int = position
 
-    override fun getItemCount(): Int = 4
+    override fun getItemCount(): Int = when (cardNumberInput?.valid) {
+        true -> ITEM_SIZE_AFTER_NUMBER
+        else -> ITEM_SIZE_BEFORE_NUMBER
+    }
 
     override fun getItemId(position: Int): Long = position.toLong()
 }

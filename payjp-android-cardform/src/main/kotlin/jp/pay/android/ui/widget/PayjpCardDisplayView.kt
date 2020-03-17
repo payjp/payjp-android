@@ -22,23 +22,28 @@
  */
 package jp.pay.android.ui.widget
 
+import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.google.android.material.shape.AbsoluteCornerSize
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import jp.pay.android.R
 import jp.pay.android.model.CardBrand
+import jp.pay.android.ui.extension.displayBackgroundResourceId
+import jp.pay.android.ui.extension.displayLogoResourceId
+import jp.pay.android.ui.extension.fullMaskedPan
 import kotlin.math.min
 
 internal class PayjpCardDisplayView @JvmOverloads constructor(
@@ -47,14 +52,28 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : FrameLayout(context, attrs, defStyle) {
 
+    companion object {
+        private const val FLIP_DURATION = 300L
+        // https://developer.android.com/reference/android/view/View#setCameraDistance(float)
+        private const val CAMERA_DISTANCE_DEFAULT = 1280 * 5
+    }
+
     private val frameFront: ViewGroup
     private val frameBack: ViewGroup
     private val numberDisplay: TextView
     private val expirationDisplay: TextView
     private val holderDisplay: TextView
+    private val cvcDisplay: TextView
+    private val cvcDisplayAmex: TextView
+    private val brandLogo: ImageView
 
     private val frontToBack: AnimatorSet
+    private val backToFront: AnimatorSet
     private var brand: CardBrand = CardBrand.UNKNOWN
+    private val cardBackModel = ShapeAppearanceModel.Builder()
+        .setAllCornerSizes(AbsoluteCornerSize(32f))
+        .build()
+    private var frontVisible = true
 
     init {
         LayoutInflater.from(context).inflate(R.layout.payjp_card_display_view, this, true)
@@ -64,42 +83,63 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
         numberDisplay = findViewById(R.id.display_pan)
         expirationDisplay = findViewById(R.id.display_expiration)
         holderDisplay = findViewById(R.id.display_holder)
+        cvcDisplay = findViewById(R.id.display_cvc_default)
+        cvcDisplayAmex = findViewById(R.id.display_cvc_amex)
+        brandLogo = findViewById(R.id.display_brand_logo)
 
-        // https://developer.android.com/reference/android/view/View#setCameraDistance(float)
-        val defaultDistance = 1280
         val scale = resources.displayMetrics.density
-        (defaultDistance * scale * 5).let {
+        (CAMERA_DISTANCE_DEFAULT * scale).let {
             frameFront.cameraDistance = it
             frameBack.cameraDistance = it
         }
 
-        val cardBackModel = ShapeAppearanceModel.Builder()
-            .setAllCornerSizes(AbsoluteCornerSize(16f))
-            .build()
-        frameFront.background = MaterialShapeDrawable(cardBackModel).apply {
-            fillColor = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.payjp_secondaryColor))
-            setPadding(12, 12, 12, 12)
+        val defaultBackground = createBackground(R.color.payjp_card_display_background)
+        frameFront.background = defaultBackground
+        frameBack.background = defaultBackground
+        frontToBack = createFlipAnimator(frameFront, frameBack).apply {
+            addListener(AnimatorOnEndListener {
+                frontVisible = false
+            })
         }
-        frameBack.background = MaterialShapeDrawable(cardBackModel).apply {
-            fillColor = ColorStateList.valueOf(Color.BLUE)
-            setPadding(12, 12, 12, 12)
+        backToFront = createFlipAnimator(frameBack, frameFront).apply {
+            addListener(AnimatorOnEndListener {
+                frontVisible = true
+            })
         }
-
-        frontToBack = createFlipAnimator(frameFront, frameBack, 500L)
     }
+
+    fun isFrontVisible() = frontVisible
 
     fun flipToBack() {
         frontToBack.start()
     }
 
+    fun flipToFront() {
+        backToFront.start()
+    }
+
     fun setBrand(brand: CardBrand) {
+        if (brand == this.brand) {
+            return
+        }
         this.brand = brand
-        // TODO
+        cvcDisplayAmex.visibility = when (brand) {
+            CardBrand.AMEX -> View.VISIBLE
+            else -> View.INVISIBLE
+        }
+        val brandBackground = createBackground(brand.displayBackgroundResourceId)
+        frameFront.background = brandBackground
+        frameBack.background = brandBackground
+        brandLogo.setImageResource(brand.displayLogoResourceId)
+        brandLogo.visibility = when (brand) {
+            CardBrand.UNKNOWN -> View.GONE
+            else -> View.VISIBLE
+        }
     }
 
     fun setCardNumber(cardNumber: CharSequence) {
         // TODO highlight input character
-        val allMask = "XXXX XXXX XXXX XXXX"
+        val allMask = brand.fullMaskedPan
         this.numberDisplay.text = allMask.replaceRange(0 until min(cardNumber.length, allMask.length), cardNumber)
     }
 
@@ -113,10 +153,19 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
     }
 
     fun setCardCvcInputLength(length: Int) {
-        // TODO
+        val text = "•".repeat(length)
+        this.cvcDisplay.text = text
+        this.cvcDisplayAmex.text = text
     }
 
-    private fun createFlipAnimator(front: View, back: View, flipDuration: Long): AnimatorSet {
+    private fun createBackground(@ColorRes colorResId: Int): MaterialShapeDrawable {
+        return MaterialShapeDrawable(cardBackModel).apply {
+            fillColor = ColorStateList.valueOf(ContextCompat.getColor(context, colorResId))
+        }
+    }
+
+    private fun createFlipAnimator(front: View, back: View): AnimatorSet {
+        val flipDuration = FLIP_DURATION
         val flipInAlphaIn = ObjectAnimator.ofFloat(back, "alpha", 0f, 1f).apply {
             duration = 0
         }
@@ -138,5 +187,19 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
             play(flipOutRotationOut).with(flipInAlphaOut)
             play(flipOutAlphaOut).after(flipInAlphaOut).after(flipDuration / 2)
         }
+    }
+
+    class AnimatorOnEndListener(
+        private val onAnimationEnd: (animation: Animator) -> Unit
+    ) : Animator.AnimatorListener {
+        override fun onAnimationRepeat(animation: Animator) {}
+
+        override fun onAnimationEnd(animation: Animator) {
+            this.onAnimationEnd.invoke(animation)
+        }
+
+        override fun onAnimationCancel(animation: Animator) {}
+
+        override fun onAnimationStart(animation: Animator) {}
     }
 }

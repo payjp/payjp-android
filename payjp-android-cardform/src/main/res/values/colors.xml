@@ -26,4 +26,12 @@
     <color name="payjp_primaryColor">#198fcc</color>
     <color name="payjp_primaryDarkColor">#00629b</color>
     <color name="payjp_secondaryColor">#69737f</color>
+    <color name="payjp_card_display_background">#e2e2e2</color>
+
+    <color name="payjp_card_display_visa">#a1a5e9</color>
+    <color name="payjp_card_display_mastercard">#f4f4f4</color>
+    <color name="payjp_card_display_jcb">#cbcbcb</color>
+    <color name="payjp_card_display_amex">#1274b8</color>
+    <color name="payjp_card_display_diners">#256091</color>
+    <color name="payjp_card_display_discover">#e6e6e6</color>
 </resources>
