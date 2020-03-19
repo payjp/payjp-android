@@ -26,6 +26,7 @@ import android.util.Base64
 import java.nio.charset.Charset
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
+import jp.pay.android.model.ThreeDSecureId
 import jp.pay.android.model.Token
 import jp.pay.android.network.TokenApiClientFactory.createApiClient
 import jp.pay.android.network.TokenApiClientFactory.createOkHttp
@@ -77,6 +78,13 @@ class PayjpToken internal constructor(
             expYear = param.expYear,
             name = param.name,
             tenant = param.tenantId?.id
+        )
+    }
+
+    override fun createToken(id: ThreeDSecureId): Task<Token> {
+        return payjpApi.createToken(
+            authorization = authorization,
+            tdsId = id.identifier
         )
     }
 

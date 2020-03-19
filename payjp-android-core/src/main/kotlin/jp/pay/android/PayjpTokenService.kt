@@ -24,6 +24,7 @@ package jp.pay.android
 
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
+import jp.pay.android.model.ThreeDSecureId
 import jp.pay.android.model.Token
 
 /**
@@ -60,6 +61,14 @@ interface PayjpTokenService {
      * @return task to create token.
      */
     fun createToken(param: PayjpTokenParam): Task<Token>
+
+    /**
+     * Create token from 3DS id
+     *
+     * @param id 3DS id
+     * @return task to create token.
+     */
+    fun createToken(id: ThreeDSecureId): Task<Token>
 
     /**
      * Retrieve token from token id.
