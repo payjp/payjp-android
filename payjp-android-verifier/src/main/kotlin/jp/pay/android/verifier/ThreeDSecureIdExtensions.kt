@@ -23,23 +23,21 @@
 package jp.pay.android.verifier
 
 import android.net.Uri
-import jp.pay.android.model.Card
+import jp.pay.android.model.ThreeDSecureId
 
-private fun Card.getTdsBaseUri(): Uri = Uri.Builder()
+private fun ThreeDSecureId.getTdsBaseUri(): Uri = Uri.Builder()
     .scheme("https")
     .authority(PayjpVerifier.VERIFY_WEB_ENDPOINT_HOST)
     .appendEncodedPath("v1/3ds")
-    .appendPath(id)
+    .appendPath(identifier)
     .build()
 
-@Deprecated("use ThreeDSecureId.getTdsEntryUri()")
-internal fun Card.getTdsEntryUri(): Uri = getTdsBaseUri()
+internal fun ThreeDSecureId.getTdsEntryUri(): Uri = getTdsBaseUri()
     .buildUpon()
     .appendPath("start")
     .build()
 
-@Deprecated("use ThreeDSecureId.getTdsFinishUri()")
-internal fun Card.getTdsFinishUri(): Uri = getTdsBaseUri()
+internal fun ThreeDSecureId.getTdsFinishUri(): Uri = getTdsBaseUri()
     .buildUpon()
     .appendPath("finish")
     .build()

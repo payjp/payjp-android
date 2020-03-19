@@ -22,24 +22,27 @@
  */
 package jp.pay.android.verifier
 
-import android.net.Uri
-import jp.pay.android.model.Card
+import jp.pay.android.model.ThreeDSecureId
+import org.hamcrest.Matchers
+import org.junit.Assert.assertThat
+import org.junit.Test
 
-private fun Card.getTdsBaseUri(): Uri = Uri.Builder()
-    .scheme("https")
-    .authority(PayjpVerifier.VERIFY_WEB_ENDPOINT_HOST)
-    .appendEncodedPath("v1/3ds")
-    .appendPath(id)
-    .build()
+class ThreeDSecureIdExtensionsTest {
+    @Test
+    fun getTdsEntryUri() {
+        val id = "tds_xxx"
+        val tdsId = ThreeDSecureId(id)
+        assertThat(tdsId.getTdsEntryUri().toString(),
+            Matchers.`is`("https://${PayjpVerifier.VERIFY_WEB_ENDPOINT_HOST}/v1/3ds/$id/start")
+        )
+    }
 
-@Deprecated("use ThreeDSecureId.getTdsEntryUri()")
-internal fun Card.getTdsEntryUri(): Uri = getTdsBaseUri()
-    .buildUpon()
-    .appendPath("start")
-    .build()
-
-@Deprecated("use ThreeDSecureId.getTdsFinishUri()")
-internal fun Card.getTdsFinishUri(): Uri = getTdsBaseUri()
-    .buildUpon()
-    .appendPath("finish")
-    .build()
+    @Test
+    fun getTdsFinishUri() {
+        val id = "tds_xxx"
+        val tdsId = ThreeDSecureId(id)
+        assertThat(tdsId.getTdsFinishUri().toString(),
+            Matchers.`is`("https://${PayjpVerifier.VERIFY_WEB_ENDPOINT_HOST}/v1/3ds/$id/finish")
+        )
+    }
+}
