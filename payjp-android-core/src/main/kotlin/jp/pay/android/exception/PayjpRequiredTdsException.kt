@@ -23,10 +23,11 @@
 package jp.pay.android.exception
 
 import java.io.IOException
+import jp.pay.android.model.ThreeDSecureId
 
 /**
  * Exception indicate the tokenization has suspended due to required 3DS verification.
  *
  * @param tdsId 3DS id
  */
-class PayjpRequiredTdsException(val tdsId: String) : IOException()
+class PayjpRequiredTdsException(val tdsId: ThreeDSecureId) : IOException()

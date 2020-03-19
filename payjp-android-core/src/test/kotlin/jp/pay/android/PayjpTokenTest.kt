@@ -289,7 +289,7 @@ class PayjpTokenTest {
             task.run()
             fail()
         } catch (e: PayjpRequiredTdsException) {
-            assertEquals(tdsId, e.tdsId)
+            assertEquals(tdsId, e.tdsId.identifier)
         }
     }
 

@@ -20,34 +20,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.network
-
-import jp.pay.android.exception.PayjpRequiredTdsException
-import jp.pay.android.model.ThreeDSecureId
-import okhttp3.Interceptor
-import okhttp3.Response
+package jp.pay.android.model
 
 /**
- * Intercept 3DS redirect
  *
- * It will throw [PayjpRequiredTdsException] with capturing id from location.
+ * @param identifier id
  */
-internal class TdsRedirectionInterceptor : Interceptor {
-
-    companion object {
-        private val REGEX_TDS_PATH = """\A/v1/tds/([\w\d_]+)/.*\z""".toRegex()
-    }
-
-    override fun intercept(c: Interceptor.Chain): Response {
-        val request = c.request()
-        val response = c.proceed(request)
-        if (response.isRedirect) {
-            response.header("location")?.let { location ->
-                REGEX_TDS_PATH.find(location)?.destructured
-            }?.let { (id) ->
-                throw PayjpRequiredTdsException(ThreeDSecureId(identifier = id))
-            }
-        }
-        return response
-    }
-}
+data class ThreeDSecureId(val identifier: String)
