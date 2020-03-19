@@ -24,11 +24,13 @@ package jp.pay.android
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.io.IOException
+import java.lang.RuntimeException
 import java.nio.charset.Charset
 import java.util.Locale
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import jp.pay.android.exception.PayjpApiException
+import jp.pay.android.exception.PayjpRequiredTdsException
 import jp.pay.android.fixtures.ACCEPTED_BRANDS_EMPTY
 import jp.pay.android.fixtures.ACCEPTED_BRANDS_FULL
 import jp.pay.android.fixtures.ERROR_AUTH
@@ -39,8 +41,11 @@ import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ClientInfo
 import jp.pay.android.model.TenantId
 import jp.pay.android.network.TokenApiClientFactory.createApiClient
+import jp.pay.android.network.TokenApiClientFactory.createOkHttp
+import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
 import org.hamcrest.Matchers.contains
 import org.hamcrest.Matchers.empty
 import org.junit.After
@@ -88,9 +93,15 @@ class PayjpTokenTest {
 
     private fun createApi() = createApiClient(
         baseUrl = mockWebServer.url("/").toString(),
-        callbackExecutor = CurrentThreadExecutor(),
-        locale = Locale.US,
-        clientInfo = ClientInfo.Builder().build()
+        okHttpClient = createOkHttp(
+            locale = Locale.US,
+            clientInfo = ClientInfo.Builder().build(),
+            debuggable = false)
+            .newBuilder()
+            // fix wrong host when retry
+            .retryOnConnectionFailure(false)
+            .build(),
+        callbackExecutor = CurrentThreadExecutor()
     )
 
     @Test
@@ -247,6 +258,38 @@ class PayjpTokenTest {
             task.run()
             fail()
         } catch (e: IOException) {
+        }
+    }
+
+    @Test
+    fun createToken_redirect_tds() {
+        val tdsId = "tds_abcd1234"
+        mockWebServer.setDispatcher(object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest): MockResponse = when (request.path) {
+                "/tokens" -> MockResponse()
+                    .setResponseCode(303)
+                    .setHeader("Location", "/v1/tds/$tdsId/start")
+//                    .setResponseCode(200)
+                    .setBody(TOKEN_OK)
+                "/v1/tds/$tdsId/start" -> MockResponse().setResponseCode(200).setBody(TOKEN_OK)
+                else -> throw RuntimeException("unknwon path -> ${request.path}")
+            }
+        })
+
+        val task = PayjpToken(
+            configuration = configuration,
+            payjpApi = createApi()
+        )
+            .createToken(
+                number = "4242424242424242",
+                cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA"
+            )
+
+        try {
+            task.run()
+            fail()
+        } catch (e: PayjpRequiredTdsException) {
+            assertEquals(tdsId, e.tdsId)
         }
     }
 

@@ -51,8 +51,13 @@ internal object TokenApiClientFactory {
             .build()
     }
 
-    fun createOkHttp(locale: Locale, debuggable: Boolean, clientInfo: ClientInfo): OkHttpClient =
+    fun createOkHttp(
+        locale: Locale,
+        clientInfo: ClientInfo,
+        debuggable: Boolean = false
+    ): OkHttpClient =
         OkHttpClient.Builder()
+            .addNetworkInterceptor(TdsRedirectionInterceptor())
             .addInterceptor(CustomHeaderInterceptor(locale, clientInfo, moshi))
             .apply {
                 if (debuggable) {
@@ -68,13 +73,11 @@ internal object TokenApiClientFactory {
 
     fun createApiClient(
         baseUrl: String,
-        debuggable: Boolean = false,
-        callbackExecutor: Executor,
-        locale: Locale,
-        clientInfo: ClientInfo
+        okHttpClient: OkHttpClient,
+        callbackExecutor: Executor
     ): PayjpApi = Retrofit.Builder()
         .baseUrl(baseUrl)
-        .client(createOkHttp(locale, debuggable, clientInfo))
+        .client(okHttpClient)
         .addCallAdapterFactory(ResultCallAdapterFactory(moshi, callbackExecutor))
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()

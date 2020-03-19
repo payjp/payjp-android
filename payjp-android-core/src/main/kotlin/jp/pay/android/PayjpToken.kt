@@ -28,6 +28,7 @@ import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.network.TokenApiClientFactory.createApiClient
+import jp.pay.android.network.TokenApiClientFactory.createOkHttp
 
 /**
  * Payjp token client
@@ -50,10 +51,12 @@ class PayjpToken internal constructor(
         configuration = configuration,
         payjpApi = createApiClient(
             baseUrl = PayjpConstants.API_ENDPOINT,
-            debuggable = configuration.debugEnabled,
-            callbackExecutor = configuration.callbackExecutor,
-            locale = configuration.locale,
-            clientInfo = configuration.clientInfo
+            okHttpClient = createOkHttp(
+                locale = configuration.locale,
+                clientInfo = configuration.clientInfo,
+                debuggable = configuration.debugEnabled
+            ),
+            callbackExecutor = configuration.callbackExecutor
         )
     )
 
