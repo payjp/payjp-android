@@ -56,7 +56,7 @@ internal interface PayjpApi {
     @FormUrlEncoded
     fun createToken(
         @Header("Authorization") authorization: String,
-        @Header("tds_id") tdsId: String
+        @Field("tds_id") tdsId: String
     ): ResultCall<Token>
 
     @GET("tokens/{id}")

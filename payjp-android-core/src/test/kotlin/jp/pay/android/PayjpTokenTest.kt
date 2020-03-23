@@ -40,6 +40,7 @@ import jp.pay.android.fixtures.TOKEN_OK
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ClientInfo
 import jp.pay.android.model.TenantId
+import jp.pay.android.model.ThreeDSecureId
 import jp.pay.android.network.TokenApiClientFactory.createApiClient
 import jp.pay.android.network.TokenApiClientFactory.createOkHttp
 import okhttp3.mockwebserver.Dispatcher
@@ -291,6 +292,38 @@ class PayjpTokenTest {
         } catch (e: PayjpRequiredTdsException) {
             assertEquals(tdsId, e.tdsId.identifier)
         }
+    }
+
+    @Test
+    fun createToken_by_card() {
+        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
+
+        val tdsId = ThreeDSecureId("tds_xxx")
+        PayjpToken(
+            configuration = configuration,
+            payjpApi = createApi()
+        )
+            .createToken(tdsId)
+            .run()
+            .let { token ->
+                assertEquals("tok_5ca06b51685e001723a2c3b4aeb4", token.id)
+                assertEquals("car_e3ccd4e0959f45e7c75bacc4be90", token.card.id)
+            }
+
+        mockWebServer.takeRequest()
+            .let { request ->
+                assertEquals("POST", request.method)
+                assertEquals("/tokens", request.path)
+                assertEquals(
+                    "Basic cGtfdGVzdF8wMzgzYTFiOGY5MWU4YTZlM2VhMGUyYTk6",
+                    request.getHeader("Authorization")
+                )
+                assertEquals("en", request.getHeader("Locale"))
+                assertEquals(
+                    "tds_id=${tdsId.identifier}",
+                    request.body.readString(Charset.forName("utf-8"))
+                )
+            }
     }
 
     @Test
