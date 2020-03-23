@@ -38,7 +38,17 @@ class PayjpVerifierRedirectActivity : AppCompatActivity() {
     }
 
     companion object {
+        private const val EXTRA_KEY_SUCCESS = "EXTRA_KEY_SUCCESS"
         internal val returnUrlHolder: UrlHolder = UrlHolder()
+
+        fun getResult(data: Intent?): PayjpVerifyCardResult {
+            val success = data?.getBooleanExtra(EXTRA_KEY_SUCCESS, false) ?: false
+            return if (success) {
+                PayjpVerifyCardResult.Success
+            } else {
+                PayjpVerifyCardResult.Canceled
+            }
+        }
 
         fun setEnabled(context: Context, enabled: Boolean) {
             context.applicationContext.run {
@@ -63,6 +73,7 @@ class PayjpVerifierRedirectActivity : AppCompatActivity() {
             returnUrlHolder.uri = uri
             val intent = Intent().apply {
                 setClassName(packageName, "jp.pay.android.ui.PayjpCardFormActivity")
+                putExtra(EXTRA_KEY_SUCCESS, true)
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             }
             startActivity(intent)

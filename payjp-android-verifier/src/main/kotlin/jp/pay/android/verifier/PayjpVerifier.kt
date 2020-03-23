@@ -30,12 +30,10 @@ import jp.pay.android.PayjpLogger
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.verifier.ui.PayjpVerifierRedirectActivity
-import jp.pay.android.verifier.ui.PayjpVerifyCardResult
 import jp.pay.android.verifier.ui.PayjpVerifyCardResultCallback
 
 object PayjpVerifier {
 
-    internal const val VERIFY_WEB_ENDPOINT_HOST = "api.pay-stage.com" // TODO
     private const val REQUEST_CODE_VERIFY = 10
 
     private var logger: PayjpLogger = PayjpLogger.None
@@ -82,7 +80,6 @@ object PayjpVerifier {
         callback: PayjpVerifyCardResultCallback
     ) {
         PayjpVerifierRedirectActivity.setEnabled(context, false)
-        // TODO check deeplink activity
-        callback.onResult(PayjpVerifyCardResult.Canceled)
+        callback.onResult(PayjpVerifierRedirectActivity.getResult(data))
     }
 }

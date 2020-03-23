@@ -47,7 +47,6 @@ class PayjpWebActivity : AppCompatActivity(R.layout.payjp_verify_card_activity),
     LifecycleObserver {
 
     companion object {
-        private const val EXTRA_KEY_SUCCESS = "EXTRA_KEY_SUCCESS"
         private const val EXTRA_KEY_START_URI = "EXTRA_KEY_START_URI"
         private const val EXTRA_KEY_CALLBACK_URI = "EXTRA_KEY_CALLBACK_URI"
 
@@ -55,16 +54,6 @@ class PayjpWebActivity : AppCompatActivity(R.layout.payjp_verify_card_activity),
             return Intent(context, PayjpWebActivity::class.java)
                 .putExtra(EXTRA_KEY_START_URI, startUri.toString())
                 .putExtra(EXTRA_KEY_CALLBACK_URI, callbackUri.toString())
-        }
-
-        fun onActivityResult(data: Intent?, callback: PayjpVerifyCardResultCallback) {
-            val success = data?.getBooleanExtra(EXTRA_KEY_SUCCESS, false) ?: false
-            val result = if (success) {
-                PayjpVerifyCardResult.Success
-            } else {
-                PayjpVerifyCardResult.Canceled
-            }
-            callback.onResult(result)
         }
     }
 
