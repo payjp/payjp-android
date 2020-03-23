@@ -30,16 +30,16 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import java.io.IOException
-import java.lang.IllegalStateException
 import jp.pay.android.PayjpTokenBackgroundHandler
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.R
 import jp.pay.android.Task
 import jp.pay.android.TokenHandlerExecutor
+import jp.pay.android.exception.PayjpRequiredTdsException
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
-import jp.pay.android.model.ThreeDSecureStatus
+import jp.pay.android.model.ThreeDSecureId
 import jp.pay.android.model.Token
 import jp.pay.android.util.OneOffValue
 import jp.pay.android.verifier.ui.PayjpVerifyCardResult
@@ -61,7 +61,7 @@ internal class CardFormScreenViewModel(
     override val errorDialogMessage: MutableLiveData<OneOffValue<CharSequence>> = MutableLiveData()
     override val errorViewText: MutableLiveData<CharSequence> = MutableLiveData()
     override val success: MutableLiveData<OneOffValue<Token>> = MutableLiveData()
-    override val startVerify: MutableLiveData<OneOffValue<Token>> = MutableLiveData()
+    override val startVerify: MutableLiveData<OneOffValue<ThreeDSecureId>> = MutableLiveData()
     override val snackBarMessage: MutableLiveData<OneOffValue<Int>> = MutableLiveData()
     // private property
     private var fetchAcceptedBrandsTask: Task<CardBrandsAcceptedResponse>? = null
@@ -78,6 +78,7 @@ internal class CardFormScreenViewModel(
         fetchTokenTask?.cancel()
         fetchTokenTask = null
         tokenHandlerExecutor?.cancel()
+        startVerify.value = null
     }
 
     override fun onValidateInput(isValid: Boolean) {
@@ -98,9 +99,14 @@ internal class CardFormScreenViewModel(
     }
 
     override fun onCompleteCardVerify(result: PayjpVerifyCardResult) {
-        if (result is PayjpVerifyCardResult.Success && !result.tokenId.isNullOrEmpty()) {
+        if (result is PayjpVerifyCardResult.Success) {
             tokenizeProcessing = true
-            fetchToken(checkNotNull(result.tokenId))
+            startVerify.value?.peek()?.let { id ->
+                createTokenWithTdsId(id)
+            } ?: let {
+                // TODO pending tdsId is not found
+                tokenizeProcessing = false
+            }
         } else {
             snackBarMessage.value = OneOffValue(R.string.payjp_card_form_message_cancel_verification)
             setSubmitButtonVisible(true)
@@ -140,38 +146,28 @@ internal class CardFormScreenViewModel(
         }
     }
 
-    private fun fetchToken(id: String) {
-        fetchTokenTask = tokenService.getToken(id).also {
-            enqueueTokenTask(it, afterVerify = true)
+    private fun createTokenWithTdsId(id: ThreeDSecureId) {
+        fetchTokenTask = tokenService.createToken(id).also {
+            enqueueTokenTask(it)
         }
     }
 
-    private fun enqueueTokenTask(task: Task<Token>, afterVerify: Boolean = false) {
+    private fun enqueueTokenTask(task: Task<Token>) {
         setSubmitButtonVisible(false)
         task.enqueue(object : Task.Callback<Token> {
             override fun onSuccess(data: Token) {
-                validateThreeDSecure(data, afterVerify)
+                postTokenHandlerOrComplete(data)
             }
 
             override fun onError(throwable: Throwable) {
-                showTokenError(throwable)
+                when (throwable) {
+                    is PayjpRequiredTdsException -> {
+                        startVerify.value = OneOffValue(throwable.tdsId)
+                    }
+                    else -> showTokenError(throwable)
+                }
             }
         })
-    }
-
-    private fun validateThreeDSecure(token: Token, afterVerify: Boolean) {
-        if (token.card.threeDSecureStatus == ThreeDSecureStatus.UNVERIFIED) {
-            // if already tried to verify, something wrong with token.
-            if (afterVerify) {
-                showTokenError(
-                    IllegalStateException("The verification is success, but we can't find verified card.")
-                )
-            } else {
-                startVerify.value = OneOffValue(token)
-            }
-        } else {
-            postTokenHandlerOrComplete(token)
-        }
     }
 
     private fun postTokenHandlerOrComplete(token: Token) {

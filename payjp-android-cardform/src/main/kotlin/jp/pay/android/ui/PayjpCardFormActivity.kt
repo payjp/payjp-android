@@ -44,6 +44,7 @@ import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.TenantId
+import jp.pay.android.model.ThreeDSecureId
 import jp.pay.android.model.Token
 import jp.pay.android.ui.extension.showWith
 import jp.pay.android.ui.widget.PayjpAcceptedBrandsView
@@ -261,7 +262,7 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
         finish()
     }
 
-    private fun startVerify(token: Token) {
-        PayjpVerifier.startWebVerify(token, this)
+    private fun startVerify(tdsId: ThreeDSecureId) {
+        PayjpVerifier.startWebVerify(tdsId, this)
     }
 }

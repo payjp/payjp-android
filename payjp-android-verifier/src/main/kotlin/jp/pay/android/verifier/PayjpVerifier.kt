@@ -28,14 +28,11 @@ import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import jp.pay.android.PayjpLogger
 import jp.pay.android.PayjpTokenService
-import jp.pay.android.model.Card
-import jp.pay.android.model.Token
+import jp.pay.android.model.ThreeDSecureId
 import jp.pay.android.verifier.ui.PayjpVerifyCardActivity
 import jp.pay.android.verifier.ui.PayjpVerifyCardResultCallback
 
 object PayjpVerifier {
-
-    internal const val VERIFY_WEB_ENDPOINT_HOST = "api.pay-stage.com" // TODO
 
     private var logger: PayjpLogger = PayjpLogger.None
     private var tokenService: PayjpTokenService? = null
@@ -55,18 +52,13 @@ object PayjpVerifier {
     }
 
     @MainThread
-    fun startWebVerify(token: Token, activity: Activity, requestCode: Int? = null) {
-        PayjpVerifyCardActivity.start(activity, token, requestCode)
+    fun startWebVerify(tdsId: ThreeDSecureId, activity: Activity, requestCode: Int? = null) {
+        PayjpVerifyCardActivity.start(activity, tdsId, requestCode)
     }
 
     @MainThread
-    fun startWebVerify(card: Card, activity: Activity, requestCode: Int? = null) {
-        PayjpVerifyCardActivity.start(activity, card, requestCode)
-    }
-
-    @MainThread
-    fun startWebVerify(card: Card, fragment: Fragment, requestCode: Int? = null) {
-        PayjpVerifyCardActivity.start(fragment, card, requestCode)
+    fun startWebVerify(tdsId: ThreeDSecureId, fragment: Fragment, requestCode: Int? = null) {
+        PayjpVerifyCardActivity.start(fragment, tdsId, requestCode)
     }
 
     @MainThread

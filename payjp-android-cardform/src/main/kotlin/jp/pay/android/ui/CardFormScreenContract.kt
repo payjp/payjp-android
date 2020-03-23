@@ -25,6 +25,7 @@ package jp.pay.android.ui
 import androidx.lifecycle.LiveData
 import jp.pay.android.Task
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.ThreeDSecureId
 import jp.pay.android.model.Token
 import jp.pay.android.util.OneOffValue
 import jp.pay.android.verifier.ui.PayjpVerifyCardResult
@@ -54,7 +55,7 @@ internal interface CardFormScreenContract {
         val errorDialogMessage: LiveData<OneOffValue<CharSequence>>
         val errorViewText: LiveData<CharSequence>
         val success: LiveData<OneOffValue<Token>>
-        val startVerify: LiveData<OneOffValue<Token>>
+        val startVerify: LiveData<OneOffValue<ThreeDSecureId>>
         val snackBarMessage: LiveData<OneOffValue<Int>>
     }
 }

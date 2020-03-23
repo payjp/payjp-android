@@ -36,12 +36,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import jp.pay.android.PayjpLogger
-import jp.pay.android.model.Card
-import jp.pay.android.model.Token
+import jp.pay.android.model.ThreeDSecureId
 import jp.pay.android.verifier.PayjpVerifier
 import jp.pay.android.verifier.R
-import jp.pay.android.verifier.getTdsEntryUri
-import jp.pay.android.verifier.getTdsFinishUri
 
 /**
  * PayjpCardVerifyActivity
@@ -53,42 +50,30 @@ class PayjpVerifyCardActivity : AppCompatActivity(R.layout.payjp_verify_card_act
     companion object {
         const val DEFAULT_CARD_TDS_1_REQUEST_CODE = 10
         private const val EXTRA_KEY_SUCCESS = "EXTRA_KEY_SUCCESS"
-        private const val EXTRA_KEY_CARD = "EXTRA_KEY_CARD"
-        private const val EXTRA_KEY_TOKEN_ID = "EXTRA_KEY_TOKEN_ID"
+        private const val EXTRA_KEY_TDS_ID = "EXTRA_KEY_TDS_ID"
 
-        fun start(activity: Activity, token: Token, requestCode: Int?) {
+        fun start(activity: Activity, tdsId: ThreeDSecureId, requestCode: Int?) {
             activity.startActivityForResult(
                 Intent(activity, PayjpVerifyCardActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                    .putExtra(EXTRA_KEY_CARD, token.card)
-                    .putExtra(EXTRA_KEY_TOKEN_ID, token.id),
+                    .putExtra(EXTRA_KEY_TDS_ID, tdsId.identifier),
                 requestCode ?: DEFAULT_CARD_TDS_1_REQUEST_CODE
             )
         }
 
-        fun start(activity: Activity, card: Card, requestCode: Int?) {
-            activity.startActivityForResult(
-                Intent(activity, PayjpVerifyCardActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                    .putExtra(EXTRA_KEY_CARD, card),
-                requestCode ?: DEFAULT_CARD_TDS_1_REQUEST_CODE
-            )
-        }
-
-        fun start(fragment: Fragment, card: Card, requestCode: Int?) {
+        fun start(fragment: Fragment, tdsId: ThreeDSecureId, requestCode: Int?) {
             fragment.startActivityForResult(
                 Intent(fragment.requireActivity(), PayjpVerifyCardActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                    .putExtra(EXTRA_KEY_CARD, card),
+                    .putExtra(EXTRA_KEY_TDS_ID, tdsId.identifier),
                 requestCode ?: DEFAULT_CARD_TDS_1_REQUEST_CODE
             )
         }
 
         fun onActivityResult(data: Intent?, callback: PayjpVerifyCardResultCallback) {
             val success = data?.getBooleanExtra(EXTRA_KEY_SUCCESS, false) ?: false
-            val tokenId = data?.getStringExtra(EXTRA_KEY_TOKEN_ID)
             val result = if (success) {
-                PayjpVerifyCardResult.Success(tokenId)
+                PayjpVerifyCardResult.Success
             } else {
                 PayjpVerifyCardResult.Canceled
             }
@@ -96,11 +81,8 @@ class PayjpVerifyCardActivity : AppCompatActivity(R.layout.payjp_verify_card_act
         }
     }
 
-    private val card: Card by lazy {
-        intent?.getParcelableExtra(EXTRA_KEY_CARD) as Card
-    }
-    private val tokenId: String? by lazy {
-        intent?.getStringExtra(EXTRA_KEY_TOKEN_ID)
+    private val tdsId: ThreeDSecureId by lazy {
+        ThreeDSecureId(intent.getStringExtra(EXTRA_KEY_TDS_ID) as String)
     }
     private lateinit var webView: VerifyCardWebView
     private val logger: PayjpLogger = PayjpVerifier.logger()
@@ -151,7 +133,7 @@ class PayjpVerifyCardActivity : AppCompatActivity(R.layout.payjp_verify_card_act
     private fun startLoad() {
         val authorization: String = PayjpVerifier.tokenService().getAuthorization()
         webView.loadUrl(
-            card.getTdsEntryUri().toString(),
+            tdsId.getTdsEntryUri().toString(),
             mutableMapOf("Authorization" to authorization)
         )
     }
@@ -175,7 +157,7 @@ class PayjpVerifyCardActivity : AppCompatActivity(R.layout.payjp_verify_card_act
             swipeRefresh = swipeRefresh
         ))
         webView.addOnFinishedLoadState { _, url ->
-            if (url == card.getTdsFinishUri().toString()) {
+            if (url == tdsId.getTdsFinishUri().toString()) {
                 finishWithSuccess()
             }
         }
@@ -199,9 +181,7 @@ class PayjpVerifyCardActivity : AppCompatActivity(R.layout.payjp_verify_card_act
 
     private fun finishWithSuccess() {
         val data = Intent().putExtra(EXTRA_KEY_SUCCESS, true).apply {
-            if (!tokenId.isNullOrEmpty()) {
-                putExtra(EXTRA_KEY_TOKEN_ID, tokenId)
-            }
+            putExtra(EXTRA_KEY_TDS_ID, tdsId.identifier)
         }
         setResult(Activity.RESULT_OK, data)
         finish()
