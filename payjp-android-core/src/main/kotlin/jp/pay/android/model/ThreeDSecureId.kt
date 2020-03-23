@@ -22,8 +22,27 @@
  */
 package jp.pay.android.model
 
+import android.net.Uri
+import jp.pay.android.PayjpConstants
+
 /**
  *
  * @param identifier id
  */
-data class ThreeDSecureId(val identifier: String)
+data class ThreeDSecureId(val identifier: String) {
+    private fun getTdsBaseUri(): Uri = Uri.parse(PayjpConstants.API_ENDPOINT)
+        .buildUpon()
+        .appendPath("tds")
+        .appendPath(identifier)
+        .build()
+
+    fun getTdsEntryUri(): Uri = getTdsBaseUri()
+        .buildUpon()
+        .appendPath("start")
+        .build()
+
+    fun getTdsFinishUri(): Uri = getTdsBaseUri()
+        .buildUpon()
+        .appendPath("finish")
+        .build()
+}

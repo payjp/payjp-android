@@ -20,20 +20,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.verifier
+package jp.pay.android.model
 
-import jp.pay.android.model.ThreeDSecureId
-import org.hamcrest.Matchers
+import jp.pay.android.PayjpConstants
+import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Test
 
-class ThreeDSecureIdExtensionsTest {
+class ThreeDSecureIdTest {
     @Test
     fun getTdsEntryUri() {
         val id = "tds_xxx"
         val tdsId = ThreeDSecureId(id)
         assertThat(tdsId.getTdsEntryUri().toString(),
-            Matchers.`is`("https://${PayjpVerifier.VERIFY_WEB_ENDPOINT_HOST}/v1/3ds/$id/start")
+            `is`("${PayjpConstants.API_ENDPOINT}3ds/$id/start")
         )
     }
 
@@ -42,7 +42,7 @@ class ThreeDSecureIdExtensionsTest {
         val id = "tds_xxx"
         val tdsId = ThreeDSecureId(id)
         assertThat(tdsId.getTdsFinishUri().toString(),
-            Matchers.`is`("https://${PayjpVerifier.VERIFY_WEB_ENDPOINT_HOST}/v1/3ds/$id/finish")
+            `is`("${PayjpConstants.API_ENDPOINT}3ds/$id/finish")
         )
     }
 }
