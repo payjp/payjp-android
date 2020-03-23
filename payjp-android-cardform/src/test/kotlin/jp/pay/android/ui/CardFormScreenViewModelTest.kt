@@ -23,6 +23,7 @@
 package jp.pay.android.ui
 
 import android.view.View
+import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.net.SocketTimeoutException
 import jp.pay.android.PayjpTokenBackgroundHandler
@@ -68,9 +69,11 @@ class CardFormScreenViewModelTest {
     }
 
     private fun createViewModel(
+        savedStateHandle: SavedStateHandle = SavedStateHandle(),
         tenantId: TenantId? = null,
         tokenHandlerExecutor: TokenHandlerExecutor? = null
     ) = CardFormScreenViewModel(
+        savedStateHandle = savedStateHandle,
         tokenService = mockTokenService,
         tenantId = tenantId,
         errorTranslator = mockErrorTranslator,
@@ -120,7 +123,7 @@ class CardFormScreenViewModelTest {
         `when`(mockTokenService.getAcceptedBrands(anyNullable()))
             .thenReturn(Tasks.success(response))
 
-        val viewModel = createViewModel(tenantId)
+        val viewModel = createViewModel(tenantId = tenantId)
         assertThat(viewModel.acceptedBrands.value, nullValue())
         viewModel.fetchAcceptedBrands()
         verify(mockTokenService).getAcceptedBrands(tenantId)
@@ -336,6 +339,36 @@ class CardFormScreenViewModelTest {
         }
         verify(mockTokenService).createToken(tdsId)
         verify(mockTokenHandlerExecutor, never()).post(anyNullable(), anyNullable())
+    }
+
+    @Test
+    fun onCompleteCardVerify_success_tdsId_from_state() {
+        val tdsId = ThreeDSecureId(identifier = "tds_xxx")
+        val tokenId = "tok_xxx"
+        val card = TestStubs.newCard()
+        val token = TestStubs.newToken(id = tokenId, card = card)
+        val savedStateHandle = SavedStateHandle()
+        savedStateHandle.set(CardFormScreenViewModel.STATE_KEY_TDS_ID, tdsId.identifier)
+
+        `when`(mockTokenService.createToken(tdsId)).thenReturn(Tasks.success(token))
+        val handlerExecutor = RecordingHandlerExecutor()
+        val viewModel = createViewModel(
+            savedStateHandle = savedStateHandle,
+            tokenHandlerExecutor = handlerExecutor
+        )
+        viewModel.onCompleteCardVerify(PayjpVerifyCardResult.Success)
+
+        viewModel.run {
+            assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.VISIBLE))
+        }
+        verify(mockTokenService).createToken(tdsId)
+
+        handlerExecutor.callback?.invoke(PayjpTokenBackgroundHandler.CardFormStatus.Complete())
+
+        viewModel.run {
+            assertThat(success.value?.peek(), `is`(token))
+        }
     }
 
     class RecordingHandlerExecutor : TokenHandlerExecutor {

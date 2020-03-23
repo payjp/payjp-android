@@ -164,6 +164,7 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
         val contentView = findViewById<ViewGroup>(R.id.content_view)
 
         val vmFactory = CardFormScreenViewModel.Factory(
+            owner = this,
             tokenService = checkNotNull(PayjpCardForm.tokenService()) {
                 "You must initialize Payjp first"
             },

@@ -23,12 +23,15 @@
 package jp.pay.android.ui
 
 import android.view.View
+import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.savedstate.SavedStateRegistryOwner
 import java.io.IOException
 import jp.pay.android.PayjpTokenBackgroundHandler
 import jp.pay.android.PayjpTokenService
@@ -45,6 +48,7 @@ import jp.pay.android.util.OneOffValue
 import jp.pay.android.verifier.ui.PayjpVerifyCardResult
 
 internal class CardFormScreenViewModel(
+    private val savedStateHandle: SavedStateHandle,
     private val tokenService: PayjpTokenService,
     private val tenantId: TenantId?,
     private val errorTranslator: ErrorTranslator,
@@ -78,7 +82,6 @@ internal class CardFormScreenViewModel(
         fetchTokenTask?.cancel()
         fetchTokenTask = null
         tokenHandlerExecutor?.cancel()
-        startVerify.value = null
     }
 
     override fun onValidateInput(isValid: Boolean) {
@@ -99,14 +102,11 @@ internal class CardFormScreenViewModel(
     }
 
     override fun onCompleteCardVerify(result: PayjpVerifyCardResult) {
-        if (result is PayjpVerifyCardResult.Success) {
+        val tdsId = savedStateHandle.get<String>(STATE_KEY_TDS_ID)
+        if (result is PayjpVerifyCardResult.Success && tdsId != null) {
             tokenizeProcessing = true
-            startVerify.value?.peek()?.let { id ->
-                createTokenWithTdsId(id)
-            } ?: let {
-                // TODO pending tdsId is not found
-                tokenizeProcessing = false
-            }
+            setSubmitButtonVisible(false)
+            createTokenWithTdsId(ThreeDSecureId(identifier = tdsId))
         } else {
             snackBarMessage.value = OneOffValue(R.string.payjp_card_form_message_cancel_verification)
             setSubmitButtonVisible(true)
@@ -163,6 +163,7 @@ internal class CardFormScreenViewModel(
                 when (throwable) {
                     is PayjpRequiredTdsException -> {
                         startVerify.value = OneOffValue(throwable.tdsId)
+                        savedStateHandle.set(STATE_KEY_TDS_ID, throwable.tdsId.identifier)
                     }
                     else -> showTokenError(throwable)
                 }
@@ -207,16 +208,27 @@ internal class CardFormScreenViewModel(
         }
     }
 
+    companion object {
+        @VisibleForTesting
+        const val STATE_KEY_TDS_ID = "tds_id"
+    }
+
     internal class Factory(
+        owner: SavedStateRegistryOwner,
         private val tokenService: PayjpTokenService,
         private val tenantId: TenantId?,
         private val errorTranslator: ErrorTranslator,
         private val tokenHandlerExecutor: TokenHandlerExecutor?
-    ) : ViewModelProvider.NewInstanceFactory() {
+    ) : AbstractSavedStateViewModelFactory(owner, null) {
 
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel?> create(
+            key: String,
+            modelClass: Class<T>,
+            handle: SavedStateHandle
+        ): T {
+            @Suppress("UNCHECKED_CAST")
             return CardFormScreenViewModel(
+                savedStateHandle = handle,
                 tokenService = tokenService,
                 tenantId = tenantId,
                 errorTranslator = errorTranslator,
