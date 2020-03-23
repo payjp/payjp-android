@@ -22,18 +22,21 @@
  */
 package jp.pay.android.model
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.PayjpConstants
 import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(AndroidJUnit4::class)
 class ThreeDSecureIdTest {
     @Test
     fun getTdsEntryUri() {
         val id = "tds_xxx"
         val tdsId = ThreeDSecureId(id)
         assertThat(tdsId.getTdsEntryUri().toString(),
-            `is`("${PayjpConstants.API_ENDPOINT}3ds/$id/start")
+            `is`("${PayjpConstants.API_ENDPOINT}tds/$id/start")
         )
     }
 
@@ -42,7 +45,7 @@ class ThreeDSecureIdTest {
         val id = "tds_xxx"
         val tdsId = ThreeDSecureId(id)
         assertThat(tdsId.getTdsFinishUri().toString(),
-            `is`("${PayjpConstants.API_ENDPOINT}3ds/$id/finish")
+            `is`("${PayjpConstants.API_ENDPOINT}tds/$id/finish")
         )
     }
 }
