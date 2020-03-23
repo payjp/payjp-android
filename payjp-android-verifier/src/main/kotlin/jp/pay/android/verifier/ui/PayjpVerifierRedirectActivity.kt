@@ -26,20 +26,14 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import jp.pay.android.verifier.PayjpVerifier
 
 class PayjpVerifierRedirectActivity : AppCompatActivity() {
 
-    class UrlHolder {
-        var uri: Uri? = null
-    }
-
     companion object {
         private const val EXTRA_KEY_SUCCESS = "EXTRA_KEY_SUCCESS"
-        internal val returnUrlHolder: UrlHolder = UrlHolder()
 
         fun getResult(data: Intent?): PayjpVerifyCardResult {
             val success = data?.getBooleanExtra(EXTRA_KEY_SUCCESS, false) ?: false
@@ -69,8 +63,7 @@ class PayjpVerifierRedirectActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        intent?.data?.let { uri ->
-            returnUrlHolder.uri = uri
+        intent?.data?.let {
             val intent = Intent().apply {
                 setClassName(packageName, "jp.pay.android.ui.PayjpCardFormActivity")
                 putExtra(EXTRA_KEY_SUCCESS, true)
@@ -79,7 +72,7 @@ class PayjpVerifierRedirectActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        PayjpVerifier.logger().d("return uri ${returnUrlHolder.uri}")
+        PayjpVerifier.logger().d("return uri ${intent.data}")
 
         finish()
     }

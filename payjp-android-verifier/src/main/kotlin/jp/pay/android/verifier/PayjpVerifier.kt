@@ -33,9 +33,6 @@ import jp.pay.android.verifier.ui.PayjpVerifierRedirectActivity
 import jp.pay.android.verifier.ui.PayjpVerifyCardResultCallback
 
 object PayjpVerifier {
-
-    private const val REQUEST_CODE_VERIFY = 10
-
     private var logger: PayjpLogger = PayjpLogger.None
     private var tokenService: PayjpTokenService? = null
     private val webBrowserResolver = WebBrowserResolver(
@@ -59,7 +56,7 @@ object PayjpVerifier {
     }
 
     @MainThread
-    fun startWebVerify(tdsToken: ThreeDSecureToken, activity: Activity, requestCode: Int = REQUEST_CODE_VERIFY) {
+    fun startWebVerify(tdsToken: ThreeDSecureToken, activity: Activity) {
         val intent = webBrowserResolver.resolve(
             context = activity,
             uri = tdsToken.getTdsEntryUri(),
@@ -69,7 +66,7 @@ object PayjpVerifier {
             logger.w("Any activity which open Web not found.")
         } else {
             PayjpVerifierRedirectActivity.setEnabled(activity, true)
-            activity.startActivityForResult(intent, requestCode)
+            activity.startActivity(intent)
         }
     }
 

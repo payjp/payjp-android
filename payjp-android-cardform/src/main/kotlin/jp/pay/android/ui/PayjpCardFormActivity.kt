@@ -122,12 +122,12 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
         cardFormFragment = findCardFormFragment()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        PayjpVerifier.handleWebVerifyResult(this, data,
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        PayjpVerifier.handleWebVerifyResult(this, intent,
             PayjpVerifyCardResultCallback { result ->
                 viewModel?.onCompleteCardVerify(result)
             })
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onSupportNavigateUp(): Boolean {
