@@ -23,16 +23,17 @@
 package jp.pay.android.verifier
 
 import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import androidx.annotation.MainThread
 import jp.pay.android.PayjpLogger
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.verifier.ui.PayjpVerifierRedirectActivity
+import jp.pay.android.verifier.ui.PayjpVerifyCardResult
 import jp.pay.android.verifier.ui.PayjpVerifyCardResultCallback
 
 object PayjpVerifier {
+    private const val REQUEST_CODE_VERIFY_LAUNCHER = 10
+    private const val REQUEST_CODE_VERIFY = 11
     private var logger: PayjpLogger = PayjpLogger.None
     private var tokenService: PayjpTokenService? = null
     private val webBrowserResolver = WebBrowserResolver(
@@ -56,7 +57,13 @@ object PayjpVerifier {
     }
 
     @MainThread
-    fun startWebVerify(tdsToken: ThreeDSecureToken, activity: Activity) {
+    fun startWebVerifyLauncher(tdsToken: ThreeDSecureToken, activity: Activity) {
+        val intent = PayjpVerifierRedirectActivity.createLaunchIntent(activity, tdsToken)
+        activity.startActivityForResult(intent, REQUEST_CODE_VERIFY_LAUNCHER)
+    }
+
+    @MainThread
+    internal fun startWebVerify(tdsToken: ThreeDSecureToken, activity: Activity) {
         val intent = webBrowserResolver.resolve(
             context = activity,
             uri = tdsToken.getTdsEntryUri(),
@@ -65,18 +72,18 @@ object PayjpVerifier {
         if (intent == null) {
             logger.w("Any activity which open Web not found.")
         } else {
-            PayjpVerifierRedirectActivity.setEnabled(activity, true)
-            activity.startActivity(intent)
+            activity.startActivityForResult(intent, REQUEST_CODE_VERIFY)
         }
     }
 
     @MainThread
     fun handleWebVerifyResult(
-        context: Context,
-        data: Intent?,
+        requestCode: Int,
         callback: PayjpVerifyCardResultCallback
     ) {
-        PayjpVerifierRedirectActivity.setEnabled(context, false)
-        callback.onResult(PayjpVerifierRedirectActivity.getResult(data))
+        when (requestCode) {
+            REQUEST_CODE_VERIFY_LAUNCHER -> callback.onResult(PayjpVerifierRedirectActivity.getResult())
+            else -> callback.onResult(PayjpVerifyCardResult.Canceled)
+        }
     }
 }

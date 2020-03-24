@@ -122,12 +122,11 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
         cardFormFragment = findCardFormFragment()
     }
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        PayjpVerifier.handleWebVerifyResult(this, intent,
-            PayjpVerifyCardResultCallback { result ->
-                viewModel?.onCompleteCardVerify(result)
-            })
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        PayjpVerifier.handleWebVerifyResult(requestCode, PayjpVerifyCardResultCallback { result ->
+            viewModel?.onCompleteCardVerify(result)
+        })
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -257,7 +256,7 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
     }
 
     private fun startVerify(tdsToken: ThreeDSecureToken) {
-        PayjpVerifier.startWebVerify(tdsToken, this)
+        PayjpVerifier.startWebVerifyLauncher(tdsToken, this)
         viewModel?.onStartedVerify()
     }
 }
