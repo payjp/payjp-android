@@ -28,7 +28,6 @@ import jp.pay.android.PayjpLogger
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.verifier.ui.PayjpVerifierRedirectActivity
-import jp.pay.android.verifier.ui.PayjpVerifyCardResult
 import jp.pay.android.verifier.ui.PayjpVerifyCardResultCallback
 
 object PayjpVerifier {
@@ -81,9 +80,8 @@ object PayjpVerifier {
         requestCode: Int,
         callback: PayjpVerifyCardResultCallback
     ) {
-        when (requestCode) {
-            REQUEST_CODE_VERIFY_LAUNCHER -> callback.onResult(PayjpVerifierRedirectActivity.getResult())
-            else -> callback.onResult(PayjpVerifyCardResult.Canceled)
+        if (requestCode == REQUEST_CODE_VERIFY_LAUNCHER) {
+            callback.onResult(PayjpVerifierRedirectActivity.getResult())
         }
     }
 }
