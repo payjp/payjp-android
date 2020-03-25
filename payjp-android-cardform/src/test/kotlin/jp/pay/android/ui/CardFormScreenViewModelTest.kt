@@ -36,7 +36,7 @@ import jp.pay.android.exception.PayjpRequiredTdsException
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
-import jp.pay.android.model.ThreeDSecureId
+import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.util.Tasks
 import jp.pay.android.verifier.ui.PayjpVerifyCardResult
@@ -292,8 +292,8 @@ class CardFormScreenViewModelTest {
     @Test
     fun start_verify_if_tds_required() {
         val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
-        val tdsId = ThreeDSecureId(identifier = "tds_xxx")
-        val tdsRequired = PayjpRequiredTdsException(tdsId = tdsId)
+        val tdsId = ThreeDSecureToken(id = "tds_xxx")
+        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsId)
         viewModel.onCreateToken(Tasks.failure(tdsRequired))
         viewModel.run {
             assertThat(success.value, nullValue())
@@ -307,8 +307,8 @@ class CardFormScreenViewModelTest {
     @Test
     fun clear_start_verify_command_after_command() {
         val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
-        val tdsId = ThreeDSecureId(identifier = "tds_xxx")
-        val tdsRequired = PayjpRequiredTdsException(tdsId = tdsId)
+        val tdsId = ThreeDSecureToken(id = "tds_xxx")
+        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsId)
         viewModel.onCreateToken(Tasks.failure(tdsRequired))
         assertThat(viewModel.startVerifyCommand.value, `is`(tdsId))
         viewModel.onStartedVerify()
@@ -318,8 +318,8 @@ class CardFormScreenViewModelTest {
     @Test
     fun onCompleteCardVerify_canceled() {
         val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
-        val tdsId = ThreeDSecureId(identifier = "tds_xxx")
-        val tdsRequired = PayjpRequiredTdsException(tdsId = tdsId)
+        val tdsId = ThreeDSecureToken(id = "tds_xxx")
+        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsId)
         viewModel.onCreateToken(Tasks.failure(tdsRequired))
         viewModel.onCompleteCardVerify(PayjpVerifyCardResult.Canceled)
 
@@ -337,8 +337,8 @@ class CardFormScreenViewModelTest {
     @Test
     fun clear_snackBarMessage_after_displayed() {
         val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
-        val tdsId = ThreeDSecureId(identifier = "tds_xxx")
-        val tdsRequired = PayjpRequiredTdsException(tdsId = tdsId)
+        val tdsId = ThreeDSecureToken(id = "tds_xxx")
+        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsId)
         viewModel.onCreateToken(Tasks.failure(tdsRequired))
         viewModel.onCompleteCardVerify(PayjpVerifyCardResult.Canceled)
 
@@ -352,8 +352,8 @@ class CardFormScreenViewModelTest {
 
     @Test
     fun onCompleteCardVerify_success_createToken_success() {
-        val tdsId = ThreeDSecureId(identifier = "tds_xxx")
-        val tdsRequired = PayjpRequiredTdsException(tdsId = tdsId)
+        val tdsId = ThreeDSecureToken(id = "tds_xxx")
+        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsId)
         val tokenId = "tok_xxx"
         val card = TestStubs.newCard()
         val token = TestStubs.newToken(id = tokenId, card = card)
@@ -380,8 +380,8 @@ class CardFormScreenViewModelTest {
 
     @Test
     fun onCompleteCardVerify_success_createToken_failure() {
-        val tdsId = ThreeDSecureId(identifier = "tds_xxx")
-        val tdsRequired = PayjpRequiredTdsException(tdsId = tdsId)
+        val tdsId = ThreeDSecureToken(id = "tds_xxx")
+        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsId)
         val error = RuntimeException("omg")
         val message = "message"
         `when`(mockTokenService.createToken(tdsId)).thenReturn(Tasks.failure(error))
@@ -403,12 +403,12 @@ class CardFormScreenViewModelTest {
 
     @Test
     fun onCompleteCardVerify_success_tdsId_from_state() {
-        val tdsId = ThreeDSecureId(identifier = "tds_xxx")
+        val tdsId = ThreeDSecureToken(id = "tds_xxx")
         val tokenId = "tok_xxx"
         val card = TestStubs.newCard()
         val token = TestStubs.newToken(id = tokenId, card = card)
         val savedStateHandle = SavedStateHandle()
-        savedStateHandle.set(CardFormScreenViewModel::pendingTdsId.name, tdsId)
+        savedStateHandle.set(CardFormScreenViewModel::pendingTdsToken.name, tdsId)
 
         `when`(mockTokenService.createToken(tdsId)).thenReturn(Tasks.success(token))
         val handlerExecutor = RecordingHandlerExecutor()

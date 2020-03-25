@@ -42,7 +42,7 @@ import jp.pay.android.exception.PayjpRequiredTdsException
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
-import jp.pay.android.model.ThreeDSecureId
+import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.util.delegate
 import jp.pay.android.util.delegateLiveData
@@ -67,7 +67,7 @@ internal class CardFormScreenViewModel(
     override val errorDialogMessage: MutableLiveData<CharSequence> by handle.delegateLiveData()
     override val errorViewText: MutableLiveData<CharSequence> by handle.delegateLiveData()
     override val success: MutableLiveData<Token> by handle.delegateLiveData()
-    override val startVerifyCommand: MutableLiveData<ThreeDSecureId> by handle.delegateLiveData()
+    override val startVerifyCommand: MutableLiveData<ThreeDSecureToken> by handle.delegateLiveData()
     override val snackBarMessage: MutableLiveData<Int> by handle.delegateLiveData()
     // private property
     private var fetchAcceptedBrandsTask: Task<CardBrandsAcceptedResponse>? = null
@@ -76,7 +76,7 @@ internal class CardFormScreenViewModel(
     private var fetchBrandsProcessing: Boolean by handle.delegate(initialValue = false)
     private var tokenizeProcessing: Boolean by handle.delegate(initialValue = false)
     @VisibleForTesting
-    val pendingTdsId: MutableLiveData<ThreeDSecureId> by handle.delegateLiveData()
+    val pendingTdsToken: MutableLiveData<ThreeDSecureToken> by handle.delegateLiveData()
 
     override fun onCleared() {
         fetchAcceptedBrandsTask?.cancel()
@@ -106,7 +106,7 @@ internal class CardFormScreenViewModel(
     }
 
     override fun onCompleteCardVerify(result: PayjpVerifyCardResult) {
-        val tdsId = pendingTdsId.value
+        val tdsId = pendingTdsToken.value
         if (result is PayjpVerifyCardResult.Success && tdsId != null) {
             tokenizeProcessing = true
             setSubmitButtonVisible(false)
@@ -169,8 +169,8 @@ internal class CardFormScreenViewModel(
         }
     }
 
-    private fun createTokenWithTdsId(id: ThreeDSecureId) {
-        fetchTokenTask = tokenService.createToken(id).also {
+    private fun createTokenWithTdsId(token: ThreeDSecureToken) {
+        fetchTokenTask = tokenService.createToken(token).also {
             enqueueTokenTask(it)
         }
     }
@@ -184,8 +184,8 @@ internal class CardFormScreenViewModel(
 
             override fun onError(throwable: Throwable) {
                 when (throwable) {
-                    is PayjpRequiredTdsException -> throwable.tdsId.let {
-                        pendingTdsId.value = it
+                    is PayjpRequiredTdsException -> throwable.tdsToken.let {
+                        pendingTdsToken.value = it
                         startVerifyCommand.value = it
                     }
                     else -> showTokenError(throwable)

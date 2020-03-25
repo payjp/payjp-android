@@ -26,7 +26,7 @@ import android.util.Base64
 import java.nio.charset.Charset
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
-import jp.pay.android.model.ThreeDSecureId
+import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.network.TokenApiClientFactory.createApiClient
 import jp.pay.android.network.TokenApiClientFactory.createOkHttp
@@ -81,10 +81,10 @@ class PayjpToken internal constructor(
         )
     }
 
-    override fun createToken(id: ThreeDSecureId): Task<Token> {
+    override fun createToken(token: ThreeDSecureToken): Task<Token> {
         return payjpApi.createToken(
             authorization = authorization,
-            tdsId = id.identifier
+            tdsId = token.id
         )
     }
 

@@ -40,7 +40,7 @@ import jp.pay.android.fixtures.TOKEN_OK
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ClientInfo
 import jp.pay.android.model.TenantId
-import jp.pay.android.model.ThreeDSecureId
+import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.network.TokenApiClientFactory.createApiClient
 import jp.pay.android.network.TokenApiClientFactory.createOkHttp
 import okhttp3.mockwebserver.Dispatcher
@@ -290,7 +290,7 @@ class PayjpTokenTest {
             task.run()
             fail()
         } catch (e: PayjpRequiredTdsException) {
-            assertEquals(tdsId, e.tdsId.identifier)
+            assertEquals(tdsId, e.tdsToken.id)
         }
     }
 
@@ -298,7 +298,7 @@ class PayjpTokenTest {
     fun createToken_by_card() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
 
-        val tdsId = ThreeDSecureId("tds_xxx")
+        val tdsId = ThreeDSecureToken("tds_xxx")
         PayjpToken(
             configuration = configuration,
             payjpApi = createApi()
@@ -320,7 +320,7 @@ class PayjpTokenTest {
                 )
                 assertEquals("en", request.getHeader("Locale"))
                 assertEquals(
-                    "tds_id=${tdsId.identifier}",
+                    "tds_id=${tdsId.id}",
                     request.body.readString(Charset.forName("utf-8"))
                 )
             }

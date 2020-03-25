@@ -28,7 +28,7 @@ import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import jp.pay.android.PayjpLogger
 import jp.pay.android.PayjpTokenService
-import jp.pay.android.model.ThreeDSecureId
+import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.verifier.ui.PayjpVerifyCardActivity
 import jp.pay.android.verifier.ui.PayjpVerifyCardResultCallback
 
@@ -52,13 +52,13 @@ object PayjpVerifier {
     }
 
     @MainThread
-    fun startWebVerify(tdsId: ThreeDSecureId, activity: Activity, requestCode: Int? = null) {
-        PayjpVerifyCardActivity.start(activity, tdsId, requestCode)
+    fun startWebVerify(tdsToken: ThreeDSecureToken, activity: Activity, requestCode: Int? = null) {
+        PayjpVerifyCardActivity.start(activity, tdsToken, requestCode)
     }
 
     @MainThread
-    fun startWebVerify(tdsId: ThreeDSecureId, fragment: Fragment, requestCode: Int? = null) {
-        PayjpVerifyCardActivity.start(fragment, tdsId, requestCode)
+    fun startWebVerify(tdsToken: ThreeDSecureToken, fragment: Fragment, requestCode: Int? = null) {
+        PayjpVerifyCardActivity.start(fragment, tdsToken, requestCode)
     }
 
     @MainThread

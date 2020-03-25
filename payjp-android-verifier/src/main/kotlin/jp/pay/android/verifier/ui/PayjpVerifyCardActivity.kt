@@ -36,7 +36,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import jp.pay.android.PayjpLogger
-import jp.pay.android.model.ThreeDSecureId
+import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.verifier.PayjpVerifier
 import jp.pay.android.verifier.R
 
@@ -52,20 +52,20 @@ class PayjpVerifyCardActivity : AppCompatActivity(R.layout.payjp_verify_card_act
         private const val EXTRA_KEY_SUCCESS = "EXTRA_KEY_SUCCESS"
         private const val EXTRA_KEY_TDS_ID = "EXTRA_KEY_TDS_ID"
 
-        fun start(activity: Activity, tdsId: ThreeDSecureId, requestCode: Int?) {
+        fun start(activity: Activity, tdsToken: ThreeDSecureToken, requestCode: Int?) {
             activity.startActivityForResult(
                 Intent(activity, PayjpVerifyCardActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                    .putExtra(EXTRA_KEY_TDS_ID, tdsId.identifier),
+                    .putExtra(EXTRA_KEY_TDS_ID, tdsToken.id),
                 requestCode ?: DEFAULT_CARD_TDS_1_REQUEST_CODE
             )
         }
 
-        fun start(fragment: Fragment, tdsId: ThreeDSecureId, requestCode: Int?) {
+        fun start(fragment: Fragment, tdsToken: ThreeDSecureToken, requestCode: Int?) {
             fragment.startActivityForResult(
                 Intent(fragment.requireActivity(), PayjpVerifyCardActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                    .putExtra(EXTRA_KEY_TDS_ID, tdsId.identifier),
+                    .putExtra(EXTRA_KEY_TDS_ID, tdsToken.id),
                 requestCode ?: DEFAULT_CARD_TDS_1_REQUEST_CODE
             )
         }
@@ -81,8 +81,8 @@ class PayjpVerifyCardActivity : AppCompatActivity(R.layout.payjp_verify_card_act
         }
     }
 
-    private val tdsId: ThreeDSecureId by lazy {
-        ThreeDSecureId(intent.getStringExtra(EXTRA_KEY_TDS_ID) as String)
+    private val tdsToken: ThreeDSecureToken by lazy {
+        ThreeDSecureToken(intent.getStringExtra(EXTRA_KEY_TDS_ID) as String)
     }
     private lateinit var webView: VerifyCardWebView
     private val logger: PayjpLogger = PayjpVerifier.logger()
@@ -133,7 +133,7 @@ class PayjpVerifyCardActivity : AppCompatActivity(R.layout.payjp_verify_card_act
     private fun startLoad() {
         val authorization: String = PayjpVerifier.tokenService().getAuthorization()
         webView.loadUrl(
-            tdsId.getTdsEntryUri().toString(),
+            tdsToken.getTdsEntryUri().toString(),
             mutableMapOf("Authorization" to authorization)
         )
     }
@@ -157,7 +157,7 @@ class PayjpVerifyCardActivity : AppCompatActivity(R.layout.payjp_verify_card_act
             swipeRefresh = swipeRefresh
         ))
         webView.addOnFinishedLoadState { _, url ->
-            if (url == tdsId.getTdsFinishUri().toString()) {
+            if (url == tdsToken.getTdsFinishUri().toString()) {
                 finishWithSuccess()
             }
         }
@@ -181,7 +181,7 @@ class PayjpVerifyCardActivity : AppCompatActivity(R.layout.payjp_verify_card_act
 
     private fun finishWithSuccess() {
         val data = Intent().putExtra(EXTRA_KEY_SUCCESS, true).apply {
-            putExtra(EXTRA_KEY_TDS_ID, tdsId.identifier)
+            putExtra(EXTRA_KEY_TDS_ID, tdsToken.id)
         }
         setResult(Activity.RESULT_OK, data)
         finish()

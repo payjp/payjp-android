@@ -29,14 +29,14 @@ import kotlinx.android.parcel.Parcelize
 
 /**
  *
- * @param identifier id
+ * @param id id
  */
 @Parcelize
-data class ThreeDSecureId(val identifier: String) : Parcelable {
+data class ThreeDSecureToken(val id: String) : Parcelable {
     private fun getTdsBaseUri(): Uri = Uri.parse(PayjpConstants.API_ENDPOINT)
         .buildUpon()
         .appendPath("tds")
-        .appendPath(identifier)
+        .appendPath(id)
         .build()
 
     fun getTdsEntryUri(): Uri = getTdsBaseUri()

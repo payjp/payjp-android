@@ -30,11 +30,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class ThreeDSecureIdTest {
+class ThreeDSecureTokenTest {
     @Test
     fun getTdsEntryUri() {
         val id = "tds_xxx"
-        val tdsId = ThreeDSecureId(id)
+        val tdsId = ThreeDSecureToken(id)
         assertThat(tdsId.getTdsEntryUri().toString(),
             `is`("${PayjpConstants.API_ENDPOINT}tds/$id/start")
         )
@@ -43,7 +43,7 @@ class ThreeDSecureIdTest {
     @Test
     fun getTdsFinishUri() {
         val id = "tds_xxx"
-        val tdsId = ThreeDSecureId(id)
+        val tdsId = ThreeDSecureToken(id)
         assertThat(tdsId.getTdsFinishUri().toString(),
             `is`("${PayjpConstants.API_ENDPOINT}tds/$id/finish")
         )

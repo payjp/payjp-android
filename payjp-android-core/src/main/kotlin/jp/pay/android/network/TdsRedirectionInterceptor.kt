@@ -23,7 +23,7 @@
 package jp.pay.android.network
 
 import jp.pay.android.exception.PayjpRequiredTdsException
-import jp.pay.android.model.ThreeDSecureId
+import jp.pay.android.model.ThreeDSecureToken
 import okhttp3.Interceptor
 import okhttp3.Response
 
@@ -45,7 +45,7 @@ internal class TdsRedirectionInterceptor : Interceptor {
             response.header("location")?.let { location ->
                 REGEX_TDS_PATH.find(location)?.destructured
             }?.let { (id) ->
-                throw PayjpRequiredTdsException(ThreeDSecureId(identifier = id))
+                throw PayjpRequiredTdsException(ThreeDSecureToken(id = id))
             }
         }
         return response
