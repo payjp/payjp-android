@@ -27,7 +27,6 @@ import jp.pay.android.Task
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ThreeDSecureId
 import jp.pay.android.model.Token
-import jp.pay.android.util.OneOffValue
 import jp.pay.android.verifier.ui.PayjpVerifyCardResult
 
 internal interface CardFormScreenContract {
@@ -41,6 +40,14 @@ internal interface CardFormScreenContract {
         fun onClickReload()
 
         fun onCompleteCardVerify(result: PayjpVerifyCardResult)
+
+        fun onAddedCardForm()
+
+        fun onStartedVerify()
+
+        fun onDisplayedErrorMessage()
+
+        fun onDisplaySnackBarMessage()
     }
 
     interface Output {
@@ -51,11 +58,12 @@ internal interface CardFormScreenContract {
         val submitButtonVisibility: LiveData<Int>
         val submitButtonProgressVisibility: LiveData<Int>
         val submitButtonIsEnabled: LiveData<Boolean>
-        val acceptedBrands: LiveData<OneOffValue<List<CardBrand>>>
-        val errorDialogMessage: LiveData<OneOffValue<CharSequence>>
+        val acceptedBrands: LiveData<ArrayList<CardBrand>>
+        val addCardFormCommand: LiveData<ArrayList<CardBrand>>
+        val errorDialogMessage: LiveData<CharSequence>
         val errorViewText: LiveData<CharSequence>
-        val success: LiveData<OneOffValue<Token>>
-        val startVerify: LiveData<OneOffValue<ThreeDSecureId>>
-        val snackBarMessage: LiveData<OneOffValue<Int>>
+        val success: LiveData<Token>
+        val startVerifyCommand: LiveData<ThreeDSecureId>
+        val snackBarMessage: LiveData<Int>
     }
 }

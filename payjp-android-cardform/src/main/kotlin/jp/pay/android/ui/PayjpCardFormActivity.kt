@@ -50,6 +50,7 @@ import jp.pay.android.ui.extension.showWith
 import jp.pay.android.ui.widget.PayjpAcceptedBrandsView
 import jp.pay.android.ui.widget.PayjpCardFormFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
+import jp.pay.android.util.nonNull
 import jp.pay.android.verifier.PayjpVerifier
 import jp.pay.android.verifier.ui.PayjpVerifyCardResultCallback
 
@@ -175,7 +176,7 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
         viewModel = ViewModelProvider(this, vmFactory).get(CardFormScreenViewModel::class.java)
             .also { vm ->
                 lifecycle.addObserver(vm)
-                vm.acceptedBrands.value?.peek()?.let(acceptedBrandsView::setAcceptedBrands)
+                vm.acceptedBrands.nonNull().observe(this, acceptedBrandsView::setAcceptedBrands)
                 vm.contentViewVisibility.observe(this, contentView::setVisibility)
                 vm.errorViewVisibility.observe(this, errorView::setVisibility)
                 vm.loadingViewVisibility.observe(this, loadingView::setVisibility)
@@ -184,24 +185,14 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
                 vm.submitButtonProgressVisibility.observe(this, submitButtonProgress::setVisibility)
                 vm.submitButtonIsEnabled.observe(this, submitButton::setEnabled)
                 vm.errorViewText.observe(this, errorMessageView::setText)
-                vm.acceptedBrands.observe(this) { oneOff ->
-                    oneOff.consume { brands ->
-                        acceptedBrandsView.setAcceptedBrands(brands)
-                        cardFormFragment = addCardFormFragment(brands.toTypedArray())
-                    }
+                vm.addCardFormCommand.nonNull().observe(this) { brands ->
+                    cardFormFragment = addCardFormFragment(brands.toTypedArray())
+                    viewModel?.onAddedCardForm()
                 }
-                vm.errorDialogMessage.observe(this) { oneOff ->
-                    oneOff.consume(this::showErrorMessage)
-                }
-                vm.success.observe(this) { oneOff ->
-                    oneOff.consume(this::finishWithSuccess)
-                }
-                vm.startVerify.observe(this) { oneOff ->
-                    oneOff.consume(this::startVerify)
-                }
-                vm.snackBarMessage.observe(this) { oneOff ->
-                    oneOff.consume(this::showSnackBarMessage)
-                }
+                vm.errorDialogMessage.nonNull().observe(this, this::showErrorMessage)
+                vm.success.nonNull().observe(this, this::finishWithSuccess)
+                vm.startVerifyCommand.nonNull().observe(this, this::startVerify)
+                vm.snackBarMessage.nonNull().observe(this, this::showSnackBarMessage)
             }
     }
 
@@ -246,6 +237,7 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
 
     private fun showSnackBarMessage(@StringRes message: Int) {
         Snackbar.make(findViewById(R.id.content_view), message, Snackbar.LENGTH_SHORT).show()
+        viewModel?.onDisplaySnackBarMessage()
     }
 
     private fun showErrorMessage(message: CharSequence) {
@@ -255,6 +247,7 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
             .setNegativeButton(R.string.payjp_card_form_dialog_ok, null)
             .create()
             .showWith(this)
+        viewModel?.onDisplayedErrorMessage()
     }
 
     private fun finishWithSuccess(token: Token) {
@@ -265,5 +258,6 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
 
     private fun startVerify(tdsId: ThreeDSecureId) {
         PayjpVerifier.startWebVerify(tdsId, this)
+        viewModel?.onStartedVerify()
     }
 }

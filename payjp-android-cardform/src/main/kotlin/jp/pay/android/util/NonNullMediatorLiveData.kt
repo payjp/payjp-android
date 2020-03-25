@@ -20,32 +20,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.model
+package jp.pay.android.util
 
-import android.net.Uri
-import android.os.Parcelable
-import jp.pay.android.PayjpConstants
-import kotlinx.android.parcel.Parcelize
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 
-/**
- *
- * @param identifier id
- */
-@Parcelize
-data class ThreeDSecureId(val identifier: String) : Parcelable {
-    private fun getTdsBaseUri(): Uri = Uri.parse(PayjpConstants.API_ENDPOINT)
-        .buildUpon()
-        .appendPath("tds")
-        .appendPath(identifier)
-        .build()
+class NonNullMediatorLiveData<T> : MediatorLiveData<T>()
 
-    fun getTdsEntryUri(): Uri = getTdsBaseUri()
-        .buildUpon()
-        .appendPath("start")
-        .build()
-
-    fun getTdsFinishUri(): Uri = getTdsBaseUri()
-        .buildUpon()
-        .appendPath("finish")
-        .build()
+fun <T> LiveData<T>.nonNull(): NonNullMediatorLiveData<T> {
+    val mediator: NonNullMediatorLiveData<T> = NonNullMediatorLiveData()
+    mediator.addSource(this) { it?.let { mediator.value = it } }
+    return mediator
+}
+fun <T> NonNullMediatorLiveData<T>.observe(owner: LifecycleOwner, observer: (t: T) -> Unit) {
+    this.observe(owner, androidx.lifecycle.Observer {
+        it?.let(observer)
+    })
 }
