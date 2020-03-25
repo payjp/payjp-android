@@ -44,7 +44,6 @@ import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
-import jp.pay.android.util.delegate
 import jp.pay.android.util.delegateLiveData
 import jp.pay.android.verifier.ui.PayjpVerifyCardResult
 
@@ -73,8 +72,8 @@ internal class CardFormScreenViewModel(
     private var fetchAcceptedBrandsTask: Task<CardBrandsAcceptedResponse>? = null
     private var createTokenTask: Task<Token>? = null
     private var fetchTokenTask: Task<Token>? = null
-    private var fetchBrandsProcessing: Boolean by handle.delegate(initialValue = false)
-    private var tokenizeProcessing: Boolean by handle.delegate(initialValue = false)
+    private var fetchBrandsProcessing: Boolean = false
+    private var tokenizeProcessing: Boolean = false
     @VisibleForTesting
     val pendingTdsToken: MutableLiveData<ThreeDSecureToken> by handle.delegateLiveData()
 
@@ -229,11 +228,6 @@ internal class CardFormScreenViewModel(
             submitButtonVisibility.value = View.INVISIBLE
             submitButtonProgressVisibility.value = View.VISIBLE
         }
-    }
-
-    companion object {
-        @VisibleForTesting
-        const val STATE_KEY_TDS_ID = "tds_id"
     }
 
     internal class Factory(
