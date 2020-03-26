@@ -30,4 +30,14 @@ sealed class PayjpVerifyCardResult {
     object Success : PayjpVerifyCardResult()
 
     object Canceled : PayjpVerifyCardResult()
+
+    /**
+     * Return it is success.
+     */
+    fun isSuccess(): Boolean = this == Success
+
+    /**
+     * Return it is canceled.
+     */
+    fun isCanceled(): Boolean = this === Canceled
 }
