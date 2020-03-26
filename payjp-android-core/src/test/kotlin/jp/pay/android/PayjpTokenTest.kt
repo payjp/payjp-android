@@ -298,12 +298,12 @@ class PayjpTokenTest {
     fun createToken_by_card() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
 
-        val tdsId = ThreeDSecureToken("tds_xxx")
+        val tdsToken = ThreeDSecureToken("tds_xxx")
         PayjpToken(
             configuration = configuration,
             payjpApi = createApi()
         )
-            .createToken(tdsId)
+            .createToken(tdsToken)
             .run()
             .let { token ->
                 assertEquals("tok_5ca06b51685e001723a2c3b4aeb4", token.id)
@@ -320,7 +320,7 @@ class PayjpTokenTest {
                 )
                 assertEquals("en", request.getHeader("Locale"))
                 assertEquals(
-                    "tds_id=${tdsId.id}",
+                    "tds_id=${tdsToken.id}",
                     request.body.readString(Charset.forName("utf-8"))
                 )
             }

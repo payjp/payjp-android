@@ -34,8 +34,8 @@ class ThreeDSecureTokenTest {
     @Test
     fun getTdsEntryUri() {
         val id = "tds_xxx"
-        val tdsId = ThreeDSecureToken(id)
-        assertThat(tdsId.getTdsEntryUri().toString(),
+        val token = ThreeDSecureToken(id)
+        assertThat(token.getTdsEntryUri().toString(),
             `is`("${PayjpConstants.API_ENDPOINT}tds/$id/start")
         )
     }
@@ -43,8 +43,8 @@ class ThreeDSecureTokenTest {
     @Test
     fun getTdsFinishUri() {
         val id = "tds_xxx"
-        val tdsId = ThreeDSecureToken(id)
-        assertThat(tdsId.getTdsFinishUri().toString(),
+        val token = ThreeDSecureToken(id)
+        assertThat(token.getTdsFinishUri().toString(),
             `is`("${PayjpConstants.API_ENDPOINT}tds/$id/finish")
         )
     }

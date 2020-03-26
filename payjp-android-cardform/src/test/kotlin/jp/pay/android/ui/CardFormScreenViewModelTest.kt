@@ -292,12 +292,12 @@ class CardFormScreenViewModelTest {
     @Test
     fun start_verify_if_tds_required() {
         val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
-        val tdsId = ThreeDSecureToken(id = "tds_xxx")
-        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsId)
+        val tdsToken = ThreeDSecureToken(id = "tds_xxx")
+        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsToken)
         viewModel.onCreateToken(Tasks.failure(tdsRequired))
         viewModel.run {
             assertThat(success.value, nullValue())
-            assertThat(startVerifyCommand.value, `is`(tdsId))
+            assertThat(startVerifyCommand.value, `is`(tdsToken))
             assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
             assertThat(submitButtonProgressVisibility.value, `is`(View.VISIBLE))
         }
@@ -307,10 +307,10 @@ class CardFormScreenViewModelTest {
     @Test
     fun clear_start_verify_command_after_command() {
         val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
-        val tdsId = ThreeDSecureToken(id = "tds_xxx")
-        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsId)
+        val tdsToken = ThreeDSecureToken(id = "tds_xxx")
+        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsToken)
         viewModel.onCreateToken(Tasks.failure(tdsRequired))
-        assertThat(viewModel.startVerifyCommand.value, `is`(tdsId))
+        assertThat(viewModel.startVerifyCommand.value, `is`(tdsToken))
         viewModel.onStartedVerify()
         assertThat(viewModel.startVerifyCommand.value, nullValue())
     }
@@ -318,8 +318,8 @@ class CardFormScreenViewModelTest {
     @Test
     fun onCompleteCardVerify_canceled() {
         val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
-        val tdsId = ThreeDSecureToken(id = "tds_xxx")
-        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsId)
+        val tdsToken = ThreeDSecureToken(id = "tds_xxx")
+        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsToken)
         viewModel.onCreateToken(Tasks.failure(tdsRequired))
         viewModel.onCompleteCardVerify(PayjpVerifyCardResult.Canceled)
 
@@ -337,8 +337,8 @@ class CardFormScreenViewModelTest {
     @Test
     fun clear_snackBarMessage_after_displayed() {
         val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
-        val tdsId = ThreeDSecureToken(id = "tds_xxx")
-        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsId)
+        val tdsToken = ThreeDSecureToken(id = "tds_xxx")
+        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsToken)
         viewModel.onCreateToken(Tasks.failure(tdsRequired))
         viewModel.onCompleteCardVerify(PayjpVerifyCardResult.Canceled)
 
@@ -352,13 +352,13 @@ class CardFormScreenViewModelTest {
 
     @Test
     fun onCompleteCardVerify_success_createToken_success() {
-        val tdsId = ThreeDSecureToken(id = "tds_xxx")
-        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsId)
+        val tdsToken = ThreeDSecureToken(id = "tds_xxx")
+        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsToken)
         val tokenId = "tok_xxx"
         val card = TestStubs.newCard()
         val token = TestStubs.newToken(id = tokenId, card = card)
 
-        `when`(mockTokenService.createToken(tdsId)).thenReturn(Tasks.success(token))
+        `when`(mockTokenService.createToken(tdsToken)).thenReturn(Tasks.success(token))
         val handlerExecutor = RecordingHandlerExecutor()
         val viewModel = createViewModel(tokenHandlerExecutor = handlerExecutor)
 
@@ -369,7 +369,7 @@ class CardFormScreenViewModelTest {
             assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
             assertThat(submitButtonProgressVisibility.value, `is`(View.VISIBLE))
         }
-        verify(mockTokenService).createToken(tdsId)
+        verify(mockTokenService).createToken(tdsToken)
 
         handlerExecutor.callback?.invoke(PayjpTokenBackgroundHandler.CardFormStatus.Complete())
 
@@ -380,11 +380,11 @@ class CardFormScreenViewModelTest {
 
     @Test
     fun onCompleteCardVerify_success_createToken_failure() {
-        val tdsId = ThreeDSecureToken(id = "tds_xxx")
-        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsId)
+        val tdsToken = ThreeDSecureToken(id = "tds_xxx")
+        val tdsRequired = PayjpRequiredTdsException(tdsToken = tdsToken)
         val error = RuntimeException("omg")
         val message = "message"
-        `when`(mockTokenService.createToken(tdsId)).thenReturn(Tasks.failure(error))
+        `when`(mockTokenService.createToken(tdsToken)).thenReturn(Tasks.failure(error))
         `when`(mockErrorTranslator.translate(error)).thenReturn(message)
         val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
 
@@ -397,20 +397,20 @@ class CardFormScreenViewModelTest {
             assertThat(errorDialogMessage.value, `is`(message as CharSequence))
             assertThat(success.value, nullValue())
         }
-        verify(mockTokenService).createToken(tdsId)
+        verify(mockTokenService).createToken(tdsToken)
         verify(mockTokenHandlerExecutor, never()).post(anyNullable(), anyNullable())
     }
 
     @Test
-    fun onCompleteCardVerify_success_tdsId_from_state() {
-        val tdsId = ThreeDSecureToken(id = "tds_xxx")
+    fun onCompleteCardVerify_success_tdsToken_from_state() {
+        val tdsToken = ThreeDSecureToken(id = "tds_xxx")
         val tokenId = "tok_xxx"
         val card = TestStubs.newCard()
         val token = TestStubs.newToken(id = tokenId, card = card)
         val savedStateHandle = SavedStateHandle()
-        savedStateHandle.set(CardFormScreenViewModel::pendingTdsToken.name, tdsId)
+        savedStateHandle.set(CardFormScreenViewModel::pendingTdsToken.name, tdsToken)
 
-        `when`(mockTokenService.createToken(tdsId)).thenReturn(Tasks.success(token))
+        `when`(mockTokenService.createToken(tdsToken)).thenReturn(Tasks.success(token))
         val handlerExecutor = RecordingHandlerExecutor()
         val viewModel = createViewModel(
             savedStateHandle = savedStateHandle,
@@ -422,7 +422,7 @@ class CardFormScreenViewModelTest {
             assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
             assertThat(submitButtonProgressVisibility.value, `is`(View.VISIBLE))
         }
-        verify(mockTokenService).createToken(tdsId)
+        verify(mockTokenService).createToken(tdsToken)
 
         handlerExecutor.callback?.invoke(PayjpTokenBackgroundHandler.CardFormStatus.Complete())
 

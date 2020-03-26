@@ -105,11 +105,11 @@ internal class CardFormScreenViewModel(
     }
 
     override fun onCompleteCardVerify(result: PayjpVerifyCardResult) {
-        val tdsId = pendingTdsToken.value
-        if (result is PayjpVerifyCardResult.Success && tdsId != null) {
+        val tdsToken = pendingTdsToken.value
+        if (result is PayjpVerifyCardResult.Success && tdsToken != null) {
             tokenizeProcessing = true
             setSubmitButtonVisible(false)
-            createTokenWithTdsId(tdsId)
+            createTokenWithTdsToken(tdsToken)
         } else {
             snackBarMessage.value = R.string.payjp_card_form_message_cancel_verification
             setSubmitButtonVisible(true)
@@ -168,7 +168,7 @@ internal class CardFormScreenViewModel(
         }
     }
 
-    private fun createTokenWithTdsId(token: ThreeDSecureToken) {
+    private fun createTokenWithTdsToken(token: ThreeDSecureToken) {
         fetchTokenTask = tokenService.createToken(token).also {
             enqueueTokenTask(it)
         }
