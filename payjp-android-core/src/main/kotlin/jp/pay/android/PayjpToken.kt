@@ -67,6 +67,8 @@ class PayjpToken internal constructor(
         authorization = createAuthorization(configuration.publicKey)
     }
 
+    override fun getPublicKey(): String = configuration.publicKey
+
     override fun getAuthorization(): String = authorization
 
     override fun createToken(param: PayjpTokenParam): Task<Token> {

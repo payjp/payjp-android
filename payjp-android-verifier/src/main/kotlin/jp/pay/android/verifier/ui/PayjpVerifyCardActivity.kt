@@ -133,7 +133,7 @@ class PayjpVerifyCardActivity : AppCompatActivity(R.layout.payjp_verify_card_act
     private fun startLoad() {
         val authorization: String = PayjpVerifier.tokenService().getAuthorization()
         webView.loadUrl(
-            tdsToken.getTdsEntryUri().toString(),
+            tdsToken.getTdsEntryUri(publicKey = PayjpVerifier.tokenService().getPublicKey()).toString(),
             mutableMapOf("Authorization" to authorization)
         )
     }

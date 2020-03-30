@@ -32,6 +32,8 @@ import jp.pay.android.model.Token
  */
 interface PayjpTokenService {
 
+    fun getPublicKey(): String
+
     fun getAuthorization(): String
 
     /**

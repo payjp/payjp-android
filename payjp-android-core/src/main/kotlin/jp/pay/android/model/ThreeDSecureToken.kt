@@ -39,9 +39,15 @@ data class ThreeDSecureToken(val id: String) : Parcelable {
         .appendPath(id)
         .build()
 
-    fun getTdsEntryUri(): Uri = getTdsBaseUri()
+    fun getTdsEntryUri(publicKey: String, redirectUrlKey: String? = null): Uri = getTdsBaseUri()
         .buildUpon()
         .appendPath("start")
+        .appendQueryParameter("publickey", publicKey)
+        .apply {
+            if (redirectUrlKey != null) {
+                appendQueryParameter("redirect_url", redirectUrlKey)
+            }
+        }
         .build()
 
     fun getTdsFinishUri(): Uri = getTdsBaseUri()
