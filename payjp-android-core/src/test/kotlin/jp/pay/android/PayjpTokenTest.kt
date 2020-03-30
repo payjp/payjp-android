@@ -269,7 +269,7 @@ class PayjpTokenTest {
             override fun dispatch(request: RecordedRequest): MockResponse = when (request.path) {
                 "/tokens" -> MockResponse()
                     .setResponseCode(303)
-                    .setHeader("Location", "/v1/tds/$tdsId/start")
+                    .setHeader("Location", "${PayjpConstants.API_ENDPOINT}tds/$tdsId/start")
 //                    .setResponseCode(200)
                     .setBody(TOKEN_OK)
                 "/v1/tds/$tdsId/start" -> MockResponse().setResponseCode(200).setBody(TOKEN_OK)
