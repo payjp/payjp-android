@@ -57,7 +57,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="tds" />
+                <data android:scheme="jppayexample" android:host="tds" android:path="/finish" />
             </intent-filter>
         </activity>
 

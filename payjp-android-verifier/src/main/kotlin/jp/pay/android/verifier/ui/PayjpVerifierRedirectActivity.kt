@@ -83,7 +83,7 @@ class PayjpVerifierRedirectActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        PayjpVerifier.logger().d("onActivityResult")
+        PayjpVerifier.logger().d("onActivityResult requestCode $requestCode resultCode $resultCode")
         finish()
     }
 }

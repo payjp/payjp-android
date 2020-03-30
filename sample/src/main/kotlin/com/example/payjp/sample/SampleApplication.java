@@ -79,6 +79,7 @@ public class SampleApplication extends Application {
                 .setDebugEnabled(BuildConfig.DEBUG)
                 .setCardScannerPlugin(PayjpCardScannerPlugin.INSTANCE)
                 .setTokenBackgroundHandler(sendTokenHandler)
+                .setTdsRedirectName("mobileapp")
                 .build());
 
 

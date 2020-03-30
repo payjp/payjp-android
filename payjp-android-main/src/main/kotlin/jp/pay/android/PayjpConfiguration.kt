@@ -46,7 +46,8 @@ class PayjpConfiguration private constructor(
     val callbackExecutor: Executor,
     val clientInfo: ClientInfo,
     val cardScannerPlugin: CardScannerPlugin?,
-    val tokenBackgroundHandler: PayjpTokenBackgroundHandler?
+    val tokenBackgroundHandler: PayjpTokenBackgroundHandler?,
+    val tdsRedirectName: String?
 ) {
 
     fun tokenConfiguration(): PayjpTokenConfiguration = PayjpTokenConfiguration(
@@ -79,6 +80,8 @@ class PayjpConfiguration private constructor(
         private var executor: Executor = MainThreadExecutor
 
         private var clientInfo: ClientInfo = ClientInfo.Builder().build()
+
+        private var tdsRedirectName: String? = null
 
         /**
          * set debugEnabled
@@ -115,6 +118,10 @@ class PayjpConfiguration private constructor(
             this.clientInfo = clientInfo
         }
 
+        fun setTdsRedirectName(name: String?) = apply {
+            this.tdsRedirectName = name
+        }
+
         /**
          * Build configuration.
          *
@@ -127,7 +134,8 @@ class PayjpConfiguration private constructor(
             callbackExecutor = executor,
             clientInfo = clientInfo,
             cardScannerPlugin = cardScannerPlugin,
-            tokenBackgroundHandler = tokenBackgroundHandler
+            tokenBackgroundHandler = tokenBackgroundHandler,
+            tdsRedirectName = tdsRedirectName
         )
     }
 }

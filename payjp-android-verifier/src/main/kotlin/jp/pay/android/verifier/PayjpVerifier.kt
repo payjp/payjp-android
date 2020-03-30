@@ -35,6 +35,7 @@ object PayjpVerifier {
     private const val REQUEST_CODE_VERIFY = 11
     private var logger: PayjpLogger = PayjpLogger.None
     private var tokenService: PayjpTokenService? = null
+    private var tdsRedirectName: String? = null
     private val webBrowserResolver = WebBrowserResolver(
         WebBrowser.ChromeTab,
         WebBrowser.AnyBrowsable,
@@ -43,15 +44,17 @@ object PayjpVerifier {
 
     fun configure(
         logger: PayjpLogger,
-        tokenService: PayjpTokenService
+        tokenService: PayjpTokenService,
+        tdsRedirectName: String?
     ) {
         this.logger = logger
         this.tokenService = tokenService
+        this.tdsRedirectName = tdsRedirectName
     }
 
     internal fun logger(): PayjpLogger = logger
 
-    internal fun tokenService(): PayjpTokenService = checkNotNull(tokenService) {
+    private fun tokenService(): PayjpTokenService = checkNotNull(tokenService) {
         "You must initialize Payjp first"
     }
 
@@ -65,12 +68,17 @@ object PayjpVerifier {
     internal fun startWebVerify(tdsToken: ThreeDSecureToken, activity: Activity) {
         val intent = webBrowserResolver.resolve(
             context = activity,
-            uri = tdsToken.getTdsEntryUri(),
+            uri = tdsToken.getTdsEntryUri(
+                publicKey = tokenService().getPublicKey(),
+                redirectUrlName = tdsRedirectName
+            ),
             callbackUri = tdsToken.getTdsFinishUri()
         )
         if (intent == null) {
             logger.w("Any activity which open Web not found.")
         } else {
+            logger.d("Intent $intent")
+            logger.d("data ${intent.data}")
             activity.startActivityForResult(intent, REQUEST_CODE_VERIFY)
         }
     }
