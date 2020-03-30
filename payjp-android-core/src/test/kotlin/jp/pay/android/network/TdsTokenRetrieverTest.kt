@@ -20,7 +20,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package jp.pay.android.network
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -61,5 +60,4 @@ class TdsTokenRetrieverTest {
         val result = retriever.retrieve("https://api.pay.jp/v1/tds/tds_xxx/start")
         assertThat(result, `is`(ThreeDSecureToken(id = "tds_xxx")))
     }
-
 }

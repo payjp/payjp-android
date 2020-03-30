@@ -20,7 +20,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package jp.pay.android.network
 
 import android.net.Uri
@@ -43,5 +42,4 @@ class TdsTokenRetriever(private val host: String) {
             }
         }
     }
-
 }
