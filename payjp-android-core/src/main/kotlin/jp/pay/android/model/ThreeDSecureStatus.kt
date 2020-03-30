@@ -42,7 +42,7 @@ enum class ThreeDSecureStatus : Parcelable {
     /**
      * The card object has not been verified, but the verification is optional.
      */
-    ATTEMPT,
+    ATTEMPTED,
     /**
      * The card object has not been verified, and the verification is required.
      */
