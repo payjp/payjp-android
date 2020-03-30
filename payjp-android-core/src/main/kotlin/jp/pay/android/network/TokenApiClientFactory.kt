@@ -57,6 +57,7 @@ internal object TokenApiClientFactory {
         debuggable: Boolean = false
     ): OkHttpClient =
         OkHttpClient.Builder()
+            .retryOnConnectionFailure(false)
             .addNetworkInterceptor(TdsRedirectionInterceptor())
             .addInterceptor(CustomHeaderInterceptor(locale, clientInfo, moshi))
             .apply {

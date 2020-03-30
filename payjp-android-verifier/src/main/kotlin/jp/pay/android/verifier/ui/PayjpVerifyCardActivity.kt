@@ -157,7 +157,7 @@ class PayjpVerifyCardActivity : AppCompatActivity(R.layout.payjp_verify_card_act
             swipeRefresh = swipeRefresh
         ))
         webView.addOnFinishedLoadState { _, url ->
-            if (url == tdsToken.getTdsFinishUri().toString()) {
+            if (url.startsWith(tdsToken.getTdsFinishUri().toString())) {
                 finishWithSuccess()
             }
         }

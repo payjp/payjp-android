@@ -99,8 +99,6 @@ class PayjpTokenTest {
             clientInfo = ClientInfo.Builder().build(),
             debuggable = false)
             .newBuilder()
-            // fix wrong host when retry
-            .retryOnConnectionFailure(false)
             .build(),
         callbackExecutor = CurrentThreadExecutor()
     )
@@ -320,7 +318,7 @@ class PayjpTokenTest {
                 )
                 assertEquals("en", request.getHeader("Locale"))
                 assertEquals(
-                    "tds_id=${tdsToken.id}",
+                    "three_d_secure_token=${tdsToken.id}",
                     request.body.readString(Charset.forName("utf-8"))
                 )
             }
