@@ -81,10 +81,10 @@ class PayjpToken internal constructor(
         )
     }
 
-    override fun createToken(token: ThreeDSecureToken): Task<Token> {
+    override fun createToken(tdsToken: ThreeDSecureToken): Task<Token> {
         return payjpApi.createToken(
             authorization = authorization,
-            tdsId = token.id
+            tdsId = tdsToken.id
         )
     }
 
