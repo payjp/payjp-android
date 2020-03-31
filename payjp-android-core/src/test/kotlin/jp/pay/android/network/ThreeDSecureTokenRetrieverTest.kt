@@ -31,32 +31,32 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class TdsTokenRetrieverTest {
+class ThreeDSecureTokenRetrieverTest {
 
     @Test
     fun retrieve_unknown_host() {
-        val retriever = TdsTokenRetriever(host = "api.pay.jp")
+        val retriever = ThreeDSecureTokenRetriever(host = "api.pay.jp")
         val result = retriever.retrieve("https://example.com/v1/tds/tds_xxx/start")
         assertThat(result, nullValue())
     }
 
     @Test
     fun retrieve_unknown_path() {
-        val retriever = TdsTokenRetriever(host = "api.pay.jp")
+        val retriever = ThreeDSecureTokenRetriever(host = "api.pay.jp")
         val result = retriever.retrieve("https://api.pay.jp/v1/unknown/tds_xxx/start")
         assertThat(result, nullValue())
     }
 
     @Test
     fun retrieve_no_id() {
-        val retriever = TdsTokenRetriever(host = "api.pay.jp")
+        val retriever = ThreeDSecureTokenRetriever(host = "api.pay.jp")
         val result = retriever.retrieve("https://api.pay.jp/v1/tds/")
         assertThat(result, nullValue())
     }
 
     @Test
     fun retrieve_valid_url() {
-        val retriever = TdsTokenRetriever(host = "api.pay.jp")
+        val retriever = ThreeDSecureTokenRetriever(host = "api.pay.jp")
         val result = retriever.retrieve("https://api.pay.jp/v1/tds/tds_xxx/start")
         assertThat(result, `is`(ThreeDSecureToken(id = "tds_xxx")))
     }

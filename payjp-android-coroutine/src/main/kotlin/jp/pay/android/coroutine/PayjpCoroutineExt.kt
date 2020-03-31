@@ -57,12 +57,12 @@ suspend fun PayjpTokenService.createTokenSuspend(param: PayjpTokenParam): Token 
 /**
  * Create token with 3-D Secure token by suspend function.
  *
- * @param tdsToken 3-D Secure token
+ * @param threeDSecureToken 3-D Secure token
  * @return token
  * @see [PayjpTokenService.createToken]
  */
-suspend fun PayjpTokenService.createTokenSuspend(tdsToken: ThreeDSecureToken): Token =
-    createToken(tdsToken).toSuspend()
+suspend fun PayjpTokenService.createTokenSuspend(threeDSecureToken: ThreeDSecureToken): Token =
+    createToken(threeDSecureToken).toSuspend()
 
 /**
  * Get token by suspend function.

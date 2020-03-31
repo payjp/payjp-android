@@ -118,7 +118,7 @@ class PayjpConfiguration private constructor(
             this.clientInfo = clientInfo
         }
 
-        fun setTdsRedirectName(name: String?) = apply {
+        fun setThreeDSecureRedirectName(name: String?) = apply {
             this.tdsRedirectName = name
         }
 

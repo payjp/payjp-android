@@ -20,14 +20,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.exception
+package jp.pay.android.network
 
-import java.io.IOException
-import jp.pay.android.model.ThreeDSecureToken
+import jp.pay.android.PayjpConstants
+import jp.pay.android.exception.PayjpThreeDSecureRequiredException
+import okhttp3.Interceptor
+import okhttp3.Response
 
 /**
- * Exception indicate the tokenization has suspended due to required 3DS verification.
+ * Intercept 3DS redirect
  *
- * @param tdsToken 3DS token
+ * It will throw [PayjpThreeDSecureRequiredException] with capturing id from location.
  */
-class PayjpRequiredTdsException(val tdsToken: ThreeDSecureToken) : IOException()
+internal class ThreeDSecureRedirectionInterceptor : Interceptor {
+
+    private val tdsTokenRetriever = ThreeDSecureTokenRetriever(PayjpConstants.API_HOST)
+
+    override fun intercept(c: Interceptor.Chain): Response {
+        val request = c.request()
+        val response = c.proceed(request)
+        if (response.isRedirect) {
+            response.header("location")?.let(tdsTokenRetriever::retrieve)
+                ?.let { token ->
+                    throw PayjpThreeDSecureRequiredException(token)
+                }
+        }
+        return response
+    }
+}

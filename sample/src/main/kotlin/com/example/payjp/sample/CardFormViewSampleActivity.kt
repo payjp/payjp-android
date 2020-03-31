@@ -34,7 +34,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import jp.pay.android.Payjp
 import jp.pay.android.Task
-import jp.pay.android.exception.PayjpRequiredTdsException
+import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
@@ -127,7 +127,7 @@ class CardFormViewSampleActivity : AppCompatActivity(),
         super.onActivityResult(requestCode, resultCode, data)
         Payjp.verifier().handleWebVerifyResult(requestCode, PayjpVerifyCardResultCallback {
             if (it.isSuccess()) {
-                createTokenForTds(it.retrieveTdsToken())
+                createTokenForTds(it.retrieveThreeDSecureToken())
             }
         })
     }
@@ -150,11 +150,11 @@ class CardFormViewSampleActivity : AppCompatActivity(),
 
             override fun onError(throwable: Throwable) {
                 Log.e("CardFormViewSample", "failure creating token", throwable)
-                if (throwable is PayjpRequiredTdsException) {
+                if (throwable is PayjpThreeDSecureRequiredException) {
                     // if support 3DSecure
                     // NOTE: 3DSecure is a limited feature for now.
                     Payjp.verifier()
-                        .startWebVerifyLauncher(throwable.tdsToken, this@CardFormViewSampleActivity)
+                        .startWebVerifyLauncher(throwable.token, this@CardFormViewSampleActivity)
                 } else {
                     text_token_content.text = throwable.toString()
                     progress_bar.visibility = View.GONE

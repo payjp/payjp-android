@@ -58,7 +58,7 @@ class PayjpVerifierRedirectActivity : AppCompatActivity() {
             val uri = intent?.data
             val tdsTokenId = intent?.getStringExtra(EXTRA_KEY_TDS)
             return if (uri != null && tdsTokenId != null) {
-                PayjpVerifyCardResult.Success(tdsToken = ThreeDSecureToken(id = tdsTokenId))
+                PayjpVerifyCardResult.Success(threeDSecureToken = ThreeDSecureToken(id = tdsTokenId))
             } else {
                 PayjpVerifyCardResult.Canceled
             }

@@ -37,7 +37,7 @@ import jp.pay.android.PayjpTokenService
 import jp.pay.android.R
 import jp.pay.android.Task
 import jp.pay.android.TokenHandlerExecutor
-import jp.pay.android.exception.PayjpRequiredTdsException
+import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
@@ -105,7 +105,7 @@ internal class CardFormScreenViewModel(
         if (result.isSuccess()) {
             tokenizeProcessing = true
             setSubmitButtonVisible(false)
-            createTokenWithTdsToken(result.retrieveTdsToken())
+            createTokenWithTdsToken(result.retrieveThreeDSecureToken())
         } else {
             snackBarMessage.value = R.string.payjp_card_form_message_cancel_verification
             setSubmitButtonVisible(true)
@@ -179,8 +179,8 @@ internal class CardFormScreenViewModel(
 
             override fun onError(throwable: Throwable) {
                 when (throwable) {
-                    is PayjpRequiredTdsException -> {
-                        startVerifyCommand.value = throwable.tdsToken
+                    is PayjpThreeDSecureRequiredException -> {
+                        startVerifyCommand.value = throwable.token
                     }
                     else -> showTokenError(throwable)
                 }

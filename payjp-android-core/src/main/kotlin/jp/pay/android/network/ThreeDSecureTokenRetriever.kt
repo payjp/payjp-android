@@ -22,29 +22,24 @@
  */
 package jp.pay.android.network
 
-import jp.pay.android.PayjpConstants
-import jp.pay.android.exception.PayjpRequiredTdsException
-import okhttp3.Interceptor
-import okhttp3.Response
+import android.net.Uri
+import jp.pay.android.model.ThreeDSecureToken
 
-/**
- * Intercept 3DS redirect
- *
- * It will throw [PayjpRequiredTdsException] with capturing id from location.
- */
-internal class TdsRedirectionInterceptor : Interceptor {
+internal class ThreeDSecureTokenRetriever(private val host: String) {
 
-    private val tdsTokenRetriever = TdsTokenRetriever(PayjpConstants.API_HOST)
+    companion object {
+        private val REGEX_TDS_PATH = """\A/v1/tds/([\w\d_]+)/.*\z""".toRegex()
+    }
 
-    override fun intercept(c: Interceptor.Chain): Response {
-        val request = c.request()
-        val response = c.proceed(request)
-        if (response.isRedirect) {
-            response.header("location")?.let(tdsTokenRetriever::retrieve)
-                ?.let { token ->
-                    throw PayjpRequiredTdsException(token)
-                }
+    fun retrieve(url: String): ThreeDSecureToken? {
+        return Uri.parse(url)?.let { uri ->
+            uri.takeIf {
+                host == uri.host && uri.path?.let { REGEX_TDS_PATH.matches(it) } == true
+            }?.let {
+                REGEX_TDS_PATH.find(it.path.orEmpty())?.destructured
+            }?.let { (id) ->
+                ThreeDSecureToken(id = id)
+            }
         }
-        return response
     }
 }

@@ -35,7 +35,7 @@ object PayjpVerifier {
     private const val REQUEST_CODE_VERIFY = 11
     private var logger: PayjpLogger = PayjpLogger.None
     private var tokenService: PayjpTokenService? = null
-    private var tdsRedirectName: String? = null
+    private var threeDSecureRedirectName: String? = null
     private val webBrowserResolver = WebBrowserResolver(
         WebBrowser.ChromeTab,
         WebBrowser.AnyBrowsable,
@@ -45,11 +45,11 @@ object PayjpVerifier {
     fun configure(
         logger: PayjpLogger,
         tokenService: PayjpTokenService,
-        tdsRedirectName: String?
+        threeDSecureRedirectName: String?
     ) {
         this.logger = logger
         this.tokenService = tokenService
-        this.tdsRedirectName = tdsRedirectName
+        this.threeDSecureRedirectName = threeDSecureRedirectName
     }
 
     internal fun logger(): PayjpLogger = logger
@@ -59,20 +59,20 @@ object PayjpVerifier {
     }
 
     @MainThread
-    fun startWebVerifyLauncher(tdsToken: ThreeDSecureToken, activity: Activity) {
-        val intent = PayjpVerifierRedirectActivity.createLaunchIntent(activity, tdsToken)
+    fun startWebVerifyLauncher(threeDSecureToken: ThreeDSecureToken, activity: Activity) {
+        val intent = PayjpVerifierRedirectActivity.createLaunchIntent(activity, threeDSecureToken)
         activity.startActivityForResult(intent, REQUEST_CODE_VERIFY_LAUNCHER)
     }
 
     @MainThread
-    internal fun startWebVerify(tdsToken: ThreeDSecureToken, activity: Activity) {
+    internal fun startWebVerify(threeDSecureToken: ThreeDSecureToken, activity: Activity) {
         val intent = webBrowserResolver.resolve(
             context = activity,
-            uri = tdsToken.getTdsEntryUri(
+            uri = threeDSecureToken.getTdsEntryUri(
                 publicKey = tokenService().getPublicKey(),
-                redirectUrlName = tdsRedirectName
+                redirectUrlName = threeDSecureRedirectName
             ),
-            callbackUri = tdsToken.getTdsFinishUri()
+            callbackUri = threeDSecureToken.getTdsFinishUri()
         )
         if (intent == null) {
             logger.w("Any activity which open Web not found.")

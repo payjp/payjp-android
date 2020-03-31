@@ -30,7 +30,7 @@ import java.util.Locale
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import jp.pay.android.exception.PayjpApiException
-import jp.pay.android.exception.PayjpRequiredTdsException
+import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.fixtures.ACCEPTED_BRANDS_EMPTY
 import jp.pay.android.fixtures.ACCEPTED_BRANDS_FULL
 import jp.pay.android.fixtures.ERROR_AUTH
@@ -287,8 +287,8 @@ class PayjpTokenTest {
         try {
             task.run()
             fail()
-        } catch (e: PayjpRequiredTdsException) {
-            assertEquals(tdsId, e.tdsToken.id)
+        } catch (e: PayjpThreeDSecureRequiredException) {
+            assertEquals(tdsId, e.token.id)
         }
     }
 

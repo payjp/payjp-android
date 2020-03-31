@@ -31,7 +31,7 @@ import androidx.appcompat.app.AppCompatActivity
 import jp.pay.android.Payjp
 import jp.pay.android.coroutine.createTokenSuspend
 import jp.pay.android.coroutine.getTokenSuspend
-import jp.pay.android.exception.PayjpRequiredTdsException
+import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.ui.widget.PayjpCardFormFragment
@@ -88,7 +88,7 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
         super.onActivityResult(requestCode, resultCode, data)
         Payjp.verifier().handleWebVerifyResult(requestCode, PayjpVerifyCardResultCallback {
             if (it.isSuccess()) {
-                createToken(tdsToken = it.retrieveTdsToken())
+                createToken(tdsToken = it.retrieveThreeDSecureToken())
             } else {
                 Toast.makeText(this, "3-D Secure canceled.", Toast.LENGTH_SHORT).show()
             }
@@ -108,8 +108,8 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
                 }
             }
             updateSuccessUI(token)
-        } catch (e: PayjpRequiredTdsException) {
-            Payjp.verifier().startWebVerifyLauncher(e.tdsToken, this@CoroutineSampleActivity)
+        } catch (e: PayjpThreeDSecureRequiredException) {
+            Payjp.verifier().startWebVerifyLauncher(e.token, this@CoroutineSampleActivity)
         } catch (t: Throwable) {
             updateErrorUI(t, "failure creating token")
         }

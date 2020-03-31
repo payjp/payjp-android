@@ -29,7 +29,7 @@ import jp.pay.android.model.ThreeDSecureToken
  */
 sealed class PayjpVerifyCardResult {
 
-    data class Success(val tdsToken: ThreeDSecureToken) : PayjpVerifyCardResult()
+    data class Success(val threeDSecureToken: ThreeDSecureToken) : PayjpVerifyCardResult()
 
     object Canceled : PayjpVerifyCardResult()
 
@@ -47,9 +47,9 @@ sealed class PayjpVerifyCardResult {
      * Get out token from result. If it is not success, throw exception.
      *
      */
-    fun retrieveTdsToken(): ThreeDSecureToken {
+    fun retrieveThreeDSecureToken(): ThreeDSecureToken {
         val success = this as? Success
             ?: throw IllegalStateException("Cannot call retrieveToken() when it is not success")
-        return success.tdsToken
+        return success.threeDSecureToken
     }
 }

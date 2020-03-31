@@ -20,26 +20,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.network
+package jp.pay.android.exception
 
-import android.net.Uri
+import java.io.IOException
 import jp.pay.android.model.ThreeDSecureToken
 
-class TdsTokenRetriever(private val host: String) {
-
-    companion object {
-        private val REGEX_TDS_PATH = """\A/v1/tds/([\w\d_]+)/.*\z""".toRegex()
-    }
-
-    fun retrieve(url: String): ThreeDSecureToken? {
-        return Uri.parse(url)?.let { uri ->
-            uri.takeIf {
-                host == uri.host && uri.path?.let { REGEX_TDS_PATH.matches(it) } == true
-            }?.let {
-                REGEX_TDS_PATH.find(it.path.orEmpty())?.destructured
-            }?.let { (id) ->
-                ThreeDSecureToken(id = id)
-            }
-        }
-    }
-}
+/**
+ * Exception indicate the tokenization has suspended due to required 3DS verification.
+ *
+ * @param token 3DS token
+ */
+class PayjpThreeDSecureRequiredException(val token: ThreeDSecureToken) : IOException()
