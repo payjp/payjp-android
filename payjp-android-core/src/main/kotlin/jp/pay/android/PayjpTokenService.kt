@@ -34,8 +34,6 @@ interface PayjpTokenService {
 
     fun getPublicKey(): String
 
-    fun getAuthorization(): String
-
     /**
      * Create token from card information.
      *
