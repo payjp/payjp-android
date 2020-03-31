@@ -22,22 +22,34 @@
  */
 package jp.pay.android.verifier.ui
 
+import jp.pay.android.model.ThreeDSecureToken
+
 /**
  * State represents of result form the activity that verify card on web.
  */
 sealed class PayjpVerifyCardResult {
 
-    object Success : PayjpVerifyCardResult()
+    data class Success(val tdsToken: ThreeDSecureToken) : PayjpVerifyCardResult()
 
     object Canceled : PayjpVerifyCardResult()
 
     /**
      * Return it is success.
      */
-    fun isSuccess(): Boolean = this == Success
+    fun isSuccess(): Boolean = this is Success
 
     /**
      * Return it is canceled.
      */
     fun isCanceled(): Boolean = this === Canceled
+
+    /**
+     * Get out token from result. If it is not success, throw exception.
+     *
+     */
+    fun retrieveTdsToken(): ThreeDSecureToken {
+        val success = this as? Success
+            ?: throw IllegalStateException("Cannot call retrieveToken() when it is not success")
+        return success.tdsToken
+    }
 }

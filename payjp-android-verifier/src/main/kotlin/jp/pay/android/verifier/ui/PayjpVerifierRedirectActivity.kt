@@ -25,7 +25,6 @@ package jp.pay.android.verifier.ui
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import jp.pay.android.model.ThreeDSecureToken
@@ -33,19 +32,19 @@ import jp.pay.android.verifier.PayjpVerifier
 
 class PayjpVerifierRedirectActivity : AppCompatActivity() {
 
-    internal class UrlHolder {
-        var uri: Uri? = null
+    internal class IntentHolder {
+        var intent: Intent? = null
 
-        fun pop(): Uri? {
-            val u = uri
-            uri = null
-            return u
+        fun pop(): Intent? {
+            val i = intent
+            intent = null
+            return i
         }
     }
 
     companion object {
         private const val EXTRA_KEY_TDS = "EXTRA_KEY_TDS"
-        internal val returnUrlHolder: UrlHolder = UrlHolder()
+        internal val intentHolder: IntentHolder = IntentHolder()
 
         internal fun createLaunchIntent(context: Context, tdsToken: ThreeDSecureToken): Intent {
             return Intent(context, PayjpVerifierRedirectActivity::class.java)
@@ -54,20 +53,30 @@ class PayjpVerifierRedirectActivity : AppCompatActivity() {
         }
 
         internal fun getResult(): PayjpVerifyCardResult {
-            val uri = returnUrlHolder.pop()
-            return if (uri != null) {
-                PayjpVerifyCardResult.Success
+            val intent = intentHolder.pop()
+            PayjpVerifier.logger().d("getResult intent: $intent")
+            val uri = intent?.data
+            val tdsTokenId = intent?.getStringExtra(EXTRA_KEY_TDS)
+            return if (uri != null && tdsTokenId != null) {
+                PayjpVerifyCardResult.Success(tdsToken = ThreeDSecureToken(id = tdsTokenId))
             } else {
                 PayjpVerifyCardResult.Canceled
             }
         }
     }
 
+    private var tdsTokenId: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        intent.getStringExtra(EXTRA_KEY_TDS)?.let { id ->
-            returnUrlHolder.pop()
-            PayjpVerifier.startWebVerify(ThreeDSecureToken(id = id), this)
+        if (savedInstanceState?.containsKey(EXTRA_KEY_TDS) == true) {
+            tdsTokenId = savedInstanceState.getString(EXTRA_KEY_TDS)
+        } else {
+            intent.getStringExtra(EXTRA_KEY_TDS)?.let { id ->
+                tdsTokenId = id
+                intentHolder.pop()
+                PayjpVerifier.startWebVerify(ThreeDSecureToken(id = id), this)
+            }
         }
     }
 
@@ -75,7 +84,7 @@ class PayjpVerifierRedirectActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         PayjpVerifier.logger().d("onNewIntent uri ${intent?.data}")
         intent?.data?.let { uri ->
-            returnUrlHolder.uri = uri
+            intentHolder.intent = Intent().setData(uri).putExtra(EXTRA_KEY_TDS, tdsTokenId)
             setResult(Activity.RESULT_OK)
             finish()
         }
@@ -85,5 +94,12 @@ class PayjpVerifierRedirectActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         PayjpVerifier.logger().d("onActivityResult requestCode $requestCode resultCode $resultCode")
         finish()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        tdsTokenId?.let { id ->
+            outState.putString(EXTRA_KEY_TDS, id)
+        }
     }
 }
