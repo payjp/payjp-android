@@ -67,10 +67,10 @@ interface PayjpTokenService {
     /**
      * Create token from 3DS token
      *
-     * @param tdsToken 3DS token
+     * @param threeDSecureToken 3DS token
      * @return task to create token.
      */
-    fun createToken(tdsToken: ThreeDSecureToken): Task<Token>
+    fun createToken(threeDSecureToken: ThreeDSecureToken): Task<Token>
 
     /**
      * Retrieve token from token id.

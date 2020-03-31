@@ -23,7 +23,6 @@
 package jp.pay.android.ui
 
 import android.view.View
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -38,7 +37,7 @@ import jp.pay.android.PayjpTokenService
 import jp.pay.android.R
 import jp.pay.android.Task
 import jp.pay.android.TokenHandlerExecutor
-import jp.pay.android.exception.PayjpRequiredTdsException
+import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
@@ -74,8 +73,6 @@ internal class CardFormScreenViewModel(
     private var fetchTokenTask: Task<Token>? = null
     private var fetchBrandsProcessing: Boolean = false
     private var tokenizeProcessing: Boolean = false
-    @VisibleForTesting
-    val pendingTdsToken: MutableLiveData<ThreeDSecureToken> by handle.delegateLiveData()
 
     override fun onCleared() {
         fetchAcceptedBrandsTask?.cancel()
@@ -105,11 +102,10 @@ internal class CardFormScreenViewModel(
     }
 
     override fun onCompleteCardVerify(result: PayjpVerifyCardResult) {
-        val tdsToken = pendingTdsToken.value
-        if (result is PayjpVerifyCardResult.Success && tdsToken != null) {
+        if (result.isSuccess()) {
             tokenizeProcessing = true
             setSubmitButtonVisible(false)
-            createTokenWithTdsToken(tdsToken)
+            createTokenWithTdsToken(result.retrieveThreeDSecureToken())
         } else {
             snackBarMessage.value = R.string.payjp_card_form_message_cancel_verification
             setSubmitButtonVisible(true)
@@ -183,9 +179,8 @@ internal class CardFormScreenViewModel(
 
             override fun onError(throwable: Throwable) {
                 when (throwable) {
-                    is PayjpRequiredTdsException -> throwable.tdsToken.let {
-                        pendingTdsToken.value = it
-                        startVerifyCommand.value = it
+                    is PayjpThreeDSecureRequiredException -> {
+                        startVerifyCommand.value = throwable.token
                     }
                     else -> showTokenError(throwable)
                 }

@@ -20,31 +20,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.network
+package jp.pay.android.verifier
 
-import jp.pay.android.PayjpConstants
-import jp.pay.android.exception.PayjpRequiredTdsException
-import okhttp3.Interceptor
-import okhttp3.Response
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 
-/**
- * Intercept 3DS redirect
- *
- * It will throw [PayjpRequiredTdsException] with capturing id from location.
- */
-internal class TdsRedirectionInterceptor : Interceptor {
+internal class WebBrowserResolver(vararg browsers: WebBrowser) {
 
-    private val tdsTokenRetriever = TdsTokenRetriever(PayjpConstants.API_HOST)
+    private val browserList = listOf(*browsers)
 
-    override fun intercept(c: Interceptor.Chain): Response {
-        val request = c.request()
-        val response = c.proceed(request)
-        if (response.isRedirect) {
-            response.header("location")?.let(tdsTokenRetriever::retrieve)
-                ?.let { token ->
-                    throw PayjpRequiredTdsException(token)
-                }
-        }
-        return response
+    fun resolve(context: Context, uri: Uri, callbackUri: Uri): Intent? {
+        return browserList.firstOrNull { it.canResolveComponent(context, uri) }
+            ?.createIntent(context, uri, callbackUri)
+            ?.takeIf {
+                context.packageManager.queryIntentActivities(it, PackageManager.MATCH_DEFAULT_ONLY)
+                    ?.isNotEmpty()
+                    ?: false
+            }
     }
 }

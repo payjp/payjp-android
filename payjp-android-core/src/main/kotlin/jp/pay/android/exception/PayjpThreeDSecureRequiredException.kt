@@ -28,6 +28,6 @@ import jp.pay.android.model.ThreeDSecureToken
 /**
  * Exception indicate the tokenization has suspended due to required 3DS verification.
  *
- * @param tdsToken 3DS token
+ * @param token 3DS token
  */
-class PayjpRequiredTdsException(val tdsToken: ThreeDSecureToken) : IOException()
+class PayjpThreeDSecureRequiredException(val token: ThreeDSecureToken) : IOException()

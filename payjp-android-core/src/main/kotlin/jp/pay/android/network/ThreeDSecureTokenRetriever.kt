@@ -25,7 +25,7 @@ package jp.pay.android.network
 import android.net.Uri
 import jp.pay.android.model.ThreeDSecureToken
 
-class TdsTokenRetriever(private val host: String) {
+internal class ThreeDSecureTokenRetriever(private val host: String) {
 
     companion object {
         private val REGEX_TDS_PATH = """\A/v1/tds/([\w\d_]+)/.*\z""".toRegex()

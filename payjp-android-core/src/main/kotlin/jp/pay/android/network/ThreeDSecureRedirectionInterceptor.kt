@@ -20,36 +20,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.verifier.ui
+package jp.pay.android.network
 
-import jp.pay.android.model.ThreeDSecureToken
+import jp.pay.android.PayjpConstants
+import jp.pay.android.exception.PayjpThreeDSecureRequiredException
+import okhttp3.Interceptor
+import okhttp3.Response
 
 /**
- * State represents of result form the activity that verify card on web.
+ * Intercept 3DS redirect
+ *
+ * It will throw [PayjpThreeDSecureRequiredException] with capturing id from location.
  */
-sealed class PayjpVerifyCardResult {
+internal class ThreeDSecureRedirectionInterceptor : Interceptor {
 
-    data class Success(val threeDSecureToken: ThreeDSecureToken) : PayjpVerifyCardResult()
+    private val tdsTokenRetriever = ThreeDSecureTokenRetriever(PayjpConstants.API_HOST)
 
-    object Canceled : PayjpVerifyCardResult()
-
-    /**
-     * Return it is success.
-     */
-    fun isSuccess(): Boolean = this is Success
-
-    /**
-     * Return it is canceled.
-     */
-    fun isCanceled(): Boolean = this === Canceled
-
-    /**
-     * Get out token from result. If it is not success, throw exception.
-     *
-     */
-    fun retrieveThreeDSecureToken(): ThreeDSecureToken {
-        val success = this as? Success
-            ?: throw IllegalStateException("Cannot call retrieveToken() when it is not success")
-        return success.threeDSecureToken
+    override fun intercept(c: Interceptor.Chain): Response {
+        val request = c.request()
+        val response = c.proceed(request)
+        if (response.isRedirect) {
+            response.header("location")?.let(tdsTokenRetriever::retrieve)
+                ?.let { token ->
+                    throw PayjpThreeDSecureRequiredException(token)
+                }
+        }
+        return response
     }
 }

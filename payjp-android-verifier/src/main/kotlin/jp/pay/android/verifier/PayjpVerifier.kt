@@ -23,46 +23,73 @@
 package jp.pay.android.verifier
 
 import android.app.Activity
-import android.content.Intent
 import androidx.annotation.MainThread
-import androidx.fragment.app.Fragment
 import jp.pay.android.PayjpLogger
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.model.ThreeDSecureToken
-import jp.pay.android.verifier.ui.PayjpVerifyCardActivity
+import jp.pay.android.verifier.ui.PayjpVerifierRedirectActivity
 import jp.pay.android.verifier.ui.PayjpVerifyCardResultCallback
 
 object PayjpVerifier {
-
+    private const val REQUEST_CODE_VERIFY_LAUNCHER = 10
+    private const val REQUEST_CODE_VERIFY = 11
     private var logger: PayjpLogger = PayjpLogger.None
     private var tokenService: PayjpTokenService? = null
+    private var threeDSecureRedirectName: String? = null
+    private val webBrowserResolver = WebBrowserResolver(
+        WebBrowser.ChromeTab,
+        WebBrowser.AnyBrowsable,
+        WebBrowser.InAppWeb
+    )
 
     fun configure(
         logger: PayjpLogger,
-        tokenService: PayjpTokenService
+        tokenService: PayjpTokenService,
+        threeDSecureRedirectName: String?
     ) {
         this.logger = logger
         this.tokenService = tokenService
+        this.threeDSecureRedirectName = threeDSecureRedirectName
     }
 
     internal fun logger(): PayjpLogger = logger
 
-    internal fun tokenService(): PayjpTokenService = checkNotNull(tokenService) {
+    private fun tokenService(): PayjpTokenService = checkNotNull(tokenService) {
         "You must initialize Payjp first"
     }
 
     @MainThread
-    fun startWebVerify(tdsToken: ThreeDSecureToken, activity: Activity, requestCode: Int? = null) {
-        PayjpVerifyCardActivity.start(activity, tdsToken, requestCode)
+    fun startWebVerifyLauncher(threeDSecureToken: ThreeDSecureToken, activity: Activity) {
+        val intent = PayjpVerifierRedirectActivity.createLaunchIntent(activity, threeDSecureToken)
+        activity.startActivityForResult(intent, REQUEST_CODE_VERIFY_LAUNCHER)
     }
 
     @MainThread
-    fun startWebVerify(tdsToken: ThreeDSecureToken, fragment: Fragment, requestCode: Int? = null) {
-        PayjpVerifyCardActivity.start(fragment, tdsToken, requestCode)
+    internal fun startWebVerify(threeDSecureToken: ThreeDSecureToken, activity: Activity) {
+        val intent = webBrowserResolver.resolve(
+            context = activity,
+            uri = threeDSecureToken.getTdsEntryUri(
+                publicKey = tokenService().getPublicKey(),
+                redirectUrlName = threeDSecureRedirectName
+            ),
+            callbackUri = threeDSecureToken.getTdsFinishUri()
+        )
+        if (intent == null) {
+            logger.w("Any activity which open Web not found.")
+        } else {
+            logger.d("Intent $intent")
+            logger.d("data ${intent.data}")
+            activity.startActivityForResult(intent, REQUEST_CODE_VERIFY)
+        }
     }
 
     @MainThread
-    fun handleWebVerifyResult(data: Intent?, callback: PayjpVerifyCardResultCallback) {
-        PayjpVerifyCardActivity.onActivityResult(data, callback)
+    fun handleWebVerifyResult(
+        requestCode: Int,
+        callback: PayjpVerifyCardResultCallback
+    ) {
+        if (requestCode == REQUEST_CODE_VERIFY_LAUNCHER) {
+            callback.onResult(PayjpVerifierRedirectActivity.getResult())
+        }
     }
 }

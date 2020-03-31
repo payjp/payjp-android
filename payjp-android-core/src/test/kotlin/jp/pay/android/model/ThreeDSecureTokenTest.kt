@@ -50,11 +50,11 @@ class ThreeDSecureTokenTest {
         val token = ThreeDSecureToken(id)
         val uri = token.getTdsEntryUri(
             publicKey = "pk_zzzz",
-            redirectUrlKey = "app"
+            redirectUrlName = "app"
         )
         assertThat(
             uri.toString(),
-            `is`("${PayjpConstants.API_ENDPOINT}tds/$id/start?publickey=pk_zzzz&redirect_url=app")
+            `is`("${PayjpConstants.API_ENDPOINT}tds/$id/start?publickey=pk_zzzz&back=app")
         )
     }
 
