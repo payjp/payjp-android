@@ -57,7 +57,7 @@ ext {
     minSdkVersion = 16
     sdkVersion = 28
 
-    okHttp = "3.12.3"
+    okHttp = "3.12.10"
     moshi = "1.9.2"
     retrofit = "2.6.2"
     lifecycle = "2.2.0"
