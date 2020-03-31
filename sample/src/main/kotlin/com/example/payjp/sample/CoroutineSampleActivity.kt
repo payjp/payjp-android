@@ -22,15 +22,20 @@
  */
 package com.example.payjp.sample
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import jp.pay.android.Payjp
 import jp.pay.android.coroutine.createTokenSuspend
 import jp.pay.android.coroutine.getTokenSuspend
+import jp.pay.android.exception.PayjpRequiredTdsException
+import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.ui.widget.PayjpCardFormFragment
+import jp.pay.android.verifier.ui.PayjpVerifyCardResultCallback
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token_with_validate
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_get_token
@@ -79,13 +84,32 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
         super.onDestroy()
     }
 
-    private fun createToken() = launch {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Payjp.verifier().handleWebVerifyResult(requestCode, PayjpVerifyCardResultCallback {
+            if (it.isSuccess()) {
+                createToken(tdsToken = it.retrieveTdsToken())
+            } else {
+                Toast.makeText(this, "3-D Secure canceled.", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun createToken(tdsToken: ThreeDSecureToken? = null) = launch {
         layout_buttons.visibility = View.INVISIBLE
         progress_bar.visibility = View.VISIBLE
         text_token_content.visibility = View.INVISIBLE
         try {
-            val token = withContext(Dispatchers.IO) { cardFormFragment.createTokenSuspend() }
+            val token = withContext(Dispatchers.IO) {
+                if (tdsToken == null) {
+                    cardFormFragment.createTokenSuspend()
+                } else {
+                    Payjp.token().createTokenSuspend(tdsToken)
+                }
+            }
             updateSuccessUI(token)
+        } catch (e: PayjpRequiredTdsException) {
+            Payjp.verifier().startWebVerifyLauncher(e.tdsToken, this@CoroutineSampleActivity)
         } catch (t: Throwable) {
             updateErrorUI(t, "failure creating token")
         }
