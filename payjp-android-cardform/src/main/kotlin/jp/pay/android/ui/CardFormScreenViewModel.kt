@@ -44,7 +44,7 @@ import jp.pay.android.model.TenantId
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.util.delegateLiveData
-import jp.pay.android.verifier.ui.PayjpVerifyCardResult
+import jp.pay.android.verifier.ui.PayjpThreeDSecureResult
 
 internal class CardFormScreenViewModel(
     private val handle: SavedStateHandle,
@@ -101,7 +101,7 @@ internal class CardFormScreenViewModel(
         fetchAcceptedBrands()
     }
 
-    override fun onCompleteCardVerify(result: PayjpVerifyCardResult) {
+    override fun onCompleteCardVerify(result: PayjpThreeDSecureResult) {
         if (result.isSuccess()) {
             tokenizeProcessing = true
             setSubmitButtonVisible(false)

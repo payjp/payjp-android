@@ -50,7 +50,7 @@
         <activity android:name=".CardFormViewSampleJavaActivity" />
         <activity android:name=".CoroutineSampleActivity" />
 
-        <activity android:name="jp.pay.android.verifier.ui.PayjpVerifierRedirectActivity"
+        <activity android:name="jp.pay.android.verifier.ui.PayjpThreeDSecureStepActivity"
                 android:enabled="true"
                 android:exported="true">
             <intent-filter>

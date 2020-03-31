@@ -27,8 +27,8 @@ import androidx.annotation.MainThread
 import jp.pay.android.PayjpLogger
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.model.ThreeDSecureToken
-import jp.pay.android.verifier.ui.PayjpVerifierRedirectActivity
-import jp.pay.android.verifier.ui.PayjpVerifyCardResultCallback
+import jp.pay.android.verifier.ui.PayjpThreeDSecureResultCallback
+import jp.pay.android.verifier.ui.PayjpThreeDSecureStepActivity
 
 object PayjpVerifier {
     private const val REQUEST_CODE_VERIFY_LAUNCHER = 10
@@ -59,20 +59,20 @@ object PayjpVerifier {
     }
 
     @MainThread
-    fun startWebVerifyLauncher(threeDSecureToken: ThreeDSecureToken, activity: Activity) {
-        val intent = PayjpVerifierRedirectActivity.createLaunchIntent(activity, threeDSecureToken)
+    fun startThreeDSecureFlow(threeDSecureToken: ThreeDSecureToken, activity: Activity) {
+        val intent = PayjpThreeDSecureStepActivity.createLaunchIntent(activity, threeDSecureToken)
         activity.startActivityForResult(intent, REQUEST_CODE_VERIFY_LAUNCHER)
     }
 
     @MainThread
-    internal fun startWebVerify(threeDSecureToken: ThreeDSecureToken, activity: Activity) {
+    internal fun openThreeDSecure(threeDSecureToken: ThreeDSecureToken, activity: Activity) {
         val intent = webBrowserResolver.resolve(
             context = activity,
-            uri = threeDSecureToken.getTdsEntryUri(
+            uri = threeDSecureToken.getVerificationEntryUri(
                 publicKey = tokenService().getPublicKey(),
                 redirectUrlName = threeDSecureRedirectName
             ),
-            callbackUri = threeDSecureToken.getTdsFinishUri()
+            callbackUri = threeDSecureToken.getVerificationFinishUri()
         )
         if (intent == null) {
             logger.w("Any activity which open Web not found.")
@@ -84,12 +84,12 @@ object PayjpVerifier {
     }
 
     @MainThread
-    fun handleWebVerifyResult(
+    fun handleThreeDSecureResult(
         requestCode: Int,
-        callback: PayjpVerifyCardResultCallback
+        callback: PayjpThreeDSecureResultCallback
     ) {
         if (requestCode == REQUEST_CODE_VERIFY_LAUNCHER) {
-            callback.onResult(PayjpVerifierRedirectActivity.getResult())
+            callback.onResult(PayjpThreeDSecureStepActivity.getResult())
         }
     }
 }

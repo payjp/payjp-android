@@ -28,29 +28,32 @@ import jp.pay.android.PayjpConstants
 import kotlinx.android.parcel.Parcelize
 
 /**
+ * 3-D Secure token object
+ * used for 3DS verification.
  *
  * @param id id
  */
 @Parcelize
 data class ThreeDSecureToken(val id: String) : Parcelable {
-    private fun getTdsBaseUri(): Uri = Uri.parse(PayjpConstants.API_ENDPOINT)
+    private fun getVerificationBaseUri(): Uri = Uri.parse(PayjpConstants.API_ENDPOINT)
         .buildUpon()
         .appendPath("tds")
         .appendPath(id)
         .build()
 
-    fun getTdsEntryUri(publicKey: String, redirectUrlName: String? = null): Uri = getTdsBaseUri()
-        .buildUpon()
-        .appendPath("start")
-        .appendQueryParameter("publickey", publicKey)
-        .apply {
-            if (redirectUrlName != null) {
-                appendQueryParameter("back", redirectUrlName)
+    fun getVerificationEntryUri(publicKey: String, redirectUrlName: String? = null): Uri =
+        getVerificationBaseUri()
+            .buildUpon()
+            .appendPath("start")
+            .appendQueryParameter("publickey", publicKey)
+            .apply {
+                if (redirectUrlName != null) {
+                    appendQueryParameter("back", redirectUrlName)
+                }
             }
-        }
-        .build()
+            .build()
 
-    fun getTdsFinishUri(): Uri = getTdsBaseUri()
+    fun getVerificationFinishUri(): Uri = getVerificationBaseUri()
         .buildUpon()
         .appendPath("finish")
         .build()

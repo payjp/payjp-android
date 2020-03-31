@@ -36,7 +36,7 @@ internal class WebViewLoadingDelegate(
     private val errorView: ViewGroup,
     private val progressBar: ProgressBar,
     private val swipeRefresh: SwipeRefreshLayout
-) : VerifyCardWebView.LoadStateWatcher {
+) : VerifierWebView.LoadStateWatcher {
     private val animation = AlphaAnimation(1.0f, 0.0f).apply {
         duration = 1000
     }

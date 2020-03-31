@@ -35,7 +35,7 @@ import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.ui.widget.PayjpCardFormFragment
-import jp.pay.android.verifier.ui.PayjpVerifyCardResultCallback
+import jp.pay.android.verifier.ui.PayjpThreeDSecureResultCallback
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token_with_validate
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_get_token
@@ -86,13 +86,14 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Payjp.verifier().handleWebVerifyResult(requestCode, PayjpVerifyCardResultCallback {
-            if (it.isSuccess()) {
-                createToken(tdsToken = it.retrieveThreeDSecureToken())
-            } else {
-                Toast.makeText(this, "3-D Secure canceled.", Toast.LENGTH_SHORT).show()
-            }
-        })
+        Payjp.verifier().handleThreeDSecureResult(requestCode,
+            PayjpThreeDSecureResultCallback {
+                if (it.isSuccess()) {
+                    createToken(tdsToken = it.retrieveThreeDSecureToken())
+                } else {
+                    Toast.makeText(this, "3-D Secure canceled.", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 
     private fun createToken(tdsToken: ThreeDSecureToken? = null) = launch {
@@ -109,7 +110,7 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
             }
             updateSuccessUI(token)
         } catch (e: PayjpThreeDSecureRequiredException) {
-            Payjp.verifier().startWebVerifyLauncher(e.token, this@CoroutineSampleActivity)
+            Payjp.verifier().startThreeDSecureFlow(e.token, this@CoroutineSampleActivity)
         } catch (t: Throwable) {
             updateErrorUI(t, "failure creating token")
         }

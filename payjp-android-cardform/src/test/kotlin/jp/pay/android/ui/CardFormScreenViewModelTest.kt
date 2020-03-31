@@ -39,7 +39,7 @@ import jp.pay.android.model.TenantId
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.util.Tasks
-import jp.pay.android.verifier.ui.PayjpVerifyCardResult
+import jp.pay.android.verifier.ui.PayjpThreeDSecureResult
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.nullValue
 import org.junit.Assert.assertThat
@@ -321,7 +321,7 @@ class CardFormScreenViewModelTest {
         val tdsToken = ThreeDSecureToken(id = "tds_xxx")
         val tdsRequired = PayjpThreeDSecureRequiredException(token = tdsToken)
         viewModel.onCreateToken(Tasks.failure(tdsRequired))
-        viewModel.onCompleteCardVerify(PayjpVerifyCardResult.Canceled)
+        viewModel.onCompleteCardVerify(PayjpThreeDSecureResult.Canceled)
 
         viewModel.run {
             assertThat(submitButtonVisibility.value, `is`(View.VISIBLE))
@@ -340,7 +340,7 @@ class CardFormScreenViewModelTest {
         val tdsToken = ThreeDSecureToken(id = "tds_xxx")
         val tdsRequired = PayjpThreeDSecureRequiredException(token = tdsToken)
         viewModel.onCreateToken(Tasks.failure(tdsRequired))
-        viewModel.onCompleteCardVerify(PayjpVerifyCardResult.Canceled)
+        viewModel.onCompleteCardVerify(PayjpThreeDSecureResult.Canceled)
 
         assertThat(
             viewModel.snackBarMessage.value,
@@ -363,7 +363,7 @@ class CardFormScreenViewModelTest {
         val viewModel = createViewModel(tokenHandlerExecutor = handlerExecutor)
 
         viewModel.onCreateToken(Tasks.failure(tdsRequired))
-        viewModel.onCompleteCardVerify(PayjpVerifyCardResult.Success(tdsToken))
+        viewModel.onCompleteCardVerify(PayjpThreeDSecureResult.Success(tdsToken))
 
         viewModel.run {
             assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
@@ -389,7 +389,7 @@ class CardFormScreenViewModelTest {
         val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
 
         viewModel.onCreateToken(Tasks.failure(tdsRequired))
-        viewModel.onCompleteCardVerify(PayjpVerifyCardResult.Success(tdsToken))
+        viewModel.onCompleteCardVerify(PayjpThreeDSecureResult.Success(tdsToken))
 
         viewModel.run {
             assertThat(submitButtonVisibility.value, `is`(View.VISIBLE))

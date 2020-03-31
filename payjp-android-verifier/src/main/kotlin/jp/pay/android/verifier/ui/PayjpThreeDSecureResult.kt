@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 PAY, Inc.
+ * Copyright (c) 2020 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,21 +20,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package jp.pay.android.verifier.ui
 
-package jp.pay.android.verifier.ui;
-
-import androidx.annotation.NonNull;
+import jp.pay.android.model.ThreeDSecureToken
 
 /**
- * Callback interface of {@link jp.pay.android.verifier.ui.PayjpVerifyCardResult}
- *
+ * State represents of result form the activity that verify card on web.
  */
-public interface PayjpVerifyCardResultCallback {
+sealed class PayjpThreeDSecureResult {
 
     /**
-     * Callback result {@link jp.pay.android.verifier.ui.PayjpVerifyCardResult}
+     * Success
      *
-     * @param result result
+     * @param threeDSecureToken 3DS token
      */
-    void onResult(@NonNull PayjpVerifyCardResult result);
+    data class Success(val threeDSecureToken: ThreeDSecureToken) : PayjpThreeDSecureResult()
+
+    /**
+     * Canceled
+     */
+    object Canceled : PayjpThreeDSecureResult()
+
+    /**
+     * Return it is success.
+     */
+    fun isSuccess(): Boolean = this is Success
+
+    /**
+     * Return it is canceled.
+     */
+    fun isCanceled(): Boolean = this === Canceled
+
+    /**
+     * Get out token from result. If it is not success, throw exception.
+     *
+     */
+    fun retrieveThreeDSecureToken(): ThreeDSecureToken {
+        val success = this as? Success
+            ?: throw IllegalStateException("Cannot call retrieveToken() when it is not success")
+        return success.threeDSecureToken
+    }
 }

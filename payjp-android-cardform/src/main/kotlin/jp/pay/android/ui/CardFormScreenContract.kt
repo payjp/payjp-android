@@ -27,7 +27,7 @@ import jp.pay.android.Task
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
-import jp.pay.android.verifier.ui.PayjpVerifyCardResult
+import jp.pay.android.verifier.ui.PayjpThreeDSecureResult
 
 internal interface CardFormScreenContract {
 
@@ -39,7 +39,7 @@ internal interface CardFormScreenContract {
 
         fun onClickReload()
 
-        fun onCompleteCardVerify(result: PayjpVerifyCardResult)
+        fun onCompleteCardVerify(result: PayjpThreeDSecureResult)
 
         fun onAddedCardForm()
 

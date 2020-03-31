@@ -40,10 +40,10 @@ import jp.pay.android.verifier.PayjpVerifier
 import jp.pay.android.verifier.R
 
 /**
- * PayjpCardVerifyActivity
+ * PayjpWebActivity
  *
  */
-class PayjpWebActivity : AppCompatActivity(R.layout.payjp_verify_card_activity),
+class PayjpWebActivity : AppCompatActivity(R.layout.payjp_web_activity),
     LifecycleObserver {
 
     companion object {
@@ -65,7 +65,7 @@ class PayjpWebActivity : AppCompatActivity(R.layout.payjp_verify_card_activity),
         intent.getStringExtra(EXTRA_KEY_CALLBACK_URI).let { Uri.parse(it) }
     }
 
-    private lateinit var webView: VerifyCardWebView
+    private lateinit var webView: VerifierWebView
     private val logger: PayjpLogger = PayjpVerifier.logger()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -147,7 +147,7 @@ class PayjpWebActivity : AppCompatActivity(R.layout.payjp_verify_card_activity),
     }
 
     private fun redirectWithResult(uri: Uri) {
-        val intent = Intent(this, PayjpVerifierRedirectActivity::class.java)
+        val intent = Intent(this, PayjpThreeDSecureStepActivity::class.java)
             .setData(uri)
             .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)

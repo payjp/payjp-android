@@ -30,7 +30,7 @@ import androidx.appcompat.app.AppCompatActivity
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.verifier.PayjpVerifier
 
-class PayjpVerifierRedirectActivity : AppCompatActivity() {
+class PayjpThreeDSecureStepActivity : AppCompatActivity() {
 
     internal class IntentHolder {
         var intent: Intent? = null
@@ -47,20 +47,20 @@ class PayjpVerifierRedirectActivity : AppCompatActivity() {
         internal val intentHolder: IntentHolder = IntentHolder()
 
         internal fun createLaunchIntent(context: Context, tdsToken: ThreeDSecureToken): Intent {
-            return Intent(context, PayjpVerifierRedirectActivity::class.java)
+            return Intent(context, PayjpThreeDSecureStepActivity::class.java)
                 .putExtra(EXTRA_KEY_TDS, tdsToken.id)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
 
-        internal fun getResult(): PayjpVerifyCardResult {
+        internal fun getResult(): PayjpThreeDSecureResult {
             val intent = intentHolder.pop()
             PayjpVerifier.logger().d("getResult intent: $intent")
             val uri = intent?.data
             val tdsTokenId = intent?.getStringExtra(EXTRA_KEY_TDS)
             return if (uri != null && tdsTokenId != null) {
-                PayjpVerifyCardResult.Success(threeDSecureToken = ThreeDSecureToken(id = tdsTokenId))
+                PayjpThreeDSecureResult.Success(threeDSecureToken = ThreeDSecureToken(id = tdsTokenId))
             } else {
-                PayjpVerifyCardResult.Canceled
+                PayjpThreeDSecureResult.Canceled
             }
         }
     }
@@ -75,7 +75,7 @@ class PayjpVerifierRedirectActivity : AppCompatActivity() {
             intent.getStringExtra(EXTRA_KEY_TDS)?.let { id ->
                 tdsTokenId = id
                 intentHolder.pop()
-                PayjpVerifier.startWebVerify(ThreeDSecureToken(id = id), this)
+                PayjpVerifier.openThreeDSecure(ThreeDSecureToken(id = id), this)
             }
         }
     }

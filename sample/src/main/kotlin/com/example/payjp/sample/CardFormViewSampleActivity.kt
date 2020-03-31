@@ -40,7 +40,7 @@ import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.ui.widget.PayjpCardFormFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
-import jp.pay.android.verifier.ui.PayjpVerifyCardResultCallback
+import jp.pay.android.verifier.ui.PayjpThreeDSecureResultCallback
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token_with_validate
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_get_token
@@ -125,11 +125,12 @@ class CardFormViewSampleActivity : AppCompatActivity(),
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Payjp.verifier().handleWebVerifyResult(requestCode, PayjpVerifyCardResultCallback {
-            if (it.isSuccess()) {
-                createTokenForTds(it.retrieveThreeDSecureToken())
-            }
-        })
+        Payjp.verifier().handleThreeDSecureResult(requestCode,
+            PayjpThreeDSecureResultCallback {
+                if (it.isSuccess()) {
+                    createTokenForTds(it.retrieveThreeDSecureToken())
+                }
+            })
     }
 
     private fun createToken() {
@@ -154,7 +155,7 @@ class CardFormViewSampleActivity : AppCompatActivity(),
                     // if support 3DSecure
                     // NOTE: 3DSecure is a limited feature for now.
                     Payjp.verifier()
-                        .startWebVerifyLauncher(throwable.token, this@CardFormViewSampleActivity)
+                        .startThreeDSecureFlow(throwable.token, this@CardFormViewSampleActivity)
                 } else {
                     text_token_content.text = throwable.toString()
                     progress_bar.visibility = View.GONE

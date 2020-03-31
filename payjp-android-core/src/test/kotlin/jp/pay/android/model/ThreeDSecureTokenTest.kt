@@ -35,7 +35,7 @@ class ThreeDSecureTokenTest {
     fun getTdsEntryUri() {
         val id = "tds_xxx"
         val token = ThreeDSecureToken(id)
-        val uri = token.getTdsEntryUri(
+        val uri = token.getVerificationEntryUri(
             publicKey = "pk_zzzz"
         )
         assertThat(
@@ -48,7 +48,7 @@ class ThreeDSecureTokenTest {
     fun getTdsEntryUri_withRedirect() {
         val id = "tds_xxx"
         val token = ThreeDSecureToken(id)
-        val uri = token.getTdsEntryUri(
+        val uri = token.getVerificationEntryUri(
             publicKey = "pk_zzzz",
             redirectUrlName = "app"
         )
@@ -63,7 +63,7 @@ class ThreeDSecureTokenTest {
         val id = "tds_xxx"
         val token = ThreeDSecureToken(id)
         assertThat(
-            token.getTdsFinishUri().toString(),
+            token.getVerificationFinishUri().toString(),
             `is`("${PayjpConstants.API_ENDPOINT}tds/$id/finish")
         )
     }
