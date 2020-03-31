@@ -134,7 +134,8 @@ class PayjpWebActivity : AppCompatActivity(R.layout.payjp_verify_card_activity),
         ))
         webView.addOnFinishedLoadState { _, url ->
             if (url.startsWith(callbackUri.toString())) {
-                openExternal(Uri.parse(url))
+                logger.d("url matches with callbackUri $url")
+                redirectWithResult(Uri.parse(url))
                 setResult(Activity.RESULT_OK)
                 finish()
             }
@@ -143,6 +144,13 @@ class PayjpWebActivity : AppCompatActivity(R.layout.payjp_verify_card_activity),
         swipeRefresh.setOnRefreshListener {
             webView.reload()
         }
+    }
+
+    private fun redirectWithResult(uri: Uri) {
+        val intent = Intent(this, PayjpVerifierRedirectActivity::class.java)
+            .setData(uri)
+            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        startActivity(intent)
     }
 
     private fun openExternal(uri: Uri) {
