@@ -49,11 +49,13 @@ class PayjpWebActivity : AppCompatActivity(R.layout.payjp_web_activity),
     companion object {
         private const val EXTRA_KEY_START_URI = "EXTRA_KEY_START_URI"
         private const val EXTRA_KEY_CALLBACK_URI = "EXTRA_KEY_CALLBACK_URI"
+        private const val EXTRA_KEY_TITLE = "EXTRA_KEY_TITLE"
 
-        fun createIntent(context: Context, startUri: Uri, callbackUri: Uri): Intent {
+        fun createIntent(context: Context, startUri: Uri, callbackUri: Uri, title: String): Intent {
             return Intent(context, PayjpWebActivity::class.java)
                 .putExtra(EXTRA_KEY_START_URI, startUri.toString())
                 .putExtra(EXTRA_KEY_CALLBACK_URI, callbackUri.toString())
+                .putExtra(EXTRA_KEY_TITLE, title)
         }
     }
 
@@ -65,6 +67,10 @@ class PayjpWebActivity : AppCompatActivity(R.layout.payjp_web_activity),
         intent.getStringExtra(EXTRA_KEY_CALLBACK_URI).let { Uri.parse(it) }
     }
 
+    private val customTitle: String by lazy {
+        intent.getStringExtra(EXTRA_KEY_TITLE)
+    }
+
     private lateinit var webView: VerifierWebView
     private val logger: PayjpLogger = PayjpVerifier.logger()
 
@@ -73,6 +79,7 @@ class PayjpWebActivity : AppCompatActivity(R.layout.payjp_web_activity),
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setUpUI()
         lifecycle.addObserver(this)
+        title = customTitle
     }
 
     override fun onSupportNavigateUp(): Boolean {
