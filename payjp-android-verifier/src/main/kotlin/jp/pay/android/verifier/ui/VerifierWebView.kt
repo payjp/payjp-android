@@ -33,13 +33,13 @@ import android.view.View
 import android.webkit.JsResult
 import android.webkit.SslErrorHandler
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
-import androidx.webkit.WebResourceErrorCompat
 import androidx.webkit.WebSettingsCompat
-import androidx.webkit.WebViewClientCompat
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import java.text.SimpleDateFormat
@@ -172,7 +172,7 @@ internal class VerifierWebView @JvmOverloads constructor(
         }
     }
 
-    internal class CardVerifyWebViewClient : WebViewClientCompat() {
+    internal class CardVerifyWebViewClient : WebViewClient() {
         private var loadingState: LoadingState = LoadingState.STOPPED
 
         @RequiresApi(21)
@@ -187,11 +187,11 @@ internal class VerifierWebView @JvmOverloads constructor(
             return (view as? VerifierWebView)?.intercept(Uri.parse(url)) ?: false
         }
 
-        @RequiresApi(21)
+        @RequiresApi(23)
         override fun onReceivedError(
             view: WebView,
             request: WebResourceRequest,
-            error: WebResourceErrorCompat
+            error: WebResourceError
         ) {
             val errorCode =
                 if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_RESOURCE_ERROR_GET_CODE)) {

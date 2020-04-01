@@ -38,7 +38,7 @@ object PayjpVerifier {
     private var threeDSecureRedirectName: String? = null
     private val webBrowserResolver = WebBrowserResolver(
         WebBrowser.ChromeTab,
-        WebBrowser.AnyBrowsable,
+        // WebBrowser.AnyBrowsable,
         WebBrowser.InAppWeb
     )
 
