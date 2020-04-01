@@ -75,7 +75,6 @@ internal class VerifierWebView @JvmOverloads constructor(
 
     override fun destroy() {
         stopLoading()
-        pauseTimers()
         clearHistory()
         clearCache(true)
         removeAllViews()
