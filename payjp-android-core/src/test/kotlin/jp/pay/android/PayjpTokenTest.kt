@@ -92,16 +92,20 @@ class PayjpTokenTest {
         clientInfo = ClientInfo.Builder().build()
     )
 
-    private fun createApi() = createApiClient(
-        baseUrl = mockWebServer.url("/").toString(),
-        okHttpClient = createOkHttp(
-            locale = Locale.US,
-            clientInfo = ClientInfo.Builder().build(),
-            debuggable = false)
-            .newBuilder()
-            .build(),
-        callbackExecutor = CurrentThreadExecutor()
-    )
+    private fun createApi(): PayjpApi {
+        val baseUrl = mockWebServer.url("/").toString()
+        return createApiClient(
+            baseUrl = baseUrl,
+            okHttpClient = createOkHttp(
+                baseUrl = baseUrl,
+                locale = Locale.US,
+                clientInfo = ClientInfo.Builder().build(),
+                debuggable = false)
+                .newBuilder()
+                .build(),
+            callbackExecutor = CurrentThreadExecutor()
+        )
+    }
 
     @Test
     fun createToken_ok() {
@@ -267,11 +271,12 @@ class PayjpTokenTest {
             override fun dispatch(request: RecordedRequest): MockResponse = when (request.path) {
                 "/tokens" -> MockResponse()
                     .setResponseCode(303)
-                    .setHeader("Location", "${PayjpConstants.API_ENDPOINT}tds/$tdsId/start")
-//                    .setResponseCode(200)
-                    .setBody(TOKEN_OK)
-                "/v1/tds/$tdsId/start" -> MockResponse().setResponseCode(200).setBody(TOKEN_OK)
-                else -> throw RuntimeException("unknwon path -> ${request.path}")
+                    .setHeader("Location", "${mockWebServer.url("/")}tds/$tdsId/start")
+                    .setBody("""
+{ "object": "three_d_secure_token", "id": "$tdsId" }
+                    """.trimIndent())
+                "/tds/$tdsId/start" -> MockResponse().setResponseCode(200).setBody(TOKEN_OK)
+                else -> throw RuntimeException("unknown path -> ${request.path}")
             }
         })
 

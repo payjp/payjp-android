@@ -23,7 +23,16 @@
 package jp.pay.android.network
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.squareup.moshi.JsonDataException
+import jp.pay.android.PayjpConstants
+import jp.pay.android.model.PayjpResourceObject
 import jp.pay.android.model.ThreeDSecureToken
+import okhttp3.MediaType
+import okhttp3.Protocol
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
+import okhttp3.ResponseBody
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.nullValue
 import org.junit.Assert.assertThat
@@ -33,31 +42,116 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ThreeDSecureTokenRetrieverTest {
 
+    private val moshi = TokenApiClientFactory.moshi
+    private val mediaType = MediaType.parse("application/json charset=utf-8")
+    private val tdsTokenObject = PayjpResourceObject(name = "three_d_secure_token", id = "tds_foo")
+    private val tdsTokenObjectJson = moshi.adapter(PayjpResourceObject::class.java).toJson(tdsTokenObject)
+    private val baseUrl = PayjpConstants.API_ENDPOINT
+
+    private fun createRetriever() = ThreeDSecureTokenRetriever(
+        baseUrl = baseUrl,
+        moshi = moshi
+    )
+
+    private fun createRequest(
+        url: String,
+        applyFunc: Request.Builder.() -> Unit = {
+        }
+    ): Request = Request.Builder()
+        .url(url)
+        .post(RequestBody.create(mediaType, "foo=bar"))
+        .apply(applyFunc)
+        .build()
+
+    private fun createResponse(
+        request: Request,
+        content: String,
+        code: Int
+    ): Response = Response.Builder()
+        .request(request)
+        .protocol(Protocol.HTTP_1_1)
+        .message("")
+        .body(ResponseBody.create(mediaType, content))
+        .code(code)
+        .build()
+
     @Test
-    fun retrieve_unknown_host() {
-        val retriever = ThreeDSecureTokenRetriever(host = "api.pay.jp")
-        val result = retriever.retrieve("https://example.com/v1/tds/tds_xxx/start")
+    fun retrieve_token_from_redirect_response() {
+        val retriever = createRetriever()
+        val request = createRequest(url = "${baseUrl}tokens")
+        val response = createResponse(request, tdsTokenObjectJson, 303)
+        val result = retriever.retrieve(
+            request = request,
+            response = response
+        )
+        assertThat(result, `is`(ThreeDSecureToken(id = tdsTokenObject.id)))
+    }
+
+    @Test
+    fun retrieve_nothing_if_path_is_unknown() {
+        val retriever = createRetriever()
+        val request = createRequest(url = "${baseUrl}tokens/any")
+        val response = createResponse(request, tdsTokenObjectJson, 303)
+        val result = retriever.retrieve(
+            request = request,
+            response = response
+        )
         assertThat(result, nullValue())
     }
 
     @Test
-    fun retrieve_unknown_path() {
-        val retriever = ThreeDSecureTokenRetriever(host = "api.pay.jp")
-        val result = retriever.retrieve("https://api.pay.jp/v1/unknown/tds_xxx/start")
+    fun retrieve_nothing_if_method_is_not_post() {
+        val retriever = createRetriever()
+        val request = createRequest(
+            url = "${baseUrl}tokens",
+            applyFunc = { get() }
+        )
+        val response = createResponse(request, tdsTokenObjectJson, 303)
+        val result = retriever.retrieve(
+            request = request,
+            response = response
+        )
         assertThat(result, nullValue())
     }
 
     @Test
-    fun retrieve_no_id() {
-        val retriever = ThreeDSecureTokenRetriever(host = "api.pay.jp")
-        val result = retriever.retrieve("https://api.pay.jp/v1/tds/")
+    fun retrieve_nothing_if_response_is_not_redirect() {
+        val retriever = createRetriever()
+        val request = createRequest(url = "${baseUrl}tokens")
+        val response = createResponse(request, tdsTokenObjectJson, 200)
+        val result = retriever.retrieve(
+            request = request,
+            response = response
+        )
         assertThat(result, nullValue())
     }
 
     @Test
-    fun retrieve_valid_url() {
-        val retriever = ThreeDSecureTokenRetriever(host = "api.pay.jp")
-        val result = retriever.retrieve("https://api.pay.jp/v1/tds/tds_xxx/start")
-        assertThat(result, `is`(ThreeDSecureToken(id = "tds_xxx")))
+    fun retrieve_nothing_if_response_is_not_tds_token() {
+        val retriever = createRetriever()
+        val request = createRequest(url = "${baseUrl}tokens")
+        val json = """
+{ "object": "other_object", "id": "other_id" }
+            """.trimIndent()
+        val response = createResponse(request, json, 303)
+        val result = retriever.retrieve(
+            request = request,
+            response = response
+        )
+        assertThat(result, nullValue())
+    }
+
+    @Test(expected = JsonDataException::class)
+    fun throw_exception_if_response_is_unknown() {
+        val retriever = createRetriever()
+        val request = createRequest(url = "${baseUrl}tokens")
+        val json = """
+{ "unknown_key": "unknown_value" }
+            """.trimIndent()
+        val response = createResponse(request, json, 303)
+        retriever.retrieve(
+            request = request,
+            response = response
+        )
     }
 }

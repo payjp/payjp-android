@@ -53,6 +53,7 @@ class PayjpToken internal constructor(
         payjpApi = createApiClient(
             baseUrl = PayjpConstants.API_ENDPOINT,
             okHttpClient = createOkHttp(
+                baseUrl = PayjpConstants.API_ENDPOINT,
                 locale = configuration.locale,
                 clientInfo = configuration.clientInfo,
                 debuggable = configuration.debugEnabled
