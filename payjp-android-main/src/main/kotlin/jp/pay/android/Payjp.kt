@@ -64,7 +64,7 @@ object Payjp {
         PayjpVerifier.configure(
             logger = logger,
             tokenService = payjpToken,
-            threeDSecureRedirectName = configuration.tdsRedirectName
+            threeDSecureRedirectName = configuration.threeDSecureRedirectName
         )
         return this
     }

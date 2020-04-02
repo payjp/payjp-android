@@ -38,6 +38,8 @@ import jp.pay.android.util.MainThreadExecutor
  * @param callbackExecutor executor to run callback.
  * @param locale locale of request header
  * @param cardScannerPlugin optional scanner plugin.
+ * @param tokenBackgroundHandler handler for send token to app's server
+ * @param threeDSecureRedirectName 3DS redirect name registered on PAY.JP dashboard.
  */
 class PayjpConfiguration private constructor(
     val publicKey: String,
@@ -47,7 +49,7 @@ class PayjpConfiguration private constructor(
     val clientInfo: ClientInfo,
     val cardScannerPlugin: CardScannerPlugin?,
     val tokenBackgroundHandler: PayjpTokenBackgroundHandler?,
-    val tdsRedirectName: String?
+    val threeDSecureRedirectName: String?
 ) {
 
     fun tokenConfiguration(): PayjpTokenConfiguration = PayjpTokenConfiguration(
@@ -81,7 +83,7 @@ class PayjpConfiguration private constructor(
 
         private var clientInfo: ClientInfo = ClientInfo.Builder().build()
 
-        private var tdsRedirectName: String? = null
+        private var threeDSecureRedirectName: String? = null
 
         /**
          * set debugEnabled
@@ -118,8 +120,13 @@ class PayjpConfiguration private constructor(
             this.clientInfo = clientInfo
         }
 
+        /**
+         * set 3DS redirect url name. (registered on PAY.JP dashboard)
+         *
+         * @param name name (not url)
+         */
         fun setThreeDSecureRedirectName(name: String?) = apply {
-            this.tdsRedirectName = name
+            this.threeDSecureRedirectName = name
         }
 
         /**
@@ -135,7 +142,7 @@ class PayjpConfiguration private constructor(
             clientInfo = clientInfo,
             cardScannerPlugin = cardScannerPlugin,
             tokenBackgroundHandler = tokenBackgroundHandler,
-            tdsRedirectName = tdsRedirectName
+            threeDSecureRedirectName = threeDSecureRedirectName
         )
     }
 }
