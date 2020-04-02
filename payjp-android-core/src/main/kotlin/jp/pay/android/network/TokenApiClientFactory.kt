@@ -26,10 +26,12 @@ import com.squareup.moshi.Moshi
 import java.util.Locale
 import java.util.concurrent.Executor
 import jp.pay.android.PayjpApi
+import jp.pay.android.PayjpLogger
 import jp.pay.android.model.BundleJsonAdapter
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ClientInfo
 import jp.pay.android.model.DateUnixTimeJsonAdapter
+import jp.pay.android.model.ThreeDSecureStatus
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -45,11 +47,23 @@ internal object TokenApiClientFactory {
             .add(CardBrand.JsonAdapter())
             .add(DateUnixTimeJsonAdapter())
             .add(BundleJsonAdapter())
+            .add(ThreeDSecureStatus.JsonAdapter())
             .build()
     }
 
-    fun createOkHttp(locale: Locale, debuggable: Boolean, clientInfo: ClientInfo): OkHttpClient =
+    fun createOkHttp(
+        baseUrl: String,
+        locale: Locale,
+        clientInfo: ClientInfo,
+        debuggable: Boolean = false
+    ): OkHttpClient =
         OkHttpClient.Builder()
+            .retryOnConnectionFailure(false)
+            .addNetworkInterceptor(
+                ThreeDSecureRedirectionInterceptor(
+                    ThreeDSecureTokenRetriever(baseUrl = baseUrl, moshi = moshi)
+                )
+            )
             .addInterceptor(CustomHeaderInterceptor(locale, clientInfo, moshi))
             .apply {
                 if (debuggable) {
@@ -58,20 +72,18 @@ internal object TokenApiClientFactory {
                 }
             }
             .let {
-                OkHttpTlsHelper.enableTls12OnPreLollipop(it, debuggable)
+                OkHttpTlsHelper.enableTls12OnPreLollipop(it, PayjpLogger.get(debuggable))
             }
             .dispatcher(Dispatcher(NetworkExecutorFactory.create()))
             .build()
 
     fun createApiClient(
         baseUrl: String,
-        debuggable: Boolean = false,
-        callbackExecutor: Executor,
-        locale: Locale,
-        clientInfo: ClientInfo
+        okHttpClient: OkHttpClient,
+        callbackExecutor: Executor
     ): PayjpApi = Retrofit.Builder()
         .baseUrl(baseUrl)
-        .client(createOkHttp(locale, debuggable, clientInfo))
+        .client(okHttpClient)
         .addCallAdapterFactory(ResultCallAdapterFactory(moshi, callbackExecutor))
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()

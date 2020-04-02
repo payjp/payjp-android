@@ -26,8 +26,10 @@ import android.util.Base64
 import java.nio.charset.Charset
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
+import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.network.TokenApiClientFactory.createApiClient
+import jp.pay.android.network.TokenApiClientFactory.createOkHttp
 
 /**
  * Payjp token client
@@ -50,10 +52,13 @@ class PayjpToken internal constructor(
         configuration = configuration,
         payjpApi = createApiClient(
             baseUrl = PayjpConstants.API_ENDPOINT,
-            debuggable = configuration.debugEnabled,
-            callbackExecutor = configuration.callbackExecutor,
-            locale = configuration.locale,
-            clientInfo = configuration.clientInfo
+            okHttpClient = createOkHttp(
+                baseUrl = PayjpConstants.API_ENDPOINT,
+                locale = configuration.locale,
+                clientInfo = configuration.clientInfo,
+                debuggable = configuration.debugEnabled
+            ),
+            callbackExecutor = configuration.callbackExecutor
         )
     )
 
@@ -62,6 +67,8 @@ class PayjpToken internal constructor(
     init {
         authorization = createAuthorization(configuration.publicKey)
     }
+
+    override fun getPublicKey(): String = configuration.publicKey
 
     override fun createToken(param: PayjpTokenParam): Task<Token> {
         return payjpApi.createToken(
@@ -72,6 +79,13 @@ class PayjpToken internal constructor(
             expYear = param.expYear,
             name = param.name,
             tenant = param.tenantId?.id
+        )
+    }
+
+    override fun createToken(threeDSecureToken: ThreeDSecureToken): Task<Token> {
+        return payjpApi.createToken(
+            authorization = authorization,
+            tdsId = threeDSecureToken.id
         )
     }
 

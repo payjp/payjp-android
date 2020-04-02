@@ -28,6 +28,7 @@ import com.squareup.moshi.Moshi
 import java.util.Date
 import jp.pay.android.fixtures.CARD_HAS_METADATA
 import jp.pay.android.fixtures.CARD_ID_NULL
+import jp.pay.android.fixtures.CARD_NO_3DS_STATUS
 import jp.pay.android.fixtures.CARD_OK
 import jp.pay.android.network.TokenApiClientFactory
 import org.junit.Assert.assertEquals
@@ -67,6 +68,7 @@ class CardTest {
                 assertEquals(customer, "cus_xxxxx")
                 assertEquals(cvcCheck, "passed")
                 assertEquals(metadata.isEmpty, true)
+                assertEquals(threeDSecureStatus, ThreeDSecureStatus.VERIFIED)
             } ?: fail("card is null")
     }
 
@@ -87,5 +89,14 @@ class CardTest {
                 assertEquals(metadata.get("user_verified"), true)
                 assertEquals(metadata.get("user_tags"), "[car, bike]")
             } ?: fail("card is null")
+    }
+
+    @Test
+    fun allow_three_d_secure_status_null() {
+        moshi.adapter(Card::class.java)
+            .fromJson(CARD_NO_3DS_STATUS)
+            ?.apply {
+                assertEquals(threeDSecureStatus, null)
+            }
     }
 }
