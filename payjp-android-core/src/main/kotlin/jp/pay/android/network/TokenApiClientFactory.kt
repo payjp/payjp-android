@@ -52,13 +52,18 @@ internal object TokenApiClientFactory {
     }
 
     fun createOkHttp(
+        baseUrl: String,
         locale: Locale,
         clientInfo: ClientInfo,
         debuggable: Boolean = false
     ): OkHttpClient =
         OkHttpClient.Builder()
             .retryOnConnectionFailure(false)
-            .addNetworkInterceptor(ThreeDSecureRedirectionInterceptor())
+            .addNetworkInterceptor(
+                ThreeDSecureRedirectionInterceptor(
+                    ThreeDSecureTokenRetriever(baseUrl = baseUrl, moshi = moshi)
+                )
+            )
             .addInterceptor(CustomHeaderInterceptor(locale, clientInfo, moshi))
             .apply {
                 if (debuggable) {

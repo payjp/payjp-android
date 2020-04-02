@@ -22,24 +22,43 @@
  */
 package jp.pay.android.network
 
-import android.net.Uri
+import com.squareup.moshi.Moshi
+import jp.pay.android.model.PayjpResourceObject
 import jp.pay.android.model.ThreeDSecureToken
+import okhttp3.Request
+import okhttp3.Response
 
-internal class ThreeDSecureTokenRetriever(private val host: String) {
+/**
+ * Retrieve [ThreeDSecureToken] from response.
+ * 3DS token will return when the client request Token if required.
+ * The response is redirect to 3DS endpoint with 3DS token in the body.
+ *
+ * @param baseUrl api baseUrl
+ * @param moshi Response json adapter
+ */
+internal class ThreeDSecureTokenRetriever(
+    private val baseUrl: String,
+    private val moshi: Moshi
+) {
 
-    companion object {
-        private val REGEX_TDS_PATH = """\A/v1/tds/([\w\d_]+)/.*\z""".toRegex()
-    }
-
-    fun retrieve(url: String): ThreeDSecureToken? {
-        return Uri.parse(url)?.let { uri ->
-            uri.takeIf {
-                host == uri.host && uri.path?.let { REGEX_TDS_PATH.matches(it) } == true
-            }?.let {
-                REGEX_TDS_PATH.find(it.path.orEmpty())?.destructured
-            }?.let { (id) ->
-                ThreeDSecureToken(id = id)
-            }
+    /**
+     * Take [ThreeDSecureToken] from response.
+     *
+     * @param request request
+     * @param response response
+     * @return return 3DS Token if found, return null if not found.
+     */
+    fun retrieve(request: Request, response: Response): ThreeDSecureToken? = response
+        .takeIf {
+            request.url().toString() == "${baseUrl}tokens" &&
+                request.method() == "POST" &&
+                it.isRedirect
         }
-    }
+        ?.body()
+        ?.let { body ->
+        val bodyString = body.string()
+        moshi.adapter(PayjpResourceObject::class.java).fromJson(bodyString)
+            ?.takeIf { it.name == "three_d_secure_token" }
+            ?.let { ThreeDSecureToken(id = it.id) }
+        }
 }

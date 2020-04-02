@@ -20,28 +20,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.network
+package jp.pay.android.model
 
-import jp.pay.android.exception.PayjpThreeDSecureRequiredException
-import okhttp3.Interceptor
-import okhttp3.Response
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-/**
- * Intercept 3DS redirect
- *
- * It will throw [PayjpThreeDSecureRequiredException] with capturing 3DS resource from body.
- *
- * @param tdsTokenRetriever if the retriever found token, throw exception.
- */
-internal class ThreeDSecureRedirectionInterceptor(
-    private val tdsTokenRetriever: ThreeDSecureTokenRetriever
-) : Interceptor {
-    override fun intercept(c: Interceptor.Chain): Response {
-        val request = c.request()
-        return c.proceed(request).also { response ->
-            tdsTokenRetriever.retrieve(request, response)?.let { token ->
-                throw PayjpThreeDSecureRequiredException(token)
-            }
-        }
-    }
-}
+@JsonClass(generateAdapter = true)
+data class PayjpResourceObject(
+    @Json(name = "object") val name: String,
+    val id: String
+)
