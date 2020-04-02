@@ -27,12 +27,12 @@ import androidx.lifecycle.SavedStateHandle
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-fun <T> SavedStateHandle.delegate(
+internal fun <T> SavedStateHandle.delegate(
     key: String? = null,
     initialValue: T? = null
 ): ReadWriteProperty<Any, T> = SavedStateHandleDelegate(this, key, initialValue)
 
-fun <T> SavedStateHandle.delegateLiveData(
+internal fun <T> SavedStateHandle.delegateLiveData(
     key: String? = null,
     initialValue: T? = null
 ): ReadWriteProperty<Any, MutableLiveData<T>> =
