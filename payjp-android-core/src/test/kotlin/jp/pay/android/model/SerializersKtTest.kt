@@ -60,7 +60,8 @@ class SerializersKtTest {
             metadata = Bundle().apply {
                 putString("meta_a", "a")
                 putBoolean("meta_true", true)
-            }
+            },
+            threeDSecureStatus = ThreeDSecureStatus.VERIFIED
         )
     }
 
@@ -74,7 +75,8 @@ class SerializersKtTest {
             addressCity = null,
             addressLine1 = null,
             addressLine2 = null,
-            metadata = Bundle.EMPTY
+            metadata = Bundle.EMPTY,
+            threeDSecureStatus = null
         )
     }
 
@@ -120,6 +122,7 @@ class SerializersKtTest {
                 map,
                 hasEntry("metadata", mapOf("meta_a" to "a", "meta_true" to true))
             )
+            assertThat(map, hasEntry<String, Any>("three_d_secure_status", "verified"))
         }
     }
 
@@ -136,6 +139,7 @@ class SerializersKtTest {
             assertThat(map, hasEntry<String, Any>("address_line1", null))
             assertThat(map, hasEntry<String, Any>("address_line2", null))
             assertThat((map["metadata"] as? Map<*, *>)?.isEmpty(), `is`(true))
+            assertThat(map, hasEntry<String, Any>("three_d_secure_status", null))
         }
     }
 
