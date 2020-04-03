@@ -115,7 +115,8 @@ class SerializersKtTest {
             assertThat(map, hasEntry<String, Any>("address_line2", "line2"))
             assertThat(map, hasEntry<String, Any>("address_zip_check", "checked"))
             assertThat(map, hasEntry<String, Any>("cvc_check", "checked"))
-            assertThat(
+            @Suppress("RemoveExplicitTypeArguments")
+            assertThat<Map<String, Any?>>(
                 map,
                 hasEntry("metadata", mapOf("meta_a" to "a", "meta_true" to true))
             )
