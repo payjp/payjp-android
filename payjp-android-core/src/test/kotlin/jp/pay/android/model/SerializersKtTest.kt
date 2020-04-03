@@ -97,25 +97,25 @@ class SerializersKtTest {
     fun cardToJsonValue_fulfilled() {
         cardFulFilled.toJsonValue().let { map ->
             assertThat(map, notNullValue())
-            assertThat<Map<String, Any?>>(map, hasEntry("id", "car_1"))
-            assertThat<Map<String, Any?>>(map, hasEntry("name", "n"))
-            assertThat<Map<String, Any?>>(map, hasEntry("last4", "1234"))
-            assertThat<Map<String, Any?>>(map, hasEntry("brand", "Visa"))
-            assertThat<Map<String, Any?>>(map, hasEntry("created", 1577804400000L))
-            assertThat<Map<String, Any?>>(map, hasEntry("exp_month", 1L))
-            assertThat<Map<String, Any?>>(map, hasEntry("exp_year", 2050L))
-            assertThat<Map<String, Any?>>(map, hasEntry("fingerprint", "f"))
-            assertThat<Map<String, Any?>>(map, hasEntry("livemode", true))
-            assertThat<Map<String, Any?>>(map, hasEntry("customer", "c"))
-            assertThat<Map<String, Any?>>(map, hasEntry("country", "JP"))
-            assertThat<Map<String, Any?>>(map, hasEntry("address_state", "state"))
-            assertThat<Map<String, Any?>>(map, hasEntry("address_zip", "zip"))
-            assertThat<Map<String, Any?>>(map, hasEntry("address_city", "city"))
-            assertThat<Map<String, Any?>>(map, hasEntry("address_line1", "line1"))
-            assertThat<Map<String, Any?>>(map, hasEntry("address_line2", "line2"))
-            assertThat<Map<String, Any?>>(map, hasEntry("address_zip_check", "checked"))
-            assertThat<Map<String, Any?>>(map, hasEntry("cvc_check", "checked"))
-            assertThat<Map<String, Any?>>(
+            assertThat(map, hasEntry<String, Any>("id", "car_1"))
+            assertThat(map, hasEntry<String, Any>("name", "n"))
+            assertThat(map, hasEntry<String, Any>("last4", "1234"))
+            assertThat(map, hasEntry<String, Any>("brand", "Visa"))
+            assertThat(map, hasEntry<String, Any>("created", 1577804400000L))
+            assertThat(map, hasEntry<String, Any>("exp_month", 1L))
+            assertThat(map, hasEntry<String, Any>("exp_year", 2050L))
+            assertThat(map, hasEntry<String, Any>("fingerprint", "f"))
+            assertThat(map, hasEntry<String, Any>("livemode", true))
+            assertThat(map, hasEntry<String, Any>("customer", "c"))
+            assertThat(map, hasEntry<String, Any>("country", "JP"))
+            assertThat(map, hasEntry<String, Any>("address_state", "state"))
+            assertThat(map, hasEntry<String, Any>("address_zip", "zip"))
+            assertThat(map, hasEntry<String, Any>("address_city", "city"))
+            assertThat(map, hasEntry<String, Any>("address_line1", "line1"))
+            assertThat(map, hasEntry<String, Any>("address_line2", "line2"))
+            assertThat(map, hasEntry<String, Any>("address_zip_check", "checked"))
+            assertThat(map, hasEntry<String, Any>("cvc_check", "checked"))
+            assertThat(
                 map,
                 hasEntry("metadata", mapOf("meta_a" to "a", "meta_true" to true))
             )
@@ -126,14 +126,14 @@ class SerializersKtTest {
     fun cardToJsonValue_havingNull() {
         cardHavingNull.toJsonValue().let { map ->
             assertThat(map, notNullValue())
-            assertThat<Map<String, Any?>>(map, hasEntry("name", null))
-            assertThat<Map<String, Any?>>(map, hasEntry("customer", null))
-            assertThat<Map<String, Any?>>(map, hasEntry("country", null))
-            assertThat<Map<String, Any?>>(map, hasEntry("address_state", null))
-            assertThat<Map<String, Any?>>(map, hasEntry("address_zip", null))
-            assertThat<Map<String, Any?>>(map, hasEntry("address_city", null))
-            assertThat<Map<String, Any?>>(map, hasEntry("address_line1", null))
-            assertThat<Map<String, Any?>>(map, hasEntry("address_line2", null))
+            assertThat(map, hasEntry<String, Any>("name", null))
+            assertThat(map, hasEntry<String, Any>("customer", null))
+            assertThat(map, hasEntry<String, Any>("country", null))
+            assertThat(map, hasEntry<String, Any>("address_state", null))
+            assertThat(map, hasEntry<String, Any>("address_zip", null))
+            assertThat(map, hasEntry<String, Any>("address_city", null))
+            assertThat(map, hasEntry<String, Any>("address_line1", null))
+            assertThat(map, hasEntry<String, Any>("address_line2", null))
             assertThat((map["metadata"] as? Map<*, *>)?.isEmpty(), `is`(true))
         }
     }
@@ -146,14 +146,14 @@ class SerializersKtTest {
     @Test
     fun tokenToJsonValue() {
         token.toJsonValue().let { token ->
-            assertThat<Map<String, Any?>>(token, hasEntry("id", "tok_1"))
-            assertThat<Map<String, Any?>>(token, hasEntry("livemode", true))
-            assertThat<Map<String, Any?>>(token, hasEntry("used", false))
-            assertThat<Map<String, Any?>>(token, hasEntry("created", 1577804400000L))
+            assertThat(token, hasEntry<String, Any>("id", "tok_1"))
+            assertThat(token, hasEntry<String, Any>("livemode", true))
+            assertThat(token, hasEntry<String, Any>("used", false))
+            assertThat(token, hasEntry<String, Any>("created", 1577804400000L))
             assertThat(token["card"], instanceOf(Map::class.java))
             (token["card"] as Map<*, *>).let { card ->
-                assertThat<Map<*, *>>(card, hasEntry("id", "car_1"))
-                assertThat<Map<*, *>>(card, hasEntry("name", "n"))
+                assertThat(card, hasEntry<Any?, Any?>("id", "car_1"))
+                assertThat(card, hasEntry<Any?, Any?>("name", "n"))
             }
         }
     }
