@@ -138,6 +138,7 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
                 if (hasFocus && formElementsPager.currentItem != position) {
                     formElementsPager.setCurrentItem(position, true)
                 }
+                cardDisplay.updateHighlight(type, hasFocus)
             }
         )
         formElementsPager.adapter = adapter

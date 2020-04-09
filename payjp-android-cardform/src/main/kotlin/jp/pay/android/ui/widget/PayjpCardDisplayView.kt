@@ -73,6 +73,7 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
     private val cardBackModel = ShapeAppearanceModel.Builder()
         .setAllCornerSizes(AbsoluteCornerSize(32f))
         .build()
+    private val highlightBackground: MaterialShapeDrawable
     private var frontVisible = true
 
     init {
@@ -106,6 +107,13 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
                 frontVisible = true
             })
         }
+        highlightBackground = MaterialShapeDrawable(ShapeAppearanceModel.Builder()
+            .setAllCornerSizes(AbsoluteCornerSize(16f))
+            .build()).apply {
+            strokeWidth = 4.0f
+            fillColor = ColorStateList.valueOf(ContextCompat.getColor(context, android.R.color.transparent))
+            strokeColor = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.payjp_primaryColor))
+        }
     }
 
     fun isFrontVisible() = frontVisible
@@ -135,6 +143,19 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
             CardBrand.UNKNOWN -> View.GONE
             else -> View.VISIBLE
         }
+    }
+
+    fun updateHighlight(elementType: CardFormElementType, highlighted: Boolean) {
+        val view = when (elementType) {
+            CardFormElementType.Number -> numberDisplay
+            CardFormElementType.Expiration -> expirationDisplay
+            CardFormElementType.Cvc -> when (brand) {
+                CardBrand.AMEX -> cvcDisplayAmex
+                else -> cvcDisplay
+            }
+            CardFormElementType.HolderName -> holderDisplay
+        }
+        view.background = highlightBackground.takeIf { highlighted }
     }
 
     fun setCardNumber(cardNumber: CharSequence) {
