@@ -35,7 +35,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/payjp_card_form_cvc_label"
-            app:endIconDrawable="@drawable/ic_cvc_back"
             app:endIconMode="custom"
             app:endIconTint="@null">
 

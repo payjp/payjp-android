@@ -37,8 +37,6 @@ import jp.pay.android.R
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput
 import jp.pay.android.plugin.CardScannerPlugin
-import jp.pay.android.ui.extension.cvcIconResourceId
-import jp.pay.android.ui.extension.logoResourceId
 import jp.pay.android.ui.extension.setErrorOrNull
 
 internal typealias OnCardFormElementTextChanged = (type: CardFormElementType, s: CharSequence, start: Int, before: Int, count: Int) -> Unit
@@ -117,7 +115,6 @@ internal sealed class CardFormElementViewHolder(
         private var brand: CardBrand = CardBrand.UNKNOWN
             set(value) {
                 if (field != value) {
-                    inputLayout.setStartIconDrawable(value.logoResourceId)
                     cardNumberFormatter.brand = value
                 }
                 field = value
@@ -218,7 +215,6 @@ internal sealed class CardFormElementViewHolder(
                 if (field != value) {
                     editText.filters =
                         arrayOf<InputFilter>(InputFilter.LengthFilter(value.cvcLength))
-                    inputLayout.setEndIconDrawable(value.cvcIconResourceId)
                 }
                 field = value
             }

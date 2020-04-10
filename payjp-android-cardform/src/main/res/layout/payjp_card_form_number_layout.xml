@@ -37,7 +37,6 @@
             android:hint="@string/payjp_card_form_number_label"
             app:endIconDrawable="@drawable/ic_camera"
             app:endIconMode="none"
-            app:startIconDrawable="@drawable/ic_card"
             app:startIconTint="@null"
             tools:endIconMode="custom">
 
