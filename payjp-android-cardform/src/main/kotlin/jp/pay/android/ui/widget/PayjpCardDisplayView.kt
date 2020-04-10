@@ -165,7 +165,7 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
     }
 
     fun setCardExpiration(cardExpiration: CharSequence) {
-        val allMask = "XX/XX"
+        val allMask = "MM/YY"
         this.expirationDisplay.text = allMask.replaceRange(0 until min(cardExpiration.length, allMask.length), cardExpiration)
     }
 

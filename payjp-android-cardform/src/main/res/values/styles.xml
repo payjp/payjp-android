@@ -39,6 +39,8 @@
 
     <style name="PayjpCardDisplayTextView" parent="Widget.MaterialComponents.TextView">
         <item name="android:fontFamily">@font/space_mono</item>
+        <item name="android:textColor">@color/payjp_card_display_text_color</item>
+        <item name="android:textColorHint">@color/payjp_card_display_text_color_hint</item>
     </style>
 
 </resources>
