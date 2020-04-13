@@ -158,7 +158,14 @@ object PayjpCardForm {
     ): PayjpCardFormFragment =
         PayjpCardFormFragment.newInstance(holderNameEnabled, tenantId, acceptedBrands)
 
-    // TODO: switch by @CardFormFace
+    /**
+     * Create new Fragment instance that inherited [PayjpCardFormAbstractFragment].
+     *
+     * @param holderNameEnabled a option it require card holder name or not.
+     * @param tenantId a option for platform tenant.
+     * @param acceptedBrands accepted brands. if it is null, the fragment try to get them.
+     * @param face form appearance type. cf. [PayjpCardForm.CardFormFace]
+     */
     @JvmOverloads
     fun newCardFormFragment(
         holderNameEnabled: Boolean = true,

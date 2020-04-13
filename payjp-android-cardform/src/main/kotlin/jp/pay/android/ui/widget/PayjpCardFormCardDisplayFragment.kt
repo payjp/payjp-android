@@ -43,7 +43,8 @@ import jp.pay.android.validator.CardHolderNameInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformer
 import kotlin.math.abs
 
-class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment(R.layout.payjp_card_form_view_card_display) {
+class PayjpCardFormCardDisplayFragment :
+    PayjpCardFormAbstractFragment(R.layout.payjp_card_form_view_card_display) {
 
     companion object {
         private const val ARGS_TENANT_ID = "ARGS_TENANT_ID"
@@ -124,7 +125,8 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment(R.layout.
                 when (type) {
                     CardFormElementType.Cvc -> {
                         if (hasFocus && cardDisplay.isFrontVisible() &&
-                            viewModel?.cardNumberBrand?.value != CardBrand.AMEX) {
+                            viewModel?.cardNumberBrand?.value != CardBrand.AMEX
+                        ) {
                             cardDisplay.flipToBack()
                         }
                     }
