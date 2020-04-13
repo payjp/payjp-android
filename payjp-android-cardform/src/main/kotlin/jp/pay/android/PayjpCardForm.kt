@@ -24,6 +24,7 @@ package jp.pay.android
 
 import android.app.Activity
 import android.content.Intent
+import androidx.annotation.IntDef
 import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import java.util.concurrent.Executor
@@ -33,6 +34,7 @@ import jp.pay.android.model.TenantId
 import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.ui.PayjpCardFormActivity
 import jp.pay.android.ui.PayjpCardFormResultCallback
+import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
 import jp.pay.android.ui.widget.PayjpCardFormFragment
 import jp.pay.android.ui.widget.PayjpCardFormFragment2
 
@@ -40,6 +42,12 @@ import jp.pay.android.ui.widget.PayjpCardFormFragment2
  * Card form client.
  */
 object PayjpCardForm {
+
+    @IntDef(FACE_MULTI_LINE, FACE_CARD_DISPLAY)
+    @Retention(AnnotationRetention.SOURCE)
+    annotation class CardFormFace
+    const val FACE_MULTI_LINE = 0
+    const val FACE_CARD_DISPLAY = 1
 
     internal const val CARD_FORM_DELIMITER_NUMBER = '-'
     internal const val CARD_FORM_DELIMITER_NUMBER_DISPLAY = ' '
@@ -89,11 +97,16 @@ object PayjpCardForm {
      * @param activity activity
      * @param requestCode requestCode. The default is [PayjpCardFormActivity.DEFAULT_CARD_FORM_REQUEST_CODE]
      * @param tenant tenant (only for platformer)
+     * @param face card form face. The default is [FACE_MULTI_LINE].
      */
     @MainThread
     @JvmOverloads
-    fun start(activity: Activity, requestCode: Int? = null, tenant: TenantId? = null) =
-        PayjpCardFormActivity.start(activity = activity, requestCode = requestCode, tenant = tenant)
+    fun start(
+        activity: Activity,
+        requestCode: Int? = null,
+        tenant: TenantId? = null,
+        @CardFormFace face: Int = FACE_MULTI_LINE
+    ) = PayjpCardFormActivity.start(activity = activity, requestCode = requestCode, tenant = tenant, face = face)
 
     /**
      * Start card form screen from Fragment.
@@ -104,8 +117,12 @@ object PayjpCardForm {
      */
     @MainThread
     @JvmOverloads
-    fun start(fragment: Fragment, requestCode: Int? = null, tenant: TenantId? = null) =
-        PayjpCardFormActivity.start(fragment = fragment, requestCode = requestCode, tenant = tenant)
+    fun start(
+        fragment: Fragment,
+        requestCode: Int? = null,
+        tenant: TenantId? = null,
+        @CardFormFace face: Int = FACE_MULTI_LINE
+    ) = PayjpCardFormActivity.start(fragment = fragment, requestCode = requestCode, tenant = tenant, face = face)
 
     /**
      * Handle the result from the activity which is started by [PayjpCardForm.start].
@@ -127,6 +144,13 @@ object PayjpCardForm {
      * @return fragment
      */
     @JvmOverloads
+    @Deprecated(
+        message = "Use newCardFormFragment()",
+        replaceWith = ReplaceWith(
+        "newCardFormFragment(holderNameEnabled, tenantId, acceptedBrands, face)",
+        "jp.pay.android"
+        )
+    )
     fun newFragment(
         holderNameEnabled: Boolean = true,
         tenantId: TenantId? = null,
@@ -134,11 +158,16 @@ object PayjpCardForm {
     ): PayjpCardFormFragment =
         PayjpCardFormFragment.newInstance(holderNameEnabled, tenantId, acceptedBrands)
 
+    // TODO: switch by @CardFormFace
     @JvmOverloads
-    fun newFragment2(
+    fun newCardFormFragment(
         holderNameEnabled: Boolean = true,
         tenantId: TenantId? = null,
-        acceptedBrands: Array<CardBrand>? = null
-    ): PayjpCardFormFragment2 =
-        PayjpCardFormFragment2.newInstance(tenantId, acceptedBrands)
+        acceptedBrands: Array<CardBrand>? = null,
+        @CardFormFace face: Int = FACE_MULTI_LINE
+    ): PayjpCardFormAbstractFragment = when (face) {
+        FACE_MULTI_LINE -> PayjpCardFormFragment.newInstance(holderNameEnabled, tenantId, acceptedBrands)
+        FACE_CARD_DISPLAY -> PayjpCardFormFragment2.newInstance(tenantId, acceptedBrands)
+        else -> throw IllegalArgumentException("unknown face $face")
+    }
 }
