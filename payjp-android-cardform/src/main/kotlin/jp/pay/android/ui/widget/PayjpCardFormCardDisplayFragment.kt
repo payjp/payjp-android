@@ -43,7 +43,7 @@ import jp.pay.android.validator.CardHolderNameInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformer
 import kotlin.math.abs
 
-class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card_form_view_2) {
+class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment(R.layout.payjp_card_form_view_card_display) {
 
     companion object {
         private const val ARGS_TENANT_ID = "ARGS_TENANT_ID"
@@ -60,8 +60,8 @@ class PayjpCardFormFragment2 : PayjpCardFormAbstractFragment(R.layout.payjp_card
         fun newInstance(
             tenantId: TenantId? = null,
             acceptedBrands: Array<CardBrand>? = null
-        ): PayjpCardFormFragment2 =
-            PayjpCardFormFragment2().apply {
+        ): PayjpCardFormCardDisplayFragment =
+            PayjpCardFormCardDisplayFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARGS_TENANT_ID, tenantId?.id)
                     putParcelableArray(ARGS_ACCEPTED_BRANDS, acceptedBrands)

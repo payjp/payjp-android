@@ -35,8 +35,8 @@ import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.ui.PayjpCardFormActivity
 import jp.pay.android.ui.PayjpCardFormResultCallback
 import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
+import jp.pay.android.ui.widget.PayjpCardFormCardDisplayFragment
 import jp.pay.android.ui.widget.PayjpCardFormFragment
-import jp.pay.android.ui.widget.PayjpCardFormFragment2
 
 /**
  * Card form client.
@@ -167,7 +167,7 @@ object PayjpCardForm {
         @CardFormFace face: Int = FACE_MULTI_LINE
     ): PayjpCardFormAbstractFragment = when (face) {
         FACE_MULTI_LINE -> PayjpCardFormFragment.newInstance(holderNameEnabled, tenantId, acceptedBrands)
-        FACE_CARD_DISPLAY -> PayjpCardFormFragment2.newInstance(tenantId, acceptedBrands)
+        FACE_CARD_DISPLAY -> PayjpCardFormCardDisplayFragment.newInstance(tenantId, acceptedBrands)
         else -> throw IllegalArgumentException("unknown face $face")
     }
 }
