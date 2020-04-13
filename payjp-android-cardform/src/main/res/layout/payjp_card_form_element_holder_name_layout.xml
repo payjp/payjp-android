@@ -26,24 +26,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="@dimen/payjp_card_form_element_margin"
-        android:layout_marginRight="@dimen/payjp_card_form_element_margin"
-        xmlns:tools="http://schemas.android.com/tools">
+        android:layout_marginRight="@dimen/payjp_card_form_element_margin">
 
-    <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_layout_expiration"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/payjp_card_form_expiration_label">
-
-        <jp.pay.android.ui.widget.CardExpirationEditText
-                android:id="@+id/input_edit_expiration"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="flagNoExtractUi|actionNext"
-                android:inputType="date"
-                android:maxLines="1"
-                tools:text="12/20" />
-
-    </com.google.android.material.textfield.TextInputLayout>
+    <include layout="@layout/payjp_card_form_part_holder_name_layout" />
 
 </FrameLayout>

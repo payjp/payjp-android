@@ -104,7 +104,7 @@ internal sealed class CardFormElementViewHolder(
         CardFormElementViewHolder(
             CardFormElementType.Number,
             parent,
-            R.layout.payjp_card_form_number_layout,
+            R.layout.payjp_card_form_element_number_layout,
             R.id.input_layout_number,
             R.id.input_edit_number,
             onTextChanged,
@@ -146,7 +146,7 @@ internal sealed class CardFormElementViewHolder(
     ) :
         CardFormElementViewHolder(
             CardFormElementType.Expiration,
-            parent, R.layout.payjp_card_form_expiration_layout,
+            parent, R.layout.payjp_card_form_element_expiration_layout,
             R.id.input_layout_expiration,
             R.id.input_edit_expiration,
             onTextChanged,
@@ -177,7 +177,7 @@ internal sealed class CardFormElementViewHolder(
         CardFormElementViewHolder(
             CardFormElementType.HolderName,
             parent,
-            R.layout.payjp_card_form_holder_name_layout,
+            R.layout.payjp_card_form_element_holder_name_layout,
             R.id.input_layout_holder_name,
             R.id.input_edit_holder_name,
             onTextChanged,
@@ -203,7 +203,7 @@ internal sealed class CardFormElementViewHolder(
         CardFormElementViewHolder(
             CardFormElementType.Cvc,
             parent,
-            R.layout.payjp_card_form_cvc_layout,
+            R.layout.payjp_card_form_element_cvc_layout,
             R.id.input_layout_cvc,
             R.id.input_edit_cvc,
             onTextChanged,
