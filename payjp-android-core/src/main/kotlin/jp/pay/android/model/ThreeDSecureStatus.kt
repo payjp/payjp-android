@@ -36,17 +36,30 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 enum class ThreeDSecureStatus : Parcelable {
     /**
+     * The card object has not been verified, and the verification is required.
+     */
+    UNVERIFIED,
+    /**
      * The card object has been verified.
      */
     VERIFIED,
+    /**
+     * The card 3-D Secure status check has been failed.
+     */
+    FAILED,
     /**
      * The card object has not been verified, but the verification is optional.
      */
     ATTEMPTED,
     /**
-     * The card object has not been verified, and the verification is required.
+     * The card 3-D Secure status check has been aborted.
      */
-    UNVERIFIED;
+    ABORTED,
+    /**
+     * The card 3-D Secure status check error has been occurred.
+     */
+    ERROR,
+    ;
 
     /**
      * Moshi json adapter for ThreeDSecureStatus
