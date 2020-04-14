@@ -38,9 +38,12 @@ class ThreeDSecureStatusJsonAdapterTest(
         @ParameterizedRobolectricTestRunner.Parameters
         fun data(): List<Array<out Any?>> {
             return listOf(
+                arrayOf("unverified", ThreeDSecureStatus.UNVERIFIED),
                 arrayOf("verified", ThreeDSecureStatus.VERIFIED),
+                arrayOf("failed", ThreeDSecureStatus.FAILED),
                 arrayOf("attempted", ThreeDSecureStatus.ATTEMPTED),
-                arrayOf("unverified", ThreeDSecureStatus.UNVERIFIED)
+                arrayOf("aborted", ThreeDSecureStatus.ABORTED),
+                arrayOf("error", ThreeDSecureStatus.ERROR)
             )
         }
     }
