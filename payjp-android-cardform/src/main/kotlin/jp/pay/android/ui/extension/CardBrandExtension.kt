@@ -24,7 +24,6 @@
 
 package jp.pay.android.ui.extension
 
-import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import jp.pay.android.R
 import jp.pay.android.model.CardBrand
@@ -48,14 +47,17 @@ val CardBrand.logoResourceId: Int
         CardBrand.UNKNOWN -> R.drawable.ic_card
     }
 
-val CardBrand.displayLogoResourceId: Int
-    // TODO
+val CardBrand.displayLogoResourceId: Int?
     @DrawableRes
-    get() = logoResourceId
-
-val CardBrand.displayBackgroundResourceId: Int
-    @ColorRes
-    get() = R.color.payjp_card_display_background
+    get() = when (this) {
+        CardBrand.VISA -> R.drawable.ic_card_display_brand_visa
+        CardBrand.MASTER_CARD -> R.drawable.ic_card_display_brand_mastercard
+        CardBrand.JCB -> R.drawable.ic_card_display_brand_jcb
+        CardBrand.AMEX -> R.drawable.ic_card_display_brand_amex
+        CardBrand.DINERS_CLUB -> R.drawable.ic_card_display_brand_diners
+        CardBrand.DISCOVER -> R.drawable.ic_card_display_brand_discover
+        CardBrand.UNKNOWN -> null
+    }
 
 /**
  * Icon of security code (a.k.a. cvc, cvv)

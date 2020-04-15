@@ -34,14 +34,12 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.google.android.material.shape.AbsoluteCornerSize
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import jp.pay.android.R
 import jp.pay.android.model.CardBrand
-import jp.pay.android.ui.extension.displayBackgroundResourceId
 import jp.pay.android.ui.extension.displayLogoResourceId
 import jp.pay.android.ui.extension.fullMaskedPan
 import kotlin.math.min
@@ -70,9 +68,6 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
     private val frontToBack: AnimatorSet
     private val backToFront: AnimatorSet
     private var brand: CardBrand = CardBrand.UNKNOWN
-    private val cardBackModel = ShapeAppearanceModel.Builder()
-        .setAllCornerSizes(AbsoluteCornerSize(32f))
-        .build()
     private val highlightBackground: MaterialShapeDrawable
     private var frontVisible = true
 
@@ -94,7 +89,13 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
             frameBack.cameraDistance = it
         }
 
-        val defaultBackground = createBackground(R.color.payjp_card_display_background)
+        val cardBackModel = ShapeAppearanceModel.Builder()
+            .setAllCornerSizes(AbsoluteCornerSize(32f))
+            .build()
+        val backgroundColor = ContextCompat.getColor(context, R.color.payjp_card_display_background)
+        val defaultBackground = MaterialShapeDrawable(cardBackModel).apply {
+            fillColor = ColorStateList.valueOf(backgroundColor)
+        }
         frameFront.background = defaultBackground
         frameBack.background = defaultBackground
         frontToBack = createFlipAnimator(frameFront, frameBack).apply {
@@ -135,10 +136,7 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
             CardBrand.AMEX -> View.VISIBLE
             else -> View.INVISIBLE
         }
-        val brandBackground = createBackground(brand.displayBackgroundResourceId)
-        frameFront.background = brandBackground
-        frameBack.background = brandBackground
-        brandLogo.setImageResource(brand.displayLogoResourceId)
+        brand.displayLogoResourceId?.let { brandLogo.setImageResource(it) }
         brandLogo.visibility = when (brand) {
             CardBrand.UNKNOWN -> View.GONE
             else -> View.VISIBLE
@@ -177,12 +175,6 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
         val text = "•".repeat(length)
         this.cvcDisplay.text = text
         this.cvcDisplayAmex.text = text
-    }
-
-    private fun createBackground(@ColorRes colorResId: Int): MaterialShapeDrawable {
-        return MaterialShapeDrawable(cardBackModel).apply {
-            fillColor = ColorStateList.valueOf(ContextCompat.getColor(context, colorResId))
-        }
     }
 
     private fun createFlipAnimator(front: View, back: View): AnimatorSet {
