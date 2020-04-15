@@ -158,21 +158,20 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
 
     fun setCardNumber(cardNumber: CharSequence) {
         // TODO highlight input character
-        val allMask = brand.fullMaskedPan
+        val allMask = brand.fullMaskedPan(maskChar = 'X', delimiter = ' ')
         this.numberDisplay.text = allMask.replaceRange(0 until min(cardNumber.length, allMask.length), cardNumber)
     }
 
     fun setCardExpiration(cardExpiration: CharSequence) {
-        val allMask = "MM/YY"
-        this.expirationDisplay.text = allMask.replaceRange(0 until min(cardExpiration.length, allMask.length), cardExpiration)
+        this.expirationDisplay.text = cardExpiration
     }
 
     fun setCardHolderName(cardHolderName: CharSequence) {
-        this.holderDisplay.text = cardHolderName.ifEmpty { "NAME" }
+        this.holderDisplay.text = cardHolderName
     }
 
     fun setCardCvcInputLength(length: Int) {
-        val text = "•".repeat(length)
+        val text = "•".repeat(length).ifEmpty { null }
         this.cvcDisplay.text = text
         this.cvcDisplayAmex.text = text
     }

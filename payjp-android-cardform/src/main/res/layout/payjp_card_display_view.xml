@@ -70,7 +70,9 @@
                     android:minWidth="40dp"
                     android:layout_marginEnd="8dp"
                     android:textColor="@color/payjp_card_display_text_color_cvc_default"
+                    android:textColorHint="#80000000"
                     android:textSize="12sp"
+                    android:hint="•••"
                     tools:text="•••" />
 
         </FrameLayout>
@@ -95,7 +97,7 @@
                 android:maxLines="1"
                 android:singleLine="true"
                 android:gravity="center"
-                android:text="XXXX XXXX XXXX XXXX"
+                android:hint="XXXX XXXX XXXX XXXX"
                 android:textSize="14sp"
                 android:paddingVertical="2dp"
                 android:paddingHorizontal="8dp"
@@ -113,7 +115,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:text="MM/YY"
+                android:hint="MM/YY"
                 android:paddingVertical="2dp"
                 android:paddingHorizontal="8dp"
                 android:textSize="12sp"
@@ -132,7 +134,7 @@
                 android:paddingVertical="2dp"
                 android:paddingHorizontal="8dp"
                 android:singleLine="true"
-                android:text="NAME"
+                android:hint="NAME"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -151,6 +153,7 @@
                 android:paddingHorizontal="8dp"
                 android:textSize="12sp"
                 android:visibility="invisible"
+                android:hint="••••"
                 tools:text="••••" />
 
         <ImageView

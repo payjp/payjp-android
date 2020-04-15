@@ -71,8 +71,18 @@ val CardBrand.cvcIconResourceId: Int
         else -> R.drawable.ic_cvc_back
     }
 
-val CardBrand.fullMaskedPan: CharSequence
+val CardBrand.numberFormat: IntArray
     get() = when (this) {
-        CardBrand.AMEX, CardBrand.DINERS_CLUB -> "XXXX XXXXXX XXXXX"
-        else -> "XXXX XXXX XXXX XXXX"
+        CardBrand.DINERS_CLUB -> intArrayOf(4, 6, 4)
+        CardBrand.AMEX -> intArrayOf(4, 6, 5)
+        else -> intArrayOf(4, 4, 4, 4)
+    }
+
+fun CardBrand.fullMaskedPan(maskChar: Char, delimiter: Char): String =
+    numberFormat.foldIndexed("") { index, acc, i ->
+        var r = acc + maskChar.toString().repeat(i)
+        if (index != numberFormat.lastIndex) {
+            r += delimiter
+        }
+        r
     }
