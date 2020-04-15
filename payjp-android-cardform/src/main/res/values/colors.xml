@@ -30,11 +30,4 @@
     <color name="payjp_card_display_text_color">#ddffffff</color>
     <color name="payjp_card_display_text_color_hint">#60ffffff</color>
     <color name="payjp_card_display_text_color_cvc_default">#333333</color>
-
-    <color name="payjp_card_display_visa">#a1a5e9</color>
-    <color name="payjp_card_display_mastercard">#f4f4f4</color>
-    <color name="payjp_card_display_jcb">#cbcbcb</color>
-    <color name="payjp_card_display_amex">#1274b8</color>
-    <color name="payjp_card_display_diners">#256091</color>
-    <color name="payjp_card_display_discover">#e6e6e6</color>
 </resources>
