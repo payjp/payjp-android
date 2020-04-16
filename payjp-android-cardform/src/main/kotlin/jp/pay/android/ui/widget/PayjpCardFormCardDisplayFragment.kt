@@ -74,6 +74,8 @@ class PayjpCardFormCardDisplayFragment :
     private lateinit var cardDisplay: PayjpCardDisplayView
     private lateinit var adapter: CardFormElementAdapter
     private val handler = Handler(Looper.getMainLooper())
+    private val cardNumberFormatter =
+        CardNumberFormatTextWatcher(PayjpCardForm.CARD_FORM_DELIMITER_NUMBER)
 
     private val delimiterExpiration = PayjpCardForm.CARD_FORM_DELIMITER_EXPIRATION
 
@@ -94,7 +96,7 @@ class PayjpCardFormCardDisplayFragment :
         formElementsPager.isFocusable = false
 
         adapter = CardFormElementAdapter(
-            cardNumberFormatter = CardNumberFormatTextWatcher(PayjpCardForm.CARD_FORM_DELIMITER_NUMBER_DISPLAY),
+            cardNumberFormatter = cardNumberFormatter,
             cardExpirationFormatter = CardExpirationFormatTextWatcher(delimiterExpiration),
             scannerPlugin = PayjpCardForm.cardScannerPlugin(),
             onClickScannerIcon = View.OnClickListener {
@@ -187,6 +189,7 @@ class PayjpCardFormCardDisplayFragment :
                 adapter.notifyCardFormElementChanged(CardFormElementType.Cvc)
             }
             cardNumberBrand.observe(viewLifecycleOwner) { brand ->
+                cardNumberFormatter.brand = brand
                 adapter.brand = brand
                 adapter.notifyDataSetChanged()
             }

@@ -94,7 +94,7 @@ internal sealed class CardFormElementViewHolder(
 
     class CardFormNumberElement(
         parent: ViewGroup,
-        private val cardNumberFormatter: CardNumberFormatTextWatcher,
+        cardNumberFormatter: CardNumberFormatTextWatcher,
         scannerPlugin: CardScannerPlugin?,
         onClickScannerIcon: View.OnClickListener?,
         onTextChanged: OnCardFormElementTextChanged,
@@ -112,14 +112,6 @@ internal sealed class CardFormElementViewHolder(
             onFocusChanged
         ) {
 
-        private var brand: CardBrand = CardBrand.UNKNOWN
-            set(value) {
-                if (field != value) {
-                    cardNumberFormatter.brand = value
-                }
-                field = value
-            }
-
         init {
             editText.addTextChangedListener(cardNumberFormatter)
             scannerPlugin?.run {
@@ -133,7 +125,6 @@ internal sealed class CardFormElementViewHolder(
         fun bindData(input: CardComponentInput.CardNumberInput?, showErrorImmediately: Boolean) {
             setTextDisablingInputWatcher(input)
             setInputError(input, showErrorImmediately)
-            this.brand = input?.brand ?: CardBrand.UNKNOWN
         }
     }
 

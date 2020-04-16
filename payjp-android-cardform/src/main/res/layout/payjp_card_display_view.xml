@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:gravity="center"
+                android:gravity="center|start"
                 android:hint="XXXX XXXX XXXX XXXX"
                 android:textSize="14sp"
                 android:paddingVertical="2dp"
