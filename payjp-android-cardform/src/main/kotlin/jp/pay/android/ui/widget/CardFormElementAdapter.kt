@@ -43,7 +43,8 @@ internal class CardFormElementAdapter(
     private val onClickScannerIcon: View.OnClickListener?,
     private val onElementTextChanged: OnCardFormElementTextChanged,
     private val onElementEditorAction: OnCardFormElementEditorAction,
-    private val onElementFocusChanged: OnCardFormElementFocusChanged
+    private val onElementFocusChanged: OnCardFormElementFocusChanged,
+    private val onCardNumberInputChanged: (s: CharSequence) -> Unit
 ) : RecyclerView.Adapter<CardFormElementViewHolder>() {
 
     companion object {
@@ -89,7 +90,8 @@ internal class CardFormElementAdapter(
                 onClickScannerIcon,
                 onElementTextChanged,
                 onElementEditorAction,
-                onElementFocusChanged
+                onElementFocusChanged,
+                onCardNumberInputChanged
             )
             CardFormElementType.Expiration -> CardFormExpirationElement(
                 parent,

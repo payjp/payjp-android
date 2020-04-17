@@ -37,6 +37,7 @@ import jp.pay.android.R
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput
 import jp.pay.android.plugin.CardScannerPlugin
+import jp.pay.android.ui.extension.addOnTextChanged
 import jp.pay.android.ui.extension.setErrorOrNull
 
 internal typealias OnCardFormElementTextChanged = (type: CardFormElementType, s: CharSequence, start: Int, before: Int, count: Int) -> Unit
@@ -99,7 +100,8 @@ internal sealed class CardFormElementViewHolder(
         onClickScannerIcon: View.OnClickListener?,
         onTextChanged: OnCardFormElementTextChanged,
         onEditorAction: OnCardFormElementEditorAction,
-        onFocusChanged: OnCardFormElementFocusChanged
+        onFocusChanged: OnCardFormElementFocusChanged,
+        onNumberInputChanged: (s: CharSequence) -> Unit
     ) :
         CardFormElementViewHolder(
             CardFormElementType.Number,
@@ -114,6 +116,9 @@ internal sealed class CardFormElementViewHolder(
 
         init {
             editText.addTextChangedListener(cardNumberFormatter)
+            editText.addOnTextChanged { s, _, _, _ ->
+                onNumberInputChanged(s)
+            }
             scannerPlugin?.run {
                 inputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
                 onClickScannerIcon?.let {

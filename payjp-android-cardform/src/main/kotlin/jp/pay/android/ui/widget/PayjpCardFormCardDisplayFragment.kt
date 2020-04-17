@@ -75,7 +75,7 @@ class PayjpCardFormCardDisplayFragment :
     private lateinit var adapter: CardFormElementAdapter
     private val handler = Handler(Looper.getMainLooper())
     private val cardNumberFormatter =
-        CardNumberFormatTextWatcher(PayjpCardForm.CARD_FORM_DELIMITER_NUMBER)
+        CardNumberFormatTextWatcher(PayjpCardForm.CARD_FORM_DELIMITER_NUMBER_DISPLAY)
 
     private val delimiterExpiration = PayjpCardForm.CARD_FORM_DELIMITER_EXPIRATION
 
@@ -143,7 +143,8 @@ class PayjpCardFormCardDisplayFragment :
                     formElementsPager.setCurrentItem(position, true)
                 }
                 cardDisplay.updateHighlight(type, hasFocus)
-            }
+            },
+            onCardNumberInputChanged = cardDisplay::setCardNumber
         )
         formElementsPager.adapter = adapter
         formElementsPager.offscreenPageLimit = 2
