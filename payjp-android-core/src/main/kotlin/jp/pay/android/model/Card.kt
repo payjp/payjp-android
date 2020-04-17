@@ -56,7 +56,8 @@ data class Card(
     @Json(name = "address_zip_check") val addressZipCheck: String,
     val customer: String?,
     @Json(name = "cvc_check") val cvcCheck: String,
-    val metadata: Bundle
+    val metadata: Bundle,
+    @Json(name = "three_d_secure_status") val threeDSecureStatus: ThreeDSecureStatus?
 ) : Parcelable {
 
     override fun hashCode(): Int = id.hashCode()

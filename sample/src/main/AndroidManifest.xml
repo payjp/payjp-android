@@ -50,6 +50,17 @@
         <activity android:name=".CardFormViewSampleJavaActivity" />
         <activity android:name=".CoroutineSampleActivity" />
 
+        <activity android:name="jp.pay.android.verifier.ui.PayjpThreeDSecureStepActivity"
+                android:enabled="true"
+                android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="jp.pay.example" android:host="tds" android:path="/finish" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"
             android:exported="true"/>

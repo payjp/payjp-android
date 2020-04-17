@@ -21,4 +21,12 @@
  * SOFTWARE.
  */
 
-include ':payjp-android-core', ':sample', ':payjp-android-cardio', ':payjp-android-coroutine', ':common-test', ':documentation', ':payjp-android-cardform', ':payjp-android-main'
+include ':payjp-android-core',
+        ':payjp-android-cardform',
+        ':payjp-android-verifier',
+        ':payjp-android-main',
+        ':payjp-android-cardio',
+        ':payjp-android-coroutine',
+        ':common-test',
+        ':documentation',
+        ':sample'

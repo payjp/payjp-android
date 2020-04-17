@@ -52,4 +52,5 @@ Please make sure that the app permission in Settings app.
     <string name="payjp_card_form_screen_error_network">Network is unavailable.\nPlease check your internet connectivity.</string>
     <string name="payjp_card_form_dialog_ok">OK</string>
     <string name="payjp_card_form_dialog_title_error">Error</string>
+    <string name="payjp_card_form_message_cancel_verification">Identity verification is canceled.</string>
 </resources>

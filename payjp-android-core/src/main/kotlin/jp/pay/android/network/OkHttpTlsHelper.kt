@@ -23,13 +23,12 @@
 package jp.pay.android.network
 
 import android.os.Build
-import android.util.Log
 import java.security.KeyStore
 import java.util.Arrays
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
-import jp.pay.android.PayjpConstants
+import jp.pay.android.PayjpLogger
 import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import okhttp3.TlsVersion
@@ -42,7 +41,7 @@ internal object OkHttpTlsHelper {
 
     fun enableTls12OnPreLollipop(
         builder: OkHttpClient.Builder,
-        debuggable: Boolean
+        logger: PayjpLogger
     ): OkHttpClient.Builder {
         return builder.takeIf {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN &&
@@ -75,13 +74,9 @@ internal object OkHttpTlsHelper {
                         ConnectionSpec.CLEARTEXT
                     )
                 )
-                if (debuggable) {
-                    Log.v(PayjpConstants.TAG_FOR_LOG, "apply TLSv1.2 for pre-Lollipop")
-                }
+                logger.v("apply TLSv1.2 for pre-Lollipop")
             } catch (e: Exception) {
-                if (debuggable) {
-                    Log.e(PayjpConstants.TAG_FOR_LOG, "error while setting TLS 1.2", e)
-                }
+                logger.e("error while setting TLS 1.2", e)
             }
         } ?: builder
     }

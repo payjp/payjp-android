@@ -38,6 +38,8 @@ import jp.pay.android.util.MainThreadExecutor
  * @param callbackExecutor executor to run callback.
  * @param locale locale of request header
  * @param cardScannerPlugin optional scanner plugin.
+ * @param tokenBackgroundHandler handler for send token to app's server
+ * @param threeDSecureRedirectName 3DS redirect name registered on PAY.JP dashboard.
  */
 class PayjpConfiguration private constructor(
     val publicKey: String,
@@ -46,7 +48,8 @@ class PayjpConfiguration private constructor(
     val callbackExecutor: Executor,
     val clientInfo: ClientInfo,
     val cardScannerPlugin: CardScannerPlugin?,
-    val tokenBackgroundHandler: PayjpTokenBackgroundHandler?
+    val tokenBackgroundHandler: PayjpTokenBackgroundHandler?,
+    val threeDSecureRedirectName: String?
 ) {
 
     fun tokenConfiguration(): PayjpTokenConfiguration = PayjpTokenConfiguration(
@@ -79,6 +82,8 @@ class PayjpConfiguration private constructor(
         private var executor: Executor = MainThreadExecutor
 
         private var clientInfo: ClientInfo = ClientInfo.Builder().build()
+
+        private var threeDSecureRedirectName: String? = null
 
         /**
          * set debugEnabled
@@ -116,6 +121,15 @@ class PayjpConfiguration private constructor(
         }
 
         /**
+         * set 3DS redirect url name. (registered on PAY.JP dashboard)
+         *
+         * @param name name (not url)
+         */
+        fun setThreeDSecureRedirectName(name: String?) = apply {
+            this.threeDSecureRedirectName = name
+        }
+
+        /**
          * Build configuration.
          *
          * @return configuration
@@ -127,7 +141,8 @@ class PayjpConfiguration private constructor(
             callbackExecutor = executor,
             clientInfo = clientInfo,
             cardScannerPlugin = cardScannerPlugin,
-            tokenBackgroundHandler = tokenBackgroundHandler
+            tokenBackgroundHandler = tokenBackgroundHandler,
+            threeDSecureRedirectName = threeDSecureRedirectName
         )
     }
 }
