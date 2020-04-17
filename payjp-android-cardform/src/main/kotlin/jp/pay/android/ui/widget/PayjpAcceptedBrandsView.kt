@@ -63,7 +63,7 @@ class PayjpAcceptedBrandsView @JvmOverloads constructor(
      * @param brands brand list.
      */
     fun setAcceptedBrands(brands: List<CardBrand>) {
-        acceptedBrandsAdapter.list = brands
+        acceptedBrandsAdapter.list = brands.toList()
         acceptedBrandsAdapter.notifyDataSetChanged()
     }
 

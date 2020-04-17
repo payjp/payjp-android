@@ -26,6 +26,7 @@ import android.os.Bundle
 import java.util.Date
 import jp.pay.android.model.Card
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.ThreeDSecureStatus
 import jp.pay.android.model.Token
 
 object TestStubs {
@@ -50,7 +51,8 @@ object TestStubs {
         country: String? = null,
         customer: String? = null,
         cvcCheck: String = "unchecked",
-        metadata: Bundle = Bundle.EMPTY
+        metadata: Bundle = Bundle.EMPTY,
+        threeDSecureStatus: ThreeDSecureStatus? = null
     ): Card = Card(
         id = id,
         name = name,
@@ -70,7 +72,8 @@ object TestStubs {
         country = country,
         customer = customer,
         cvcCheck = cvcCheck,
-        metadata = metadata
+        metadata = metadata,
+        threeDSecureStatus = threeDSecureStatus
     )
 
     fun newToken(

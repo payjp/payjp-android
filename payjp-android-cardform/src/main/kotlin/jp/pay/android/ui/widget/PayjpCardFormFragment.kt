@@ -37,7 +37,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.transition.TransitionManager
 import com.google.android.material.textfield.TextInputLayout
@@ -264,7 +264,7 @@ class PayjpCardFormFragment : Fragment(), PayjpCardFormView,
             acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>()
         )
         viewModel =
-            ViewModelProviders.of(requireActivity(), factory).get(CardFormViewModel::class.java)
+            ViewModelProvider(requireActivity(), factory).get(CardFormViewModel::class.java)
                 .apply {
                     acceptedBrands.observe(viewLifecycleOwner) { oneOff ->
                         oneOff.consume {

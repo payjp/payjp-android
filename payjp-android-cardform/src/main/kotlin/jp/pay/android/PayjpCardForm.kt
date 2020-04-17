@@ -42,14 +42,13 @@ object PayjpCardForm {
 
     internal const val CARD_FORM_DELIMITER_NUMBER = '-'
     internal const val CARD_FORM_DELIMITER_EXPIRATION = '/'
-    internal const val TAG_FOR_LOG = "payjp-android"
 
     private var cardScannerPlugin: CardScannerPlugin? = null
     private var tokenService: PayjpTokenService? = null
     private var tokenHandlerExecutor: TokenHandlerExecutor? = null
 
     fun configure(
-        debugEnabled: Boolean,
+        logger: PayjpLogger,
         tokenService: PayjpTokenService,
         cardScannerPlugin: CardScannerPlugin?,
         handler: PayjpTokenBackgroundHandler?,
@@ -63,7 +62,7 @@ object PayjpCardForm {
                 backgroundExecutor = newBackgroundExecutor(),
                 futureExecutor = newBackgroundExecutor(),
                 callbackExecutor = callbackExecutor,
-                debugEnabled = debugEnabled
+                logger = logger
             )
         }
     }

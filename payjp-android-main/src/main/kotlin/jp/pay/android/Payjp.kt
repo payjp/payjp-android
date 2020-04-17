@@ -22,6 +22,8 @@
  */
 package jp.pay.android
 
+import jp.pay.android.verifier.PayjpVerifier
+
 /**
  * Entry point for payjp-android
  *
@@ -49,14 +51,20 @@ object Payjp {
     @JvmStatic
     fun init(configuration: PayjpConfiguration): Payjp {
         this.configuration = configuration
+        val logger = PayjpLogger.get(configuration.debugEnabled)
         val payjpToken = PayjpToken(configuration.tokenConfiguration())
         this.tokenService = payjpToken
         PayjpCardForm.configure(
-            debugEnabled = configuration.debugEnabled,
+            logger = logger,
             tokenService = payjpToken,
             cardScannerPlugin = configuration.cardScannerPlugin,
             handler = configuration.tokenBackgroundHandler,
             callbackExecutor = configuration.callbackExecutor
+        )
+        PayjpVerifier.configure(
+            logger = logger,
+            tokenService = payjpToken,
+            threeDSecureRedirectName = configuration.threeDSecureRedirectName
         )
         return this
     }
@@ -77,4 +85,11 @@ object Payjp {
      */
     @JvmStatic
     fun cardForm() = PayjpCardForm
+
+    /**
+     * Return [PayjpVerifier] instance.
+     * You must call `Payjp.init(configuration)` first.
+     */
+    @JvmStatic
+    fun verifier() = PayjpVerifier
 }

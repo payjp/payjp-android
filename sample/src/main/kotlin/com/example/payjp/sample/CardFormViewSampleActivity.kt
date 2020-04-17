@@ -34,10 +34,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import jp.pay.android.Payjp
 import jp.pay.android.Task
+import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.ui.widget.PayjpCardFormFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
+import jp.pay.android.verifier.ui.PayjpThreeDSecureResultCallback
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token_with_validate
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_get_token
@@ -120,6 +123,16 @@ class CardFormViewSampleActivity : AppCompatActivity(),
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Payjp.verifier().handleThreeDSecureResult(requestCode,
+            PayjpThreeDSecureResultCallback {
+                if (it.isSuccess()) {
+                    createTokenForTds(it.retrieveThreeDSecureToken())
+                }
+            })
+    }
+
     private fun createToken() {
         layout_buttons.visibility = View.INVISIBLE
         progress_bar.visibility = View.VISIBLE
@@ -138,10 +151,17 @@ class CardFormViewSampleActivity : AppCompatActivity(),
 
             override fun onError(throwable: Throwable) {
                 Log.e("CardFormViewSample", "failure creating token", throwable)
-                text_token_content.text = throwable.toString()
-                progress_bar.visibility = View.GONE
-                layout_buttons.visibility = View.VISIBLE
-                text_token_content.visibility = View.VISIBLE
+                if (throwable is PayjpThreeDSecureRequiredException) {
+                    // if support 3DSecure
+                    // NOTE: 3DSecure is a limited feature for now.
+                    Payjp.verifier()
+                        .startThreeDSecureFlow(throwable.token, this@CardFormViewSampleActivity)
+                } else {
+                    text_token_content.text = throwable.toString()
+                    progress_bar.visibility = View.GONE
+                    layout_buttons.visibility = View.VISIBLE
+                    text_token_content.visibility = View.VISIBLE
+                }
             }
         })
     }
@@ -220,6 +240,32 @@ class CardFormViewSampleActivity : AppCompatActivity(),
             else -> AppCompatDelegate.MODE_NIGHT_YES
         }
         AppCompatDelegate.setDefaultNightMode(mode)
+    }
+
+    private fun createTokenForTds(tdsToken: ThreeDSecureToken) {
+        layout_buttons.visibility = View.INVISIBLE
+        progress_bar.visibility = View.VISIBLE
+        text_token_content.visibility = View.INVISIBLE
+        // create token by 3DS
+        createToken = Payjp.token().createToken(tdsToken)
+        createToken?.enqueue(object : Task.Callback<Token> {
+            override fun onSuccess(data: Token) {
+                Log.i("CardFormViewSample", "token => $data")
+                text_token_id.setText(data.id)
+                text_token_content.text = "The token has created."
+                progress_bar.visibility = View.GONE
+                layout_buttons.visibility = View.VISIBLE
+                text_token_content.visibility = View.VISIBLE
+            }
+
+            override fun onError(throwable: Throwable) {
+                Log.e("CardFormViewSample", "failure creating token", throwable)
+                text_token_content.text = throwable.toString()
+                progress_bar.visibility = View.GONE
+                layout_buttons.visibility = View.VISIBLE
+                text_token_content.visibility = View.VISIBLE
+            }
+        })
     }
 }
 
