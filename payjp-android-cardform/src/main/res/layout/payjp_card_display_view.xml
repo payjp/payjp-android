@@ -65,15 +65,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end|center_vertical"
-                    android:paddingVertical="2dp"
-                    android:paddingHorizontal="8dp"
-                    android:minWidth="40dp"
                     android:layout_marginEnd="8dp"
+                    android:hint="@string/payjp_card_form_display_hint_cvc_default"
+                    android:minWidth="40dp"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
                     android:textColor="@color/payjp_card_display_text_color_cvc_default"
                     android:textColorHint="@color/payjp_card_display_text_color_hint_cvc_default"
-                    android:textSize="12sp"
-                    android:hint="•••"
-                    tools:text="•••" />
+                    android:textSize="12sp" />
 
         </FrameLayout>
 
@@ -84,77 +83,72 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:elevation="8dp"
-            tools:background="@color/payjp_card_display_background"
-            tools:targetApi="lollipop"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
-            >
+            tools:background="@color/payjp_card_display_background"
+            tools:targetApi="lollipop">
 
         <TextView
                 android:id="@+id/display_pan"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:singleLine="true"
                 android:gravity="center|start"
-                android:hint="XXXX XXXX XXXX XXXX"
-                android:textSize="14sp"
-                android:paddingVertical="2dp"
+                android:hint=""
+                android:maxLines="1"
                 android:paddingHorizontal="8dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintHorizontal_bias="0"
+                android:paddingVertical="2dp"
+                android:singleLine="true"
+                android:textSize="14sp"
                 app:layout_constraintBottom_toTopOf="@id/display_expiration"
-                app:layout_constraintVertical_bias="1"
-                />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1" />
 
         <TextView
                 android:id="@+id/display_expiration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:hint="@string/payjp_card_form_display_hint_expiration"
                 android:maxLines="1"
-                android:singleLine="true"
-                android:hint="MM/YY"
-                android:paddingVertical="2dp"
                 android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                android:singleLine="true"
                 android:textSize="12sp"
-                app:layout_constraintHorizontal_bias="0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/display_holder"
-                />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
                 android:id="@+id/display_holder"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
+                android:hint="@string/payjp_card_form_display_hint_holder_name"
                 android:maxLines="1"
-                android:paddingVertical="2dp"
                 android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
                 android:singleLine="true"
-                android:hint="NAME"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                />
+                app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
                 android:id="@+id/display_cvc_amex"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@id/display_pan"
-                app:layout_constraintEnd_toEndOf="@id/display_pan"
                 android:layout_marginBottom="4dp"
+                android:hint="@string/payjp_card_form_display_hint_cvc_amex"
                 android:minWidth="48dp"
-                android:paddingVertical="2dp"
                 android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
                 android:textSize="12sp"
                 android:visibility="invisible"
-                android:hint="••••"
-                tools:text="••••" />
+                app:layout_constraintBottom_toTopOf="@id/display_pan"
+                app:layout_constraintEnd_toEndOf="@id/display_pan" />
 
         <ImageView
                 android:id="@+id/display_brand_logo"
@@ -169,6 +163,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0"
+                tools:ignore="ContentDescription"
                 tools:src="@drawable/ic_card_display_brand_visa" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
