@@ -27,6 +27,10 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.ColorStateList
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -34,6 +38,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.google.android.material.shape.AbsoluteCornerSize
 import com.google.android.material.shape.MaterialShapeDrawable
@@ -42,7 +47,6 @@ import jp.pay.android.R
 import jp.pay.android.model.CardBrand
 import jp.pay.android.ui.extension.displayLogoResourceId
 import jp.pay.android.ui.extension.fullMaskedPan
-import kotlin.math.min
 
 internal class PayjpCardDisplayView @JvmOverloads constructor(
     context: Context,
@@ -157,13 +161,12 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
     }
 
     fun setCardNumber(cardNumber: CharSequence) {
-        // TODO highlight input character
         val allMask = brand.fullMaskedPan(maskChar = 'X', delimiter = ' ')
-        this.numberDisplay.text = allMask.replaceRange(0 until min(cardNumber.length, allMask.length), cardNumber)
+        this.numberDisplay.text = filledWithHintSpannable(cardNumber, allMask)
     }
 
     fun setCardExpiration(cardExpiration: CharSequence) {
-        this.expirationDisplay.text = cardExpiration
+        this.expirationDisplay.text = filledWithHintSpannable(cardExpiration, "MM/YY")
     }
 
     fun setCardHolderName(cardHolderName: CharSequence) {
@@ -171,9 +174,42 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
     }
 
     fun setCardCvcInputLength(length: Int) {
-        val text = "•".repeat(length).ifEmpty { null }
-        this.cvcDisplay.text = text
-        this.cvcDisplayAmex.text = text
+        val text = "•".repeat(length)
+        this.cvcDisplay.text = filledWithHintSpannable(
+            actual = text,
+            hint = "•••",
+            textColorRes = R.color.payjp_card_display_text_color_cvc_default,
+            textHintColorRes = R.color.payjp_card_display_text_color_hint_cvc_default
+        )
+        this.cvcDisplayAmex.text = filledWithHintSpannable(
+            actual = text,
+            hint = "••••"
+        )
+    }
+
+    private fun filledWithHintSpannable(
+        actual: CharSequence,
+        hint: CharSequence,
+        @ColorRes textColorRes: Int = R.color.payjp_card_display_text_color,
+        @ColorRes textHintColorRes: Int = R.color.payjp_card_display_text_color_hint
+    ): Spannable {
+        return SpannableStringBuilder(actual).apply {
+            setSpan(
+                ForegroundColorSpan(ContextCompat.getColor(context, textColorRes)),
+                0,
+                actual.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            if (actual.length < hint.length) {
+                append(hint.subSequence(actual.length, hint.length))
+                setSpan(
+                    ForegroundColorSpan(ContextCompat.getColor(context, textHintColorRes)),
+                    actual.length,
+                    hint.length,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
+        }
     }
 
     private fun createFlipAnimator(front: View, back: View): AnimatorSet {

@@ -44,7 +44,7 @@
                 android:layout_width="0dp"
                 android:layout_height="20dp"
                 android:layout_marginTop="20dp"
-                android:background="#2b2b2b"
+                android:background="@color/payjp_card_display_magnetic_background"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -54,7 +54,7 @@
                 android:layout_height="30dp"
                 android:layout_marginStart="12dp"
                 android:layout_marginEnd="52dp"
-                android:background="#fff"
+                android:background="@color/payjp_card_display_cvc_default_background"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -70,7 +70,7 @@
                     android:minWidth="40dp"
                     android:layout_marginEnd="8dp"
                     android:textColor="@color/payjp_card_display_text_color_cvc_default"
-                    android:textColorHint="#80000000"
+                    android:textColorHint="@color/payjp_card_display_text_color_hint_cvc_default"
                     android:textSize="12sp"
                     android:hint="•••"
                     tools:text="•••" />
