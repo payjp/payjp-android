@@ -176,42 +176,31 @@ class PayjpCardFormCardDisplayFragment :
             cardNumberInput.observe(viewLifecycleOwner) { cardNumber ->
                 adapter.cardNumberInput = cardNumber
                 adapter.notifyCardFormElementChanged(CardFormElementType.Number)
+                cardDisplay.setCardNumber(cardNumber.input.orEmpty())
             }
             cardExpirationInput.observe(viewLifecycleOwner) { expiration ->
                 adapter.cardExpirationInput = expiration
                 adapter.notifyCardFormElementChanged(CardFormElementType.Expiration)
+                cardDisplay.setCardExpiration(expiration.input.orEmpty())
             }
             cardHolderNameInput.observe(viewLifecycleOwner) { holderName ->
                 adapter.cardHolderNameInput = holderName
                 adapter.notifyCardFormElementChanged(CardFormElementType.HolderName)
+                cardDisplay.setCardHolderName(holderName.input.orEmpty())
             }
             cardCvcInput.observe(viewLifecycleOwner) { cvc ->
                 adapter.cardCvcInput = cvc
                 adapter.notifyCardFormElementChanged(CardFormElementType.Cvc)
+                cardDisplay.setCardCvcInputLength(cvc.input?.length ?: 0)
             }
             cardNumberBrand.observe(viewLifecycleOwner) { brand ->
                 cardNumberFormatter.brand = brand
                 adapter.brand = brand
                 adapter.notifyDataSetChanged()
+                cardDisplay.setBrand(brand)
             }
             showErrorImmediately.observe(viewLifecycleOwner) {
                 adapter.showErrorImmediately = it
-            }
-            // DisplayView
-            cardNumberBrand.observe(viewLifecycleOwner) { brand ->
-                cardDisplay.setBrand(brand)
-            }
-            cardNumberInput.observe(viewLifecycleOwner) { cardNumber ->
-                cardDisplay.setCardNumber(cardNumber.input.orEmpty())
-            }
-            cardExpirationInput.observe(viewLifecycleOwner) { expiration ->
-                cardDisplay.setCardExpiration(expiration.input.orEmpty())
-            }
-            cardHolderNameInput.observe(viewLifecycleOwner) { holderName ->
-                cardDisplay.setCardHolderName(holderName.input.orEmpty())
-            }
-            cardCvcInput.observe(viewLifecycleOwner) { cvc ->
-                cardDisplay.setCardCvcInputLength(cvc.input?.length ?: 0)
             }
             currentPrimaryInput.observe(viewLifecycleOwner) { input ->
                 input?.let(adapter::getPositionForElementType)
