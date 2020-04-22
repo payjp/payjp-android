@@ -152,8 +152,11 @@ class PayjpCardFormCardDisplayFragment :
             override fun onPageSelected(position: Int) {
                 val element = CardFormElementType.values()[position]
                 handler.postDelayed({
-                    val id = CardFormElementAdapter.findEditTextId(element)
-                    formElementsPager.findViewById<TextInputEditText>(id)?.requestFocusFromTouch()
+                    // prevent if current item has changed
+                    if (isAdded && formElementsPager.currentItem == position) {
+                        val id = CardFormElementAdapter.findEditTextId(element)
+                        formElementsPager.findViewById<TextInputEditText>(id)?.requestFocusFromTouch()
+                    }
                 }, 300)
             }
         })
