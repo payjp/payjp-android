@@ -22,6 +22,7 @@
  */
 package jp.pay.android.ui.widget
 
+import android.os.Build
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
@@ -29,6 +30,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.autofill.AutofillId
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
@@ -52,7 +54,8 @@ internal sealed class CardFormElementViewHolder(
     inputEditTextId: Int,
     onTextChanged: OnCardFormElementTextChanged,
     onEditorAction: OnCardFormElementEditorAction,
-    onFocusChanged: OnCardFormElementFocusChanged
+    onFocusChanged: OnCardFormElementFocusChanged,
+    autofillId: Any?
 ) : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(layoutId, parent, false)) {
 
     private val inputTextWatcher = object : TextWatcher {
@@ -74,6 +77,11 @@ internal sealed class CardFormElementViewHolder(
         }
         editText.setOnEditorActionListener { v, actionId, event ->
             onEditorAction.invoke(type, v, actionId, event)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            (autofillId as? AutofillId)?.let {
+                editText.autofillId = it
+            }
         }
     }
 
@@ -101,7 +109,8 @@ internal sealed class CardFormElementViewHolder(
         onTextChanged: OnCardFormElementTextChanged,
         onEditorAction: OnCardFormElementEditorAction,
         onFocusChanged: OnCardFormElementFocusChanged,
-        onNumberInputChanged: (s: CharSequence) -> Unit
+        onNumberInputChanged: (s: CharSequence) -> Unit,
+        autofillId: Any?
     ) :
         CardFormElementViewHolder(
             CardFormElementType.Number,
@@ -111,7 +120,8 @@ internal sealed class CardFormElementViewHolder(
             R.id.input_edit_number,
             onTextChanged,
             onEditorAction,
-            onFocusChanged
+            onFocusChanged,
+            autofillId
         ) {
 
         init {
@@ -127,9 +137,15 @@ internal sealed class CardFormElementViewHolder(
             }
         }
 
-        fun bindData(input: CardComponentInput.CardNumberInput?, showErrorImmediately: Boolean) {
+        fun bindData(
+            input: CardComponentInput.CardNumberInput?,
+            showErrorImmediately: Boolean
+        ) {
             setTextDisablingInputWatcher(input)
             setInputError(input, showErrorImmediately)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                editText.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_NUMBER)
+            }
         }
     }
 
@@ -138,7 +154,8 @@ internal sealed class CardFormElementViewHolder(
         expirationFormatter: TextWatcher,
         onTextChanged: OnCardFormElementTextChanged,
         onEditorAction: OnCardFormElementEditorAction,
-        onFocusChanged: OnCardFormElementFocusChanged
+        onFocusChanged: OnCardFormElementFocusChanged,
+        autofillId: Any?
     ) :
         CardFormElementViewHolder(
             CardFormElementType.Expiration,
@@ -147,7 +164,8 @@ internal sealed class CardFormElementViewHolder(
             R.id.input_edit_expiration,
             onTextChanged,
             onEditorAction,
-            onFocusChanged
+            onFocusChanged,
+            autofillId
         ) {
 
         init {
@@ -161,6 +179,9 @@ internal sealed class CardFormElementViewHolder(
             setTextDisablingInputWatcher(input)
             setInputError(input, showErrorImmediately)
             (editText as? CardExpirationEditText)?.expiration = input?.value
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                editText.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DAY)
+            }
         }
     }
 
@@ -168,7 +189,8 @@ internal sealed class CardFormElementViewHolder(
         parent: ViewGroup,
         onTextChanged: OnCardFormElementTextChanged,
         onEditorAction: OnCardFormElementEditorAction,
-        onFocusChanged: OnCardFormElementFocusChanged
+        onFocusChanged: OnCardFormElementFocusChanged,
+        autofillId: Any?
     ) :
         CardFormElementViewHolder(
             CardFormElementType.HolderName,
@@ -178,7 +200,8 @@ internal sealed class CardFormElementViewHolder(
             R.id.input_edit_holder_name,
             onTextChanged,
             onEditorAction,
-            onFocusChanged
+            onFocusChanged,
+            autofillId
         ) {
 
         fun bindData(
@@ -194,7 +217,8 @@ internal sealed class CardFormElementViewHolder(
         parent: ViewGroup,
         onTextChanged: OnCardFormElementTextChanged,
         onEditorAction: OnCardFormElementEditorAction,
-        onFocusChanged: OnCardFormElementFocusChanged
+        onFocusChanged: OnCardFormElementFocusChanged,
+        autofillId: Any?
     ) :
         CardFormElementViewHolder(
             CardFormElementType.Cvc,
@@ -204,7 +228,8 @@ internal sealed class CardFormElementViewHolder(
             R.id.input_edit_cvc,
             onTextChanged,
             onEditorAction,
-            onFocusChanged
+            onFocusChanged,
+            autofillId
         ) {
         private var brand: CardBrand = CardBrand.UNKNOWN
             set(value) {

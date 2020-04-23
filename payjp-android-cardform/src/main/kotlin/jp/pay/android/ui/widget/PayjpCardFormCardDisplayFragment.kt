@@ -22,11 +22,13 @@
  */
 package jp.pay.android.ui.widget
 
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
+import android.view.autofill.AutofillManager
 import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
@@ -76,6 +78,7 @@ class PayjpCardFormCardDisplayFragment :
     private val handler = Handler(Looper.getMainLooper())
     private val cardNumberFormatter =
         CardNumberFormatTextWatcher(PayjpCardForm.CARD_FORM_DELIMITER_NUMBER_DISPLAY)
+    private var autofillManager: AutofillManager? = null
 
     private val delimiterExpiration = PayjpCardForm.CARD_FORM_DELIMITER_EXPIRATION
 
@@ -94,6 +97,9 @@ class PayjpCardFormCardDisplayFragment :
         cardDisplay = view.findViewById(R.id.card_display)
         formElementsPager.isFocusableInTouchMode = false
         formElementsPager.isFocusable = false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            autofillManager = requireContext().getSystemService(AutofillManager::class.java)
+        }
 
         adapter = CardFormElementAdapter(
             cardNumberFormatter = cardNumberFormatter,
@@ -144,7 +150,8 @@ class PayjpCardFormCardDisplayFragment :
                 }
                 cardDisplay.updateHighlight(type, hasFocus)
             },
-            onCardNumberInputChanged = cardDisplay::setCardNumber
+            onCardNumberInputChanged = cardDisplay::setCardNumber,
+            autofillManager = autofillManager
         )
         formElementsPager.adapter = adapter
         formElementsPager.offscreenPageLimit = 2

@@ -22,9 +22,11 @@
  */
 package jp.pay.android.ui.widget
 
+import android.os.Build
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
+import android.view.autofill.AutofillManager
 import androidx.annotation.IdRes
 import androidx.recyclerview.widget.RecyclerView
 import jp.pay.android.R
@@ -44,14 +46,16 @@ internal class CardFormElementAdapter(
     private val onElementTextChanged: OnCardFormElementTextChanged,
     private val onElementEditorAction: OnCardFormElementEditorAction,
     private val onElementFocusChanged: OnCardFormElementFocusChanged,
-    private val onCardNumberInputChanged: (s: CharSequence) -> Unit
+    private val onCardNumberInputChanged: (s: CharSequence) -> Unit,
+    autofillManager: AutofillManager?
 ) : RecyclerView.Adapter<CardFormElementViewHolder>() {
 
     companion object {
         const val ITEM_SIZE_AFTER_NUMBER = 4
         const val ITEM_SIZE_BEFORE_NUMBER = 1
 
-        @IdRes fun findEditTextId(element: CardFormElementType): Int = when (element) {
+        @IdRes
+        fun findEditTextId(element: CardFormElementType): Int = when (element) {
             CardFormElementType.Number -> R.id.input_edit_number
             CardFormElementType.Expiration -> R.id.input_edit_expiration
             CardFormElementType.Cvc -> R.id.input_edit_cvc
@@ -65,9 +69,14 @@ internal class CardFormElementAdapter(
     var cardCvcInput: CardComponentInput.CardCvcInput? = null
     var brand: CardBrand = CardBrand.UNKNOWN
     var showErrorImmediately: Boolean = false
+    private val autofillIds: List<Any>
 
     init {
         setHasStableIds(true)
+        autofillIds =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && autofillManager != null) {
+                (0 until ITEM_SIZE_AFTER_NUMBER).map { autofillManager.nextAutofillId }.toList()
+            } else emptyList()
     }
 
     fun getPositionForElementType(cardFormElementType: CardFormElementType): Int {
@@ -82,7 +91,9 @@ internal class CardFormElementAdapter(
         parent: ViewGroup,
         viewType: Int
     ): CardFormElementViewHolder {
-        return when (CardFormElementType.values()[viewType]) {
+        val type = CardFormElementType.values()[viewType]
+        val autofillId = autofillIds.getOrNull(type.ordinal)
+        return when (type) {
             CardFormElementType.Number -> CardFormNumberElement(
                 parent,
                 cardNumberFormatter,
@@ -91,38 +102,49 @@ internal class CardFormElementAdapter(
                 onElementTextChanged,
                 onElementEditorAction,
                 onElementFocusChanged,
-                onCardNumberInputChanged
+                onCardNumberInputChanged,
+                autofillId
             )
             CardFormElementType.Expiration -> CardFormExpirationElement(
                 parent,
                 cardExpirationFormatter,
                 onElementTextChanged,
                 onElementEditorAction,
-                onElementFocusChanged
+                onElementFocusChanged,
+                autofillId
             )
             CardFormElementType.Cvc -> CardFormCvcElement(
                 parent,
                 onElementTextChanged,
                 onElementEditorAction,
-                onElementFocusChanged
+                onElementFocusChanged,
+                autofillId
             )
             CardFormElementType.HolderName -> CardFormHolderNameElement(
                 parent,
                 onElementTextChanged,
                 onElementEditorAction,
-                onElementFocusChanged
+                onElementFocusChanged,
+                autofillId
             )
         }
     }
 
     override fun onBindViewHolder(holder: CardFormElementViewHolder, position: Int) {
         when (holder) {
-            is CardFormNumberElement -> holder.bindData(cardNumberInput, showErrorImmediately)
+            is CardFormNumberElement -> holder.bindData(
+                cardNumberInput,
+                showErrorImmediately
+            )
             is CardFormExpirationElement -> holder.bindData(
                 cardExpirationInput,
                 showErrorImmediately
             )
-            is CardFormCvcElement -> holder.bindData(cardCvcInput, brand, showErrorImmediately)
+            is CardFormCvcElement -> holder.bindData(
+                cardCvcInput,
+                brand,
+                showErrorImmediately
+            )
             is CardFormHolderNameElement -> holder.bindData(
                 cardHolderNameInput,
                 showErrorImmediately
