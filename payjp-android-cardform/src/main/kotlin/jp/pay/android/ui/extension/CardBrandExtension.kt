@@ -78,6 +78,42 @@ val CardBrand.numberFormat: IntArray
         else -> intArrayOf(4, 4, 4, 4)
     }
 
+val CardBrand.numberDelimiterPositions: IntArray
+    get() {
+        val format = numberFormat
+        return format.foldIndexed(intArrayOf()) { index, acc, i ->
+            when (index) {
+                0 -> acc.plus(i)
+                in 1 until format.lastIndex -> acc.plus(acc.last() + i)
+                else -> acc
+            }
+        }
+    }
+
+fun CardBrand.lastMaskedPan(maskChar: Char, delimiter: Char, src: CharSequence, lastSize: Int = 4): String {
+    require(lastSize > 0) { "lastSize must be larger than zero." }
+    val format = numberFormat
+    val allCount = format.sum()
+    require(lastSize < allCount) { "lastSize must be less than pan size." }
+    val pan = src.filter(Character::isDigit)
+    if (pan.length != allCount) {
+        return fullMaskedPan(maskChar, delimiter)
+    }
+    val delimiterPosition = numberDelimiterPositions
+    val sb = StringBuilder()
+    pan.forEachIndexed { index, c ->
+        if (allCount - lastSize > index) {
+            sb.append(maskChar)
+        } else {
+            sb.append(c)
+        }
+        if (delimiterPosition.contains(index + 1)) {
+            sb.append(delimiter)
+        }
+    }
+    return sb.toString()
+}
+
 fun CardBrand.fullMaskedPan(maskChar: Char, delimiter: Char): String =
     numberFormat.foldIndexed("") { index, acc, i ->
         var r = acc + maskChar.toString().repeat(i)

@@ -63,4 +63,54 @@ class CardBrandExtensionTest {
             `is`("XXXX XXXX XXXX XXXX")
         )
     }
+
+    @Test
+    fun lastMaskedPan_visa() {
+        assertThat(
+            CardBrand.VISA.lastMaskedPan('*', ' ', "4242 4242 4242 4242", 1),
+            `is`("**** **** **** ***2")
+        )
+        assertThat(
+            CardBrand.VISA.lastMaskedPan('*', ' ', "4242 4242 4242 4242", 4),
+            `is`("**** **** **** 4242")
+        )
+        assertThat(
+            CardBrand.VISA.lastMaskedPan('*', ' ', "4242 4242 4242 4242", 5),
+            `is`("**** **** ***2 4242")
+        )
+    }
+
+    @Test
+    fun lastMaskedPan_amex() {
+        assertThat(
+            CardBrand.AMEX.lastMaskedPan('*', ' ', "378282246310005", 1),
+            `is`("**** ****** ****5")
+        )
+        assertThat(
+            CardBrand.AMEX.lastMaskedPan('*', ' ', "378282246310005", 4),
+            `is`("**** ****** *0005")
+        )
+    }
+
+    @Test
+    fun lastMaskedPan_format() {
+        assertThat(
+            CardBrand.VISA.lastMaskedPan('*', ' ', "4242 4242 4242", 4),
+            `is`("**** **** **** ****")
+        )
+        assertThat(
+            CardBrand.VISA.lastMaskedPan('X', '-', "4242 4242 4242 4242", 4),
+            `is`("XXXX-XXXX-XXXX-4242")
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun lastMaskedPan_zero() {
+        CardBrand.VISA.lastMaskedPan('*', ' ', "4242 4242 4242 4242", 0)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun lastMaskedPan_too_large() {
+        CardBrand.VISA.lastMaskedPan('*', ' ', "4242 4242 4242 4242", 18)
+    }
 }

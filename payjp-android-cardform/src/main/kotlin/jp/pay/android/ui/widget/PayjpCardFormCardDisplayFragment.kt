@@ -148,7 +148,7 @@ class PayjpCardFormCardDisplayFragment :
                 if (hasFocus && formElementsPager.currentItem != position) {
                     formElementsPager.setCurrentItem(position, true)
                 }
-                cardDisplay.updateHighlight(type, hasFocus)
+                cardDisplay.updateFocus(type, hasFocus)
             },
             onCardNumberInputChanged = cardDisplay::setCardNumber,
             autofillManager = autofillManager

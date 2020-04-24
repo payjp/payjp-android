@@ -47,6 +47,9 @@ import jp.pay.android.R
 import jp.pay.android.model.CardBrand
 import jp.pay.android.ui.extension.displayLogoResourceId
 import jp.pay.android.ui.extension.fullMaskedPan
+import jp.pay.android.ui.extension.lastMaskedPan
+import jp.pay.android.validator.CardNumberValidator
+import jp.pay.android.validator.CardNumberValidatorService
 
 internal class PayjpCardDisplayView @JvmOverloads constructor(
     context: Context,
@@ -69,11 +72,13 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
     private val cvcDisplayAmex: TextView
     private val brandLogo: ImageView
 
+    private val cardNumberValidator = CardNumberValidator
     private val frontToBack: AnimatorSet
     private val backToFront: AnimatorSet
-    private var brand: CardBrand = CardBrand.UNKNOWN
     private val highlightBackground: MaterialShapeDrawable
+    private var brand: CardBrand = CardBrand.UNKNOWN
     private var frontVisible = true
+    private var currentNum: CharSequence? = null
 
     init {
         LayoutInflater.from(context).inflate(R.layout.payjp_card_display_view, this, true)
@@ -112,12 +117,16 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
                 frontVisible = true
             })
         }
-        highlightBackground = MaterialShapeDrawable(ShapeAppearanceModel.Builder()
-            .setAllCornerSizes(AbsoluteCornerSize(16f))
-            .build()).apply {
+        highlightBackground = MaterialShapeDrawable(
+            ShapeAppearanceModel.Builder()
+                .setAllCornerSizes(AbsoluteCornerSize(16f))
+                .build()
+        ).apply {
             strokeWidth = 4.0f
-            fillColor = ColorStateList.valueOf(ContextCompat.getColor(context, android.R.color.transparent))
-            strokeColor = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.payjp_primaryColor))
+            fillColor =
+                ColorStateList.valueOf(ContextCompat.getColor(context, android.R.color.transparent))
+            strokeColor =
+                ColorStateList.valueOf(ContextCompat.getColor(context, R.color.payjp_primaryColor))
         }
     }
 
@@ -147,7 +156,14 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
         }
     }
 
-    fun updateHighlight(elementType: CardFormElementType, highlighted: Boolean) {
+    fun updateFocus(elementType: CardFormElementType, hasFocus: Boolean) {
+        updateHighlight(elementType, hasFocus)
+        if (elementType == CardFormElementType.Number) {
+            toggleCardNumber(hasFocus)
+        }
+    }
+
+    private fun updateHighlight(elementType: CardFormElementType, highlighted: Boolean) {
         val view = when (elementType) {
             CardFormElementType.Number -> numberDisplay
             CardFormElementType.Expiration -> expirationDisplay
@@ -160,9 +176,28 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
         view.background = highlightBackground.takeIf { highlighted }
     }
 
+    private fun toggleCardNumber(hasFocus: Boolean) {
+        currentNum?.let { pan ->
+            // only if number has valid length.
+            if (cardNumberValidator.isCardNumberLengthValid(
+                    pan.filter(Character::isDigit).toString(), brand
+                ) == CardNumberValidatorService.CardNumberLengthStatus.MATCH
+            ) {
+                if (hasFocus) {
+                    this.numberDisplay.text = pan
+                } else {
+                    this.numberDisplay.text =
+                        brand.lastMaskedPan(maskChar = '•', delimiter = ' ', src = pan, lastSize = 4)
+                }
+            }
+        }
+    }
+
     fun setCardNumber(cardNumber: CharSequence) {
         val allMask = brand.fullMaskedPan(maskChar = 'X', delimiter = ' ')
-        this.numberDisplay.text = filledWithHintSpannable(cardNumber, allMask)
+        this.numberDisplay.text = filledWithHintSpannable(cardNumber, allMask).also {
+            currentNum = it
+        }
     }
 
     fun setCardExpiration(cardExpiration: CharSequence) {
