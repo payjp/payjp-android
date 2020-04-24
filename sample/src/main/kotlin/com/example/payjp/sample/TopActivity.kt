@@ -45,16 +45,16 @@ class TopActivity : AppCompatActivity() {
 
     private val samples by lazy {
         listOf(
-            Sample("CardFormActivity Example (Card Face)",
+            Sample("CardFormActivity (Card Display)",
                 null, this::startCardFormCardFace),
-            Sample("CardFormActivity Example",
+            Sample("CardFormActivity (Multi Line)",
                 null, this::startCardForm),
             Sample(
-                "CardFormView Example",
+                "CardFormView",
                 Intent(this, CardFormViewSampleActivity::class.java)
             ),
             Sample(
-                "CardFormView Example (Java)",
+                "CardFormView (Java)",
                 Intent(this, CardFormViewSampleJavaActivity::class.java)
             ),
             Sample(

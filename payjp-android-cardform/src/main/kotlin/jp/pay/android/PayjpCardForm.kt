@@ -43,8 +43,13 @@ import jp.pay.android.ui.widget.PayjpCardFormFragment
  */
 object PayjpCardForm {
 
-    @IntDef(FACE_MULTI_LINE, FACE_CARD_DISPLAY)
+    /**
+     * Face type of Card form.
+     * PAY.JP provide two different form UI to input credit card.
+     * [FACE_MULTI_LINE] is the default form, it is standard form with multi rows.
+     */
     @Retention(AnnotationRetention.SOURCE)
+    @IntDef(FACE_MULTI_LINE, FACE_CARD_DISPLAY)
     annotation class CardFormFace
     const val FACE_MULTI_LINE = 0
     const val FACE_CARD_DISPLAY = 1
