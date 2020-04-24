@@ -24,12 +24,13 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="232dp"
-        android:layout_height="156dp"
+        android:layout_width="228dp"
+        android:layout_height="148dp"
         android:layout_gravity="center_horizontal"
         android:clipToPadding="false"
         android:padding="12dp"
-        android:theme="@style/Payjp.Theme.CardForm.Display">
+        android:theme="@style/Payjp.Theme.CardForm.Display"
+        tools:ignore="spUsage">
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/card_display_back"
@@ -72,7 +73,7 @@
                     android:paddingVertical="2dp"
                     android:textColor="@color/payjp_card_display_text_color_cvc_default"
                     android:textColorHint="@color/payjp_card_display_text_color_hint_cvc_default"
-                    android:textSize="12sp" />
+                    android:textSize="12dp" />
 
         </FrameLayout>
 
@@ -98,7 +99,7 @@
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="2dp"
                 android:singleLine="true"
-                android:textSize="14sp"
+                android:textSize="14dp"
                 app:layout_constraintBottom_toTopOf="@id/display_expiration"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0"
@@ -115,7 +116,7 @@
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="2dp"
                 android:singleLine="true"
-                android:textSize="12sp"
+                android:textSize="12dp"
                 app:layout_constraintBottom_toTopOf="@id/display_holder"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0"
@@ -131,7 +132,7 @@
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="2dp"
                 android:singleLine="true"
-                android:textSize="12sp"
+                android:textSize="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -145,7 +146,7 @@
                 android:minWidth="48dp"
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="2dp"
-                android:textSize="12sp"
+                android:textSize="12dp"
                 android:visibility="invisible"
                 app:layout_constraintBottom_toTopOf="@id/display_pan"
                 app:layout_constraintEnd_toEndOf="@id/display_pan" />
