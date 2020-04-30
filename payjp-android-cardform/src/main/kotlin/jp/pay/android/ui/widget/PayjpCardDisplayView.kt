@@ -107,12 +107,13 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
         }
         frameFront.background = defaultBackground
         frameBack.background = defaultBackground
+
         frontToBack = createFlipAnimator(frameFront, frameBack).apply {
             addListener(AnimatorOnEndListener {
                 frontVisible = false
             })
         }
-        backToFront = createFlipAnimator(frameBack, frameFront).apply {
+        backToFront = createFlipAnimator(frameBack, frameFront, true).apply {
             addListener(AnimatorOnEndListener {
                 frontVisible = true
             })
@@ -247,7 +248,8 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
         }
     }
 
-    private fun createFlipAnimator(front: View, back: View): AnimatorSet {
+    private fun createFlipAnimator(front: View, back: View, reverse: Boolean = false): AnimatorSet {
+        val reverseFactor = if (reverse) -1 else 1
         val flipDuration = FLIP_DURATION
         val flipInAlphaIn = ObjectAnimator.ofFloat(back, "alpha", 0f, 1f).apply {
             duration = 0
@@ -255,13 +257,13 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
         val flipInAlphaOut = ObjectAnimator.ofFloat(back, "alpha", 1f, 0f).apply {
             duration = 0
         }
-        val flipInRotationIn = ObjectAnimator.ofFloat(back, "rotationY", 180f, 0f).apply {
+        val flipInRotationIn = ObjectAnimator.ofFloat(back, "rotationY", 180f * reverseFactor, 0f).apply {
             duration = flipDuration
         }
         val flipOutAlphaOut = ObjectAnimator.ofFloat(front, "alpha", 1f, 0f).apply {
             duration = 0
         }
-        val flipOutRotationOut = ObjectAnimator.ofFloat(front, "rotationY", 0f, -180f).apply {
+        val flipOutRotationOut = ObjectAnimator.ofFloat(front, "rotationY", 0f, -180f * reverseFactor).apply {
             duration = flipDuration
         }
         return AnimatorSet().apply {
