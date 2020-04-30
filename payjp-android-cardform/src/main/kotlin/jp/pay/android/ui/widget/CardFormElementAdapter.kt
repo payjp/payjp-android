@@ -46,6 +46,7 @@ internal class CardFormElementAdapter(
     private val onElementTextChanged: OnCardFormElementTextChanged,
     private val onElementEditorAction: OnCardFormElementEditorAction,
     private val onElementFocusChanged: OnCardFormElementFocusChanged,
+    private val onElementKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
     private val onCardNumberInputChanged: (s: CharSequence) -> Unit,
     autofillManager: AutofillManager?
 ) : RecyclerView.Adapter<CardFormElementViewHolder>() {
@@ -103,6 +104,7 @@ internal class CardFormElementAdapter(
                 onElementEditorAction,
                 onElementFocusChanged,
                 onCardNumberInputChanged,
+                onElementKeyDownDeleteWithEmpty,
                 autofillId
             )
             CardFormElementType.Expiration -> CardFormExpirationElement(
@@ -111,6 +113,7 @@ internal class CardFormElementAdapter(
                 onElementTextChanged,
                 onElementEditorAction,
                 onElementFocusChanged,
+                onElementKeyDownDeleteWithEmpty,
                 autofillId
             )
             CardFormElementType.Cvc -> CardFormCvcElement(
@@ -118,6 +121,7 @@ internal class CardFormElementAdapter(
                 onElementTextChanged,
                 onElementEditorAction,
                 onElementFocusChanged,
+                onElementKeyDownDeleteWithEmpty,
                 autofillId
             )
             CardFormElementType.HolderName -> CardFormHolderNameElement(
@@ -125,6 +129,7 @@ internal class CardFormElementAdapter(
                 onElementTextChanged,
                 onElementEditorAction,
                 onElementFocusChanged,
+                onElementKeyDownDeleteWithEmpty,
                 autofillId
             )
         }

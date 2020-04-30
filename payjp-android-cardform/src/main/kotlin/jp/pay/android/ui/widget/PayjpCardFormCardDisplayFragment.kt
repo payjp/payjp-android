@@ -150,6 +150,12 @@ class PayjpCardFormCardDisplayFragment :
                 }
                 cardDisplay.updateFocus(type, hasFocus)
             },
+            onElementKeyDownDeleteWithEmpty = { type, _ ->
+                type.prev()?.let(adapter::getPositionForElementType)?.let { next ->
+                    formElementsPager.setCurrentItem(next, true)
+                }
+                true
+            },
             onCardNumberInputChanged = cardDisplay::setCardNumber,
             autofillManager = autofillManager
         )

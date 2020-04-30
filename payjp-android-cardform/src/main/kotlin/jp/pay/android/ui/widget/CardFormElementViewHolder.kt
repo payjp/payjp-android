@@ -45,6 +45,7 @@ import jp.pay.android.ui.extension.setErrorOrNull
 internal typealias OnCardFormElementTextChanged = (type: CardFormElementType, s: CharSequence, start: Int, before: Int, count: Int) -> Unit
 internal typealias OnCardFormElementEditorAction = (type: CardFormElementType, v: TextView, actionId: Int, event: KeyEvent?) -> Boolean
 internal typealias OnCardFormElementFocusChanged = (type: CardFormElementType, view: View, hasFocus: Boolean) -> Unit
+internal typealias OnCardFormElementKeyDownDeleteWithEmpty = (type: CardFormElementType, view: View) -> Boolean
 
 internal sealed class CardFormElementViewHolder(
     type: CardFormElementType,
@@ -55,6 +56,7 @@ internal sealed class CardFormElementViewHolder(
     onTextChanged: OnCardFormElementTextChanged,
     onEditorAction: OnCardFormElementEditorAction,
     onFocusChanged: OnCardFormElementFocusChanged,
+    onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
     autofillId: Any?
 ) : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(layoutId, parent, false)) {
 
@@ -77,6 +79,15 @@ internal sealed class CardFormElementViewHolder(
         }
         editText.setOnEditorActionListener { v, actionId, event ->
             onEditorAction.invoke(type, v, actionId, event)
+        }
+        editText.setOnKeyListener { v, keyCode, event ->
+            takeIf {
+                editText.text.isNullOrEmpty() &&
+                    keyCode == KeyEvent.KEYCODE_DEL &&
+                    event.action == KeyEvent.ACTION_DOWN
+            }?.run {
+                onKeyDownDeleteWithEmpty(type, v)
+            } ?: false
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             (autofillId as? AutofillId)?.let {
@@ -110,6 +121,7 @@ internal sealed class CardFormElementViewHolder(
         onEditorAction: OnCardFormElementEditorAction,
         onFocusChanged: OnCardFormElementFocusChanged,
         onNumberInputChanged: (s: CharSequence) -> Unit,
+        onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
         autofillId: Any?
     ) :
         CardFormElementViewHolder(
@@ -121,6 +133,7 @@ internal sealed class CardFormElementViewHolder(
             onTextChanged,
             onEditorAction,
             onFocusChanged,
+            onKeyDownDeleteWithEmpty,
             autofillId
         ) {
 
@@ -155,6 +168,7 @@ internal sealed class CardFormElementViewHolder(
         onTextChanged: OnCardFormElementTextChanged,
         onEditorAction: OnCardFormElementEditorAction,
         onFocusChanged: OnCardFormElementFocusChanged,
+        onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
         autofillId: Any?
     ) :
         CardFormElementViewHolder(
@@ -165,6 +179,7 @@ internal sealed class CardFormElementViewHolder(
             onTextChanged,
             onEditorAction,
             onFocusChanged,
+            onKeyDownDeleteWithEmpty,
             autofillId
         ) {
 
@@ -190,6 +205,7 @@ internal sealed class CardFormElementViewHolder(
         onTextChanged: OnCardFormElementTextChanged,
         onEditorAction: OnCardFormElementEditorAction,
         onFocusChanged: OnCardFormElementFocusChanged,
+        onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
         autofillId: Any?
     ) :
         CardFormElementViewHolder(
@@ -201,6 +217,7 @@ internal sealed class CardFormElementViewHolder(
             onTextChanged,
             onEditorAction,
             onFocusChanged,
+            onKeyDownDeleteWithEmpty,
             autofillId
         ) {
 
@@ -218,6 +235,7 @@ internal sealed class CardFormElementViewHolder(
         onTextChanged: OnCardFormElementTextChanged,
         onEditorAction: OnCardFormElementEditorAction,
         onFocusChanged: OnCardFormElementFocusChanged,
+        onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
         autofillId: Any?
     ) :
         CardFormElementViewHolder(
@@ -229,6 +247,7 @@ internal sealed class CardFormElementViewHolder(
             onTextChanged,
             onEditorAction,
             onFocusChanged,
+            onKeyDownDeleteWithEmpty,
             autofillId
         ) {
         private var brand: CardBrand = CardBrand.UNKNOWN

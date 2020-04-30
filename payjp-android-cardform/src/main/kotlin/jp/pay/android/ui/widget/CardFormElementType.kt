@@ -22,6 +22,7 @@
  */
 package jp.pay.android.ui.widget
 
+import kotlin.math.max
 import kotlin.math.min
 
 internal enum class CardFormElementType {
@@ -30,6 +31,10 @@ internal enum class CardFormElementType {
     Cvc,
     HolderName,
     ;
+
+    fun prev(): CardFormElementType? = values().let { values ->
+        values[max(ordinal - 1, 0)]
+    }
 
     fun next(): CardFormElementType? = values().let { values ->
         values[min(ordinal + 1, values.lastIndex)]
