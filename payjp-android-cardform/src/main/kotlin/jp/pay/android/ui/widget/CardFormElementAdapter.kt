@@ -52,9 +52,6 @@ internal class CardFormElementAdapter(
 ) : RecyclerView.Adapter<CardFormElementViewHolder>() {
 
     companion object {
-        const val ITEM_SIZE_AFTER_NUMBER = 4
-        const val ITEM_SIZE_BEFORE_NUMBER = 1
-
         @IdRes
         fun findEditTextId(element: CardFormElementType): Int = when (element) {
             CardFormElementType.Number -> R.id.input_edit_number
@@ -70,18 +67,24 @@ internal class CardFormElementAdapter(
     var cardCvcInput: CardComponentInput.CardCvcInput? = null
     var brand: CardBrand = CardBrand.UNKNOWN
     var showErrorImmediately: Boolean = false
+    private val itemSize = CardFormElementType.values().size
     private val autofillIds: List<Any>
 
     init {
         setHasStableIds(true)
         autofillIds =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && autofillManager != null) {
-                (0 until ITEM_SIZE_AFTER_NUMBER).map { autofillManager.nextAutofillId }.toList()
+                (0 until itemSize).map { autofillManager.nextAutofillId }.toList()
             } else emptyList()
     }
 
     fun getPositionForElementType(cardFormElementType: CardFormElementType): Int {
         return cardFormElementType.ordinal
+    }
+
+    fun getElementTypeForPosition(position: Int): CardFormElementType {
+        require(position < itemCount) { "item count is $itemCount" }
+        return CardFormElementType.values()[position]
     }
 
     fun notifyCardFormElementChanged(cardFormElementType: CardFormElementType) {
@@ -159,10 +162,7 @@ internal class CardFormElementAdapter(
 
     override fun getItemViewType(position: Int): Int = position
 
-    override fun getItemCount(): Int = when (cardNumberInput?.valid) {
-        true -> ITEM_SIZE_AFTER_NUMBER
-        else -> ITEM_SIZE_BEFORE_NUMBER
-    }
+    override fun getItemCount(): Int = itemSize
 
     override fun getItemId(position: Int): Long = position.toLong()
 }
