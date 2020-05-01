@@ -250,7 +250,6 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
 
     private fun createFlipAnimator(front: View, back: View, reverse: Boolean = false): AnimatorSet {
         val reverseFactor = if (reverse) -1 else 1
-        val flipDuration = FLIP_DURATION
         val flipInAlphaIn = ObjectAnimator.ofFloat(back, "alpha", 0f, 1f).apply {
             duration = 0
         }
@@ -258,23 +257,23 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
             duration = 0
         }
         val flipInRotationIn = ObjectAnimator.ofFloat(back, "rotationY", 180f * reverseFactor, 0f).apply {
-            duration = flipDuration
+            duration = FLIP_DURATION
         }
         val flipOutAlphaOut = ObjectAnimator.ofFloat(front, "alpha", 1f, 0f).apply {
             duration = 0
         }
         val flipOutRotationOut = ObjectAnimator.ofFloat(front, "rotationY", 0f, -180f * reverseFactor).apply {
-            duration = flipDuration
+            duration = FLIP_DURATION
         }
         return AnimatorSet().apply {
             play(flipInAlphaOut).with(flipInRotationIn)
-            play(flipInAlphaIn).after(flipInAlphaOut).after(flipDuration / 2)
+            play(flipInAlphaIn).after(flipInAlphaOut).after(FLIP_DURATION / 2)
             play(flipOutRotationOut).with(flipInAlphaOut)
-            play(flipOutAlphaOut).after(flipInAlphaOut).after(flipDuration / 2)
+            play(flipOutAlphaOut).after(flipInAlphaOut).after(FLIP_DURATION / 2)
         }
     }
 
-    class AnimatorOnEndListener(
+    private class AnimatorOnEndListener(
         private val onAnimationEnd: (animation: Animator) -> Unit
     ) : Animator.AnimatorListener {
         override fun onAnimationRepeat(animation: Animator) {}
