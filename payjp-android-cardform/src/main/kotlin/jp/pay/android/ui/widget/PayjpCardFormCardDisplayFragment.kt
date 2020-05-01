@@ -24,8 +24,6 @@ package jp.pay.android.ui.widget
 
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import android.view.autofill.AutofillManager
@@ -75,7 +73,6 @@ class PayjpCardFormCardDisplayFragment :
     private lateinit var formElementsPager: ViewPager2
     private lateinit var cardDisplay: PayjpCardDisplayView
     private lateinit var adapter: CardFormElementAdapter
-    private val handler = Handler(Looper.getMainLooper())
     private val cardNumberFormatter =
         CardNumberFormatTextWatcher(PayjpCardForm.CARD_FORM_DELIMITER_NUMBER_DISPLAY)
     private var autofillManager: AutofillManager? = null
@@ -97,6 +94,8 @@ class PayjpCardFormCardDisplayFragment :
         cardDisplay = view.findViewById(R.id.card_display)
         formElementsPager.isFocusableInTouchMode = false
         formElementsPager.isFocusable = false
+        // disable swiping until found valid card number input.
+        formElementsPager.isUserInputEnabled = false
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             autofillManager = requireContext().getSystemService(AutofillManager::class.java)
         }
@@ -122,9 +121,7 @@ class PayjpCardFormCardDisplayFragment :
                 when (type) {
                     CardFormElementType.HolderName -> onEditorAction(v, actionId, event)
                     else -> if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                        type.next()?.let(adapter::getPositionForElementType)?.let { next ->
-                            formElementsPager.setCurrentItem(next, true)
-                        }
+                        type.next()?.let(adapter::getPositionForElementType)?.let { moveToPosition(it) }
                         true
                     } else false
                 }
@@ -144,16 +141,13 @@ class PayjpCardFormCardDisplayFragment :
                         }
                     }
                 }
-                val position = adapter.getPositionForElementType(type)
-                if (hasFocus && formElementsPager.currentItem != position) {
-                    formElementsPager.setCurrentItem(position, true)
+                if (hasFocus) {
+                    moveToPosition(adapter.getPositionForElementType(type))
                 }
                 cardDisplay.updateFocus(type, hasFocus)
             },
             onElementKeyDownDeleteWithEmpty = { type, _ ->
-                type.prev()?.let(adapter::getPositionForElementType)?.let { next ->
-                    formElementsPager.setCurrentItem(next, true)
-                }
+                type.prev()?.let(adapter::getPositionForElementType)?.let { moveToPosition(it) }
                 true
             },
             onCardNumberInputChanged = cardDisplay::setCardNumber,
@@ -163,14 +157,12 @@ class PayjpCardFormCardDisplayFragment :
         formElementsPager.offscreenPageLimit = 2
         formElementsPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                val element = CardFormElementType.values()[position]
-                handler.postDelayed({
-                    // prevent if current item has changed
-                    if (isAdded && formElementsPager.currentItem == position) {
-                        val id = CardFormElementAdapter.findEditTextId(element)
-                        formElementsPager.findViewById<TextInputEditText>(id)?.requestFocusFromTouch()
-                    }
-                }, 300)
+                val element = adapter.getElementTypeForPosition(position)
+                // prevent if current item has changed
+                if (isAdded && formElementsPager.currentItem == position) {
+                    val id = CardFormElementAdapter.findEditTextId(element)
+                    formElementsPager.findViewById<TextInputEditText>(id)?.requestFocusFromTouch()
+                }
             }
         })
 
@@ -190,6 +182,7 @@ class PayjpCardFormCardDisplayFragment :
         viewModel?.apply {
             // value
             cardNumberInput.observe(viewLifecycleOwner) { cardNumber ->
+                formElementsPager.isUserInputEnabled = cardNumber.valid
                 adapter.cardNumberInput = cardNumber
                 adapter.notifyCardFormElementChanged(CardFormElementType.Number)
                 cardDisplay.setCardNumber(cardNumber.input.orEmpty())
@@ -219,11 +212,7 @@ class PayjpCardFormCardDisplayFragment :
                 adapter.showErrorImmediately = it
             }
             currentPrimaryInput.observe(viewLifecycleOwner) { input ->
-                input?.let(adapter::getPositionForElementType)
-                    ?.takeIf { formElementsPager.currentItem != it }
-                    ?.let { position ->
-                        formElementsPager.setCurrentItem(position, true)
-                    }
+                input?.let(adapter::getPositionForElementType)?.let { moveToPosition(it) }
             }
         }
     }
@@ -244,5 +233,10 @@ class PayjpCardFormCardDisplayFragment :
             acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>()
         )
         return ViewModelProvider(requireActivity(), factory).get(CardFormViewModel::class.java)
+    }
+
+    private fun moveToPosition(position: Int, smoothScroll: Boolean = true) {
+        formElementsPager.takeIf { it.currentItem != position && it.isUserInputEnabled }
+            ?.setCurrentItem(position, smoothScroll)
     }
 }
