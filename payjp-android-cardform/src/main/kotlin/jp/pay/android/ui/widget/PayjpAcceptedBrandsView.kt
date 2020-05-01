@@ -50,6 +50,8 @@ class PayjpAcceptedBrandsView @JvmOverloads constructor(
         acceptedBrandsAdapter = AcceptedBrandAdapter(context)
         adapter = acceptedBrandsAdapter
         layoutManager = LinearLayoutManager(context, HORIZONTAL, false)
+        isFocusableInTouchMode = false
+        isFocusable = false
     }
 
     /**

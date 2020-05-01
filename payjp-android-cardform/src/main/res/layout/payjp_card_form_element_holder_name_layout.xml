@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   ~
-  ~ Copyright (c) 2019 PAY, Inc.
+  ~ Copyright (c) 2020 PAY, Inc.
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +22,12 @@
   ~ SOFTWARE.
   -->
 
-<resources>
-    <color name="payjp_primaryColor">#198fcc</color>
-    <color name="payjp_primaryDarkColor">#00629b</color>
-    <color name="payjp_secondaryColor">#69737f</color>
-    <color name="payjp_card_display_background">#515151</color>
-    <color name="payjp_card_display_text_color">#ddffffff</color>
-    <color name="payjp_card_display_text_color_hint">#60ffffff</color>
-    <color name="payjp_card_display_text_color_cvc_default">#DE000000</color>
-    <color name="payjp_card_display_text_color_hint_cvc_default">#1F000000</color>
-    <color name="payjp_card_display_cvc_default_background">#ffffff</color>
-    <color name="payjp_card_display_magnetic_background">#2b2b2b</color>
-</resources>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/payjp_card_form_element_margin"
+        android:layout_marginRight="@dimen/payjp_card_form_element_margin">
+
+    <include layout="@layout/payjp_card_form_part_holder_name_layout" />
+
+</FrameLayout>

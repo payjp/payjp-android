@@ -71,9 +71,12 @@ internal class CardFormViewModel(
     acceptedBrandsPreset: List<CardBrand>?
 ) : ViewModel(), CardFormViewModelOutput, CardFormViewModelInput, LifecycleObserver {
 
+    override val cardNumberInput = MutableLiveData<CardNumberInput>()
     override val cardNumberError: LiveData<Int?>
+    override val cardExpirationInput = MutableLiveData<CardExpirationInput>()
     override val cardExpirationError: LiveData<Int?>
     override val cardCvcError: LiveData<Int?>
+    override val cardHolderNameInput = MutableLiveData<CardHolderNameInput>()
     override val cardHolderNameError: LiveData<Int?>
     override val cardHolderNameEnabled = MutableLiveData<Boolean>()
     override val cvcImeOptions: LiveData<Int>
@@ -82,15 +85,12 @@ internal class CardFormViewModel(
     override val isValid: LiveData<Boolean>
     override val cardNumberValid: LiveData<Boolean>
     override val cardExpirationValid: LiveData<Boolean>
+    override val cardCvcInput = MutableLiveData<CardCvcInput>()
     override val cardCvcValid: LiveData<Boolean>
     override val errorFetchAcceptedBrands: MutableLiveData<OneOffValue<Throwable>> = MutableLiveData()
     override val acceptedBrands: MutableLiveData<OneOffValue<List<CardBrand>>> = MutableLiveData()
-
-    private val cardNumberInput = MutableLiveData<CardNumberInput>()
-    private val cardExpirationInput = MutableLiveData<CardExpirationInput>()
-    private val cardCvcInput = MutableLiveData<CardCvcInput>()
-    private val cardHolderNameInput = MutableLiveData<CardHolderNameInput>()
-    private val showErrorImmediately = MutableLiveData<Boolean>()
+    override val showErrorImmediately = MutableLiveData<Boolean>()
+    override val currentPrimaryInput: MutableLiveData<CardFormElementType> = MutableLiveData()
     private var task: Task<CardBrandsAcceptedResponse>? = null
     private val brandObserver: Observer<CardBrand>
 
@@ -129,6 +129,7 @@ internal class CardFormViewModel(
         cardNumberValid = cardNumberInput.map { it.valid }
         cardExpirationValid = cardExpirationInput.map { it.valid }
         cardCvcValid = cardCvcInput.map { it.valid }
+        currentPrimaryInput.value = CardFormElementType.Number
     }
 
     override fun onCleared() {
@@ -216,7 +217,12 @@ internal class CardFormViewModel(
         transformer: CardInputTransformer<T>
     ) {
         showErrorImmediately.value = false
-        data.value = transformer.transform(input)
+        val before = data.value
+        val i = transformer.transform(input)
+        data.value = i
+        if (i.valid && before != i && i !is CardHolderNameInput) {
+            currentPrimaryInput.value = getPrimaryInput()
+        }
     }
 
     private fun <T : CardComponentInput<*>> forceValidate(
@@ -225,6 +231,14 @@ internal class CardFormViewModel(
     ) {
         data.value = transformer.transform(data.value?.input.orEmpty())
     }
+
+    private fun getPrimaryInput(): CardFormElementType? =
+        listOf(
+            cardNumberInput.value to CardFormElementType.Number,
+            cardExpirationInput.value to CardFormElementType.Expiration,
+            cardCvcInput.value to CardFormElementType.Cvc,
+            cardHolderNameInput.value to CardFormElementType.HolderName
+        ).firstOrNull { it.first?.valid?.not() ?: true }?.second
 
     /**
      * Factory class for [CardFormViewModel]

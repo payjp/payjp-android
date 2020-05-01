@@ -48,7 +48,7 @@ import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.ui.extension.showWith
 import jp.pay.android.ui.widget.PayjpAcceptedBrandsView
-import jp.pay.android.ui.widget.PayjpCardFormFragment
+import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
 import jp.pay.android.util.nonNull
 import jp.pay.android.verifier.PayjpVerifier
@@ -66,12 +66,19 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
         const val DEFAULT_CARD_FORM_REQUEST_CODE = 1
         private const val FRAGMENT_CARD_FORM = "FRAGMENT_CARD_FORM"
         private const val EXTRA_KEY_TENANT = "EXTRA_KEY_TENANT"
+        private const val EXTRA_KEY_FACE = "EXTRA_KEY_FACE"
         private const val CARD_FORM_EXTRA_KEY_TOKEN = "DATA"
 
-        fun start(activity: Activity, requestCode: Int?, tenant: TenantId?) {
+        fun start(
+            activity: Activity,
+            requestCode: Int?,
+            tenant: TenantId?,
+            @PayjpCardForm.CardFormFace face: Int
+        ) {
             activity.startActivityForResult(
                 Intent(activity, PayjpCardFormActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    .putExtra(EXTRA_KEY_FACE, face)
                     .apply {
                         if (tenant != null) {
                             putExtra(EXTRA_KEY_TENANT, tenant.id)
@@ -81,13 +88,19 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
             )
         }
 
-        fun start(fragment: Fragment, requestCode: Int?, tenant: TenantId?) {
+        fun start(
+            fragment: Fragment,
+            requestCode: Int?,
+            tenant: TenantId?,
+            @PayjpCardForm.CardFormFace face: Int
+        ) {
             fragment.startActivityForResult(
                 Intent(fragment.requireActivity(), PayjpCardFormActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                     .apply {
                         if (tenant != null) {
                             putExtra(EXTRA_KEY_TENANT, tenant.id)
+                            putExtra(EXTRA_KEY_FACE, face)
                         }
                     },
                 requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
@@ -108,10 +121,14 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
     private val tenantId: TenantId? by lazy {
         intent?.getStringExtra(EXTRA_KEY_TENANT)?.let { TenantId(it) }
     }
+    private val face: Int by lazy {
+        intent?.getIntExtra(EXTRA_KEY_FACE, PayjpCardForm.FACE_MULTI_LINE)
+            ?: PayjpCardForm.FACE_MULTI_LINE
+    }
     private val inputMethodManager: InputMethodManager by lazy {
         getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     }
-    private var cardFormFragment: PayjpCardFormFragment? = null
+    private var cardFormFragment: PayjpCardFormAbstractFragment? = null
     private var viewModel: CardFormScreenViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -196,12 +213,13 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
             }
     }
 
-    private fun addCardFormFragment(acceptedBrands: Array<CardBrand>): PayjpCardFormFragment? {
+    private fun addCardFormFragment(acceptedBrands: Array<CardBrand>): PayjpCardFormAbstractFragment? {
         return supportFragmentManager.let { manager ->
-            PayjpCardForm.newFragment(
+            PayjpCardForm.newCardFormFragment(
                 holderNameEnabled = true,
                 tenantId = tenantId,
-                acceptedBrands = acceptedBrands
+                acceptedBrands = acceptedBrands,
+                face = face
             ).also { fragment ->
                 manager
                     .beginTransaction().apply {
@@ -212,9 +230,9 @@ internal class PayjpCardFormActivity : AppCompatActivity(R.layout.payjp_card_for
         }
     }
 
-    private fun findCardFormFragment(): PayjpCardFormFragment? {
+    private fun findCardFormFragment(): PayjpCardFormAbstractFragment? {
         return supportFragmentManager.let { manager ->
-            (manager.findFragmentByTag(FRAGMENT_CARD_FORM) as? PayjpCardFormFragment)?.also { f ->
+            (manager.findFragmentByTag(FRAGMENT_CARD_FORM) as? PayjpCardFormAbstractFragment)?.also { f ->
                 if (!f.isAdded) {
                     manager
                         .beginTransaction().apply {

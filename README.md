@@ -4,7 +4,9 @@
 
 オンライン決済サービス「[PAY.JP](https://pay.jp/)」のAndroidアプリ組込み用のSDKです。
 
-<img src="https://user-images.githubusercontent.com/949882/71063858-0977de00-21b1-11ea-89b6-be4661ca41b6.png" width=300 />
+| `FACE_MULTI_LINE` | `FACE_CARD_DISPLAY` |
+| - | - |
+| <img alt="face_multi_line" width=300 src="https://user-images.githubusercontent.com/949882/80774525-3d6c0280-8b98-11ea-92b7-f71528c7fcde.png" /> | <img alt="face_card_display" width=300 src="https://user-images.githubusercontent.com/949882/80774521-3a711200-8b98-11ea-966a-b82bb10c7b54.png" /> |
 
 ## 使い方
 

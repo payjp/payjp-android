@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~
-  ~ Copyright (c) 2019 PAY, Inc.
+  ~ Copyright (c) 2020 PAY, Inc.
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -21,33 +22,27 @@
   ~ SOFTWARE.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.textfield.TextInputLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/input_layout_number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:importantForAutofill="no"
-        android:orientation="vertical"
-        tools:theme="@style/Payjp.Theme.CardForm"
-        android:padding="16dp"
-        tools:targetApi="o">
+        android:hint="@string/payjp_card_form_number_label"
+        app:endIconDrawable="@drawable/ic_camera"
+        app:endIconMode="none"
+        app:startIconTint="@null"
+        tools:endIconMode="custom">
 
-    <include layout="@layout/payjp_card_form_part_number_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    <include layout="@layout/payjp_card_form_part_expiration_layout"
+    <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_edit_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/payjp_card_form_margin" />
+            android:autofillHints="creditCardNumber"
+            android:imeOptions="flagNoExtractUi|actionNext"
+            android:inputType="phone"
+            android:maxLines="1"
+            tools:targetApi="o"
+            tools:text="1234 1234 1234 1234" />
 
-    <include layout="@layout/payjp_card_form_part_cvc_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/payjp_card_form_margin" />
-
-    <include layout="@layout/payjp_card_form_part_holder_name_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/payjp_card_form_margin" />
-
-</LinearLayout>
+</com.google.android.material.textfield.TextInputLayout>

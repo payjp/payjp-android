@@ -71,6 +71,7 @@ dependencies {
     implementation "androidx.fragment:fragment:$fragment"
     implementation "androidx.appcompat:appcompat:$appcompat"
     implementation "androidx.recyclerview:recyclerview:$recyclerview"
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle"
@@ -78,6 +79,7 @@ dependencies {
     kapt "androidx.lifecycle:lifecycle-common-java8:$lifecycle"
     implementation "com.google.android.material:material:$material"
     implementation "androidx.constraintlayout:constraintlayout:$constraint"
+    implementation 'com.google.android.gms:play-services-base:17.2.1'
 
     testImplementation project(":common-test")
 }
