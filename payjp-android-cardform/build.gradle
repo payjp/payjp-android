@@ -24,7 +24,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'org.jetbrains.dokka-android'
+apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'kotlin-android-extensions'
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
