@@ -53,4 +53,10 @@ Please make sure that the app permission in Settings app.
     <string name="payjp_card_form_dialog_ok">OK</string>
     <string name="payjp_card_form_dialog_title_error">Error</string>
     <string name="payjp_card_form_message_cancel_verification">Identity verification is canceled.</string>
+
+    <string name="payjp_card_form_display_hint_cvc_default" translatable="false">•••</string>
+    <string name="payjp_card_form_display_hint_cvc_amex" translatable="false">••••</string>
+    <string name="payjp_card_form_display_hint_number" translatable="false">XXXX XXXX XXXX XXXX</string>
+    <string name="payjp_card_form_display_hint_expiration" translatable="false">MM/YY</string>
+    <string name="payjp_card_form_display_hint_holder_name" translatable="false">NAME</string>
 </resources>

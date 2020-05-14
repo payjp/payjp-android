@@ -71,21 +71,20 @@
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:orientation="vertical">
 
                 <jp.pay.android.ui.widget.PayjpAcceptedBrandsView
                         android:id="@+id/accepted_brands"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="16dp"
                         android:padding="16dp"/>
 
                 <FrameLayout
                         android:id="@+id/card_form_view"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp" />
+                        android:layout_height="wrap_content" />
 
             </LinearLayout>
 

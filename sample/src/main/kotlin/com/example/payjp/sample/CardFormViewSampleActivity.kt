@@ -38,7 +38,7 @@ import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
-import jp.pay.android.ui.widget.PayjpCardFormFragment
+import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
 import jp.pay.android.verifier.ui.PayjpThreeDSecureResultCallback
 import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token
@@ -58,7 +58,7 @@ class CardFormViewSampleActivity : AppCompatActivity(),
 
     private var createToken: Task<Token>? = null
     private var getToken: Task<Token>? = null
-    private lateinit var cardFormFragment: PayjpCardFormFragment
+    private lateinit var cardFormFragment: PayjpCardFormAbstractFragment
 
     override fun onValidateInput(view: PayjpCardFormView, isValid: Boolean) {
         button_create_token.isEnabled = isValid
@@ -193,8 +193,8 @@ class CardFormViewSampleActivity : AppCompatActivity(),
 
     private fun findCardFormFragment() {
         supportFragmentManager.let { manager ->
-            val f = manager.findFragmentByTag(FRAGMENT_CARD_FORM)
-            cardFormFragment = f as? PayjpCardFormFragment ?: Payjp.cardForm().newFragment()
+            val f = manager.findFragmentByTag(FRAGMENT_CARD_FORM) as? PayjpCardFormAbstractFragment
+            cardFormFragment = f ?: Payjp.cardForm().newCardFormFragment()
             if (!cardFormFragment.isAdded) {
                 manager
                     .beginTransaction().apply {

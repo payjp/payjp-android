@@ -35,6 +35,7 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import jp.pay.android.Payjp
+import jp.pay.android.PayjpCardForm
 import jp.pay.android.ui.PayjpCardFormResultCallback
 import kotlinx.android.synthetic.main.activity_top.recycler_view
 
@@ -44,14 +45,16 @@ class TopActivity : AppCompatActivity() {
 
     private val samples by lazy {
         listOf(
-            Sample("CardFormActivity Example",
+            Sample("CardFormActivity (Card Display)",
+                null, this::startCardFormCardFace),
+            Sample("CardFormActivity (Multi Line)",
                 null, this::startCardForm),
             Sample(
-                "CardFormView Example",
+                "CardFormView",
                 Intent(this, CardFormViewSampleActivity::class.java)
             ),
             Sample(
-                "CardFormView Example (Java)",
+                "CardFormView (Java)",
                 Intent(this, CardFormViewSampleJavaActivity::class.java)
             ),
             Sample(
@@ -91,6 +94,10 @@ class TopActivity : AppCompatActivity() {
 
     private fun startCardForm() {
         Payjp.cardForm().start(this)
+    }
+
+    private fun startCardFormCardFace() {
+        Payjp.cardForm().start(this, face = PayjpCardForm.FACE_CARD_DISPLAY)
     }
 
     class TopAdapter(
