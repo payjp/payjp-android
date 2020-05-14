@@ -32,5 +32,15 @@
         <item name="colorSecondary">@color/payjp_secondaryColor</item>
     </style>
     <style name="Payjp.Theme.CardForm" parent="Payjp.Theme.BaseCardForm"/>
+    
+    <style name="Payjp.Theme.CardForm.Display">
+        <item name="android:textViewStyle">@style/PayjpCardDisplayTextView</item>
+    </style>
+
+    <style name="PayjpCardDisplayTextView" parent="Widget.MaterialComponents.TextView">
+        <item name="android:fontFamily">@font/space_mono</item>
+        <item name="android:textColor">@color/payjp_card_display_text_color</item>
+        <item name="android:textColorHint">@color/payjp_card_display_text_color_hint</item>
+    </style>
 
 </resources>

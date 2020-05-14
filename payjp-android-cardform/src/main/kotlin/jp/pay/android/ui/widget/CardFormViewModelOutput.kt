@@ -24,15 +24,20 @@ package jp.pay.android.ui.widget
 
 import androidx.lifecycle.LiveData
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.CardComponentInput
 import jp.pay.android.model.CardExpiration
 import jp.pay.android.util.OneOffValue
 
 internal interface CardFormViewModelOutput {
+    val cardNumberInput: LiveData<CardComponentInput.CardNumberInput>
     val cardNumberError: LiveData<Int?>
+    val cardExpirationInput: LiveData<CardComponentInput.CardExpirationInput>
     val cardExpirationError: LiveData<Int?>
     val cardCvcError: LiveData<Int?>
+    val cardHolderNameInput: LiveData<CardComponentInput.CardHolderNameInput>
     val cardHolderNameError: LiveData<Int?>
     val cardHolderNameEnabled: LiveData<Boolean>
+    val cardCvcInput: LiveData<CardComponentInput.CardCvcInput>
     val cvcImeOptions: LiveData<Int>
     val cardNumberBrand: LiveData<CardBrand>
     val cardExpiration: LiveData<CardExpiration?>
@@ -42,4 +47,6 @@ internal interface CardFormViewModelOutput {
     val cardCvcValid: LiveData<Boolean>
     val errorFetchAcceptedBrands: LiveData<OneOffValue<Throwable>>
     val acceptedBrands: LiveData<OneOffValue<List<CardBrand>>>
+    val showErrorImmediately: LiveData<Boolean>
+    val currentPrimaryInput: LiveData<CardFormElementType>
 }

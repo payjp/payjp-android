@@ -41,15 +41,19 @@ def getRepositoryPassword() {
 }
 
 def kotlinAndroidArtifactTasks() {
-    if (!project.plugins.hasPlugin('org.jetbrains.dokka-android')) {
+    if (!project.plugins.hasPlugin('org.jetbrains.dokka')) {
         throw new GradleException("Apply the dokka-android plugin in ${project.name}")
     }
 
     dokka {
         outputFormat = 'javadoc'
         outputDirectory = "$buildDir/docs/kdoc"
-        sourceDirs = android.sourceSets.main.java.srcDirs
-        includeNonPublic = false
+        configuration {
+            sourceRoot {
+                path = project.file("src/main/kotlin").path
+            }
+            includeNonPublic = false
+        }
     }
 
     task docJar(type: Jar, dependsOn: dokka) {
