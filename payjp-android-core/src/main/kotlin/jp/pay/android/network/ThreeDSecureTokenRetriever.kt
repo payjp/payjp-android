@@ -52,7 +52,7 @@ internal class ThreeDSecureTokenRetriever(
         .takeIf {
             request.url().toString() == "${baseUrl}tokens" &&
                 request.method() == "POST" &&
-                it.isRedirect
+                it.isSuccessful
         }
         ?.body()
         ?.let { body ->
