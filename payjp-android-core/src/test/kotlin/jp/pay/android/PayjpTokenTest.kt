@@ -265,12 +265,12 @@ class PayjpTokenTest {
     }
 
     @Test
-    fun createToken_redirect_tds() {
+    fun createToken_returns_tds() {
         val tdsId = "tds_abcd1234"
         mockWebServer.setDispatcher(object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse = when (request.path) {
                 "/tokens" -> MockResponse()
-                    .setResponseCode(303)
+                    .setResponseCode(200)
                     .setHeader("Location", "${mockWebServer.url("/")}tds/$tdsId/start")
                     .setBody("""
 { "object": "three_d_secure_token", "id": "$tdsId" }
