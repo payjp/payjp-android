@@ -22,7 +22,8 @@
  */
 package jp.pay.android.fixtures
 
-const val CARD_OK = """
+const val CARD_OK =
+    """
 {
     "address_city": "city",
     "address_line1": "line1",
@@ -48,7 +49,8 @@ const val CARD_OK = """
 }
         """
 
-const val CARD_ID_NULL = """
+const val CARD_ID_NULL =
+    """
 {
     "address_city": null,
     "address_line1": null,
@@ -74,7 +76,8 @@ const val CARD_ID_NULL = """
 }
 """
 
-const val CARD_HAS_METADATA = """
+const val CARD_HAS_METADATA =
+    """
 {
     "address_city": null,
     "address_line1": null,
@@ -105,7 +108,8 @@ const val CARD_HAS_METADATA = """
 }
         """
 
-const val CARD_NO_3DS_STATUS = """
+const val CARD_NO_3DS_STATUS =
+    """
 {
     "address_city": null,
     "address_line1": null,

@@ -23,12 +23,6 @@
 package jp.pay.android
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import java.io.IOException
-import java.lang.RuntimeException
-import java.nio.charset.Charset
-import java.util.Locale
-import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 import jp.pay.android.exception.PayjpApiException
 import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.fixtures.ACCEPTED_BRANDS_EMPTY
@@ -57,6 +51,12 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import retrofit2.HttpException
+import java.io.IOException
+import java.lang.RuntimeException
+import java.nio.charset.Charset
+import java.util.Locale
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 /**
  * [PayjpToken]
@@ -100,7 +100,8 @@ class PayjpTokenTest {
                 baseUrl = baseUrl,
                 locale = Locale.US,
                 clientInfo = ClientInfo.Builder().build(),
-                debuggable = false)
+                debuggable = false
+            )
                 .newBuilder()
                 .build(),
             callbackExecutor = CurrentThreadExecutor()
@@ -265,16 +266,19 @@ class PayjpTokenTest {
     }
 
     @Test
-    fun createToken_redirect_tds() {
+    fun createToken_returns_tds() {
         val tdsId = "tds_abcd1234"
         mockWebServer.setDispatcher(object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse = when (request.path) {
-                "/tokens" -> MockResponse()
-                    .setResponseCode(303)
-                    .setHeader("Location", "${mockWebServer.url("/")}tds/$tdsId/start")
-                    .setBody("""
+                "/tokens" ->
+                    MockResponse()
+                        .setResponseCode(200)
+                        .setHeader("Location", "${mockWebServer.url("/")}tds/$tdsId/start")
+                        .setBody(
+                            """
 { "object": "three_d_secure_token", "id": "$tdsId" }
-                    """.trimIndent())
+                            """.trimIndent()
+                        )
                 "/tds/$tdsId/start" -> MockResponse().setResponseCode(200).setBody(TOKEN_OK)
                 else -> throw RuntimeException("unknown path -> ${request.path}")
             }
@@ -432,7 +436,8 @@ class PayjpTokenTest {
             .let { response ->
                 assertEquals(true, response.livemode)
                 assertThat(
-                    response.brands, contains(
+                    response.brands,
+                    contains(
                         CardBrand.VISA, CardBrand.MASTER_CARD, CardBrand.JCB,
                         CardBrand.AMEX, CardBrand.DINERS_CLUB, CardBrand.DISCOVER
                     )
@@ -490,7 +495,8 @@ class PayjpTokenTest {
             .let { response ->
                 assertEquals(true, response.livemode)
                 assertThat(
-                    response.brands, contains(
+                    response.brands,
+                    contains(
                         CardBrand.VISA, CardBrand.MASTER_CARD, CardBrand.JCB,
                         CardBrand.AMEX, CardBrand.DINERS_CLUB, CardBrand.DISCOVER
                     )

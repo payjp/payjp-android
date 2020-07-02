@@ -24,7 +24,6 @@ package com.example.payjp.sample
 
 import android.util.Log
 import com.squareup.moshi.Moshi
-import java.io.IOException
 import jp.pay.android.PayjpTokenBackgroundHandler
 import jp.pay.android.model.Token
 import kotlinx.coroutines.runBlocking
@@ -32,6 +31,7 @@ import okhttp3.OkHttpClient
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.io.IOException
 
 class SampleSendTokenHandler(
     private val backendUrl: String,
@@ -50,10 +50,11 @@ class SampleSendTokenHandler(
     override fun handleTokenInBackground(token: Token): PayjpTokenBackgroundHandler.CardFormStatus {
         return runBlocking {
             if (backendUrl.isEmpty()) {
-                val message = """
+                val message =
+                    """
                 `BACKEND_URL` is not found yet.
                 You can send token(${token.id}) to your own server to make Customer etc.
-                """.trimIndent()
+                    """.trimIndent()
                 Log.w("SampleSendTokenHandler", message)
                 return@runBlocking PayjpTokenBackgroundHandler.CardFormStatus.Complete()
             }

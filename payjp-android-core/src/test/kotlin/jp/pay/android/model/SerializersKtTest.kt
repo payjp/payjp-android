@@ -24,7 +24,6 @@ package jp.pay.android.model
 
 import android.os.Bundle
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import java.util.Date
 import jp.pay.android.TestStubs
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasEntry
@@ -33,6 +32,7 @@ import org.hamcrest.Matchers.notNullValue
 import org.junit.Assert.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.Date
 
 @RunWith(AndroidJUnit4::class)
 class SerializersKtTest {

@@ -80,11 +80,11 @@ internal sealed class WebBrowser {
 
         override fun createIntent(context: Context, uri: Uri, callbackUri: Uri): Intent {
             return PayjpWebActivity.createIntent(
-                    context = context,
-                    startUri = uri,
-                    callbackUri = callbackUri,
-                    title = context.getString(R.string.payjp_verifier_card_verify_title)
-                )
+                context = context,
+                startUri = uri,
+                callbackUri = callbackUri,
+                title = context.getString(R.string.payjp_verifier_card_verify_title)
+            )
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
     }

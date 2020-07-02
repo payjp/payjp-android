@@ -35,7 +35,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
-import java.lang.ref.WeakReference
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
 import jp.pay.android.Task
@@ -46,8 +45,11 @@ import jp.pay.android.ui.widget.PayjpCardFormView.CardFormEditorListener
 import jp.pay.android.ui.widget.PayjpCardFormView.OnFetchAcceptedBrandsListener
 import jp.pay.android.ui.widget.PayjpCardFormView.OnValidateInputListener
 import jp.pay.android.util.Tasks
+import java.lang.ref.WeakReference
 
-abstract class PayjpCardFormAbstractFragment(layoutId: Int) : Fragment(layoutId), PayjpCardFormView,
+abstract class PayjpCardFormAbstractFragment(layoutId: Int) :
+    Fragment(layoutId),
+    PayjpCardFormView,
     CardScannerPlugin.CardScanOnResultListener,
     CardScannerPlugin.CardScannerPermissionDelegate {
 

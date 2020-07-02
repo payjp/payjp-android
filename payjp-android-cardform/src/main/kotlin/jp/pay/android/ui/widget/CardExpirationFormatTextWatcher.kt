@@ -87,10 +87,12 @@ internal class CardExpirationFormatTextWatcher(private val delimiter: Char) : Te
         val deletionLastDelimiterOrNext = latestInsertionSize == 0 &&
             // `12/`
             //    ^ deletion from here
-            ((original.length == DELIMITER_INDEX && latestChangeStart == DELIMITER_INDEX) ||
-                // `12/1`
-                //     ^ deletion from here
-                (original.length == DELIMITER_INDEX + 1 && latestChangeStart == DELIMITER_INDEX + 1))
+            (
+                (original.length == DELIMITER_INDEX && latestChangeStart == DELIMITER_INDEX) ||
+                    // `12/1`
+                    //     ^ deletion from here
+                    (original.length == DELIMITER_INDEX + 1 && latestChangeStart == DELIMITER_INDEX + 1)
+                )
         var index = 0
         for (i in digits.indices) {
             val c = digits[i]

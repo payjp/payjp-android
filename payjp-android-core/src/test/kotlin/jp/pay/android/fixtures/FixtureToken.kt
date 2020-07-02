@@ -22,7 +22,8 @@
  */
 package jp.pay.android.fixtures
 
-const val TOKEN_OK = """
+const val TOKEN_OK =
+    """
 {
   "card": {
     "address_city": null,

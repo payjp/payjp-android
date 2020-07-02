@@ -60,20 +60,23 @@ class PayjpResourceObjectTest {
     }
 }
 
-const val OBJECT_TDS_TOKEN = """
+const val OBJECT_TDS_TOKEN =
+    """
 {
   "object": "three_d_secure_token",
   "id": "tds_abc"
 }
 """
 
-const val OBJECT_NO_NAME = """
+const val OBJECT_NO_NAME =
+    """
 {
   "id": "tds_abc"
 }
 """
 
-const val OBJECT_NO_ID = """
+const val OBJECT_NO_ID =
+    """
 {
   "object": "foo"
 }

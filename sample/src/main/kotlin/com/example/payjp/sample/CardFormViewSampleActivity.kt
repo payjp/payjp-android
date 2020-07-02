@@ -52,7 +52,8 @@ import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_
 
 private const val FRAGMENT_CARD_FORM = "FRAGMENT_CARD_FORM"
 
-class CardFormViewSampleActivity : AppCompatActivity(),
+class CardFormViewSampleActivity :
+    AppCompatActivity(),
     PayjpCardFormView.OnValidateInputListener,
     PayjpCardFormView.OnFetchAcceptedBrandsListener {
 
@@ -125,12 +126,14 @@ class CardFormViewSampleActivity : AppCompatActivity(),
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Payjp.verifier().handleThreeDSecureResult(requestCode,
+        Payjp.verifier().handleThreeDSecureResult(
+            requestCode,
             PayjpThreeDSecureResultCallback {
                 if (it.isSuccess()) {
                     createTokenForTds(it.retrieveThreeDSecureToken())
                 }
-            })
+            }
+        )
     }
 
     private fun createToken() {

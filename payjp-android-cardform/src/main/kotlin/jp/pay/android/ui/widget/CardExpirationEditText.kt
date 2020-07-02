@@ -30,8 +30,8 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.autofill.AutofillValue
 import com.google.android.material.textfield.TextInputEditText
-import java.util.Calendar
 import jp.pay.android.model.CardExpiration
+import java.util.Calendar
 
 internal class CardExpirationEditText @JvmOverloads constructor(
     context: Context,
