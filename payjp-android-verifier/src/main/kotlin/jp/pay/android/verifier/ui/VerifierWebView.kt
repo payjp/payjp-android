@@ -42,11 +42,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
-import java.text.SimpleDateFormat
-import java.util.Locale
 import jp.pay.android.PayjpLogger
 import jp.pay.android.verifier.PayjpVerifier
 import jp.pay.android.verifier.R
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 internal class VerifierWebView @JvmOverloads constructor(
     context: Context,

@@ -23,13 +23,13 @@
 package jp.pay.android
 
 import android.util.Base64
-import java.nio.charset.Charset
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.network.TokenApiClientFactory.createApiClient
 import jp.pay.android.network.TokenApiClientFactory.createOkHttp
+import java.nio.charset.Charset
 
 /**
  * Payjp token client

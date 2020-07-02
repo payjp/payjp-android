@@ -27,8 +27,6 @@ import android.content.Intent
 import androidx.annotation.IntDef
 import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
-import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.TenantId
 import jp.pay.android.plugin.CardScannerPlugin
@@ -37,6 +35,8 @@ import jp.pay.android.ui.PayjpCardFormResultCallback
 import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
 import jp.pay.android.ui.widget.PayjpCardFormCardDisplayFragment
 import jp.pay.android.ui.widget.PayjpCardFormFragment
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 /**
  * Card form client.
@@ -152,8 +152,8 @@ object PayjpCardForm {
     @Deprecated(
         message = "Use newCardFormFragment()",
         replaceWith = ReplaceWith(
-        "newCardFormFragment(holderNameEnabled, tenantId, acceptedBrands, face)",
-        "jp.pay.android"
+            "newCardFormFragment(holderNameEnabled, tenantId, acceptedBrands, face)",
+            "jp.pay.android"
         )
     )
     fun newFragment(

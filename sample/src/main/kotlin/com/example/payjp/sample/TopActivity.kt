@@ -45,10 +45,14 @@ class TopActivity : AppCompatActivity() {
 
     private val samples by lazy {
         listOf(
-            Sample("CardFormActivity (Card Display)",
-                null, this::startCardFormCardFace),
-            Sample("CardFormActivity (Multi Line)",
-                null, this::startCardForm),
+            Sample(
+                "CardFormActivity (Card Display)",
+                null, this::startCardFormCardFace
+            ),
+            Sample(
+                "CardFormActivity (Multi Line)",
+                null, this::startCardForm
+            ),
             Sample(
                 "CardFormView",
                 Intent(this, CardFormViewSampleActivity::class.java)
@@ -82,13 +86,16 @@ class TopActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Payjp.cardForm().handleResult(data, PayjpCardFormResultCallback { result ->
-            if (result.isSuccess()) {
-                val token = result.retrieveToken()
-                Log.i("handleCardFormResult", "token => $token")
-                Toast.makeText(this, "Token: $token", Toast.LENGTH_SHORT).show()
+        Payjp.cardForm().handleResult(
+            data,
+            PayjpCardFormResultCallback { result ->
+                if (result.isSuccess()) {
+                    val token = result.retrieveToken()
+                    Log.i("handleCardFormResult", "token => $token")
+                    Toast.makeText(this, "Token: $token", Toast.LENGTH_SHORT).show()
+                }
             }
-        })
+        )
         super.onActivityResult(requestCode, resultCode, data)
     }
 

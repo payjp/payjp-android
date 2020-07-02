@@ -22,11 +22,11 @@
  */
 package jp.pay.android
 
-import java.util.Locale
-import java.util.concurrent.Executor
 import jp.pay.android.model.ClientInfo
 import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.util.MainThreadExecutor
+import java.util.Locale
+import java.util.concurrent.Executor
 
 /**
  * Configuration for Payjp

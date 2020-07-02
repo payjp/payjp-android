@@ -90,7 +90,10 @@ class ClientInfoTest {
         )
         val json = Moshi.Builder().build().adapter<ClientInfo>(ClientInfo::class.java)
             .toJson(clientInfo)
-        assertThat(json, `is`("""
+        assertThat(
+            json,
+            `is`(
+                """
 {
   "bindings_name": "jp.pay.android",
   "bindings_version": "1.1.0",
@@ -99,8 +102,10 @@ class ClientInfoTest {
   "platform": "android",
   "publisher": "payjp"
 }
-        """.trimIndent()
-            .replace(" ", "")
-            .replace("\n", "")))
+                """.trimIndent()
+                    .replace(" ", "")
+                    .replace("\n", "")
+            )
+        )
     }
 }

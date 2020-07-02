@@ -24,8 +24,8 @@ package jp.pay.android.validator
 
 import androidx.annotation.IntRange
 import androidx.annotation.VisibleForTesting
-import java.util.Calendar
 import jp.pay.android.model.CardExpiration
+import java.util.Calendar
 
 /**
  * Process card expiration from input.

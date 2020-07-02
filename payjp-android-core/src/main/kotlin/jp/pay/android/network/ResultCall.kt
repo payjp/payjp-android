@@ -23,9 +23,6 @@
 package jp.pay.android.network
 
 import com.squareup.moshi.Moshi
-import java.io.IOException
-import java.lang.RuntimeException
-import java.util.concurrent.Executor
 import jp.pay.android.Task
 import jp.pay.android.exception.PayjpApiException
 import jp.pay.android.model.ErrorEnvelope
@@ -34,6 +31,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.HttpException
 import retrofit2.Response
+import java.io.IOException
+import java.lang.RuntimeException
+import java.util.concurrent.Executor
 
 /**
  * Custom call for wrapping response.
