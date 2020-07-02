@@ -25,7 +25,6 @@ package jp.pay.android.ui
 import android.view.View
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import java.net.SocketTimeoutException
 import jp.pay.android.PayjpTokenBackgroundHandler
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.R
@@ -51,6 +50,7 @@ import org.mockito.Mockito.`when`
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
+import java.net.SocketTimeoutException
 
 @RunWith(AndroidJUnit4::class)
 class CardFormScreenViewModelTest {

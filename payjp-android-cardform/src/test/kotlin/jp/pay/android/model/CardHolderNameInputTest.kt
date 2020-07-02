@@ -43,12 +43,18 @@ internal class CardHolderNameInputTest(
         @ParameterizedRobolectricTestRunner.Parameters
         fun data(): List<Array<out Any?>> {
             return listOf(
-                arrayOf(null as? String, null as? String,
-                    FormInputError(R.string.payjp_card_form_error_no_holder_name, true)),
-                arrayOf("", null,
-                    FormInputError(R.string.payjp_card_form_error_no_holder_name, true)),
-                arrayOf(" ", null,
-                    FormInputError(R.string.payjp_card_form_error_no_holder_name, true)),
+                arrayOf(
+                    null as? String, null as? String,
+                    FormInputError(R.string.payjp_card_form_error_no_holder_name, true)
+                ),
+                arrayOf(
+                    "", null,
+                    FormInputError(R.string.payjp_card_form_error_no_holder_name, true)
+                ),
+                arrayOf(
+                    " ", null,
+                    FormInputError(R.string.payjp_card_form_error_no_holder_name, true)
+                ),
                 arrayOf("JANE DOE", "JANE DOE", null),
                 arrayOf(" JANE DOE ", "JANE DOE", null)
             )

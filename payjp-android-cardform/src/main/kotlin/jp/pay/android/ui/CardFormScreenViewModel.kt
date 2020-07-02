@@ -31,7 +31,6 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
-import java.io.IOException
 import jp.pay.android.PayjpTokenBackgroundHandler
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.R
@@ -45,6 +44,7 @@ import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.util.delegateLiveData
 import jp.pay.android.verifier.ui.PayjpThreeDSecureResult
+import java.io.IOException
 
 internal class CardFormScreenViewModel(
     private val handle: SavedStateHandle,

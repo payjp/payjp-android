@@ -109,14 +109,18 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
         frameBack.background = defaultBackground
 
         frontToBack = createFlipAnimator(frameFront, frameBack).apply {
-            addListener(AnimatorOnEndListener {
-                frontVisible = false
-            })
+            addListener(
+                AnimatorOnEndListener {
+                    frontVisible = false
+                }
+            )
         }
         backToFront = createFlipAnimator(frameBack, frameFront, true).apply {
-            addListener(AnimatorOnEndListener {
-                frontVisible = true
-            })
+            addListener(
+                AnimatorOnEndListener {
+                    frontVisible = true
+                }
+            )
         }
         highlightBackground = MaterialShapeDrawable(
             ShapeAppearanceModel.Builder()
@@ -181,8 +185,8 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
         currentNum?.let { pan ->
             // only if number has valid length.
             if (cardNumberValidator.isCardNumberLengthValid(
-                    pan.filter(Character::isDigit).toString(), brand
-                ) == CardNumberValidatorService.CardNumberLengthStatus.MATCH
+                pan.filter(Character::isDigit).toString(), brand
+            ) == CardNumberValidatorService.CardNumberLengthStatus.MATCH
             ) {
                 if (hasFocus) {
                     this.numberDisplay.text = pan

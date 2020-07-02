@@ -76,10 +76,10 @@ class ThreeDSecureTokenRetrieverTest {
         .build()
 
     @Test
-    fun retrieve_token_from_redirect_response() {
+    fun retrieve_token_if_response_is_tds_token() {
         val retriever = createRetriever()
         val request = createRequest(url = "${baseUrl}tokens")
-        val response = createResponse(request, tdsTokenObjectJson, 303)
+        val response = createResponse(request, tdsTokenObjectJson, 200)
         val result = retriever.retrieve(
             request = request,
             response = response
@@ -91,7 +91,7 @@ class ThreeDSecureTokenRetrieverTest {
     fun retrieve_nothing_if_path_is_unknown() {
         val retriever = createRetriever()
         val request = createRequest(url = "${baseUrl}tokens/any")
-        val response = createResponse(request, tdsTokenObjectJson, 303)
+        val response = createResponse(request, tdsTokenObjectJson, 200)
         val result = retriever.retrieve(
             request = request,
             response = response
@@ -106,7 +106,7 @@ class ThreeDSecureTokenRetrieverTest {
             url = "${baseUrl}tokens",
             applyFunc = { get() }
         )
-        val response = createResponse(request, tdsTokenObjectJson, 303)
+        val response = createResponse(request, tdsTokenObjectJson, 200)
         val result = retriever.retrieve(
             request = request,
             response = response
@@ -115,10 +115,10 @@ class ThreeDSecureTokenRetrieverTest {
     }
 
     @Test
-    fun retrieve_nothing_if_response_is_not_redirect() {
+    fun retrieve_nothing_if_redirect_response() {
         val retriever = createRetriever()
         val request = createRequest(url = "${baseUrl}tokens")
-        val response = createResponse(request, tdsTokenObjectJson, 200)
+        val response = createResponse(request, tdsTokenObjectJson, 303)
         val result = retriever.retrieve(
             request = request,
             response = response
@@ -130,10 +130,11 @@ class ThreeDSecureTokenRetrieverTest {
     fun retrieve_nothing_if_response_is_not_tds_token() {
         val retriever = createRetriever()
         val request = createRequest(url = "${baseUrl}tokens")
-        val json = """
+        val json =
+            """
 { "object": "other_object", "id": "other_id" }
             """.trimIndent()
-        val response = createResponse(request, json, 303)
+        val response = createResponse(request, json, 200)
         val result = retriever.retrieve(
             request = request,
             response = response
@@ -145,10 +146,11 @@ class ThreeDSecureTokenRetrieverTest {
     fun throw_exception_if_response_is_unknown() {
         val retriever = createRetriever()
         val request = createRequest(url = "${baseUrl}tokens")
-        val json = """
+        val json =
+            """
 { "unknown_key": "unknown_value" }
             """.trimIndent()
-        val response = createResponse(request, json, 303)
+        val response = createResponse(request, json, 200)
         retriever.retrieve(
             request = request,
             response = response

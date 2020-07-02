@@ -60,10 +60,6 @@
                 <data android:scheme="jp.pay.example" android:host="tds" android:path="/finish" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"
-            android:exported="true"/>
     </application>
 
 </manifest>

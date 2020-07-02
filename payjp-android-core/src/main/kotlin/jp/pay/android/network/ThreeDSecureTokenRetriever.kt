@@ -52,13 +52,13 @@ internal class ThreeDSecureTokenRetriever(
         .takeIf {
             request.url().toString() == "${baseUrl}tokens" &&
                 request.method() == "POST" &&
-                it.isRedirect
+                it.isSuccessful
         }
-        ?.body()
+        // set limit 1MiB; but token response never become too large size.
+        ?.peekBody(1024 * 1024)
         ?.let { body ->
-        val bodyString = body.string()
-        moshi.adapter(PayjpResourceObject::class.java).fromJson(bodyString)
-            ?.takeIf { it.name == "three_d_secure_token" }
-            ?.let { ThreeDSecureToken(id = it.id) }
+            moshi.adapter(PayjpResourceObject::class.java).fromJson(body.string())
+                ?.takeIf { it.name == "three_d_secure_token" }
+                ?.let { ThreeDSecureToken(id = it.id) }
         }
 }

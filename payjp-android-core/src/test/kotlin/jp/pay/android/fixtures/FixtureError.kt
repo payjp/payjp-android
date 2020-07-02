@@ -22,7 +22,8 @@
  */
 package jp.pay.android.fixtures
 
-const val ERROR_AUTH = """
+const val ERROR_AUTH =
+    """
 {
   "error": {
     "message": "Invalid API Key: {0}",
@@ -32,7 +33,8 @@ const val ERROR_AUTH = """
 }
 """
 
-const val ERROR_CARD_DECLINED = """
+const val ERROR_CARD_DECLINED =
+    """
 {
   "error": {
     "code": "card_declined",
@@ -43,7 +45,8 @@ const val ERROR_CARD_DECLINED = """
 }
 """
 
-const val ERROR_INVALID_ID = """
+const val ERROR_INVALID_ID =
+    """
 {
   "error": {
     "code": "invalid_id",

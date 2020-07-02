@@ -26,8 +26,8 @@ import android.os.Bundle
 import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import java.util.Date
 import kotlinx.android.parcel.Parcelize
+import java.util.Date
 
 /**
  * PAY.JP card object.

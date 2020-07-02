@@ -22,7 +22,8 @@
  */
 package jp.pay.android.fixtures
 
-const val ACCEPTED_BRANDS_FULL = """
+const val ACCEPTED_BRANDS_FULL =
+    """
 {
   "card_types_supported": [
     "Visa",
@@ -36,7 +37,8 @@ const val ACCEPTED_BRANDS_FULL = """
 }
 """
 
-const val ACCEPTED_BRANDS_EMPTY = """
+const val ACCEPTED_BRANDS_EMPTY =
+    """
 {
   "card_types_supported": [],
   "livemode": true

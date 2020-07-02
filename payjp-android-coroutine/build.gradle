@@ -42,10 +42,6 @@ android {
         java.srcDirs += "src/${name}/kotlin"
     }
 
-    libraryVariants.all {
-        it.generateBuildConfig.enabled = false
-    }
-
     testOptions {
         unitTests {
             returnDefaultValues = true
@@ -55,6 +51,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+
+    buildFeatures {
+        buildConfig = false
     }
 }
 
