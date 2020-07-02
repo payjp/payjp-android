@@ -22,13 +22,13 @@
  */
 package jp.pay.android
 
+import jp.pay.android.PayjpTokenBackgroundHandler.CardFormStatus
+import jp.pay.android.model.Token
 import java.util.concurrent.CancellationException
 import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
 import java.util.concurrent.atomic.AtomicReference
-import jp.pay.android.PayjpTokenBackgroundHandler.CardFormStatus
-import jp.pay.android.model.Token
 
 /**
  * Default implementation of [TokenHandlerExecutor]

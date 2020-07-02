@@ -168,16 +168,18 @@ class PayjpCardFormCardDisplayFragment :
 
         val pagerMargin = resources.getDimensionPixelOffset(R.dimen.payjp_card_form_pager_margin)
         val offset = resources.getDimensionPixelOffset(R.dimen.payjp_card_form_element_offset)
-        formElementsPager.setPageTransformer(CompositePageTransformer().apply {
-            addTransformer { page, position ->
-                page.translationX = position * (2 * offset + pagerMargin) * -1
+        formElementsPager.setPageTransformer(
+            CompositePageTransformer().apply {
+                addTransformer { page, position ->
+                    page.translationX = position * (2 * offset + pagerMargin) * -1
+                }
+                addTransformer { page, position ->
+                    val scale = 1 - (abs(position) / 6)
+                    page.scaleX = scale
+                    page.scaleY = scale
+                }
             }
-            addTransformer { page, position ->
-                val scale = 1 - (abs(position) / 6)
-                page.scaleX = scale
-                page.scaleY = scale
-            }
-        })
+        )
 
         viewModel?.apply {
             // value

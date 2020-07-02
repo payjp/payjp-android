@@ -23,9 +23,9 @@
 package jp.pay.android.ui
 
 import android.content.Context
-import java.io.IOException
 import jp.pay.android.R
 import jp.pay.android.exception.PayjpApiException
+import java.io.IOException
 
 /**
  * Provide error message by context or from api response.

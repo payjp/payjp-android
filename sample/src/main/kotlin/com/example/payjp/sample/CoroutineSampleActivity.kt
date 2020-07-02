@@ -86,14 +86,16 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Payjp.verifier().handleThreeDSecureResult(requestCode,
+        Payjp.verifier().handleThreeDSecureResult(
+            requestCode,
             PayjpThreeDSecureResultCallback {
                 if (it.isSuccess()) {
                     createToken(tdsToken = it.retrieveThreeDSecureToken())
                 } else {
                     Toast.makeText(this, "3-D Secure canceled.", Toast.LENGTH_SHORT).show()
                 }
-            })
+            }
+        )
     }
 
     private fun createToken(tdsToken: ThreeDSecureToken? = null) = launch {

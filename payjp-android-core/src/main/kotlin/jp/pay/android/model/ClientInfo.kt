@@ -25,8 +25,8 @@ package jp.pay.android.model
 import android.os.Build
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import java.lang.StringBuilder
 import jp.pay.android.BuildConfig
+import java.lang.StringBuilder
 
 @JsonClass(generateAdapter = true)
 class ClientInfo internal constructor(

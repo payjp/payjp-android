@@ -43,7 +43,8 @@ import jp.pay.android.verifier.R
  * PayjpWebActivity
  *
  */
-class PayjpWebActivity : AppCompatActivity(R.layout.payjp_web_activity),
+class PayjpWebActivity :
+    AppCompatActivity(R.layout.payjp_web_activity),
     LifecycleObserver {
 
     companion object {
@@ -133,12 +134,14 @@ class PayjpWebActivity : AppCompatActivity(R.layout.payjp_web_activity),
                 false
             }
         }
-        webView.addLoadStateWatcher(WebViewLoadingDelegate(
-            logger = logger,
-            errorView = findViewById(R.id.error_view),
-            progressBar = findViewById(R.id.progress_bar),
-            swipeRefresh = swipeRefresh
-        ))
+        webView.addLoadStateWatcher(
+            WebViewLoadingDelegate(
+                logger = logger,
+                errorView = findViewById(R.id.error_view),
+                progressBar = findViewById(R.id.progress_bar),
+                swipeRefresh = swipeRefresh
+            )
+        )
         webView.addOnFinishedLoadState { _, url ->
             if (url.startsWith(callbackUri.toString())) {
                 logger.d("url matches with callbackUri $url")

@@ -23,10 +23,10 @@
 package jp.pay.android.network
 
 import com.squareup.moshi.Moshi
-import java.util.Locale
 import jp.pay.android.model.ClientInfo
 import okhttp3.Interceptor
 import okhttp3.Response
+import java.util.Locale
 
 /**
  * Request interceptor

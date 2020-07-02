@@ -26,8 +26,8 @@ import android.os.Parcelable
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.ToJson
-import java.util.Locale
 import kotlinx.android.parcel.Parcelize
+import java.util.Locale
 
 /**
  * Card verification status of 3-D Secure

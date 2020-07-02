@@ -43,10 +43,6 @@ android {
         java.srcDirs += "src/${name}/kotlin"
     }
 
-    libraryVariants.all {
-        it.generateBuildConfig.enabled = false
-    }
-
     testOptions {
         unitTests {
             returnDefaultValues = true
@@ -60,6 +56,10 @@ android {
 
     androidExtensions {
         features = ["parcelize"]
+    }
+
+    buildFeatures {
+        buildConfig = false
     }
 }
 
@@ -79,7 +79,7 @@ dependencies {
     kapt "androidx.lifecycle:lifecycle-common-java8:$lifecycle"
     implementation "com.google.android.material:material:$material"
     implementation "androidx.constraintlayout:constraintlayout:$constraint"
-    implementation 'com.google.android.gms:play-services-base:17.2.1'
+    implementation 'com.google.android.gms:play-services-base:17.3.0'
 
     testImplementation project(":common-test")
 }

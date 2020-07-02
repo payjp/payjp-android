@@ -24,7 +24,6 @@ package jp.pay.android.ui
 
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import java.io.IOException
 import jp.pay.android.R
 import jp.pay.android.exception.PayjpApiException
 import jp.pay.android.model.ApiError
@@ -36,6 +35,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
+import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
 class ContextErrorTranslatorTest {
