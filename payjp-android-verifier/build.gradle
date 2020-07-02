@@ -75,7 +75,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$constraint"
 
     implementation "androidx.webkit:webkit:1.2.0"
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-beta01"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation "androidx.browser:browser:1.2.0"
 
     testImplementation project(":common-test")
