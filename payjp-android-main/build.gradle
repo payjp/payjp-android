@@ -34,16 +34,16 @@ android {
         minSdkVersion rootProject.minSdkVersion
     }
 
-    libraryVariants.all {
-        it.generateBuildConfig.enabled = false
-    }
-
     sourceSets.all {
         java.srcDirs += "src/${name}/kotlin"
     }
 
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+
+    buildFeatures {
+        buildConfig = false
     }
 }
 

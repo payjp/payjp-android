@@ -43,10 +43,6 @@ android {
         java.srcDirs += "src/${name}/kotlin"
     }
 
-    libraryVariants.all {
-        it.generateBuildConfig.enabled = false
-    }
-
     testOptions {
         unitTests {
             returnDefaultValues = true
@@ -60,6 +56,10 @@ android {
 
     androidExtensions {
         features = ["parcelize"]
+    }
+
+    buildFeatures {
+        buildConfig = false
     }
 }
 

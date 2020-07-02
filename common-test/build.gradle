@@ -35,6 +35,10 @@ android {
         abortOnError false
         disable['InvalidPackage']
     }
+
+    buildFeatures {
+        buildConfig = false
+    }
 }
 
 dependencies {
