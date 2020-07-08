@@ -24,27 +24,28 @@ package jp.pay.android.ui.widget
 
 import android.os.Bundle
 import android.text.InputFilter
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.transition.TransitionManager
 import com.google.android.material.textfield.TextInputLayout
 import jp.pay.android.PayjpCardForm
-import jp.pay.android.R
+import jp.pay.android.databinding.PayjpCardFormViewBinding
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.TenantId
 import jp.pay.android.ui.extension.addOnTextChanged
 import jp.pay.android.ui.extension.cvcIconResourceId
 import jp.pay.android.ui.extension.logoResourceId
 import jp.pay.android.ui.extension.setErrorOrNull
+import jp.pay.android.util.autoCleared
 import jp.pay.android.validator.CardCvcInputTransformer
 import jp.pay.android.validator.CardExpirationInputTransformer
 import jp.pay.android.validator.CardHolderNameInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformer
 
-class PayjpCardFormFragment : PayjpCardFormAbstractFragment(R.layout.payjp_card_form_view) {
+class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
 
     companion object {
         private const val ARGS_HOLDER_NAME_ENABLED = "ARGS_HOLDER_NAME_ENABLED"
@@ -74,22 +75,24 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment(R.layout.payjp_card_
             }
     }
 
-    private lateinit var numberLayout: TextInputLayout
-    private lateinit var expirationLayout: TextInputLayout
-    private lateinit var cvcLayout: TextInputLayout
-    private lateinit var holderNameLayout: TextInputLayout
-    private lateinit var numberEditText: EditText
-    private lateinit var expirationEditText: CardExpirationEditText
-    private lateinit var cvcEditText: EditText
-    private lateinit var holderNameEditText: EditText
+    private var binding: PayjpCardFormViewBinding by autoCleared()
 
     private val delimiterExpiration = PayjpCardForm.CARD_FORM_DELIMITER_EXPIRATION
     private val cardNumberFormatter =
         CardNumberFormatTextWatcher(PayjpCardForm.CARD_FORM_DELIMITER_NUMBER)
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = PayjpCardFormViewBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     override fun onScanResult(cardNumber: String?) {
-        cardNumber?.let(numberEditText::setText)
-        expirationEditText.requestFocusFromTouch()
+        cardNumber?.let(binding.layoutNumber.inputEditNumber::setText)
+        binding.layoutExpiration.inputEditExpiration.requestFocusFromTouch()
     }
 
     override fun setCardHolderNameInputEnabled(enabled: Boolean) {
@@ -103,32 +106,23 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment(R.layout.payjp_card_
     }
 
     override fun setUpUI(view: ViewGroup) {
-        numberLayout = view.findViewById(R.id.input_layout_number)
-        numberEditText = view.findViewById(R.id.input_edit_number)
-        expirationLayout = view.findViewById(R.id.input_layout_expiration)
-        expirationEditText = view.findViewById(R.id.input_edit_expiration)
-        cvcLayout = view.findViewById(R.id.input_layout_cvc)
-        cvcEditText = view.findViewById(R.id.input_edit_cvc)
-        holderNameLayout = view.findViewById(R.id.input_layout_holder_name)
-        holderNameEditText = view.findViewById(R.id.input_edit_holder_name)
-
         // add formatter
-        numberEditText.addTextChangedListener(cardNumberFormatter)
-        expirationEditText.addTextChangedListener(
+        binding.layoutNumber.inputEditNumber.addTextChangedListener(cardNumberFormatter)
+        binding.layoutExpiration.inputEditExpiration.addTextChangedListener(
             CardExpirationFormatTextWatcher(delimiterExpiration)
         )
         // default cvc length
-        cvcEditText.filters =
+        binding.layoutCvc.inputEditCvc.filters =
             arrayOf<InputFilter>(InputFilter.LengthFilter(CardBrand.UNKNOWN.cvcLength))
         PayjpCardForm.cardScannerPlugin()?.let { bridge ->
-            numberLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
-            numberLayout.setEndIconOnClickListener {
+            binding.layoutNumber.inputLayoutNumber.endIconMode = TextInputLayout.END_ICON_CUSTOM
+            binding.layoutNumber.inputLayoutNumber.setEndIconOnClickListener {
                 bridge.startScanActivity(this)
             }
         }
         // editor
-        holderNameEditText.setOnEditorActionListener(this::onEditorAction)
-        cvcEditText.setOnEditorActionListener { v, actionId, event ->
+        binding.layoutHolderName.inputEditHolderName.setOnEditorActionListener(this::onEditorAction)
+        binding.layoutCvc.inputEditCvc.setOnEditorActionListener { v, actionId, event ->
             if (viewModel?.cardHolderNameEnabled?.value == false) {
                 onEditorAction(v, actionId, event)
             } else {
@@ -138,55 +132,55 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment(R.layout.payjp_card_
 
         viewModel?.apply {
             cardHolderNameEnabled.observe(viewLifecycleOwner) {
-                holderNameLayout.visibility = if (it) {
+                binding.layoutHolderName.inputLayoutHolderName.visibility = if (it) {
                     View.VISIBLE
                 } else {
                     View.GONE
                 }
                 TransitionManager.beginDelayedTransition(view)
             }
-            cvcImeOptions.observe(viewLifecycleOwner, cvcEditText::setImeOptions)
+            cvcImeOptions.observe(viewLifecycleOwner, binding.layoutCvc.inputEditCvc::setImeOptions)
             cardNumberBrand.observe(viewLifecycleOwner) {
                 cardNumberFormatter.brand = it
-                cvcEditText.filters =
+                binding.layoutCvc.inputEditCvc.filters =
                     arrayOf<InputFilter>(InputFilter.LengthFilter(it.cvcLength))
-                cvcLayout.setEndIconDrawable(it.cvcIconResourceId)
-                numberLayout.setStartIconDrawable(it.logoResourceId)
+                binding.layoutCvc.inputLayoutCvc.setEndIconDrawable(it.cvcIconResourceId)
+                binding.layoutNumber.inputLayoutNumber.setStartIconDrawable(it.logoResourceId)
             }
             cardExpiration.observe(viewLifecycleOwner) {
-                expirationEditText.expiration = it
+                binding.layoutExpiration.inputEditExpiration.expiration = it
             }
             cardNumberError.observe(viewLifecycleOwner) { resId ->
-                numberLayout.setErrorOrNull(resId?.let { getString(it) })
+                binding.layoutNumber.inputLayoutNumber.setErrorOrNull(resId?.let { getString(it) })
             }
             cardExpirationError.observe(viewLifecycleOwner) { resId ->
-                expirationLayout.setErrorOrNull(resId?.let { getString(it) })
+                binding.layoutExpiration.inputLayoutExpiration.setErrorOrNull(resId?.let { getString(it) })
             }
             cardCvcError.observe(viewLifecycleOwner) { resId ->
-                cvcLayout.setErrorOrNull(resId?.let { getString(it) })
+                binding.layoutCvc.inputLayoutCvc.setErrorOrNull(resId?.let { getString(it) })
             }
             cardHolderNameError.observe(viewLifecycleOwner) { resId ->
-                holderNameLayout.setErrorOrNull(resId?.let { getString(it) })
+                binding.layoutHolderName.inputLayoutHolderName.setErrorOrNull(resId?.let { getString(it) })
             }
             cardNumberValid.observe(viewLifecycleOwner) { valid ->
-                if (valid && numberEditText.hasFocus()) {
-                    expirationEditText.requestFocusFromTouch()
+                if (valid && binding.layoutNumber.inputEditNumber.hasFocus()) {
+                    binding.layoutExpiration.inputEditExpiration.requestFocusFromTouch()
                 }
             }
             cardExpirationValid.observe(viewLifecycleOwner) { valid ->
-                if (valid && expirationEditText.hasFocus()) {
-                    cvcEditText.requestFocusFromTouch()
+                if (valid && binding.layoutExpiration.inputEditExpiration.hasFocus()) {
+                    binding.layoutCvc.inputEditCvc.requestFocusFromTouch()
                 }
             }
             cardCvcValid.observe(viewLifecycleOwner) { valid ->
-                if (valid && cvcEditText.hasFocus() && holderNameLayout.visibility == View.VISIBLE) {
-                    holderNameEditText.requestFocusFromTouch()
+                if (valid && binding.layoutCvc.inputEditCvc.hasFocus() && binding.layoutHolderName.inputLayoutHolderName.visibility == View.VISIBLE) {
+                    binding.layoutHolderName.inputEditHolderName.requestFocusFromTouch()
                 }
             }
-            numberEditText.addOnTextChanged { s, _, _, _ -> inputCardNumber(s.toString()) }
-            expirationEditText.addOnTextChanged { s, _, _, _ -> inputCardExpiration(s.toString()) }
-            cvcEditText.addOnTextChanged { s, _, _, _ -> inputCardCvc(s.toString()) }
-            holderNameEditText.addOnTextChanged { s, _, _, _ -> inputCardHolderName(s.toString()) }
+            binding.layoutNumber.inputEditNumber.addOnTextChanged { s, _, _, _ -> inputCardNumber(s.toString()) }
+            binding.layoutExpiration.inputEditExpiration.addOnTextChanged { s, _, _, _ -> inputCardExpiration(s.toString()) }
+            binding.layoutCvc.inputEditCvc.addOnTextChanged { s, _, _, _ -> inputCardCvc(s.toString()) }
+            binding.layoutHolderName.inputEditHolderName.addOnTextChanged { s, _, _, _ -> inputCardHolderName(s.toString()) }
         }
     }
 

@@ -24,12 +24,17 @@ package jp.pay.android.ui.widget
 
 import android.os.Build
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.autofill.AutofillManager
 import androidx.annotation.IdRes
 import androidx.recyclerview.widget.RecyclerView
 import jp.pay.android.R
+import jp.pay.android.databinding.PayjpCardFormElementCvcLayoutBinding
+import jp.pay.android.databinding.PayjpCardFormElementExpirationLayoutBinding
+import jp.pay.android.databinding.PayjpCardFormElementHolderNameLayoutBinding
+import jp.pay.android.databinding.PayjpCardFormElementNumberLayoutBinding
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput
 import jp.pay.android.plugin.CardScannerPlugin
@@ -49,7 +54,7 @@ internal class CardFormElementAdapter(
     private val onElementKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
     private val onCardNumberInputChanged: (s: CharSequence) -> Unit,
     autofillManager: AutofillManager?
-) : RecyclerView.Adapter<CardFormElementViewHolder>() {
+) : RecyclerView.Adapter<CardFormElementViewHolder<*>>() {
 
     companion object {
         @IdRes
@@ -94,12 +99,13 @@ internal class CardFormElementAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): CardFormElementViewHolder {
+    ): CardFormElementViewHolder<*> {
         val type = CardFormElementType.values()[viewType]
         val autofillId = autofillIds.getOrNull(type.ordinal)
+        val inflater = LayoutInflater.from(parent.context)
         return when (type) {
             CardFormElementType.Number -> CardFormNumberElement(
-                parent,
+                PayjpCardFormElementNumberLayoutBinding.inflate(inflater, parent, false),
                 cardNumberFormatter,
                 scannerPlugin,
                 onClickScannerIcon,
@@ -111,7 +117,7 @@ internal class CardFormElementAdapter(
                 autofillId
             )
             CardFormElementType.Expiration -> CardFormExpirationElement(
-                parent,
+                PayjpCardFormElementExpirationLayoutBinding.inflate(inflater, parent, false),
                 cardExpirationFormatter,
                 onElementTextChanged,
                 onElementEditorAction,
@@ -120,7 +126,7 @@ internal class CardFormElementAdapter(
                 autofillId
             )
             CardFormElementType.Cvc -> CardFormCvcElement(
-                parent,
+                PayjpCardFormElementCvcLayoutBinding.inflate(inflater, parent, false),
                 onElementTextChanged,
                 onElementEditorAction,
                 onElementFocusChanged,
@@ -128,7 +134,7 @@ internal class CardFormElementAdapter(
                 autofillId
             )
             CardFormElementType.HolderName -> CardFormHolderNameElement(
-                parent,
+                PayjpCardFormElementHolderNameLayoutBinding.inflate(inflater, parent, false),
                 onElementTextChanged,
                 onElementEditorAction,
                 onElementFocusChanged,
@@ -138,7 +144,7 @@ internal class CardFormElementAdapter(
         }
     }
 
-    override fun onBindViewHolder(holder: CardFormElementViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: CardFormElementViewHolder<*>, position: Int) {
         when (holder) {
             is CardFormNumberElement -> holder.bindData(
                 cardNumberInput,

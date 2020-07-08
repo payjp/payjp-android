@@ -28,6 +28,6 @@
         android:layout_marginLeft="@dimen/payjp_card_form_element_margin"
         android:layout_marginRight="@dimen/payjp_card_form_element_margin">
 
-    <include layout="@layout/payjp_card_form_part_cvc_layout" />
+    <include android:id="@+id/content" layout="@layout/payjp_card_form_part_cvc_layout" />
 
 </FrameLayout>
