@@ -47,8 +47,8 @@ import jp.pay.android.ui.widget.PayjpCardFormView.OnValidateInputListener
 import jp.pay.android.util.Tasks
 import java.lang.ref.WeakReference
 
-abstract class PayjpCardFormAbstractFragment(layoutId: Int) :
-    Fragment(layoutId),
+abstract class PayjpCardFormAbstractFragment :
+    Fragment(),
     PayjpCardFormView,
     CardScannerPlugin.CardScanOnResultListener,
     CardScannerPlugin.CardScannerPermissionDelegate {

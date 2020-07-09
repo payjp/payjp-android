@@ -26,12 +26,12 @@ package com.example.payjp.sample;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.payjp.sample.databinding.ActivityGenerateTokenSampleBinding;
 
 import jp.pay.android.Payjp;
 import jp.pay.android.PayjpTokenParam;
@@ -42,38 +42,23 @@ public class GenerateTokenSampleJavaActivity extends AppCompatActivity {
 
     private Task<Token> createToken = null;
     private Task<Token> getToken = null;
-
-    private ProgressBar progressBar;
-    private TextView textTokenId;
-    private TextView textTokenContent;
-    private TextView textCardNumber;
-    private TextView textCardCvc;
-    private TextView textCardExpMonth;
-    private TextView textCardExpYear;
-    private TextView textCardName;
+    private ActivityGenerateTokenSampleBinding binding;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_generate_token_sample);
-        progressBar = findViewById(R.id.progress_bar);
-        textTokenId = findViewById(R.id.text_token_id);
-        textTokenContent = findViewById(R.id.text_token_content);
-        textCardNumber = findViewById(R.id.text_card_number);
-        textCardCvc = findViewById(R.id.text_card_cvc);
-        textCardExpMonth = findViewById(R.id.text_card_exp_month);
-        textCardExpYear = findViewById(R.id.text_card_exp_year);
-        textCardName = findViewById(R.id.text_card_name);
+        binding = ActivityGenerateTokenSampleBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        findViewById(R.id.button_create_token).setOnClickListener(view -> {
-            progressBar.setVisibility(View.VISIBLE);
-            textTokenContent.setVisibility(View.INVISIBLE);
+        binding.buttonCreateToken.setOnClickListener(view -> {
+            binding.progressBar.setVisibility(View.VISIBLE);
+            binding.textTokenContent.setVisibility(View.INVISIBLE);
 
-            final String number = textCardNumber.getText().toString();
-            final String cvc = textCardCvc.getText().toString();
-            final String expMonth = textCardExpMonth.getText().toString();
-            final String expYear = textCardExpYear.getText().toString();
-            final String name = textCardName.getText().toString();
+            final String number = binding.textCardNumber.getText().toString();
+            final String cvc = binding.textCardCvc.getText().toString();
+            final String expMonth = binding.textCardExpMonth.getText().toString();
+            final String expYear = binding.textCardExpYear.getText().toString();
+            final String name = binding.textCardName.getText().toString();
 
             createToken = Payjp.token().createToken(
                     new PayjpTokenParam.Builder(number, cvc, expMonth, expYear)
@@ -84,42 +69,42 @@ public class GenerateTokenSampleJavaActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(Token data) {
                     Log.i("GenerateTokenSampleJava", "token => " + data);
-                    textTokenId.setText(data.getId());
-                    progressBar.setVisibility(View.GONE);
-                    textTokenContent.setText("The token has created.");
-                    textTokenContent.setVisibility(View.VISIBLE);
+                    binding.textTokenId.setText(data.getId());
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.textTokenContent.setText("The token has created.");
+                    binding.textTokenContent.setVisibility(View.VISIBLE);
                 }
 
                 @Override
                 public void onError(@NonNull Throwable throwable) {
                     Log.e("GenerateTokenSampleJava", "failure creating token", throwable);
-                    progressBar.setVisibility(View.GONE);
-                    textTokenContent.setVisibility(View.VISIBLE);
-                    textTokenContent.setText(throwable.toString());
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.textTokenContent.setVisibility(View.VISIBLE);
+                    binding.textTokenContent.setText(throwable.toString());
                 }
             });
         });
 
-        findViewById(R.id.button_get_token).setOnClickListener(view -> {
-            progressBar.setVisibility(View.VISIBLE);
-            textTokenContent.setVisibility(View.INVISIBLE);
+        binding.buttonGetToken.setOnClickListener(view -> {
+            binding.progressBar.setVisibility(View.VISIBLE);
+            binding.textTokenContent.setVisibility(View.INVISIBLE);
 
-            getToken = Payjp.token().getToken(textTokenId.getText().toString());
+            getToken = Payjp.token().getToken(binding.textTokenId.getText().toString());
             getToken.enqueue(new Task.Callback<Token>() {
                 @Override
                 public void onSuccess(Token data) {
                     Log.i("GenerateTokenSampleJava", "token => " + data);
-                    textTokenContent.setText(data.toString());
-                    progressBar.setVisibility(View.GONE);
-                    textTokenContent.setVisibility(View.VISIBLE);
+                    binding.textTokenContent.setText(data.toString());
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.textTokenContent.setVisibility(View.VISIBLE);
                 }
 
                 @Override
                 public void onError(@NonNull Throwable throwable) {
                     Log.e("GenerateTokenSampleJava", "failure creating token", throwable);
-                    progressBar.setVisibility(View.GONE);
-                    textTokenContent.setVisibility(View.VISIBLE);
-                    textTokenContent.setText(throwable.toString());
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.textTokenContent.setVisibility(View.VISIBLE);
+                    binding.textTokenContent.setText(throwable.toString());
                 }
             });
         });

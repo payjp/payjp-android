@@ -26,38 +26,31 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.example.payjp.sample.databinding.ActivityGenerateTokenSampleBinding
 import jp.pay.android.Payjp
 import jp.pay.android.Task
 import jp.pay.android.model.Token
-import kotlinx.android.synthetic.main.activity_generate_token_sample.button_create_token
-import kotlinx.android.synthetic.main.activity_generate_token_sample.button_get_token
-import kotlinx.android.synthetic.main.activity_generate_token_sample.progress_bar
-import kotlinx.android.synthetic.main.activity_generate_token_sample.text_card_cvc
-import kotlinx.android.synthetic.main.activity_generate_token_sample.text_card_exp_month
-import kotlinx.android.synthetic.main.activity_generate_token_sample.text_card_exp_year
-import kotlinx.android.synthetic.main.activity_generate_token_sample.text_card_name
-import kotlinx.android.synthetic.main.activity_generate_token_sample.text_card_number
-import kotlinx.android.synthetic.main.activity_generate_token_sample.text_token_content
-import kotlinx.android.synthetic.main.activity_generate_token_sample.text_token_id
 
 class GenerateTokenSampleActivity : AppCompatActivity() {
 
     private var createToken: Task<Token>? = null
     private var getToken: Task<Token>? = null
+    private lateinit var binding: ActivityGenerateTokenSampleBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_generate_token_sample)
+        binding = ActivityGenerateTokenSampleBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        button_create_token.setOnClickListener {
-            progress_bar.visibility = View.VISIBLE
-            text_token_content.visibility = View.INVISIBLE
+        binding.buttonCreateToken.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
+            binding.textTokenContent.visibility = View.INVISIBLE
             // create token
-            val number = text_card_number.text.toString()
-            val cvc = text_card_cvc.text.toString()
-            val expMonth = text_card_exp_month.text.toString()
-            val expYear = text_card_exp_year.text.toString()
-            val name = text_card_name.text.toString()
+            val number = binding.textCardNumber.text.toString()
+            val cvc = binding.textCardCvc.text.toString()
+            val expMonth = binding.textCardExpMonth.text.toString()
+            val expYear = binding.textCardExpYear.text.toString()
+            val name = binding.textCardName.text.toString()
 
             createToken = Payjp.token().createToken(
                 number = number, cvc = cvc,
@@ -66,40 +59,40 @@ class GenerateTokenSampleActivity : AppCompatActivity() {
             createToken?.enqueue(object : Task.Callback<Token> {
                 override fun onSuccess(data: Token) {
                     Log.i("GenerateTokenSample", "token => $data")
-                    text_token_id.setText(data.id)
-                    text_token_content.text = "The token has created."
-                    progress_bar.visibility = View.GONE
-                    text_token_content.visibility = View.VISIBLE
+                    binding.textTokenId.setText(data.id)
+                    binding.textTokenContent.text = "The token has created."
+                    binding.progressBar.visibility = View.GONE
+                    binding.textTokenContent.visibility = View.VISIBLE
                 }
 
                 override fun onError(throwable: Throwable) {
                     Log.e("GenerateTokenSample", "failure creating token", throwable)
-                    text_token_content.text = throwable.toString()
-                    progress_bar.visibility = View.GONE
-                    text_token_content.visibility = View.VISIBLE
+                    binding.textTokenContent.text = throwable.toString()
+                    binding.progressBar.visibility = View.GONE
+                    binding.textTokenContent.visibility = View.VISIBLE
                 }
             })
         }
 
-        button_get_token.setOnClickListener {
-            progress_bar.visibility = View.VISIBLE
-            text_token_content.visibility = View.INVISIBLE
+        binding.buttonGetToken.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
+            binding.textTokenContent.visibility = View.INVISIBLE
 
             // get token
-            getToken = Payjp.token().getToken(text_token_id.text.toString())
+            getToken = Payjp.token().getToken(binding.textTokenId.text.toString())
             getToken?.enqueue(object : Task.Callback<Token> {
                 override fun onSuccess(data: Token) {
                     Log.i("GenerateTokenSample", "token => $data")
-                    text_token_content.text = data.toString()
-                    progress_bar.visibility = View.GONE
-                    text_token_content.visibility = View.VISIBLE
+                    binding.textTokenContent.text = data.toString()
+                    binding.progressBar.visibility = View.GONE
+                    binding.textTokenContent.visibility = View.VISIBLE
                 }
 
                 override fun onError(throwable: Throwable) {
                     Log.e("GenerateTokenSample", "failure creating token", throwable)
-                    text_token_content.text = throwable.toString()
-                    progress_bar.visibility = View.GONE
-                    text_token_content.visibility = View.VISIBLE
+                    binding.textTokenContent.text = throwable.toString()
+                    binding.progressBar.visibility = View.GONE
+                    binding.textTokenContent.visibility = View.VISIBLE
                 }
             })
         }

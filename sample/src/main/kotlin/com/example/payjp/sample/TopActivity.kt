@@ -28,16 +28,15 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.payjp.sample.databinding.ActivityTopBinding
+import com.example.payjp.sample.databinding.CardSampleBinding
 import jp.pay.android.Payjp
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.ui.PayjpCardFormResultCallback
-import kotlinx.android.synthetic.main.activity_top.recycler_view
 
 typealias OnClickSample = (sample: TopActivity.Sample) -> Unit
 
@@ -76,12 +75,17 @@ class TopActivity : AppCompatActivity() {
         )
     }
 
+    private lateinit var binding: ActivityTopBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_top)
-        recycler_view.layoutManager = LinearLayoutManager(this)
-        recycler_view.adapter = TopAdapter(this, samples) { sample ->
-            sample.start(this)
+        binding = ActivityTopBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.recyclerView.let {
+            it.layoutManager = LinearLayoutManager(this)
+            it.adapter = TopAdapter(this, samples) { sample ->
+                sample.start(this)
+            }
         }
     }
 
@@ -115,7 +119,10 @@ class TopActivity : AppCompatActivity() {
         private val inflater = LayoutInflater.from(context)
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopViewHolder {
-            return TopViewHolder(inflater, parent, onClickSample)
+            return TopViewHolder(
+                CardSampleBinding.inflate(inflater, parent, false),
+                onClickSample
+            )
         }
 
         override fun getItemCount(): Int = list.size
@@ -126,24 +133,20 @@ class TopActivity : AppCompatActivity() {
     }
 
     class TopViewHolder(
-        inflater: LayoutInflater,
-        parent: ViewGroup,
+        private val binding: CardSampleBinding,
         onClick: OnClickSample? = null
     ) :
-        RecyclerView.ViewHolder(inflater.inflate(R.layout.card_sample, parent, false)) {
-
-        private val nameView by lazy { itemView.findViewById<TextView>(R.id.name) }
-        private val cardView by lazy { itemView.findViewById<CardView>(R.id.card) }
+        RecyclerView.ViewHolder(binding.root) {
 
         var sample: Sample? = null
             set(value) {
                 field = value
-                nameView.text = value?.name
+                binding.name.text = value?.name
             }
 
         init {
             onClick?.let { onClickNonNull ->
-                cardView.setOnClickListener {
+                binding.card.setOnClickListener {
                     sample?.let {
                         onClickNonNull(it)
                     }

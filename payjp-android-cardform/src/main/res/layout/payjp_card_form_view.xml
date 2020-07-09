@@ -32,20 +32,24 @@
         tools:targetApi="o">
 
     <include layout="@layout/payjp_card_form_part_number_layout"
+            android:id="@+id/layout_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
     <include layout="@layout/payjp_card_form_part_expiration_layout"
+            android:id="@+id/layout_expiration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/payjp_card_form_margin" />
 
     <include layout="@layout/payjp_card_form_part_cvc_layout"
+            android:id="@+id/layout_cvc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/payjp_card_form_margin" />
 
     <include layout="@layout/payjp_card_form_part_holder_name_layout"
+            android:id="@+id/layout_holder_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/payjp_card_form_margin" />
