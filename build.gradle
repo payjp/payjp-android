@@ -58,7 +58,7 @@ ext {
     sdkVersion = 28
 
     okHttp = "3.12.12"
-    moshi = "1.9.2"
+    moshi = "1.9.3"
     retrofit = "2.6.4"
     lifecycle = "2.2.0"
     mockito = "2.28.2"
