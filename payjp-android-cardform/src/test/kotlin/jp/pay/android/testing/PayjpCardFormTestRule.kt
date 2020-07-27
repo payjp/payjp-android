@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 PAY, Inc.
+ * Copyright (c) 2020 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package jp.pay.android.testing
 
-dependencies {
-    testImplementation 'androidx.test:core-ktx:1.2.0'
-    testImplementation "androidx.test.ext:junit-ktx:1.1.1"
-    testImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
-    testImplementation "org.robolectric:robolectric:4.3.1"
-    testImplementation "org.mockito:mockito-core:$mockito"
+import jp.pay.android.PayjpCardForm
+import jp.pay.android.PayjpLogger
+import jp.pay.android.PayjpTokenBackgroundHandler
+import jp.pay.android.PayjpTokenService
+import jp.pay.android.plugin.CardScannerPlugin
+import org.junit.rules.ExternalResource
+import java.util.concurrent.Executor
+
+/**
+ * Test rule that configure PayjpService
+ */
+class PayjpCardFormTestRule(
+    private val tokenService: PayjpTokenService,
+    private val handler: PayjpTokenBackgroundHandler? = null,
+    private val callbackExecutor: Executor? = null,
+    private val cardScannerPlugin: CardScannerPlugin? = null
+) : ExternalResource() {
+
+    override fun before() {
+        PayjpCardForm.configure(
+            logger = PayjpLogger.get(debugEnabled = true),
+            tokenService = tokenService,
+            handler = handler,
+            callbackExecutor = callbackExecutor,
+            cardScannerPlugin = cardScannerPlugin
+        )
+    }
 }

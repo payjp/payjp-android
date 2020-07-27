@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 PAY, Inc.
+ * Copyright (c) 2020 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package jp.pay.android.testing.assertion
 
-dependencies {
-    testImplementation 'androidx.test:core-ktx:1.2.0'
-    testImplementation "androidx.test.ext:junit-ktx:1.1.1"
-    testImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
-    testImplementation "org.robolectric:robolectric:4.3.1"
-    testImplementation "org.mockito:mockito-core:$mockito"
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.NoMatchingViewException
+import androidx.test.espresso.ViewAssertion
+import androidx.test.espresso.matcher.ViewMatchers
+import org.hamcrest.Matcher
+import org.hamcrest.Matchers
+
+/**
+ * Assert item count of [RecyclerView].
+ *
+ * @param count item count recyclerView should have
+ */
+fun withItemCount(count: Int) =
+    withItemCount(Matchers.`is`(count))
+
+fun withItemCount(intMatcher: Matcher<Int>) =
+    RecyclerViewItemCountAssertion(
+        intMatcher
+    )
+
+class RecyclerViewItemCountAssertion(private val matcher: Matcher<Int>) :
+    ViewAssertion {
+
+    override fun check(view: View, noViewFoundException: NoMatchingViewException?) {
+        noViewFoundException?.let { throw it }
+        val itemCount = (view as? RecyclerView)?.adapter?.itemCount ?: 0
+        ViewMatchers.assertThat(
+            itemCount,
+            matcher
+        )
+    }
 }

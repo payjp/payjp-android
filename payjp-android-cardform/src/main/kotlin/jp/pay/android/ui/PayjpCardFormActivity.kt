@@ -67,6 +67,18 @@ internal class PayjpCardFormActivity :
         private const val EXTRA_KEY_FACE = "EXTRA_KEY_FACE"
         private const val CARD_FORM_EXTRA_KEY_TOKEN = "DATA"
 
+        fun createIntent(
+            context: Context,
+            tenant: TenantId?,
+            @PayjpCardForm.CardFormFace face: Int
+        ): Intent = Intent(context, PayjpCardFormActivity::class.java)
+            .putExtra(EXTRA_KEY_FACE, face)
+            .apply {
+                if (tenant != null) {
+                    putExtra(EXTRA_KEY_TENANT, tenant.id)
+                }
+            }
+
         fun start(
             activity: Activity,
             requestCode: Int?,
@@ -74,14 +86,8 @@ internal class PayjpCardFormActivity :
             @PayjpCardForm.CardFormFace face: Int
         ) {
             activity.startActivityForResult(
-                Intent(activity, PayjpCardFormActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                    .putExtra(EXTRA_KEY_FACE, face)
-                    .apply {
-                        if (tenant != null) {
-                            putExtra(EXTRA_KEY_TENANT, tenant.id)
-                        }
-                    },
+                createIntent(activity, tenant, face)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
             )
         }
@@ -93,14 +99,8 @@ internal class PayjpCardFormActivity :
             @PayjpCardForm.CardFormFace face: Int
         ) {
             fragment.startActivityForResult(
-                Intent(fragment.requireActivity(), PayjpCardFormActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                    .apply {
-                        if (tenant != null) {
-                            putExtra(EXTRA_KEY_TENANT, tenant.id)
-                            putExtra(EXTRA_KEY_FACE, face)
-                        }
-                    },
+                createIntent(fragment.requireActivity(), tenant, face)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
             )
         }
