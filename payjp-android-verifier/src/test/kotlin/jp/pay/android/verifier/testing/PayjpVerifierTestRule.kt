@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 PAY, Inc.
+ * Copyright (c) 2020 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,12 +20,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+package jp.pay.android.verifier.testing
 
-dependencies {
-    testImplementation 'androidx.test:core-ktx:1.2.0'
-    testImplementation "androidx.test.ext:junit-ktx:1.1.1"
-    testImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
-    testImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
-    testImplementation "org.robolectric:robolectric:4.3.1"
-    testImplementation "org.mockito:mockito-core:$mockito"
+import jp.pay.android.PayjpLogger
+import jp.pay.android.PayjpTokenService
+import jp.pay.android.verifier.PayjpVerifier
+import org.junit.rules.ExternalResource
+
+/**
+ * Test rule that configure PayjpService
+ */
+class PayjpVerifierTestRule(
+    private val tokenService: PayjpTokenService,
+    private val threeDSecureRedirectName: String?
+) : ExternalResource() {
+
+    override fun before() {
+        PayjpVerifier.configure(
+            logger = PayjpLogger.get(debugEnabled = true),
+            tokenService = tokenService,
+            threeDSecureRedirectName = threeDSecureRedirectName
+        )
+    }
 }

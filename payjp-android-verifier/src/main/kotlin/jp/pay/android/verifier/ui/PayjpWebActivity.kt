@@ -45,9 +45,9 @@ import jp.pay.android.verifier.databinding.PayjpWebActivityBinding
 class PayjpWebActivity : AppCompatActivity(), LifecycleObserver {
 
     companion object {
-        private const val EXTRA_KEY_START_URI = "EXTRA_KEY_START_URI"
-        private const val EXTRA_KEY_CALLBACK_URI = "EXTRA_KEY_CALLBACK_URI"
-        private const val EXTRA_KEY_TITLE = "EXTRA_KEY_TITLE"
+        internal const val EXTRA_KEY_START_URI = "EXTRA_KEY_START_URI"
+        internal const val EXTRA_KEY_CALLBACK_URI = "EXTRA_KEY_CALLBACK_URI"
+        internal const val EXTRA_KEY_TITLE = "EXTRA_KEY_TITLE"
 
         fun createIntent(context: Context, startUri: Uri, callbackUri: Uri, title: String): Intent {
             return Intent(context, PayjpWebActivity::class.java)
