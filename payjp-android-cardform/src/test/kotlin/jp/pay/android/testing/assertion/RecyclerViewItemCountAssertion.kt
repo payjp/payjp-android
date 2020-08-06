@@ -20,18 +20,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android
+package jp.pay.android.testing.assertion
 
-sealed class CardRobot {
-    abstract val number: String
-    abstract val exp: String
-    abstract val cvc: String
-    abstract val name: String
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.NoMatchingViewException
+import androidx.test.espresso.ViewAssertion
+import androidx.test.espresso.matcher.ViewMatchers
+import org.hamcrest.Matcher
+import org.hamcrest.Matchers
 
-    object SandboxVisa : CardRobot() {
-        override val number: String = "4242424242424242"
-        override val exp: String = "12/30"
-        override val cvc: String = "123"
-        override val name: String = "TARO YAMADA"
+/**
+ * Assert item count of [RecyclerView].
+ *
+ * @param count item count recyclerView should have
+ */
+fun withItemCount(count: Int) =
+    withItemCount(Matchers.`is`(count))
+
+fun withItemCount(intMatcher: Matcher<Int>) =
+    RecyclerViewItemCountAssertion(
+        intMatcher
+    )
+
+class RecyclerViewItemCountAssertion(private val matcher: Matcher<Int>) :
+    ViewAssertion {
+
+    override fun check(view: View, noViewFoundException: NoMatchingViewException?) {
+        noViewFoundException?.let { throw it }
+        val itemCount = (view as? RecyclerView)?.adapter?.itemCount ?: 0
+        ViewMatchers.assertThat(
+            itemCount,
+            matcher
+        )
     }
 }

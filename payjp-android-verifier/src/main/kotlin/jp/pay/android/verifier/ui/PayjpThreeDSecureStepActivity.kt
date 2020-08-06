@@ -26,6 +26,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.verifier.PayjpVerifier
@@ -43,7 +44,7 @@ class PayjpThreeDSecureStepActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val EXTRA_KEY_TDS = "EXTRA_KEY_TDS"
+        internal const val EXTRA_KEY_TDS = "EXTRA_KEY_TDS"
         internal val intentHolder: IntentHolder = IntentHolder()
 
         internal fun createLaunchIntent(context: Context, tdsToken: ThreeDSecureToken): Intent {
@@ -82,12 +83,7 @@ class PayjpThreeDSecureStepActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        PayjpVerifier.logger().d("onNewIntent uri ${intent?.data}")
-        intent?.data?.let { uri ->
-            intentHolder.intent = Intent().setData(uri).putExtra(EXTRA_KEY_TDS, tdsTokenId)
-            setResult(Activity.RESULT_OK)
-            finish()
-        }
+        onNewIntentInternal(intent)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -100,6 +96,16 @@ class PayjpThreeDSecureStepActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         tdsTokenId?.let { id ->
             outState.putString(EXTRA_KEY_TDS, id)
+        }
+    }
+
+    @VisibleForTesting
+    internal fun onNewIntentInternal(intent: Intent?) {
+        PayjpVerifier.logger().d("onNewIntent uri ${intent?.data}")
+        intent?.data?.let { uri ->
+            intentHolder.intent = Intent().setData(uri).putExtra(EXTRA_KEY_TDS, tdsTokenId)
+            setResult(Activity.RESULT_OK)
+            finish()
         }
     }
 }

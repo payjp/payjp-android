@@ -20,18 +20,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android
+package jp.pay.android.verifier.testing
 
-sealed class CardRobot {
-    abstract val number: String
-    abstract val exp: String
-    abstract val cvc: String
-    abstract val name: String
+import jp.pay.android.PayjpLogger
+import jp.pay.android.PayjpTokenService
+import jp.pay.android.verifier.PayjpVerifier
+import org.junit.rules.ExternalResource
 
-    object SandboxVisa : CardRobot() {
-        override val number: String = "4242424242424242"
-        override val exp: String = "12/30"
-        override val cvc: String = "123"
-        override val name: String = "TARO YAMADA"
+/**
+ * Test rule that configure PayjpService
+ */
+class PayjpVerifierTestRule(
+    private val tokenService: PayjpTokenService,
+    private val threeDSecureRedirectName: String?
+) : ExternalResource() {
+
+    override fun before() {
+        PayjpVerifier.configure(
+            logger = PayjpLogger.get(debugEnabled = true),
+            tokenService = tokenService,
+            threeDSecureRedirectName = threeDSecureRedirectName
+        )
     }
 }

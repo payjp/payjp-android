@@ -20,18 +20,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android
+package jp.pay.android.verifier.testing
 
-sealed class CardRobot {
-    abstract val number: String
-    abstract val exp: String
-    abstract val cvc: String
-    abstract val name: String
+import androidx.appcompat.app.AppCompatActivity
 
-    object SandboxVisa : CardRobot() {
-        override val number: String = "4242424242424242"
-        override val exp: String = "12/30"
-        override val cvc: String = "123"
-        override val name: String = "TARO YAMADA"
-    }
-}
+/**
+ * Empty activity for testing
+ */
+class TestEntryActivity : AppCompatActivity()

@@ -20,18 +20,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android
+package jp.pay.android.testing
 
-sealed class CardRobot {
-    abstract val number: String
-    abstract val exp: String
-    abstract val cvc: String
-    abstract val name: String
+import jp.pay.android.PayjpCardForm
+import jp.pay.android.PayjpLogger
+import jp.pay.android.PayjpTokenBackgroundHandler
+import jp.pay.android.PayjpTokenService
+import jp.pay.android.plugin.CardScannerPlugin
+import org.junit.rules.ExternalResource
+import java.util.concurrent.Executor
 
-    object SandboxVisa : CardRobot() {
-        override val number: String = "4242424242424242"
-        override val exp: String = "12/30"
-        override val cvc: String = "123"
-        override val name: String = "TARO YAMADA"
+/**
+ * Test rule that configure PayjpService
+ */
+class PayjpCardFormTestRule(
+    private val tokenService: PayjpTokenService,
+    private val handler: PayjpTokenBackgroundHandler? = null,
+    private val callbackExecutor: Executor? = null,
+    private val cardScannerPlugin: CardScannerPlugin? = null
+) : ExternalResource() {
+
+    override fun before() {
+        PayjpCardForm.configure(
+            logger = PayjpLogger.get(debugEnabled = true),
+            tokenService = tokenService,
+            handler = handler,
+            callbackExecutor = callbackExecutor,
+            cardScannerPlugin = cardScannerPlugin
+        )
     }
 }
