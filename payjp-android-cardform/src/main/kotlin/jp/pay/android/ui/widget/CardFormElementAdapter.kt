@@ -79,7 +79,7 @@ internal class CardFormElementAdapter(
         setHasStableIds(true)
         autofillIds =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && autofillManager != null) {
-                (0 until itemSize).map { autofillManager.nextAutofillId }.toList()
+                (0 until itemSize).map { autofillManager.nextAutofillId as Any }.toList()
             } else emptyList()
     }
 
