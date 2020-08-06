@@ -55,7 +55,7 @@ subprojects {
 ext {
 
     minSdkVersion = 16
-    sdkVersion = 28
+    sdkVersion = 29
 
     okHttp = "3.12.12"
     moshi = "1.9.3"
