@@ -3,7 +3,7 @@ version: 2
 docker_env:
   - &defaults
     docker:
-      - image: circleci/android:api-28-alpha
+      - image: circleci/android:api-29
         environment:
           JAVA_OPTS: '-Xmx2048m -XX:MaxMetaspaceSize=512m'
           GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError" -Dkotlin.incremental=false'
