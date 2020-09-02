@@ -47,6 +47,7 @@ import jp.pay.android.model.Token
 import jp.pay.android.ui.extension.showWith
 import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
+import jp.pay.android.ui.widget.onClickDebounced
 import jp.pay.android.util.nonNull
 import jp.pay.android.verifier.PayjpVerifier
 
@@ -165,10 +166,10 @@ internal class PayjpCardFormActivity :
     }
 
     private fun setUpUI() {
-        binding.cardFormButton.setOnClickListener {
+        binding.cardFormButton.onClickDebounced {
             performSubmitButton(it.windowToken)
         }
-        binding.reloadContentButton.setOnClickListener {
+        binding.reloadContentButton.onClickDebounced {
             viewModel?.onClickReload()
         }
 
