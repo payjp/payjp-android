@@ -24,12 +24,15 @@ package jp.pay.android
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.exception.PayjpApiException
+import jp.pay.android.exception.PayjpCardException
+import jp.pay.android.exception.PayjpRateLimitException
 import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.fixtures.ACCEPTED_BRANDS_EMPTY
 import jp.pay.android.fixtures.ACCEPTED_BRANDS_FULL
 import jp.pay.android.fixtures.ERROR_AUTH
 import jp.pay.android.fixtures.ERROR_CARD_DECLINED
 import jp.pay.android.fixtures.ERROR_INVALID_ID
+import jp.pay.android.fixtures.ERROR_TOO_MANY_REQUESTS
 import jp.pay.android.fixtures.TOKEN_OK
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ClientInfo
@@ -249,7 +252,7 @@ class PayjpTokenTest {
         try {
             task.run()
             fail()
-        } catch (e: PayjpApiException) {
+        } catch (e: PayjpCardException) {
             assertEquals("Card declined", e.message)
             assertEquals(HttpException::class.java, e.cause::class.java)
             assertEquals(402, e.httpStatusCode)
@@ -279,6 +282,35 @@ class PayjpTokenTest {
             task.run()
             fail()
         } catch (e: IOException) {
+        }
+    }
+
+    @Test
+    fun createToken_too_many_requests_error() {
+        mockWebServer.enqueue(MockResponse().setResponseCode(429).setBody(ERROR_TOO_MANY_REQUESTS))
+
+        val task = PayjpToken(
+            configuration = configuration,
+            payjpApi = createApi()
+        )
+            .createToken(
+                number = "4242424242424242",
+                cvc = "123",
+                expMonth = "02",
+                expYear = "2020",
+                name = "TARO YAMADA"
+            )
+
+        try {
+            task.run()
+            fail()
+        } catch (e: PayjpRateLimitException) {
+            assertEquals("Request throttled due to excessive requests.", e.message)
+            assertEquals(HttpException::class.java, e.cause::class.java)
+            assertEquals(429, e.httpStatusCode)
+            assertEquals("client_error", e.apiError.type)
+            assertEquals("too_many_requests", e.apiError.code)
+            assertEquals(ERROR_TOO_MANY_REQUESTS, e.source)
         }
     }
 

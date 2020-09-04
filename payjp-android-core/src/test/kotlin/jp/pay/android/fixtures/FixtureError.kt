@@ -57,3 +57,15 @@ const val ERROR_INVALID_ID =
   }
 }
 """
+
+const val ERROR_TOO_MANY_REQUESTS =
+    """
+{
+  "error": {
+    "code": "too_many_requests",
+    "message": "Request throttled due to excessive requests.",
+    "status": 429,
+    "type": "client_error"
+  }
+}
+"""

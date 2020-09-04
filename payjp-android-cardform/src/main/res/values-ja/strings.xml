@@ -50,6 +50,7 @@
     <string name="payjp_card_form_screen_error_server">サーバーに接続できません。\n時間をあけて再度お試しください。</string>
     <string name="payjp_card_form_screen_error_unknown">問題が発生しました。</string>
     <string name="payjp_card_form_screen_error_network">通信に失敗しました。\nネットワークの接続をご確認ください。</string>
+    <string name="payjp_card_form_screen_error_rate_limit_exceeded">アクセス集中のため一時的に利用できません。\n時間をあけて再度お試しください。</string>
     <string name="payjp_card_form_dialog_ok">OK</string>
     <string name="payjp_card_form_dialog_title_error">エラー</string>
     <string name="payjp_card_form_message_cancel_verification">本人認証をキャンセルしました。</string>
