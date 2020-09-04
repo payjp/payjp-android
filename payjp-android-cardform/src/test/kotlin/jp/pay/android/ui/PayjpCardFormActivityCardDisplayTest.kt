@@ -87,14 +87,14 @@ class PayjpCardFormActivityCardDisplayTest {
     }
 
     @Test
-    fun loadingView_display_until_get_accepted_brands() {
+    fun contentLoadingProgress_display_until_get_accepted_brands() {
         mockRecipes.prepareBrandsNever()
 
         CardFormPage.run {
             launchCardDisplay()
 
             check {
-                loadingView(isDisplayed())
+                contentLoadingProgress(isDisplayed())
                 errorMessage(not(isDisplayed()))
                 submitButton(not(isDisplayed()))
             }
@@ -110,7 +110,7 @@ class PayjpCardFormActivityCardDisplayTest {
 
             check {
                 errorMessage(isDisplayed())
-                loadingView(not(isDisplayed()))
+                contentLoadingProgress(not(isDisplayed()))
                 submitButton(not(isDisplayed()))
                 reloadButton(isDisplayed())
             }
@@ -132,7 +132,7 @@ class PayjpCardFormActivityCardDisplayTest {
             launchCardDisplay()
 
             check {
-                loadingView(not(isDisplayed()))
+                contentLoadingProgress(not(isDisplayed()))
                 acceptedBrands(isDisplayed())
                 cardDisplay(isDisplayed())
                 submitButton(isDisplayed())

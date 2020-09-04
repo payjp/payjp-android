@@ -71,8 +71,8 @@ internal object CardFormPage {
 
     object Assertion {
 
-        fun loadingView(viewMatcher: Matcher<in View>) {
-            onView(withId(R.id.loading_view))
+        fun contentLoadingProgress(viewMatcher: Matcher<in View>) {
+            onView(withId(R.id.content_loading_progress))
                 .check(matches(viewMatcher))
         }
 

@@ -66,7 +66,7 @@ class PayjpTokenTest {
 
     private val mockWebServer = MockWebServer()
 
-    internal inner class CurrentThreadExecutor : Executor {
+    internal class CurrentThreadExecutor : Executor {
         override fun execute(r: Runnable) {
             r.run()
         }

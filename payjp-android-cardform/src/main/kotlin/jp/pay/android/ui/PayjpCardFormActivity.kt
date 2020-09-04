@@ -188,7 +188,7 @@ internal class PayjpCardFormActivity :
                 vm.acceptedBrands.nonNull().observe(this, binding.acceptedBrands::setAcceptedBrands)
                 vm.contentViewVisibility.observe(this, binding.contentView::setVisibility)
                 vm.errorViewVisibility.observe(this, binding.errorView::setVisibility)
-                vm.loadingViewVisibility.observe(this, binding.loadingView::setVisibility)
+                vm.loadingViewVisibility.observe(this, binding.contentLoadingProgress::setVisibility)
                 vm.reloadContentButtonVisibility.observe(this, binding.reloadContentButton::setVisibility)
                 vm.submitButtonVisibility.observe(this, binding.cardFormButton::setVisibility)
                 vm.submitButtonProgressVisibility.observe(this, binding.cardFormButtonProgress::setVisibility)
