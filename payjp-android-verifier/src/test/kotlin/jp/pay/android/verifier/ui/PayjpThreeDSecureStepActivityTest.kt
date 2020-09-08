@@ -36,6 +36,7 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import jp.pay.android.PayjpCreateTokenObserverService
 import jp.pay.android.PayjpTokenParam
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.Task
@@ -87,6 +88,9 @@ class PayjpThreeDSecureStepActivityTest {
 
             override fun getAcceptedBrands(tenantId: TenantId?): Task<CardBrandsAcceptedResponse> =
                 mockTokenService.getAcceptedBrands(tenantId)
+
+            override fun getCreateTokenObserver(): PayjpCreateTokenObserverService =
+                mockTokenService.getCreateTokenObserver()
         },
         threeDSecureRedirectName = TEST_TDS_REDIRECT_NAME
     )
