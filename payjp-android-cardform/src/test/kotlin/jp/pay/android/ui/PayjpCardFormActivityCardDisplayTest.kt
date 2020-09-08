@@ -30,6 +30,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.CardRobot
 import jp.pay.android.PayjpCreateTokenObserverService
+import jp.pay.android.PayjpCreateTokenStatus
 import jp.pay.android.PayjpTokenParam
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.Task
@@ -39,6 +40,7 @@ import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
+import jp.pay.android.testing.FakeCreateTokenObserver
 import jp.pay.android.testing.PayjpCardFormTestRule
 import jp.pay.android.testing.assertion.withItemCount
 import jp.pay.android.testing.mock.PayjpMockTokenServiceRecipes
@@ -80,7 +82,7 @@ class PayjpCardFormActivityCardDisplayTest {
                 mockTokenService.getAcceptedBrands(tenantId)
 
             override fun getCreateTokenObserver(): PayjpCreateTokenObserverService =
-                mockTokenService.getCreateTokenObserver()
+                FakeCreateTokenObserver
         }
     )
 
@@ -88,6 +90,7 @@ class PayjpCardFormActivityCardDisplayTest {
     fun setUp() {
         MockitoAnnotations.initMocks(this)
         mockRecipes = PayjpMockTokenServiceRecipes(mockTokenService)
+        FakeCreateTokenObserver.reset()
     }
 
     @Test
@@ -210,6 +213,34 @@ class PayjpCardFormActivityCardDisplayTest {
             check {
                 submitButtonProgressBar(isDisplayed())
                 submitButton(not(isDisplayed()))
+            }
+        }
+    }
+
+    @Test
+    fun button_progress_is_displayed_until_create_token_acceptable() {
+        mockRecipes.prepareBrandsVM().prepareTokenError()
+
+        CardFormPage.run {
+            launchMultiLine()
+
+            perform {
+                inputCard(CardRobot.SandboxVisa)
+                clickSubmitButton()
+            }
+
+            FakeCreateTokenObserver.status = PayjpCreateTokenStatus.THROTTLED
+
+            check {
+                submitButtonProgressBar(isDisplayed())
+                submitButton(not(isDisplayed()))
+            }
+
+            FakeCreateTokenObserver.status = PayjpCreateTokenStatus.ACCEPTABLE
+
+            check {
+                submitButtonProgressBar(not(isDisplayed()))
+                submitButton(isDisplayed())
             }
         }
     }
