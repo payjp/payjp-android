@@ -46,7 +46,7 @@ subprojects {
     spotless {
         kotlin {
             target "**/*.kt"
-            ktlint("0.37.2")
+            ktlint("0.38.1")
             licenseHeaderFile project.rootProject.file('spotless/Copyright.kt')
         }
     }
