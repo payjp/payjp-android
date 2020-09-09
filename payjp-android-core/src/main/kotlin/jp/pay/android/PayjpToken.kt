@@ -122,7 +122,7 @@ class PayjpToken internal constructor(
             PayjpLogger.get(configuration.debugEnabled)
                 .w(
                     "The PayjpTokenOperationStatus is now `$it`, " +
-                        "We recommend waiting for the request until the status is `Acceptable`."
+                        "We recommend waiting for the request until the status is `ACCEPTABLE`."
                 )
         }
     }

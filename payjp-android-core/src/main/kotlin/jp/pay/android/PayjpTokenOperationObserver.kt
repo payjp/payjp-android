@@ -30,7 +30,9 @@ internal object PayjpTokenOperationObserver : PayjpTokenOperationObserverInterna
 
     private const val MS_THROTTLE_DURATION = 2000L
     private val handler = Handler(Looper.getMainLooper())
-    private val delayedReset = Runnable(this::reset)
+    private val makeAcceptable = Runnable { status = PayjpTokenOperationStatus.ACCEPTABLE }
+    private val makeRunning = Runnable { status = PayjpTokenOperationStatus.RUNNING }
+    private val makeThrottled = Runnable { status = PayjpTokenOperationStatus.THROTTLED }
     @Volatile override var status: PayjpTokenOperationStatus = PayjpTokenOperationStatus.ACCEPTABLE
         private set(value) {
             val onChange = field != value
@@ -44,20 +46,17 @@ internal object PayjpTokenOperationObserver : PayjpTokenOperationObserverInterna
     private val listeners = mutableListOf<TokenRequestStatusListener>()
 
     override fun startRequest() {
-        handler.removeCallbacks(delayedReset)
-        status = PayjpTokenOperationStatus.RUNNING
+        handler.removeCallbacks(makeAcceptable)
+        handler.removeCallbacks(makeThrottled)
+        handler.post(makeRunning)
     }
 
     override fun completeRequest() {
-        status = PayjpTokenOperationStatus.THROTTLED
-        handler.postDelayed(delayedReset, MS_THROTTLE_DURATION)
+        handler.post(makeThrottled)
+        handler.postDelayed(makeAcceptable, MS_THROTTLE_DURATION)
     }
 
     override fun addListener(listener: TokenRequestStatusListener) {
         listeners.add(listener)
-    }
-
-    private fun reset() {
-        status = PayjpTokenOperationStatus.ACCEPTABLE
     }
 }
