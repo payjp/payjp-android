@@ -27,7 +27,7 @@ import android.os.Looper
 
 internal object PayjpCreateTokenObserver : PayjpCreateTokenObserverService {
 
-    private const val MS_THROTTLE_DURATION = 10000L // FIXME: change to real duration
+    private const val MS_THROTTLE_DURATION = 2000L
     private val handler = Handler(Looper.getMainLooper())
     private val delayedReset = Runnable(this::reset)
     @Volatile override var status: PayjpCreateTokenStatus = PayjpCreateTokenStatus.ACCEPTABLE
