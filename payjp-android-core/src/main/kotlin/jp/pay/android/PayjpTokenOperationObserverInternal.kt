@@ -22,18 +22,9 @@
  */
 package jp.pay.android
 
-interface PayjpCreateTokenObserverService {
-
-    val status: PayjpCreateTokenStatus
+internal interface PayjpTokenOperationObserverInternal : PayjpTokenOperationObserverService {
 
     fun startRequest()
 
     fun completeRequest()
-
-    fun addListener(listener: TokenRequestStatusListener)
-
-    fun interface TokenRequestStatusListener {
-
-        fun onChangedStatus(status: PayjpCreateTokenStatus)
-    }
 }

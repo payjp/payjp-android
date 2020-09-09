@@ -23,8 +23,33 @@
 package jp.pay.android
 
 /**
- * The status of token request
+ * Observe token operations and notify the status to [TokenRequestStatusListener].
+ *
  */
-enum class PayjpCreateTokenStatus {
-    ACCEPTABLE, RUNNING, THROTTLED
+interface PayjpTokenOperationObserverService {
+
+    /**
+     * current status
+     */
+    val status: PayjpTokenOperationStatus
+
+    /**
+     * Add listener to observe [PayjpTokenOperationStatus].
+     *
+     * @param listener
+     */
+    fun addListener(listener: TokenRequestStatusListener)
+
+    /**
+     * Listener that observe [PayjpTokenOperationStatus] for changes.
+     */
+    fun interface TokenRequestStatusListener {
+
+        /**
+         * Invoked when the status is changed.
+         *
+         * @param status new status
+         */
+        fun onChangedStatus(status: PayjpTokenOperationStatus)
+    }
 }

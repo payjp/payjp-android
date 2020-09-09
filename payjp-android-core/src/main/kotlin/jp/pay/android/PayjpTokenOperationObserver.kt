@@ -24,13 +24,14 @@ package jp.pay.android
 
 import android.os.Handler
 import android.os.Looper
+import jp.pay.android.PayjpTokenOperationObserverService.TokenRequestStatusListener
 
-internal object PayjpCreateTokenObserver : PayjpCreateTokenObserverService {
+internal object PayjpTokenOperationObserver : PayjpTokenOperationObserverInternal {
 
     private const val MS_THROTTLE_DURATION = 2000L
     private val handler = Handler(Looper.getMainLooper())
     private val delayedReset = Runnable(this::reset)
-    @Volatile override var status: PayjpCreateTokenStatus = PayjpCreateTokenStatus.ACCEPTABLE
+    @Volatile override var status: PayjpTokenOperationStatus = PayjpTokenOperationStatus.ACCEPTABLE
         private set(value) {
             val onChange = field != value
             field = value
@@ -40,23 +41,23 @@ internal object PayjpCreateTokenObserver : PayjpCreateTokenObserverService {
                 }
             }
         }
-    private val listeners = mutableListOf<PayjpCreateTokenObserverService.TokenRequestStatusListener>()
+    private val listeners = mutableListOf<TokenRequestStatusListener>()
 
     override fun startRequest() {
         handler.removeCallbacks(delayedReset)
-        status = PayjpCreateTokenStatus.RUNNING
+        status = PayjpTokenOperationStatus.RUNNING
     }
 
     override fun completeRequest() {
-        status = PayjpCreateTokenStatus.THROTTLED
+        status = PayjpTokenOperationStatus.THROTTLED
         handler.postDelayed(delayedReset, MS_THROTTLE_DURATION)
     }
 
-    override fun addListener(listener: PayjpCreateTokenObserverService.TokenRequestStatusListener) {
+    override fun addListener(listener: TokenRequestStatusListener) {
         listeners.add(listener)
     }
 
     private fun reset() {
-        status = PayjpCreateTokenStatus.ACCEPTABLE
+        status = PayjpTokenOperationStatus.ACCEPTABLE
     }
 }

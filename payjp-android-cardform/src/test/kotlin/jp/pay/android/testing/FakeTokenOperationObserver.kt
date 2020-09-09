@@ -22,29 +22,25 @@
  */
 package jp.pay.android.testing
 
-import jp.pay.android.PayjpCreateTokenObserverService
-import jp.pay.android.PayjpCreateTokenStatus
+import jp.pay.android.PayjpTokenOperationObserverService
+import jp.pay.android.PayjpTokenOperationStatus
 
-object FakeCreateTokenObserver : PayjpCreateTokenObserverService {
+object FakeTokenOperationObserver : PayjpTokenOperationObserverService {
 
-    private val listeners = mutableListOf<PayjpCreateTokenObserverService.TokenRequestStatusListener>()
+    private val listeners = mutableListOf<PayjpTokenOperationObserverService.TokenRequestStatusListener>()
 
-    override var status: PayjpCreateTokenStatus = PayjpCreateTokenStatus.ACCEPTABLE
+    override var status: PayjpTokenOperationStatus = PayjpTokenOperationStatus.ACCEPTABLE
         set(value) {
             field = value
             listeners.forEach { it.onChangedStatus(status) }
         }
 
-    override fun startRequest() { }
-
-    override fun completeRequest() { }
-
-    override fun addListener(listener: PayjpCreateTokenObserverService.TokenRequestStatusListener) {
+    override fun addListener(listener: PayjpTokenOperationObserverService.TokenRequestStatusListener) {
         listeners.add(listener)
     }
 
     fun reset() {
         listeners.clear()
-        status = PayjpCreateTokenStatus.ACCEPTABLE
+        status = PayjpTokenOperationStatus.ACCEPTABLE
     }
 }

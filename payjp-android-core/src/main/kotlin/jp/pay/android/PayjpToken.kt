@@ -41,7 +41,7 @@ import java.nio.charset.Charset
 class PayjpToken internal constructor(
     private val configuration: PayjpTokenConfiguration,
     private val payjpApi: PayjpApi,
-    private val createTokenObserver: PayjpCreateTokenObserverService = PayjpCreateTokenObserver
+    private val tokenOperationObserver: PayjpTokenOperationObserverInternal = PayjpTokenOperationObserver
 ) : PayjpTokenService {
 
     /**
@@ -72,7 +72,7 @@ class PayjpToken internal constructor(
     override fun getPublicKey(): String = configuration.publicKey
 
     override fun createToken(param: PayjpTokenParam): Task<Token> {
-        checkCreateTokenStatus()
+        checkTokenOperationStatus()
         return payjpApi.createToken(
             authorization = authorization,
             number = param.number,
@@ -85,7 +85,7 @@ class PayjpToken internal constructor(
     }
 
     override fun createToken(threeDSecureToken: ThreeDSecureToken): Task<Token> {
-        checkCreateTokenStatus()
+        checkTokenOperationStatus()
         return payjpApi.createToken(
             authorization = authorization,
             tdsId = threeDSecureToken.id
@@ -110,18 +110,18 @@ class PayjpToken internal constructor(
         return payjpApi.getAcceptedBrands(authorization, tenantId?.id)
     }
 
-    override fun getCreateTokenObserver(): PayjpCreateTokenObserverService = createTokenObserver
+    override fun getTokenOperationObserver(): PayjpTokenOperationObserverService = tokenOperationObserver
 
     private fun createAuthorization(publicKey: String) =
         "$publicKey:".toByteArray(Charset.forName("UTF-8"))
             .let { data -> Base64.encodeToString(data, Base64.NO_WRAP) }
             .let { credential -> "Basic $credential" }
 
-    private fun checkCreateTokenStatus() {
-        createTokenObserver.status.takeIf { it != PayjpCreateTokenStatus.ACCEPTABLE }?.let {
+    private fun checkTokenOperationStatus() {
+        tokenOperationObserver.status.takeIf { it != PayjpTokenOperationStatus.ACCEPTABLE }?.let {
             PayjpLogger.get(configuration.debugEnabled)
                 .w(
-                    "The PayjpCreateTokenStatus is now `$it`, " +
+                    "The PayjpTokenOperationStatus is now `$it`, " +
                         "We recommend waiting for the request until the status is `Acceptable`."
                 )
         }
@@ -129,23 +129,23 @@ class PayjpToken internal constructor(
 
     private fun <T> wrapWithObserver(task: Task<T>): Task<T> = object : Task<T> {
         override fun run(): T = try {
-            createTokenObserver.startRequest()
+            tokenOperationObserver.startRequest()
             task.run()
         } finally {
-            createTokenObserver.completeRequest()
+            tokenOperationObserver.completeRequest()
         }
 
         override fun enqueue(callback: Task.Callback<T>) {
-            createTokenObserver.startRequest()
+            tokenOperationObserver.startRequest()
             task.enqueue(
                 object : Task.Callback<T> {
                     override fun onSuccess(data: T) {
-                        createTokenObserver.completeRequest()
+                        tokenOperationObserver.completeRequest()
                         callback.onSuccess(data)
                     }
 
                     override fun onError(throwable: Throwable) {
-                        createTokenObserver.completeRequest()
+                        tokenOperationObserver.completeRequest()
                         callback.onError(throwable)
                     }
                 }

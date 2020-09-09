@@ -95,9 +95,9 @@ interface PayjpTokenService {
     fun getAcceptedBrands(tenantId: TenantId?): Task<CardBrandsAcceptedResponse>
 
     /**
-     * You can observe [PayjpCreateTokenStatus] changes to know if you should make a request.
+     * You can observe [PayjpTokenOperationStatus] changes to know if you should make a request.
      *
      * @return observer
      */
-    fun getCreateTokenObserver(): PayjpCreateTokenObserverService
+    fun getTokenOperationObserver(): PayjpTokenOperationObserverService
 }

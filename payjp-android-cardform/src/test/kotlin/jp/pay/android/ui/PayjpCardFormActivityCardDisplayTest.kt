@@ -29,8 +29,8 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.CardRobot
-import jp.pay.android.PayjpCreateTokenObserverService
-import jp.pay.android.PayjpCreateTokenStatus
+import jp.pay.android.PayjpTokenOperationObserverService
+import jp.pay.android.PayjpTokenOperationStatus
 import jp.pay.android.PayjpTokenParam
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.Task
@@ -40,7 +40,7 @@ import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
-import jp.pay.android.testing.FakeCreateTokenObserver
+import jp.pay.android.testing.FakeTokenOperationObserver
 import jp.pay.android.testing.PayjpCardFormTestRule
 import jp.pay.android.testing.assertion.withItemCount
 import jp.pay.android.testing.mock.PayjpMockTokenServiceRecipes
@@ -81,8 +81,8 @@ class PayjpCardFormActivityCardDisplayTest {
             override fun getAcceptedBrands(tenantId: TenantId?): Task<CardBrandsAcceptedResponse> =
                 mockTokenService.getAcceptedBrands(tenantId)
 
-            override fun getCreateTokenObserver(): PayjpCreateTokenObserverService =
-                FakeCreateTokenObserver
+            override fun getTokenOperationObserver(): PayjpTokenOperationObserverService =
+                FakeTokenOperationObserver
         }
     )
 
@@ -90,7 +90,7 @@ class PayjpCardFormActivityCardDisplayTest {
     fun setUp() {
         MockitoAnnotations.initMocks(this)
         mockRecipes = PayjpMockTokenServiceRecipes(mockTokenService)
-        FakeCreateTokenObserver.reset()
+        FakeTokenOperationObserver.reset()
     }
 
     @Test
@@ -229,14 +229,14 @@ class PayjpCardFormActivityCardDisplayTest {
                 clickSubmitButton()
             }
 
-            FakeCreateTokenObserver.status = PayjpCreateTokenStatus.THROTTLED
+            FakeTokenOperationObserver.status = PayjpTokenOperationStatus.THROTTLED
 
             check {
                 submitButtonProgressBar(isDisplayed())
                 submitButton(not(isDisplayed()))
             }
 
-            FakeCreateTokenObserver.status = PayjpCreateTokenStatus.ACCEPTABLE
+            FakeTokenOperationObserver.status = PayjpTokenOperationStatus.ACCEPTABLE
 
             check {
                 submitButtonProgressBar(not(isDisplayed()))

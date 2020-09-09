@@ -34,8 +34,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
 import androidx.savedstate.SavedStateRegistryOwner
-import jp.pay.android.PayjpCreateTokenStatus
 import jp.pay.android.PayjpTokenBackgroundHandler
+import jp.pay.android.PayjpTokenOperationStatus
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.R
 import jp.pay.android.Task
@@ -60,7 +60,7 @@ internal class CardFormScreenViewModel(
     private val tokenHandlerExecutor: TokenHandlerExecutor?
 ) : ViewModel(), CardFormScreenContract.Input, CardFormScreenContract.Output, LifecycleObserver {
     private var tokenizeProcessing: MutableLiveData<Boolean> by handle.delegateLiveData(initialValue = false)
-    private var tokenizeStatus: MutableLiveData<PayjpCreateTokenStatus> = MutableLiveData()
+    private var tokenizeStatus: MutableLiveData<PayjpTokenOperationStatus> = MutableLiveData()
     override val contentViewVisibility: MutableLiveData<Int> by handle.delegateLiveData(initialValue = View.GONE)
     override val errorViewVisibility: MutableLiveData<Int> by handle.delegateLiveData(initialValue = View.GONE)
     override val loadingViewVisibility: MutableLiveData<Int> by handle.delegateLiveData(initialValue = View.VISIBLE)
@@ -84,7 +84,7 @@ internal class CardFormScreenViewModel(
     override val submitButtonVisibility: LiveData<Int> =
         combineLatest(tokenizeProcessing, tokenizeStatus, hasSucceedOnce) { processing, status, succeed ->
             when {
-                succeed || processing || status != PayjpCreateTokenStatus.ACCEPTABLE -> View.INVISIBLE
+                succeed || processing || status != PayjpTokenOperationStatus.ACCEPTABLE -> View.INVISIBLE
                 else -> View.VISIBLE
             }
         }.distinctUntilChanged()
@@ -92,16 +92,16 @@ internal class CardFormScreenViewModel(
         combineLatest(tokenizeProcessing, tokenizeStatus, hasSucceedOnce) { processing, status, succeed ->
             when {
                 succeed -> View.GONE
-                processing || status != PayjpCreateTokenStatus.ACCEPTABLE -> View.VISIBLE
+                processing || status != PayjpTokenOperationStatus.ACCEPTABLE -> View.VISIBLE
                 else -> View.GONE
             }
         }.distinctUntilChanged()
 
     init {
-        tokenService.getCreateTokenObserver().addListener {
+        tokenService.getTokenOperationObserver().addListener {
             tokenizeStatus.value = it
         }
-        tokenizeStatus.value = tokenService.getCreateTokenObserver().status
+        tokenizeStatus.value = tokenService.getTokenOperationObserver().status
     }
 
     override fun onCleared() {
