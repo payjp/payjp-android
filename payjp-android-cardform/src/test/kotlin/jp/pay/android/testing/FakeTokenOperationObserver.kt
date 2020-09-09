@@ -39,6 +39,14 @@ object FakeTokenOperationObserver : PayjpTokenOperationObserverService {
         listeners.add(listener)
     }
 
+    override fun removeListener(listener: PayjpTokenOperationObserverService.TokenRequestStatusListener) {
+        listeners.remove(listener)
+    }
+
+    override fun removeAllListeners() {
+        listeners.clear()
+    }
+
     fun reset() {
         listeners.clear()
         status = PayjpTokenOperationStatus.ACCEPTABLE

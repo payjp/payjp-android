@@ -41,6 +41,18 @@ interface PayjpTokenOperationObserverService {
     fun addListener(listener: TokenRequestStatusListener)
 
     /**
+     * Remove a listener
+     *
+     * @param listener
+     */
+    fun removeListener(listener: TokenRequestStatusListener)
+
+    /**
+     * Remove all listeners.
+     */
+    fun removeAllListeners()
+
+    /**
      * Listener that observe [PayjpTokenOperationStatus] for changes.
      */
     fun interface TokenRequestStatusListener {

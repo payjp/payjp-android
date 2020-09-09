@@ -59,4 +59,12 @@ internal object PayjpTokenOperationObserver : PayjpTokenOperationObserverInterna
     override fun addListener(listener: TokenRequestStatusListener) {
         listeners.add(listener)
     }
+
+    override fun removeListener(listener: TokenRequestStatusListener) {
+        listeners.remove(listener)
+    }
+
+    override fun removeAllListeners() {
+        listeners.clear()
+    }
 }

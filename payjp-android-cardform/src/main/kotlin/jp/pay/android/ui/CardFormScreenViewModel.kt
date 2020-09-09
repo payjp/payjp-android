@@ -97,10 +97,10 @@ internal class CardFormScreenViewModel(
             }
         }.distinctUntilChanged()
 
+    private val updateStatus = { status: PayjpTokenOperationStatus -> tokenizeStatus.value = status }
+
     init {
-        tokenService.getTokenOperationObserver().addListener {
-            tokenizeStatus.value = it
-        }
+        tokenService.getTokenOperationObserver().addListener(updateStatus)
         tokenizeStatus.value = tokenService.getTokenOperationObserver().status
     }
 
@@ -112,6 +112,7 @@ internal class CardFormScreenViewModel(
         fetchTokenTask?.cancel()
         fetchTokenTask = null
         tokenHandlerExecutor?.cancel()
+        tokenService.getTokenOperationObserver().removeListener(updateStatus)
     }
 
     override fun onValidateInput(isValid: Boolean) {
