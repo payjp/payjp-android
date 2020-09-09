@@ -58,20 +58,36 @@ internal class CardExpirationInputTest(
                 arrayOf("", null, false, null, null, FormInputError(R.string.payjp_card_form_error_no_expiration, true)),
                 arrayOf("12/20", null, false, null, null, FormInputError(R.string.payjp_card_form_error_invalid_expiration, true)),
                 arrayOf(
-                    "12/20", "12" to "20", false, null,
-                    null, FormInputError(R.string.payjp_card_form_error_invalid_expiration, false)
+                    "12/20",
+                    "12" to "20",
+                    false,
+                    null,
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_expiration, false)
                 ),
                 arrayOf(
-                    "12/20", "12" to null, true, null,
-                    null, FormInputError(R.string.payjp_card_form_error_invalid_expiration, true)
+                    "12/20",
+                    "12" to null,
+                    true,
+                    null,
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_expiration, true)
                 ),
                 arrayOf(
-                    "12/20", "12" to "20", true, null,
-                    null, FormInputError(R.string.payjp_card_form_error_invalid_expiration, false)
+                    "12/20",
+                    "12" to "20",
+                    true,
+                    null,
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_expiration, false)
                 ),
                 arrayOf(
-                    "12/20", "12" to "20", true, CardExpiration("12", "2020"),
-                    CardExpiration("12", "2020"), null
+                    "12/20",
+                    "12" to "20",
+                    true,
+                    CardExpiration("12", "2020"),
+                    CardExpiration("12", "2020"),
+                    null
                 )
             )
         }

@@ -137,31 +137,33 @@ class CardFormViewSampleActivity :
         binding.textTokenContent.visibility = View.INVISIBLE
         // create token
         createToken = cardFormFragment.createToken()
-        createToken?.enqueue(object : Task.Callback<Token> {
-            override fun onSuccess(data: Token) {
-                Log.i("CardFormViewSample", "token => $data")
-                binding.textTokenId.setText(data.id)
-                binding.textTokenContent.text = "The token has created."
-                binding.progressBar.visibility = View.GONE
-                binding.layoutButtons.visibility = View.VISIBLE
-                binding.textTokenContent.visibility = View.VISIBLE
-            }
-
-            override fun onError(throwable: Throwable) {
-                Log.e("CardFormViewSample", "failure creating token", throwable)
-                if (throwable is PayjpThreeDSecureRequiredException) {
-                    // if support 3DSecure
-                    // NOTE: 3DSecure is a limited feature for now.
-                    Payjp.verifier()
-                        .startThreeDSecureFlow(throwable.token, this@CardFormViewSampleActivity)
-                } else {
-                    binding.textTokenContent.text = throwable.toString()
+        createToken?.enqueue(
+            object : Task.Callback<Token> {
+                override fun onSuccess(data: Token) {
+                    Log.i("CardFormViewSample", "token => $data")
+                    binding.textTokenId.setText(data.id)
+                    binding.textTokenContent.text = "The token has created."
                     binding.progressBar.visibility = View.GONE
                     binding.layoutButtons.visibility = View.VISIBLE
                     binding.textTokenContent.visibility = View.VISIBLE
                 }
+
+                override fun onError(throwable: Throwable) {
+                    Log.e("CardFormViewSample", "failure creating token", throwable)
+                    if (throwable is PayjpThreeDSecureRequiredException) {
+                        // if support 3DSecure
+                        // NOTE: 3DSecure is a limited feature for now.
+                        Payjp.verifier()
+                            .startThreeDSecureFlow(throwable.token, this@CardFormViewSampleActivity)
+                    } else {
+                        binding.textTokenContent.text = throwable.toString()
+                        binding.progressBar.visibility = View.GONE
+                        binding.layoutButtons.visibility = View.VISIBLE
+                        binding.textTokenContent.visibility = View.VISIBLE
+                    }
+                }
             }
-        })
+        )
     }
 
     private fun getToken(id: String) {
@@ -170,23 +172,25 @@ class CardFormViewSampleActivity :
         binding.textTokenContent.visibility = View.INVISIBLE
         // get token
         getToken = Payjp.token().getToken(id)
-        getToken?.enqueue(object : Task.Callback<Token> {
-            override fun onSuccess(data: Token) {
-                Log.i("CardFormViewSample", "token => $data")
-                binding.textTokenContent.text = data.toString()
-                binding.progressBar.visibility = View.GONE
-                binding.layoutButtons.visibility = View.VISIBLE
-                binding.textTokenContent.visibility = View.VISIBLE
-            }
+        getToken?.enqueue(
+            object : Task.Callback<Token> {
+                override fun onSuccess(data: Token) {
+                    Log.i("CardFormViewSample", "token => $data")
+                    binding.textTokenContent.text = data.toString()
+                    binding.progressBar.visibility = View.GONE
+                    binding.layoutButtons.visibility = View.VISIBLE
+                    binding.textTokenContent.visibility = View.VISIBLE
+                }
 
-            override fun onError(throwable: Throwable) {
-                Log.e("CardFormViewSample", "failure creating token", throwable)
-                binding.textTokenContent.text = throwable.toString()
-                binding.progressBar.visibility = View.GONE
-                binding.layoutButtons.visibility = View.VISIBLE
-                binding.textTokenContent.visibility = View.VISIBLE
+                override fun onError(throwable: Throwable) {
+                    Log.e("CardFormViewSample", "failure creating token", throwable)
+                    binding.textTokenContent.text = throwable.toString()
+                    binding.progressBar.visibility = View.GONE
+                    binding.layoutButtons.visibility = View.VISIBLE
+                    binding.textTokenContent.visibility = View.VISIBLE
+                }
             }
-        })
+        )
     }
 
     private fun findCardFormFragment() {
@@ -246,24 +250,26 @@ class CardFormViewSampleActivity :
         binding.textTokenContent.visibility = View.INVISIBLE
         // create token by 3DS
         createToken = Payjp.token().createToken(tdsToken)
-        createToken?.enqueue(object : Task.Callback<Token> {
-            override fun onSuccess(data: Token) {
-                Log.i("CardFormViewSample", "token => $data")
-                binding.textTokenId.setText(data.id)
-                binding.textTokenContent.text = "The token has created."
-                binding.progressBar.visibility = View.GONE
-                binding.layoutButtons.visibility = View.VISIBLE
-                binding.textTokenContent.visibility = View.VISIBLE
-            }
+        createToken?.enqueue(
+            object : Task.Callback<Token> {
+                override fun onSuccess(data: Token) {
+                    Log.i("CardFormViewSample", "token => $data")
+                    binding.textTokenId.setText(data.id)
+                    binding.textTokenContent.text = "The token has created."
+                    binding.progressBar.visibility = View.GONE
+                    binding.layoutButtons.visibility = View.VISIBLE
+                    binding.textTokenContent.visibility = View.VISIBLE
+                }
 
-            override fun onError(throwable: Throwable) {
-                Log.e("CardFormViewSample", "failure creating token", throwable)
-                binding.textTokenContent.text = throwable.toString()
-                binding.progressBar.visibility = View.GONE
-                binding.layoutButtons.visibility = View.VISIBLE
-                binding.textTokenContent.visibility = View.VISIBLE
+                override fun onError(throwable: Throwable) {
+                    Log.e("CardFormViewSample", "failure creating token", throwable)
+                    binding.textTokenContent.text = throwable.toString()
+                    binding.progressBar.visibility = View.GONE
+                    binding.layoutButtons.visibility = View.VISIBLE
+                    binding.textTokenContent.visibility = View.VISIBLE
+                }
             }
-        })
+        )
     }
 }
 

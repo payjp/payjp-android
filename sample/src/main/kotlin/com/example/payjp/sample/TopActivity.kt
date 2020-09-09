@@ -46,11 +46,13 @@ class TopActivity : AppCompatActivity() {
         listOf(
             Sample(
                 "CardFormActivity (Card Display)",
-                null, this::startCardFormCardFace
+                null,
+                this::startCardFormCardFace
             ),
             Sample(
                 "CardFormActivity (Multi Line)",
-                null, this::startCardForm
+                null,
+                this::startCardForm
             ),
             Sample(
                 "CardFormView",

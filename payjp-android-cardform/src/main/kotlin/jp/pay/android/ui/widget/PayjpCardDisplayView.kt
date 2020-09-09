@@ -165,10 +165,9 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
     private fun toggleCardNumber(hasFocus: Boolean) {
         currentNum?.let { pan ->
             // only if number has valid length.
-            if (cardNumberValidator.isCardNumberLengthValid(
-                pan.filter(Character::isDigit).toString(), brand
-            ) == CardNumberValidatorService.CardNumberLengthStatus.MATCH
-            ) {
+            val digits = pan.filter(Character::isDigit).toString()
+            val status = cardNumberValidator.isCardNumberLengthValid(digits, brand)
+            if (status == CardNumberValidatorService.CardNumberLengthStatus.MATCH) {
                 if (hasFocus) {
                     this.binding.displayPan.text = pan
                 } else {
