@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 PAY, Inc.
+ * Copyright (c) 2020 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,21 +20,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-package jp.pay.android.verifier.ui;
-
-import androidx.annotation.NonNull;
+package jp.pay.android.ui
 
 /**
- * Callback interface of {@link jp.pay.android.verifier.ui.PayjpThreeDSecureResult}
+ * Callback interface of [PayjpCardFormResult]
  *
  */
-public interface PayjpThreeDSecureResultCallback {
-
+fun interface PayjpCardFormResultCallback {
     /**
-     * Callback result {@link jp.pay.android.verifier.ui.PayjpThreeDSecureResult}
+     * Callback result [PayjpCardFormResult]
      *
      * @param result result
      */
-    void onResult(@NonNull PayjpThreeDSecureResult result);
+    fun onResult(result: PayjpCardFormResult)
 }

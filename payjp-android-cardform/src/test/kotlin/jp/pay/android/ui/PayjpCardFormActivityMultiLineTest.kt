@@ -224,13 +224,10 @@ class PayjpCardFormActivityMultiLineTest {
 
             scenario.result.run {
                 assertThat(resultCode, `is`(Activity.RESULT_OK))
-                PayjpCardFormActivity.onActivityResult(
-                    resultData,
-                    PayjpCardFormResultCallback {
-                        assertThat(it.isSuccess(), `is`(true))
-                        assertThat(it.retrieveToken(), `is`(token))
-                    }
-                )
+                PayjpCardFormActivity.onActivityResult(resultData) {
+                    assertThat(it.isSuccess(), `is`(true))
+                    assertThat(it.retrieveToken(), `is`(token))
+                }
             }
         }
     }

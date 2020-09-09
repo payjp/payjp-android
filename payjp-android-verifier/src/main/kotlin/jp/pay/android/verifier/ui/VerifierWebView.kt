@@ -93,11 +93,7 @@ internal class VerifierWebView @JvmOverloads constructor(
     }
 
     fun addInterceptor(interceptor: (uri: Uri) -> Boolean) {
-        interceptors.add(
-            object : Interceptor {
-                override fun intercept(uri: Uri): Boolean = interceptor.invoke(uri)
-            }
-        )
+        interceptors.add(Interceptor { uri -> interceptor.invoke(uri) })
     }
 
     fun addLoadStateWatcher(loadStateWatcher: LoadStateWatcher) {
@@ -305,7 +301,7 @@ internal class VerifierWebView @JvmOverloads constructor(
         STOPPED, LOADING, ERROR
     }
 
-    internal interface Interceptor {
+    internal fun interface Interceptor {
         fun intercept(uri: Uri): Boolean
     }
 

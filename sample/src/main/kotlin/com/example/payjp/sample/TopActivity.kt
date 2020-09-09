@@ -36,7 +36,6 @@ import com.example.payjp.sample.databinding.ActivityTopBinding
 import com.example.payjp.sample.databinding.CardSampleBinding
 import jp.pay.android.Payjp
 import jp.pay.android.PayjpCardForm
-import jp.pay.android.ui.PayjpCardFormResultCallback
 
 typealias OnClickSample = (sample: TopActivity.Sample) -> Unit
 
@@ -92,16 +91,13 @@ class TopActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Payjp.cardForm().handleResult(
-            data,
-            PayjpCardFormResultCallback { result ->
-                if (result.isSuccess()) {
-                    val token = result.retrieveToken()
-                    Log.i("handleCardFormResult", "token => $token")
-                    Toast.makeText(this, "Token: $token", Toast.LENGTH_SHORT).show()
-                }
+        Payjp.cardForm().handleResult(data) { result ->
+            if (result.isSuccess()) {
+                val token = result.retrieveToken()
+                Log.i("handleCardFormResult", "token => $token")
+                Toast.makeText(this, "Token: $token", Toast.LENGTH_SHORT).show()
             }
-        )
+        }
         super.onActivityResult(requestCode, resultCode, data)
     }
 

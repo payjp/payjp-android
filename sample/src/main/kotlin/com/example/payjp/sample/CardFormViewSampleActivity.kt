@@ -41,7 +41,6 @@ import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
-import jp.pay.android.verifier.ui.PayjpThreeDSecureResultCallback
 
 private const val FRAGMENT_CARD_FORM = "FRAGMENT_CARD_FORM"
 
@@ -121,14 +120,11 @@ class CardFormViewSampleActivity :
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Payjp.verifier().handleThreeDSecureResult(
-            requestCode,
-            PayjpThreeDSecureResultCallback {
-                if (it.isSuccess()) {
-                    createTokenForTds(it.retrieveThreeDSecureToken())
-                }
+        Payjp.verifier().handleThreeDSecureResult(requestCode) {
+            if (it.isSuccess()) {
+                createTokenForTds(it.retrieveThreeDSecureToken())
             }
-        )
+        }
     }
 
     private fun createToken() {
