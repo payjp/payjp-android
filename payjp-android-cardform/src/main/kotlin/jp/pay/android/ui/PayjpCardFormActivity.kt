@@ -49,7 +49,6 @@ import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
 import jp.pay.android.util.nonNull
 import jp.pay.android.verifier.PayjpVerifier
-import jp.pay.android.verifier.ui.PayjpThreeDSecureResultCallback
 
 /**
  * PayjpCardFormActivity show card form.
@@ -142,12 +141,9 @@ internal class PayjpCardFormActivity :
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        PayjpVerifier.handleThreeDSecureResult(
-            requestCode,
-            PayjpThreeDSecureResultCallback { result ->
-                viewModel?.onCompleteCardVerify(result)
-            }
-        )
+        PayjpVerifier.handleThreeDSecureResult(requestCode) { result ->
+            viewModel?.onCompleteCardVerify(result)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

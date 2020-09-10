@@ -118,7 +118,10 @@ class PayjpTokenTest {
         )
             .createToken(
                 number = "4242424242424242",
-                cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA"
+                cvc = "123",
+                expMonth = "02",
+                expYear = "2020",
+                name = "TARO YAMADA"
             )
             .run()
             .let { token ->
@@ -156,7 +159,9 @@ class PayjpTokenTest {
         )
             .createToken(
                 number = "4242424242424242",
-                cvc = "123", expMonth = "02", expYear = "2020"
+                cvc = "123",
+                expMonth = "02",
+                expYear = "2020"
             )
             .run()
 
@@ -179,7 +184,10 @@ class PayjpTokenTest {
         )
             .createToken(
                 number = "4242424242424242",
-                cvc = "123", expMonth = "02", expYear = "2020", tenantId = TenantId("tenant_id")
+                cvc = "123",
+                expMonth = "02",
+                expYear = "2020",
+                tenantId = TenantId("tenant_id")
             )
             .run()
 
@@ -203,7 +211,10 @@ class PayjpTokenTest {
         )
             .createToken(
                 number = "4242424242424242",
-                cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA"
+                cvc = "123",
+                expMonth = "02",
+                expYear = "2020",
+                name = "TARO YAMADA"
             )
 
         try {
@@ -229,7 +240,10 @@ class PayjpTokenTest {
         )
             .createToken(
                 number = "4242424242424242",
-                cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA"
+                cvc = "123",
+                expMonth = "02",
+                expYear = "2020",
+                name = "TARO YAMADA"
             )
 
         try {
@@ -255,7 +269,10 @@ class PayjpTokenTest {
         )
             .createToken(
                 number = "4242424242424242",
-                cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA"
+                cvc = "123",
+                expMonth = "02",
+                expYear = "2020",
+                name = "TARO YAMADA"
             )
 
         try {
@@ -268,21 +285,23 @@ class PayjpTokenTest {
     @Test
     fun createToken_returns_tds() {
         val tdsId = "tds_abcd1234"
-        mockWebServer.setDispatcher(object : Dispatcher() {
-            override fun dispatch(request: RecordedRequest): MockResponse = when (request.path) {
-                "/tokens" ->
-                    MockResponse()
-                        .setResponseCode(200)
-                        .setHeader("Location", "${mockWebServer.url("/")}tds/$tdsId/start")
-                        .setBody(
-                            """
+        mockWebServer.setDispatcher(
+            object : Dispatcher() {
+                override fun dispatch(request: RecordedRequest): MockResponse = when (request.path) {
+                    "/tokens" ->
+                        MockResponse()
+                            .setResponseCode(200)
+                            .setHeader("Location", "${mockWebServer.url("/")}tds/$tdsId/start")
+                            .setBody(
+                                """
 { "object": "three_d_secure_token", "id": "$tdsId" }
-                            """.trimIndent()
-                        )
-                "/tds/$tdsId/start" -> MockResponse().setResponseCode(200).setBody(TOKEN_OK)
-                else -> throw RuntimeException("unknown path -> ${request.path}")
+                                """.trimIndent()
+                            )
+                    "/tds/$tdsId/start" -> MockResponse().setResponseCode(200).setBody(TOKEN_OK)
+                    else -> throw RuntimeException("unknown path -> ${request.path}")
+                }
             }
-        })
+        )
 
         val task = PayjpToken(
             configuration = configuration,
@@ -290,7 +309,10 @@ class PayjpTokenTest {
         )
             .createToken(
                 number = "4242424242424242",
-                cvc = "123", expMonth = "02", expYear = "2020", name = "TARO YAMADA"
+                cvc = "123",
+                expMonth = "02",
+                expYear = "2020",
+                name = "TARO YAMADA"
             )
 
         try {
@@ -438,8 +460,12 @@ class PayjpTokenTest {
                 assertThat(
                     response.brands,
                     contains(
-                        CardBrand.VISA, CardBrand.MASTER_CARD, CardBrand.JCB,
-                        CardBrand.AMEX, CardBrand.DINERS_CLUB, CardBrand.DISCOVER
+                        CardBrand.VISA,
+                        CardBrand.MASTER_CARD,
+                        CardBrand.JCB,
+                        CardBrand.AMEX,
+                        CardBrand.DINERS_CLUB,
+                        CardBrand.DISCOVER
                     )
                 )
             }
@@ -497,8 +523,12 @@ class PayjpTokenTest {
                 assertThat(
                     response.brands,
                     contains(
-                        CardBrand.VISA, CardBrand.MASTER_CARD, CardBrand.JCB,
-                        CardBrand.AMEX, CardBrand.DINERS_CLUB, CardBrand.DISCOVER
+                        CardBrand.VISA,
+                        CardBrand.MASTER_CARD,
+                        CardBrand.JCB,
+                        CardBrand.AMEX,
+                        CardBrand.DINERS_CLUB,
+                        CardBrand.DISCOVER
                     )
                 )
             }

@@ -137,30 +137,32 @@ internal class CardFormScreenViewModel(
             errorViewVisibility.value = View.GONE
             contentViewVisibility.value = View.GONE
             fetchAcceptedBrandsTask = tokenService.getAcceptedBrands(tenantId)
-            fetchAcceptedBrandsTask?.enqueue(object : Task.Callback<CardBrandsAcceptedResponse> {
-                override fun onSuccess(data: CardBrandsAcceptedResponse) {
-                    ArrayList<CardBrand>(data.brands).let { brands ->
-                        acceptedBrands.value = brands
-                        addCardFormCommand.value = brands
+            fetchAcceptedBrandsTask?.enqueue(
+                object : Task.Callback<CardBrandsAcceptedResponse> {
+                    override fun onSuccess(data: CardBrandsAcceptedResponse) {
+                        ArrayList<CardBrand>(data.brands).let { brands ->
+                            acceptedBrands.value = brands
+                            addCardFormCommand.value = brands
+                        }
+                        loadingViewVisibility.value = View.GONE
+                        contentViewVisibility.value = View.VISIBLE
+                        errorViewVisibility.value = View.GONE
+                        fetchBrandsProcessing = false
                     }
-                    loadingViewVisibility.value = View.GONE
-                    contentViewVisibility.value = View.VISIBLE
-                    errorViewVisibility.value = View.GONE
-                    fetchBrandsProcessing = false
-                }
 
-                override fun onError(throwable: Throwable) {
-                    errorViewText.value = errorTranslator.translate(throwable)
-                    reloadContentButtonVisibility.value = when (throwable) {
-                        is IOException -> View.VISIBLE
-                        else -> View.GONE
+                    override fun onError(throwable: Throwable) {
+                        errorViewText.value = errorTranslator.translate(throwable)
+                        reloadContentButtonVisibility.value = when (throwable) {
+                            is IOException -> View.VISIBLE
+                            else -> View.GONE
+                        }
+                        loadingViewVisibility.value = View.GONE
+                        contentViewVisibility.value = View.GONE
+                        errorViewVisibility.value = View.VISIBLE
+                        fetchBrandsProcessing = false
                     }
-                    loadingViewVisibility.value = View.GONE
-                    contentViewVisibility.value = View.GONE
-                    errorViewVisibility.value = View.VISIBLE
-                    fetchBrandsProcessing = false
                 }
-            })
+            )
         }
     }
 
@@ -172,20 +174,22 @@ internal class CardFormScreenViewModel(
 
     private fun enqueueTokenTask(task: Task<Token>) {
         setSubmitButtonVisible(false)
-        task.enqueue(object : Task.Callback<Token> {
-            override fun onSuccess(data: Token) {
-                postTokenHandlerOrComplete(data)
-            }
+        task.enqueue(
+            object : Task.Callback<Token> {
+                override fun onSuccess(data: Token) {
+                    postTokenHandlerOrComplete(data)
+                }
 
-            override fun onError(throwable: Throwable) {
-                when (throwable) {
-                    is PayjpThreeDSecureRequiredException -> {
-                        startVerifyCommand.value = throwable.token
+                override fun onError(throwable: Throwable) {
+                    when (throwable) {
+                        is PayjpThreeDSecureRequiredException -> {
+                            startVerifyCommand.value = throwable.token
+                        }
+                        else -> showTokenError(throwable)
                     }
-                    else -> showTokenError(throwable)
                 }
             }
-        })
+        )
     }
 
     private fun postTokenHandlerOrComplete(token: Token) {

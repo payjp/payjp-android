@@ -36,7 +36,6 @@ import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
-import jp.pay.android.verifier.ui.PayjpThreeDSecureResultCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -81,16 +80,13 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Payjp.verifier().handleThreeDSecureResult(
-            requestCode,
-            PayjpThreeDSecureResultCallback {
-                if (it.isSuccess()) {
-                    createToken(tdsToken = it.retrieveThreeDSecureToken())
-                } else {
-                    Toast.makeText(this, "3-D Secure canceled.", Toast.LENGTH_SHORT).show()
-                }
+        Payjp.verifier().handleThreeDSecureResult(requestCode) {
+            if (it.isSuccess()) {
+                createToken(tdsToken = it.retrieveThreeDSecureToken())
+            } else {
+                Toast.makeText(this, "3-D Secure canceled.", Toast.LENGTH_SHORT).show()
             }
-        )
+        }
     }
 
     private fun createToken(tdsToken: ThreeDSecureToken? = null) = launch {

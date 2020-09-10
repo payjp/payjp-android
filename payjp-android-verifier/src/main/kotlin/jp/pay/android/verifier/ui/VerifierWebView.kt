@@ -93,9 +93,7 @@ internal class VerifierWebView @JvmOverloads constructor(
     }
 
     fun addInterceptor(interceptor: (uri: Uri) -> Boolean) {
-        interceptors.add(object : Interceptor {
-            override fun intercept(uri: Uri): Boolean = interceptor.invoke(uri)
-        })
+        interceptors.add(Interceptor { uri -> interceptor.invoke(uri) })
     }
 
     fun addLoadStateWatcher(loadStateWatcher: LoadStateWatcher) {
@@ -113,32 +111,34 @@ internal class VerifierWebView @JvmOverloads constructor(
         onSslError: ((webView: WebView, sslError: SslError) -> Unit)? = null,
         onProgressChanged: ((webView: WebView, newProgress: Int) -> Unit)? = null
     ) {
-        loadStateWatchers.add(object : LoadStateWatcher {
-            override fun onStarted(webView: WebView, url: String) {
-                onStarted?.invoke(webView, url)
-            }
+        loadStateWatchers.add(
+            object : LoadStateWatcher {
+                override fun onStarted(webView: WebView, url: String) {
+                    onStarted?.invoke(webView, url)
+                }
 
-            override fun onFinished(webView: WebView, url: String) {
-                onFinished?.invoke(webView, url)
-            }
+                override fun onFinished(webView: WebView, url: String) {
+                    onFinished?.invoke(webView, url)
+                }
 
-            override fun onError(
-                webView: WebView,
-                errorCode: Int,
-                description: String?,
-                failingUrl: String
-            ) {
-                onError?.invoke(webView, errorCode, description, failingUrl)
-            }
+                override fun onError(
+                    webView: WebView,
+                    errorCode: Int,
+                    description: String?,
+                    failingUrl: String
+                ) {
+                    onError?.invoke(webView, errorCode, description, failingUrl)
+                }
 
-            override fun onSslError(webView: WebView, sslError: SslError) {
-                onSslError?.invoke(webView, sslError)
-            }
+                override fun onSslError(webView: WebView, sslError: SslError) {
+                    onSslError?.invoke(webView, sslError)
+                }
 
-            override fun onProgressChanged(webView: WebView, newProgress: Int) {
-                onProgressChanged?.invoke(webView, newProgress)
+                override fun onProgressChanged(webView: WebView, newProgress: Int) {
+                    onProgressChanged?.invoke(webView, newProgress)
+                }
             }
-        })
+        )
     }
 
     private fun intercept(uri: Uri): Boolean {
@@ -301,7 +301,7 @@ internal class VerifierWebView @JvmOverloads constructor(
         STOPPED, LOADING, ERROR
     }
 
-    internal interface Interceptor {
+    internal fun interface Interceptor {
         fun intercept(uri: Uri): Boolean
     }
 

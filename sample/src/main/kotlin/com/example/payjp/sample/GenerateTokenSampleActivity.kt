@@ -53,25 +53,30 @@ class GenerateTokenSampleActivity : AppCompatActivity() {
             val name = binding.textCardName.text.toString()
 
             createToken = Payjp.token().createToken(
-                number = number, cvc = cvc,
-                expMonth = expMonth, expYear = expYear, name = name
+                number = number,
+                cvc = cvc,
+                expMonth = expMonth,
+                expYear = expYear,
+                name = name
             )
-            createToken?.enqueue(object : Task.Callback<Token> {
-                override fun onSuccess(data: Token) {
-                    Log.i("GenerateTokenSample", "token => $data")
-                    binding.textTokenId.setText(data.id)
-                    binding.textTokenContent.text = "The token has created."
-                    binding.progressBar.visibility = View.GONE
-                    binding.textTokenContent.visibility = View.VISIBLE
-                }
+            createToken?.enqueue(
+                object : Task.Callback<Token> {
+                    override fun onSuccess(data: Token) {
+                        Log.i("GenerateTokenSample", "token => $data")
+                        binding.textTokenId.setText(data.id)
+                        binding.textTokenContent.text = "The token has created."
+                        binding.progressBar.visibility = View.GONE
+                        binding.textTokenContent.visibility = View.VISIBLE
+                    }
 
-                override fun onError(throwable: Throwable) {
-                    Log.e("GenerateTokenSample", "failure creating token", throwable)
-                    binding.textTokenContent.text = throwable.toString()
-                    binding.progressBar.visibility = View.GONE
-                    binding.textTokenContent.visibility = View.VISIBLE
+                    override fun onError(throwable: Throwable) {
+                        Log.e("GenerateTokenSample", "failure creating token", throwable)
+                        binding.textTokenContent.text = throwable.toString()
+                        binding.progressBar.visibility = View.GONE
+                        binding.textTokenContent.visibility = View.VISIBLE
+                    }
                 }
-            })
+            )
         }
 
         binding.buttonGetToken.setOnClickListener {
@@ -80,21 +85,23 @@ class GenerateTokenSampleActivity : AppCompatActivity() {
 
             // get token
             getToken = Payjp.token().getToken(binding.textTokenId.text.toString())
-            getToken?.enqueue(object : Task.Callback<Token> {
-                override fun onSuccess(data: Token) {
-                    Log.i("GenerateTokenSample", "token => $data")
-                    binding.textTokenContent.text = data.toString()
-                    binding.progressBar.visibility = View.GONE
-                    binding.textTokenContent.visibility = View.VISIBLE
-                }
+            getToken?.enqueue(
+                object : Task.Callback<Token> {
+                    override fun onSuccess(data: Token) {
+                        Log.i("GenerateTokenSample", "token => $data")
+                        binding.textTokenContent.text = data.toString()
+                        binding.progressBar.visibility = View.GONE
+                        binding.textTokenContent.visibility = View.VISIBLE
+                    }
 
-                override fun onError(throwable: Throwable) {
-                    Log.e("GenerateTokenSample", "failure creating token", throwable)
-                    binding.textTokenContent.text = throwable.toString()
-                    binding.progressBar.visibility = View.GONE
-                    binding.textTokenContent.visibility = View.VISIBLE
+                    override fun onError(throwable: Throwable) {
+                        Log.e("GenerateTokenSample", "failure creating token", throwable)
+                        binding.textTokenContent.text = throwable.toString()
+                        binding.progressBar.visibility = View.GONE
+                        binding.textTokenContent.visibility = View.VISIBLE
+                    }
                 }
-            })
+            )
         }
     }
 

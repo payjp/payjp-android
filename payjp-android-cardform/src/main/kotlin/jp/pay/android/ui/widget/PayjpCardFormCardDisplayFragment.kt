@@ -165,16 +165,18 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
         )
         binding.formElementPager.adapter = adapter
         binding.formElementPager.offscreenPageLimit = 2
-        binding.formElementPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                val element = adapter.getElementTypeForPosition(position)
-                // prevent if current item has changed
-                if (isAdded && binding.formElementPager.currentItem == position) {
-                    val id = CardFormElementAdapter.findEditTextId(element)
-                    binding.formElementPager.findViewById<TextInputEditText>(id)?.requestFocusFromTouch()
+        binding.formElementPager.registerOnPageChangeCallback(
+            object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    val element = adapter.getElementTypeForPosition(position)
+// prevent if current item has changed
+                    if (isAdded && binding.formElementPager.currentItem == position) {
+                        val id = CardFormElementAdapter.findEditTextId(element)
+                        binding.formElementPager.findViewById<TextInputEditText>(id)?.requestFocusFromTouch()
+                    }
                 }
             }
-        })
+        )
 
         val pagerMargin = resources.getDimensionPixelOffset(R.dimen.payjp_card_form_pager_margin)
         val offset = resources.getDimensionPixelOffset(R.dimen.payjp_card_form_element_offset)

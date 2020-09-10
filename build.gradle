@@ -24,7 +24,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.3.72'
+    ext.kotlin_version = '1.4.0'
     repositories {
         google()
         jcenter()
@@ -46,7 +46,7 @@ subprojects {
     spotless {
         kotlin {
             target "**/*.kt"
-            ktlint("0.37.2")
+            ktlint("0.38.1")
             licenseHeaderFile project.rootProject.file('spotless/Copyright.kt')
         }
     }
@@ -62,7 +62,7 @@ ext {
     retrofit = "2.6.4"
     lifecycle = "2.2.0"
     mockito = "2.28.2"
-    coroutine = "1.3.1"
+    coroutine = "1.3.7"
     appcompat = "1.1.0"
     fragment = "1.2.5"
     material = "1.2.0-beta01"
