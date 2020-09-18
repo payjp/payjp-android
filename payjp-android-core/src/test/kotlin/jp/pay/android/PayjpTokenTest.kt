@@ -32,7 +32,7 @@ import jp.pay.android.fixtures.ACCEPTED_BRANDS_FULL
 import jp.pay.android.fixtures.ERROR_AUTH
 import jp.pay.android.fixtures.ERROR_CARD_DECLINED
 import jp.pay.android.fixtures.ERROR_INVALID_ID
-import jp.pay.android.fixtures.ERROR_TOO_MANY_REQUESTS
+import jp.pay.android.fixtures.ERROR_OVER_CAPACITY
 import jp.pay.android.fixtures.TOKEN_OK
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ClientInfo
@@ -286,8 +286,8 @@ class PayjpTokenTest {
     }
 
     @Test
-    fun createToken_too_many_requests_error() {
-        mockWebServer.enqueue(MockResponse().setResponseCode(429).setBody(ERROR_TOO_MANY_REQUESTS))
+    fun createToken_over_capacity_error() {
+        mockWebServer.enqueue(MockResponse().setResponseCode(429).setBody(ERROR_OVER_CAPACITY))
 
         val task = PayjpToken(
             configuration = configuration,
@@ -305,12 +305,12 @@ class PayjpTokenTest {
             task.run()
             fail()
         } catch (e: PayjpRateLimitException) {
-            assertEquals("Request throttled due to excessive requests.", e.message)
+            assertEquals("The service is over capacity. Please try again later.", e.message)
             assertEquals(HttpException::class.java, e.cause::class.java)
             assertEquals(429, e.httpStatusCode)
             assertEquals("client_error", e.apiError.type)
-            assertEquals("too_many_requests", e.apiError.code)
-            assertEquals(ERROR_TOO_MANY_REQUESTS, e.source)
+            assertEquals("over_capacity", e.apiError.code)
+            assertEquals(ERROR_OVER_CAPACITY, e.source)
         }
     }
 

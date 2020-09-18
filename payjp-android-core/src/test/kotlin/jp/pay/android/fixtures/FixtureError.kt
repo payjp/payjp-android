@@ -58,12 +58,12 @@ const val ERROR_INVALID_ID =
 }
 """
 
-const val ERROR_TOO_MANY_REQUESTS =
+const val ERROR_OVER_CAPACITY =
     """
 {
   "error": {
-    "code": "too_many_requests",
-    "message": "Request throttled due to excessive requests.",
+    "code": "over_capacity",
+    "message": "The service is over capacity. Please try again later.",
     "status": 429,
     "type": "client_error"
   }
