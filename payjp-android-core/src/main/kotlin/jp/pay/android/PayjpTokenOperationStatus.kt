@@ -20,23 +20,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.exception
-
-import jp.pay.android.model.ApiError
+package jp.pay.android
 
 /**
- * PayjpApiException
+ * The client status of token request.
  *
- * @param message message
- * @param cause cause throwable
- * @param httpStatusCode code e.g. `400`
- * @param apiError error information from api response
- * @param source raw json string
+ * Provide a guide as to whether or not UI should allow user's submits
+ * to prevent too many post request in a short period by client side.
+ *
+ * You can request to create a token regardless of this status,
+ * but it is not recommended.
  */
-open class PayjpApiException(
-    override val message: String,
-    override val cause: Throwable,
-    open val httpStatusCode: Int,
-    open val apiError: ApiError,
-    open val source: String?
-) : RuntimeException(message, cause)
+enum class PayjpTokenOperationStatus {
+    /**
+     * UI should accept user's request to create token.
+     */
+    ACCEPTABLE,
+
+    /**
+     * The request is running, UI should block a new submission.
+     */
+    RUNNING,
+
+    /**
+     * The request has completed, but UI should not accept a new submission for a moment.
+     */
+    THROTTLED
+}

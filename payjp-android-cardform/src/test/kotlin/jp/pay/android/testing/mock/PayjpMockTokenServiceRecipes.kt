@@ -38,9 +38,9 @@ internal class PayjpMockTokenServiceRecipes(private val mock: PayjpTokenService)
             .thenReturn(Tasks.never())
     }
 
-    fun prepareBrandsError() = apply {
+    fun prepareBrandsError(error: Throwable = IOException("omg")) = apply {
         `when`(mock.getAcceptedBrands(anyNullable()))
-            .thenReturn(Tasks.failure(IOException("omg")))
+            .thenReturn(Tasks.failure(error))
     }
 
     fun prepareBrandsAll() = apply {
@@ -75,5 +75,10 @@ internal class PayjpMockTokenServiceRecipes(private val mock: PayjpTokenService)
     fun prepareTokenSuccess(token: Token) = apply {
         `when`(mock.createToken(param = anyNullable()))
             .thenReturn(Tasks.success(token))
+    }
+
+    fun prepareTokenError(error: Throwable = IOException("omg")) = apply {
+        `when`(mock.createToken(param = anyNullable()))
+            .thenReturn(Tasks.failure(error))
     }
 }

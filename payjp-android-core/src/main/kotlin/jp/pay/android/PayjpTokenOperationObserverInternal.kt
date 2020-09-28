@@ -20,23 +20,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.exception
+package jp.pay.android
 
-import jp.pay.android.model.ApiError
+internal interface PayjpTokenOperationObserverInternal : PayjpTokenOperationObserverService {
 
-/**
- * PayjpApiException
- *
- * @param message message
- * @param cause cause throwable
- * @param httpStatusCode code e.g. `400`
- * @param apiError error information from api response
- * @param source raw json string
- */
-open class PayjpApiException(
-    override val message: String,
-    override val cause: Throwable,
-    open val httpStatusCode: Int,
-    open val apiError: ApiError,
-    open val source: String?
-) : RuntimeException(message, cause)
+    fun startRequest()
+
+    fun completeRequest()
+}

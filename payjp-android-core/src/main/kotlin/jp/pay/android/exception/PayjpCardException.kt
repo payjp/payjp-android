@@ -25,18 +25,18 @@ package jp.pay.android.exception
 import jp.pay.android.model.ApiError
 
 /**
- * PayjpApiException
+ * PayjpCardException
+ * problem about card
  *
- * @param message message
- * @param cause cause throwable
- * @param httpStatusCode code e.g. `400`
- * @param apiError error information from api response
- * @param source raw json string
  */
-open class PayjpApiException(
+class PayjpCardException(
     override val message: String,
     override val cause: Throwable,
-    open val httpStatusCode: Int,
-    open val apiError: ApiError,
-    open val source: String?
-) : RuntimeException(message, cause)
+    override val apiError: ApiError,
+    override val source: String
+) : PayjpApiException(message, cause, STATUS_CODE, apiError, source) {
+
+    companion object {
+        const val STATUS_CODE = 402
+    }
+}

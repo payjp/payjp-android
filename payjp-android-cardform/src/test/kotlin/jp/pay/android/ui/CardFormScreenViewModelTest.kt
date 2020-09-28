@@ -26,6 +26,7 @@ import android.view.View
 import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.PayjpTokenBackgroundHandler
+import jp.pay.android.PayjpTokenOperationStatus
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.R
 import jp.pay.android.TestStubs
@@ -37,6 +38,7 @@ import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
+import jp.pay.android.testing.FakeTokenOperationObserver
 import jp.pay.android.util.Tasks
 import jp.pay.android.verifier.ui.PayjpThreeDSecureResult
 import org.hamcrest.Matchers.`is`
@@ -65,6 +67,9 @@ class CardFormScreenViewModelTest {
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
+        `when`(mockTokenService.getTokenOperationObserver())
+            .thenReturn(FakeTokenOperationObserver)
+        FakeTokenOperationObserver.reset()
     }
 
     private fun createViewModel(
@@ -234,6 +239,31 @@ class CardFormScreenViewModelTest {
     }
 
     @Test
+    fun failure_onCreateToken_submitButton_invisible_til_status_acceptable() {
+        val error = RuntimeException("omg")
+        val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
+
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.RUNNING
+        viewModel.run {
+            assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.VISIBLE))
+        }
+
+        viewModel.onCreateToken(Tasks.failure(error))
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.THROTTLED
+        viewModel.run {
+            assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.VISIBLE))
+        }
+
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.ACCEPTABLE
+        viewModel.run {
+            assertThat(submitButtonVisibility.value, `is`(View.VISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.GONE))
+        }
+    }
+
+    @Test
     fun skip_executor_post_if_executor_isNull() {
         val viewModel = createViewModel(tokenHandlerExecutor = null)
         val token = TestStubs.newToken()
@@ -241,8 +271,33 @@ class CardFormScreenViewModelTest {
         viewModel.onCreateToken(Tasks.success(token))
         viewModel.run {
             assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
-            assertThat(submitButtonProgressVisibility.value, `is`(View.VISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.GONE))
             assertThat(success.value, `is`(token))
+        }
+    }
+
+    @Test
+    fun success_onCreateToken_submitButton_never_visible_even_if_status_acceptable() {
+        val viewModel = createViewModel(tokenHandlerExecutor = null)
+        val token = TestStubs.newToken()
+
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.RUNNING
+        viewModel.run {
+            assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.VISIBLE))
+        }
+
+        viewModel.onCreateToken(Tasks.success(token))
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.THROTTLED
+        viewModel.run {
+            assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.GONE))
+        }
+
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.ACCEPTABLE
+        viewModel.run {
+            assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.GONE))
         }
     }
 
@@ -255,7 +310,17 @@ class CardFormScreenViewModelTest {
         viewModel.onCreateToken(Tasks.success(token))
         assertThat(handlerExecutor.token, `is`(token))
         handlerExecutor.callback?.invoke(PayjpTokenBackgroundHandler.CardFormStatus.Complete())
-        assertThat(viewModel.success.value, `is`(token))
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.THROTTLED
+        viewModel.run {
+            assertThat(success.value, `is`(token))
+            assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.GONE))
+        }
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.ACCEPTABLE
+        viewModel.run {
+            assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.GONE))
+        }
     }
 
     @Test
@@ -268,10 +333,17 @@ class CardFormScreenViewModelTest {
         viewModel.onCreateToken(Tasks.success(token))
         assertThat(handlerExecutor.token, `is`(token))
         handlerExecutor.callback?.invoke(PayjpTokenBackgroundHandler.CardFormStatus.Error(message))
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.THROTTLED
         viewModel.run {
             assertThat(success.value, nullValue())
             assertThat(errorDialogMessage.value, `is`(message as CharSequence))
+            assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.VISIBLE))
+        }
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.ACCEPTABLE
+        viewModel.run {
             assertThat(submitButtonVisibility.value, `is`(View.VISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.GONE))
         }
     }
 
@@ -364,6 +436,7 @@ class CardFormScreenViewModelTest {
 
         viewModel.onCreateToken(Tasks.failure(tdsRequired))
         viewModel.onCompleteCardVerify(PayjpThreeDSecureResult.Success(tdsToken))
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.THROTTLED
 
         viewModel.run {
             assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
@@ -372,9 +445,12 @@ class CardFormScreenViewModelTest {
         verify(mockTokenService).createToken(tdsToken)
 
         handlerExecutor.callback?.invoke(PayjpTokenBackgroundHandler.CardFormStatus.Complete())
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.ACCEPTABLE
 
         viewModel.run {
             assertThat(success.value, `is`(token))
+            assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.GONE))
         }
     }
 
@@ -390,15 +466,23 @@ class CardFormScreenViewModelTest {
 
         viewModel.onCreateToken(Tasks.failure(tdsRequired))
         viewModel.onCompleteCardVerify(PayjpThreeDSecureResult.Success(tdsToken))
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.THROTTLED
 
         viewModel.run {
-            assertThat(submitButtonVisibility.value, `is`(View.VISIBLE))
-            assertThat(submitButtonProgressVisibility.value, `is`(View.GONE))
+            assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.VISIBLE))
             assertThat(errorDialogMessage.value, `is`(message as CharSequence))
             assertThat(success.value, nullValue())
         }
         verify(mockTokenService).createToken(tdsToken)
         verify(mockTokenHandlerExecutor, never()).post(anyNullable(), anyNullable())
+
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.ACCEPTABLE
+
+        viewModel.run {
+            assertThat(submitButtonVisibility.value, `is`(View.VISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.GONE))
+        }
     }
 
     class RecordingHandlerExecutor : TokenHandlerExecutor {

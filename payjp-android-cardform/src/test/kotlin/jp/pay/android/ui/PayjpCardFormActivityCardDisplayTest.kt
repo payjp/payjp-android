@@ -29,6 +29,8 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.CardRobot
+import jp.pay.android.PayjpTokenOperationObserverService
+import jp.pay.android.PayjpTokenOperationStatus
 import jp.pay.android.PayjpTokenParam
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.Task
@@ -38,6 +40,7 @@ import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
+import jp.pay.android.testing.FakeTokenOperationObserver
 import jp.pay.android.testing.PayjpCardFormTestRule
 import jp.pay.android.testing.assertion.withItemCount
 import jp.pay.android.testing.mock.PayjpMockTokenServiceRecipes
@@ -77,6 +80,9 @@ class PayjpCardFormActivityCardDisplayTest {
 
             override fun getAcceptedBrands(tenantId: TenantId?): Task<CardBrandsAcceptedResponse> =
                 mockTokenService.getAcceptedBrands(tenantId)
+
+            override fun getTokenOperationObserver(): PayjpTokenOperationObserverService =
+                FakeTokenOperationObserver
         }
     )
 
@@ -84,17 +90,18 @@ class PayjpCardFormActivityCardDisplayTest {
     fun setUp() {
         MockitoAnnotations.initMocks(this)
         mockRecipes = PayjpMockTokenServiceRecipes(mockTokenService)
+        FakeTokenOperationObserver.reset()
     }
 
     @Test
-    fun loadingView_display_until_get_accepted_brands() {
+    fun contentLoadingProgress_display_until_get_accepted_brands() {
         mockRecipes.prepareBrandsNever()
 
         CardFormPage.run {
             launchCardDisplay()
 
             check {
-                loadingView(isDisplayed())
+                contentLoadingProgress(isDisplayed())
                 errorMessage(not(isDisplayed()))
                 submitButton(not(isDisplayed()))
             }
@@ -110,7 +117,7 @@ class PayjpCardFormActivityCardDisplayTest {
 
             check {
                 errorMessage(isDisplayed())
-                loadingView(not(isDisplayed()))
+                contentLoadingProgress(not(isDisplayed()))
                 submitButton(not(isDisplayed()))
                 reloadButton(isDisplayed())
             }
@@ -132,7 +139,7 @@ class PayjpCardFormActivityCardDisplayTest {
             launchCardDisplay()
 
             check {
-                loadingView(not(isDisplayed()))
+                contentLoadingProgress(not(isDisplayed()))
                 acceptedBrands(isDisplayed())
                 cardDisplay(isDisplayed())
                 submitButton(isDisplayed())
@@ -206,6 +213,34 @@ class PayjpCardFormActivityCardDisplayTest {
             check {
                 submitButtonProgressBar(isDisplayed())
                 submitButton(not(isDisplayed()))
+            }
+        }
+    }
+
+    @Test
+    fun button_progress_is_displayed_until_create_token_acceptable() {
+        mockRecipes.prepareBrandsVM().prepareTokenError()
+
+        CardFormPage.run {
+            launchMultiLine()
+
+            perform {
+                inputCard(CardRobot.SandboxVisa)
+                clickSubmitButton()
+            }
+
+            FakeTokenOperationObserver.status = PayjpTokenOperationStatus.THROTTLED
+
+            check {
+                submitButtonProgressBar(isDisplayed())
+                submitButton(not(isDisplayed()))
+            }
+
+            FakeTokenOperationObserver.status = PayjpTokenOperationStatus.ACCEPTABLE
+
+            check {
+                submitButtonProgressBar(not(isDisplayed()))
+                submitButton(isDisplayed())
             }
         }
     }

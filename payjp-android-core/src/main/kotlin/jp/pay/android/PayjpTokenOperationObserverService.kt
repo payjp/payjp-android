@@ -20,23 +20,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.exception
-
-import jp.pay.android.model.ApiError
+package jp.pay.android
 
 /**
- * PayjpApiException
+ * Observe token operations and notify the status to [TokenRequestStatusListener].
  *
- * @param message message
- * @param cause cause throwable
- * @param httpStatusCode code e.g. `400`
- * @param apiError error information from api response
- * @param source raw json string
  */
-open class PayjpApiException(
-    override val message: String,
-    override val cause: Throwable,
-    open val httpStatusCode: Int,
-    open val apiError: ApiError,
-    open val source: String?
-) : RuntimeException(message, cause)
+interface PayjpTokenOperationObserverService {
+
+    /**
+     * current status
+     */
+    val status: PayjpTokenOperationStatus
+
+    /**
+     * Add listener to observe [PayjpTokenOperationStatus].
+     *
+     * @param listener
+     */
+    fun addListener(listener: TokenRequestStatusListener)
+
+    /**
+     * Remove a listener
+     *
+     * @param listener
+     */
+    fun removeListener(listener: TokenRequestStatusListener)
+
+    /**
+     * Remove all listeners.
+     */
+    fun removeAllListeners()
+
+    /**
+     * Listener that observe [PayjpTokenOperationStatus] for changes.
+     */
+    fun interface TokenRequestStatusListener {
+
+        /**
+         * Invoked when the status is changed.
+         *
+         * @param status new status
+         */
+        fun onChangedStatus(status: PayjpTokenOperationStatus)
+    }
+}

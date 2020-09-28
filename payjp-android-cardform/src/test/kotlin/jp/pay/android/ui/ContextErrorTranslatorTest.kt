@@ -26,6 +26,8 @@ import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.R
 import jp.pay.android.exception.PayjpApiException
+import jp.pay.android.exception.PayjpCardException
+import jp.pay.android.exception.PayjpRateLimitException
 import jp.pay.android.model.ApiError
 import org.hamcrest.Matchers.`is`
 import org.junit.Assert.assertThat
@@ -47,6 +49,7 @@ class ContextErrorTranslatorTest {
     private val mockErrorMessageNetwork = "network"
     private val mockErrorMessageServer = "server"
     private val mockErrorMessageApplication = "application"
+    private val mockErrorMessageRateLimit = "rateLimit"
 
     @Before
     fun setUp() {
@@ -61,15 +64,16 @@ class ContextErrorTranslatorTest {
             .thenReturn(mockErrorMessageServer)
         `when`(mockContext.getString(R.string.payjp_card_form_screen_error_application))
             .thenReturn(mockErrorMessageApplication)
+        `when`(mockContext.getString(R.string.payjp_card_form_screen_error_rate_limit_exceeded))
+            .thenReturn(mockErrorMessageRateLimit)
     }
 
     @Test
-    fun translate_api_error_402_to_own_message() {
+    fun translate_card_exception_to_own_message() {
         val message = "omg"
-        val error = PayjpApiException(
+        val error = PayjpCardException(
             message = message,
             cause = RuntimeException(),
-            httpStatusCode = 402,
             apiError = ApiError(
                 code = "invalid_number",
                 message = message,
@@ -117,6 +121,25 @@ class ContextErrorTranslatorTest {
         assertThat(
             ContextErrorTranslator(mockContext).translate(error).toString(),
             `is`(mockErrorMessageServer)
+        )
+    }
+
+    @Test
+    fun translate_rate_limit_exception_to_own_message() {
+        val message = "omg"
+        val error = PayjpRateLimitException(
+            message = message,
+            cause = RuntimeException(),
+            apiError = ApiError(
+                code = "pg_wrong",
+                message = message,
+                type = "server_error"
+            ),
+            source = ""
+        )
+        assertThat(
+            ContextErrorTranslator(mockContext).translate(error).toString(),
+            `is`(mockErrorMessageRateLimit)
         )
     }
 

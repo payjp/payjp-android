@@ -20,23 +20,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.exception
+package jp.pay.android.testing
 
-import jp.pay.android.model.ApiError
+import jp.pay.android.PayjpTokenOperationObserverService
+import jp.pay.android.PayjpTokenOperationStatus
 
-/**
- * PayjpApiException
- *
- * @param message message
- * @param cause cause throwable
- * @param httpStatusCode code e.g. `400`
- * @param apiError error information from api response
- * @param source raw json string
- */
-open class PayjpApiException(
-    override val message: String,
-    override val cause: Throwable,
-    open val httpStatusCode: Int,
-    open val apiError: ApiError,
-    open val source: String?
-) : RuntimeException(message, cause)
+object FakeTokenOperationObserver : PayjpTokenOperationObserverService {
+
+    private val listeners = mutableListOf<PayjpTokenOperationObserverService.TokenRequestStatusListener>()
+
+    override var status: PayjpTokenOperationStatus = PayjpTokenOperationStatus.ACCEPTABLE
+        set(value) {
+            field = value
+            listeners.forEach { it.onChangedStatus(status) }
+        }
+
+    override fun addListener(listener: PayjpTokenOperationObserverService.TokenRequestStatusListener) {
+        listeners.add(listener)
+    }
+
+    override fun removeListener(listener: PayjpTokenOperationObserverService.TokenRequestStatusListener) {
+        listeners.remove(listener)
+    }
+
+    override fun removeAllListeners() {
+        listeners.clear()
+    }
+
+    fun reset() {
+        listeners.clear()
+        status = PayjpTokenOperationStatus.ACCEPTABLE
+    }
+}

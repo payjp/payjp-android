@@ -25,6 +25,8 @@ package jp.pay.android.network
 import com.squareup.moshi.Moshi
 import jp.pay.android.Task
 import jp.pay.android.exception.PayjpApiException
+import jp.pay.android.exception.PayjpCardException
+import jp.pay.android.exception.PayjpRateLimitException
 import jp.pay.android.model.ErrorEnvelope
 import okhttp3.Request
 import retrofit2.Call
@@ -32,7 +34,6 @@ import retrofit2.Callback
 import retrofit2.HttpException
 import retrofit2.Response
 import java.io.IOException
-import java.lang.RuntimeException
 import java.util.concurrent.Executor
 
 /**
@@ -48,20 +49,20 @@ internal class ResultCall<T>(
 ) : Call<T>, Task<T> {
 
     private fun generateHttpError(response: Response<*>): Exception {
+        val baseException = HttpException(response)
         return response.errorBody()?.string()
             ?.let { source ->
-                moshi.adapter(ErrorEnvelope::class.java).fromJson(source)
-                    ?.let {
-                        PayjpApiException(
-                            it.error.message,
-                            HttpException(response),
-                            response.code(),
-                            it.error,
-                            source
-                        )
+                moshi.adapter(ErrorEnvelope::class.java).fromJson(source)?.let { envelope ->
+                    val error = envelope.error
+                    val message = error.message
+                    when (val code = response.code()) {
+                        PayjpCardException.STATUS_CODE -> PayjpCardException(message, baseException, error, source)
+                        PayjpRateLimitException.STATUS_CODE -> PayjpRateLimitException(message, baseException, error, source)
+                        else -> PayjpApiException(message, baseException, code, error, source)
                     }
+                }
             }
-            ?: RuntimeException("unknown response", HttpException(response))
+            ?: RuntimeException("unknown response", baseException)
     }
 
     override fun run(): T = execute().body()!!
