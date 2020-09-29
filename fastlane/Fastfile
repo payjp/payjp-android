@@ -21,6 +21,11 @@ platform :android do
     gradle(task: "check")
   end
 
+  desc "Generate API docs"
+  lane :apidocs do
+    gradle(task: "dokkaHtmlCollector")
+  end
+
   desc "Create GitHub PR to `payjp/payjp-android` from internal repo. (internal only)"
   lane :create_pr_to_public do
     public_repo = 'payjp/payjp-android'

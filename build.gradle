@@ -33,12 +33,12 @@ buildscript {
         classpath 'com.android.tools.build:gradle:4.0.1'
         classpath 'com.google.gms:google-services:4.3.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.10.1"
     }
 }
 
 plugins {
     id "com.diffplug.gradle.spotless" version "4.4.0"
+    id "org.jetbrains.dokka" version "1.4.10"
 }
 
 subprojects {
@@ -50,6 +50,21 @@ subprojects {
             licenseHeaderFile project.rootProject.file('spotless/Copyright.kt')
         }
     }
+    if (project.plugins.hasPlugin('org.jetbrains.dokka')) {
+        tasks.named("dokkaHtml") {
+            dokkaSourceSets {
+                configureEach {
+                    platform.set(org.jetbrains.dokka.Platform.jvm)
+                    includeNonPublic.set(false)
+                    noAndroidSdkLink.set(false)
+                }
+            }
+        }
+    }
+}
+
+tasks.named("dokkaHtmlCollector") {
+    outputDirectory.set(rootProject.file("docs"))
 }
 
 ext {
