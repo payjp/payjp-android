@@ -1,11 +1,13 @@
 language: android
+jdk:
+  - openjdk11
 dist: trusty
 
 android:
   components:
     - tools
     - platform-tools
-    - android-28
+    - android-29
     - extra-google-m2repository
     - extra-android-m2repository
   licenses:
@@ -17,7 +19,7 @@ before_install:
   - export TERM=dumb
   - export REPOSITORY_ROOT=$TRAVIS_BUILD_DIR
   - source $REPOSITORY_ROOT/scripts/bash.source
-  - bundle install --path=vendor/bundle --clean
+  - bundle install --path=vendor/bundle --clean --jobs 4 --retry 3
   - mkdir "$ANDROID_HOME/licenses" || true
   - cp ./.android-sdk-license "$ANDROID_HOME/licenses/android-sdk-license"
   - ./gradlew androidDependencies

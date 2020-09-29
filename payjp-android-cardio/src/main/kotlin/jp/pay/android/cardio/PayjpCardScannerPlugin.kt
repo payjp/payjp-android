@@ -51,11 +51,7 @@ object PayjpCardScannerPlugin : CardScannerPlugin {
     }
 
     override fun startScanActivity(fragment: Fragment) {
-        if (PermissionUtil.hasSelfPermissions(
-            fragment.requireActivity(),
-            PERMISSIONS_CARD_SCANNER
-        )
-        ) {
+        if (PermissionUtil.hasSelfPermissions(fragment.requireActivity(), PERMISSIONS_CARD_SCANNER)) {
             startScanActivityInner(fragment)
         } else {
             fragment.requestPermissions(PERMISSIONS_CARD_SCANNER, REQUEST_CODE_PERMISSION)
@@ -87,11 +83,7 @@ object PayjpCardScannerPlugin : CardScannerPlugin {
             if (PermissionUtil.verifyPermissionResults(grantResults)) {
                 startScanActivityInner(activity)
             } else {
-                if (!PermissionUtil.shouldShowRequestPermissionRationale(
-                    activity,
-                    PERMISSIONS_CARD_SCANNER
-                )
-                ) {
+                if (!PermissionUtil.shouldShowRequestPermissionRationale(activity, PERMISSIONS_CARD_SCANNER)) {
                     delegate?.onNeverAskAgainCardScannerPermission()
                 }
             }
@@ -108,11 +100,7 @@ object PayjpCardScannerPlugin : CardScannerPlugin {
             if (PermissionUtil.verifyPermissionResults(grantResults)) {
                 startScanActivityInner(fragment)
             } else {
-                if (!PermissionUtil.shouldShowRequestPermissionRationale(
-                    fragment,
-                    PERMISSIONS_CARD_SCANNER
-                )
-                ) {
+                if (!PermissionUtil.shouldShowRequestPermissionRationale(fragment, PERMISSIONS_CARD_SCANNER)) {
                     delegate?.onNeverAskAgainCardScannerPermission()
                 }
             }

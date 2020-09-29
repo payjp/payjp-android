@@ -189,16 +189,18 @@ internal class CardFormViewModel(
     fun fetchAcceptedBrands() {
         if (cardNumberInputTransformer.acceptedBrands == null) {
             task = tokenService.getAcceptedBrands(tenantId)
-            task?.enqueue(object : Task.Callback<CardBrandsAcceptedResponse> {
-                override fun onSuccess(data: CardBrandsAcceptedResponse) {
-                    cardNumberInputTransformer.acceptedBrands = data.brands
-                    acceptedBrands.value = OneOffValue(data.brands)
-                }
+            task?.enqueue(
+                object : Task.Callback<CardBrandsAcceptedResponse> {
+                    override fun onSuccess(data: CardBrandsAcceptedResponse) {
+                        cardNumberInputTransformer.acceptedBrands = data.brands
+                        acceptedBrands.value = OneOffValue(data.brands)
+                    }
 
-                override fun onError(throwable: Throwable) {
-                    errorFetchAcceptedBrands.value = OneOffValue(throwable)
+                    override fun onError(throwable: Throwable) {
+                        errorFetchAcceptedBrands.value = OneOffValue(throwable)
+                    }
                 }
-            })
+            )
         }
     }
 

@@ -40,7 +40,8 @@ import java.nio.charset.Charset
  */
 class PayjpToken internal constructor(
     private val configuration: PayjpTokenConfiguration,
-    private val payjpApi: PayjpApi
+    private val payjpApi: PayjpApi,
+    private val tokenOperationObserver: PayjpTokenOperationObserverInternal = PayjpTokenOperationObserver
 ) : PayjpTokenService {
 
     /**
@@ -71,6 +72,7 @@ class PayjpToken internal constructor(
     override fun getPublicKey(): String = configuration.publicKey
 
     override fun createToken(param: PayjpTokenParam): Task<Token> {
+        checkTokenOperationStatus()
         return payjpApi.createToken(
             authorization = authorization,
             number = param.number,
@@ -79,14 +81,15 @@ class PayjpToken internal constructor(
             expYear = param.expYear,
             name = param.name,
             tenant = param.tenantId?.id
-        )
+        ).let { this.wrapWithObserver(it) }
     }
 
     override fun createToken(threeDSecureToken: ThreeDSecureToken): Task<Token> {
+        checkTokenOperationStatus()
         return payjpApi.createToken(
             authorization = authorization,
             tdsId = threeDSecureToken.id
-        )
+        ).let { this.wrapWithObserver(it) }
     }
 
     /**
@@ -107,8 +110,52 @@ class PayjpToken internal constructor(
         return payjpApi.getAcceptedBrands(authorization, tenantId?.id)
     }
 
+    override fun getTokenOperationObserver(): PayjpTokenOperationObserverService = tokenOperationObserver
+
     private fun createAuthorization(publicKey: String) =
         "$publicKey:".toByteArray(Charset.forName("UTF-8"))
             .let { data -> Base64.encodeToString(data, Base64.NO_WRAP) }
             .let { credential -> "Basic $credential" }
+
+    private fun checkTokenOperationStatus() {
+        tokenOperationObserver.status.takeIf { it != PayjpTokenOperationStatus.ACCEPTABLE }?.let {
+            PayjpLogger.get(configuration.debugEnabled)
+                .w(
+                    "The PayjpTokenOperationStatus is now `$it`, " +
+                        "We recommend waiting for the request until the status is `ACCEPTABLE`."
+                )
+        }
+    }
+
+    private fun <T> wrapWithObserver(task: Task<T>): Task<T> = object : Task<T> {
+        override fun run(): T = try {
+            tokenOperationObserver.startRequest()
+            task.run()
+        } finally {
+            tokenOperationObserver.completeRequest()
+        }
+
+        override fun enqueue(callback: Task.Callback<T>) {
+            tokenOperationObserver.startRequest()
+            task.enqueue(
+                object : Task.Callback<T> {
+                    override fun onSuccess(data: T) {
+                        tokenOperationObserver.completeRequest()
+                        callback.onSuccess(data)
+                    }
+
+                    override fun onError(throwable: Throwable) {
+                        tokenOperationObserver.completeRequest()
+                        callback.onError(throwable)
+                    }
+                }
+            )
+        }
+
+        override fun isExecuted(): Boolean = task.isExecuted()
+
+        override fun cancel() = task.cancel()
+
+        override fun isCanceled(): Boolean = task.isCanceled()
+    }
 }

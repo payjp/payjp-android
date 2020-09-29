@@ -34,16 +34,14 @@ import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.google.android.material.shape.AbsoluteCornerSize
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import jp.pay.android.R
+import jp.pay.android.databinding.PayjpCardDisplayViewBinding
 import jp.pay.android.model.CardBrand
 import jp.pay.android.ui.extension.displayLogoResourceId
 import jp.pay.android.ui.extension.fullMaskedPan
@@ -63,14 +61,8 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
         private const val CAMERA_DISTANCE_DEFAULT = 1280 * 5
     }
 
-    private val frameFront: ViewGroup
-    private val frameBack: ViewGroup
-    private val numberDisplay: TextView
-    private val expirationDisplay: TextView
-    private val holderDisplay: TextView
-    private val cvcDisplay: TextView
-    private val cvcDisplayAmex: TextView
-    private val brandLogo: ImageView
+    private val binding: PayjpCardDisplayViewBinding =
+        PayjpCardDisplayViewBinding.inflate(LayoutInflater.from(context), this, true)
 
     private val cardNumberValidator = CardNumberValidator
     private val frontToBack: AnimatorSet
@@ -81,21 +73,10 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
     private var currentNum: CharSequence? = null
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.payjp_card_display_view, this, true)
-
-        frameFront = findViewById(R.id.card_display_front)
-        frameBack = findViewById(R.id.card_display_back)
-        numberDisplay = findViewById(R.id.display_pan)
-        expirationDisplay = findViewById(R.id.display_expiration)
-        holderDisplay = findViewById(R.id.display_holder)
-        cvcDisplay = findViewById(R.id.display_cvc_default)
-        cvcDisplayAmex = findViewById(R.id.display_cvc_amex)
-        brandLogo = findViewById(R.id.display_brand_logo)
-
         val scale = resources.displayMetrics.density
         (CAMERA_DISTANCE_DEFAULT * scale).let {
-            frameFront.cameraDistance = it
-            frameBack.cameraDistance = it
+            binding.cardDisplayFront.cameraDistance = it
+            binding.cardDisplayBack.cameraDistance = it
         }
 
         val cardBackModel = ShapeAppearanceModel.Builder()
@@ -105,17 +86,17 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
         val defaultBackground = MaterialShapeDrawable(cardBackModel).apply {
             fillColor = ColorStateList.valueOf(backgroundColor)
         }
-        frameFront.background = defaultBackground
-        frameBack.background = defaultBackground
+        binding.cardDisplayFront.background = defaultBackground
+        binding.cardDisplayBack.background = defaultBackground
 
-        frontToBack = createFlipAnimator(frameFront, frameBack).apply {
+        frontToBack = createFlipAnimator(binding.cardDisplayFront, binding.cardDisplayBack).apply {
             addListener(
                 AnimatorOnEndListener {
                     frontVisible = false
                 }
             )
         }
-        backToFront = createFlipAnimator(frameBack, frameFront, true).apply {
+        backToFront = createFlipAnimator(binding.cardDisplayBack, binding.cardDisplayFront, true).apply {
             addListener(
                 AnimatorOnEndListener {
                     frontVisible = true
@@ -150,12 +131,12 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
             return
         }
         this.brand = brand
-        cvcDisplayAmex.visibility = when (brand) {
+        binding.displayCvcAmex.visibility = when (brand) {
             CardBrand.AMEX -> View.VISIBLE
             else -> View.INVISIBLE
         }
-        brand.displayLogoResourceId?.let { brandLogo.setImageResource(it) }
-        brandLogo.visibility = when (brand) {
+        brand.displayLogoResourceId?.let { binding.displayBrandLogo.setImageResource(it) }
+        binding.displayBrandLogo.visibility = when (brand) {
             CardBrand.UNKNOWN -> View.GONE
             else -> View.VISIBLE
         }
@@ -170,13 +151,13 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
 
     private fun updateHighlight(elementType: CardFormElementType, highlighted: Boolean) {
         val view = when (elementType) {
-            CardFormElementType.Number -> numberDisplay
-            CardFormElementType.Expiration -> expirationDisplay
+            CardFormElementType.Number -> binding.displayPan
+            CardFormElementType.Expiration -> binding.displayExpiration
             CardFormElementType.Cvc -> when (brand) {
-                CardBrand.AMEX -> cvcDisplayAmex
-                else -> cvcDisplay
+                CardBrand.AMEX -> binding.displayCvcAmex
+                else -> binding.displayCvcDefault
             }
-            CardFormElementType.HolderName -> holderDisplay
+            CardFormElementType.HolderName -> binding.displayHolder
         }
         view.background = highlightBackground.takeIf { highlighted }
     }
@@ -184,14 +165,13 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
     private fun toggleCardNumber(hasFocus: Boolean) {
         currentNum?.let { pan ->
             // only if number has valid length.
-            if (cardNumberValidator.isCardNumberLengthValid(
-                pan.filter(Character::isDigit).toString(), brand
-            ) == CardNumberValidatorService.CardNumberLengthStatus.MATCH
-            ) {
+            val digits = pan.filter(Character::isDigit).toString()
+            val status = cardNumberValidator.isCardNumberLengthValid(digits, brand)
+            if (status == CardNumberValidatorService.CardNumberLengthStatus.MATCH) {
                 if (hasFocus) {
-                    this.numberDisplay.text = pan
+                    this.binding.displayPan.text = pan
                 } else {
-                    this.numberDisplay.text =
+                    this.binding.displayPan.text =
                         brand.lastMaskedPan(maskChar = '•', delimiter = ' ', src = pan, lastSize = 4)
                 }
             }
@@ -200,28 +180,28 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
 
     fun setCardNumber(cardNumber: CharSequence) {
         val allMask = brand.fullMaskedPan(maskChar = 'X', delimiter = ' ')
-        this.numberDisplay.text = filledWithHintSpannable(cardNumber, allMask).also {
+        this.binding.displayPan.text = filledWithHintSpannable(cardNumber, allMask).also {
             currentNum = it
         }
     }
 
     fun setCardExpiration(cardExpiration: CharSequence) {
-        this.expirationDisplay.text = filledWithHintSpannable(cardExpiration, "MM/YY")
+        binding.displayExpiration.text = filledWithHintSpannable(cardExpiration, "MM/YY")
     }
 
     fun setCardHolderName(cardHolderName: CharSequence) {
-        this.holderDisplay.text = cardHolderName
+        binding.displayHolder.text = cardHolderName
     }
 
     fun setCardCvcInputLength(length: Int) {
         val text = "•".repeat(length)
-        this.cvcDisplay.text = filledWithHintSpannable(
+        binding.displayCvcDefault.text = filledWithHintSpannable(
             actual = text,
             hint = "•••",
             textColorRes = R.color.payjp_card_display_text_color_cvc_default,
             textHintColorRes = R.color.payjp_card_display_text_color_hint_cvc_default
         )
-        this.cvcDisplayAmex.text = filledWithHintSpannable(
+        binding.displayCvcAmex.text = filledWithHintSpannable(
             actual = text,
             hint = "••••"
         )

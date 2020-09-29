@@ -200,7 +200,7 @@ internal class CardFormViewModelTest {
 
     @Test
     fun isValid_correct_input() {
-        val robot = CardRobot()
+        val robot = CardRobot.SandboxVisa
         mockCorrectInput()
         createViewModel().run {
             inputCardNumber(robot.number)
@@ -213,7 +213,7 @@ internal class CardFormViewModelTest {
 
     @Test
     fun isValid_incorrect_input() {
-        val robot = CardRobot()
+        val robot = CardRobot.SandboxVisa
         mockCorrectInput()
         reset(cardCvcInputTransformer)
         `when`(cardCvcInputTransformer.transform(anyString()))
@@ -229,7 +229,7 @@ internal class CardFormViewModelTest {
 
     @Test
     fun not_required_card_holder_name_if_not_enabled() {
-        val robot = CardRobot()
+        val robot = CardRobot.SandboxVisa
         mockCorrectInput()
         createViewModel().run {
             inputCardNumber(robot.number)
@@ -503,7 +503,7 @@ internal class CardFormViewModelTest {
             )
         )
             .thenReturn(Tasks.success(TestStubs.newToken()))
-        val robot = CardRobot()
+        val robot = CardRobot.SandboxVisa
         mockCorrectInput(
             "4242424242424242",
             CardExpiration("12", "2030"),
@@ -540,7 +540,7 @@ internal class CardFormViewModelTest {
             )
         )
             .thenReturn(Tasks.success(TestStubs.newToken()))
-        val robot = CardRobot()
+        val robot = CardRobot.SandboxVisa
         mockCorrectInput(
             "4242424242424242",
             CardExpiration("12", "2030"),

@@ -28,6 +28,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.payjp.sample.databinding.ActivityCardFormViewSampleBinding
 import jp.pay.android.Payjp
 import jp.pay.android.coroutine.createTokenSuspend
 import jp.pay.android.coroutine.getTokenSuspend
@@ -35,15 +36,6 @@ import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
-import jp.pay.android.verifier.ui.PayjpThreeDSecureResultCallback
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token_with_validate
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_get_token
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.layout_buttons
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.progress_bar
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.switch_card_holder_name
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_content
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_id
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -56,25 +48,27 @@ private const val FRAGMENT_CARD_FORM = "FRAGMENT_CARD_FORM"
 class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private lateinit var cardFormFragment: PayjpCardFormAbstractFragment
+    private lateinit var binding: ActivityCardFormViewSampleBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_card_form_view_sample)
+        binding = ActivityCardFormViewSampleBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         findCardFormFragment()
-        button_create_token.setOnClickListener {
+        binding.buttonCreateToken.setOnClickListener {
             createToken()
         }
-        button_create_token_with_validate.setOnClickListener {
+        binding.buttonCreateTokenWithValidate.setOnClickListener {
             if (cardFormFragment.validateCardForm()) {
                 createToken()
             }
         }
 
-        button_get_token.setOnClickListener {
-            getToken(text_token_id.text.toString())
+        binding.buttonGetToken.setOnClickListener {
+            getToken(binding.textTokenId.text.toString())
         }
 
-        switch_card_holder_name.setOnCheckedChangeListener { _, isChecked ->
+        binding.switchCardHolderName.setOnCheckedChangeListener { _, isChecked ->
             cardFormFragment.setCardHolderNameInputEnabled(isChecked)
         }
     }
@@ -86,22 +80,19 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Payjp.verifier().handleThreeDSecureResult(
-            requestCode,
-            PayjpThreeDSecureResultCallback {
-                if (it.isSuccess()) {
-                    createToken(tdsToken = it.retrieveThreeDSecureToken())
-                } else {
-                    Toast.makeText(this, "3-D Secure canceled.", Toast.LENGTH_SHORT).show()
-                }
+        Payjp.verifier().handleThreeDSecureResult(requestCode) {
+            if (it.isSuccess()) {
+                createToken(tdsToken = it.retrieveThreeDSecureToken())
+            } else {
+                Toast.makeText(this, "3-D Secure canceled.", Toast.LENGTH_SHORT).show()
             }
-        )
+        }
     }
 
     private fun createToken(tdsToken: ThreeDSecureToken? = null) = launch {
-        layout_buttons.visibility = View.INVISIBLE
-        progress_bar.visibility = View.VISIBLE
-        text_token_content.visibility = View.INVISIBLE
+        binding.layoutButtons.visibility = View.INVISIBLE
+        binding.progressBar.visibility = View.VISIBLE
+        binding.textTokenContent.visibility = View.INVISIBLE
         try {
             val token = withContext(Dispatchers.IO) {
                 if (tdsToken == null) {
@@ -119,9 +110,9 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
     }
 
     private fun getToken(id: String) = launch {
-        layout_buttons.visibility = View.INVISIBLE
-        progress_bar.visibility = View.VISIBLE
-        text_token_content.visibility = View.INVISIBLE
+        binding.layoutButtons.visibility = View.INVISIBLE
+        binding.progressBar.visibility = View.VISIBLE
+        binding.textTokenContent.visibility = View.INVISIBLE
         try {
             val token = withContext(Dispatchers.IO) { Payjp.token().getTokenSuspend(id) }
             updateSuccessUI(token)
@@ -132,19 +123,19 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
 
     private fun updateSuccessUI(token: Token) {
         Log.i("CardFormViewSample", "token => $token")
-        text_token_id.setText(token.id)
-        text_token_content.text = token.toString()
-        progress_bar.visibility = View.GONE
-        layout_buttons.visibility = View.VISIBLE
-        text_token_content.visibility = View.VISIBLE
+        binding.textTokenId.setText(token.id)
+        binding.textTokenContent.text = token.toString()
+        binding.progressBar.visibility = View.GONE
+        binding.layoutButtons.visibility = View.VISIBLE
+        binding.textTokenContent.visibility = View.VISIBLE
     }
 
     private fun updateErrorUI(t: Throwable, message: String) {
         Log.e("CardFormViewSample", message, t)
-        text_token_content.text = t.toString()
-        progress_bar.visibility = View.GONE
-        layout_buttons.visibility = View.VISIBLE
-        text_token_content.visibility = View.VISIBLE
+        binding.textTokenContent.text = t.toString()
+        binding.progressBar.visibility = View.GONE
+        binding.layoutButtons.visibility = View.VISIBLE
+        binding.textTokenContent.visibility = View.VISIBLE
     }
 
     private fun findCardFormFragment() {

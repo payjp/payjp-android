@@ -22,9 +22,16 @@
  */
 package jp.pay.android
 
-data class CardRobot(
-    val number: String = "4242424242424242",
-    val exp: String = "12/30",
-    val cvc: String = "123",
-    val name: String = "TARO YAMADA"
-)
+sealed class CardRobot {
+    abstract val number: String
+    abstract val exp: String
+    abstract val cvc: String
+    abstract val name: String
+
+    object SandboxVisa : CardRobot() {
+        override val number: String = "4242424242424242"
+        override val exp: String = "12/30"
+        override val cvc: String = "123"
+        override val name: String = "TARO YAMADA"
+    }
+}

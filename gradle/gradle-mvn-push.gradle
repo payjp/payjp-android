@@ -45,20 +45,9 @@ def kotlinAndroidArtifactTasks() {
         throw new GradleException("Apply the dokka-android plugin in ${project.name}")
     }
 
-    dokka {
-        outputFormat = 'javadoc'
-        outputDirectory = "$buildDir/docs/kdoc"
-        configuration {
-            sourceRoot {
-                path = project.file("src/main/kotlin").path
-            }
-            includeNonPublic = false
-        }
-    }
-
-    task docJar(type: Jar, dependsOn: dokka) {
+    task docJar(type: Jar, dependsOn: dokkaJavadoc) {
         archiveClassifier.set('javadoc')
-        from dokka.outputDirectory
+        from tasks.named("dokkaJavadoc").flatMap { it.outputDirectory }
     }
 
     task sourceJar(type: Jar) {

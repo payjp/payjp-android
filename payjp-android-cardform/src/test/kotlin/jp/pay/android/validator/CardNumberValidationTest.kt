@@ -104,7 +104,8 @@ internal class CardNumberValidationTest(
     fun checkLength() {
         assertThat(
             "cardNumber $cardNumber",
-            CardNumberValidator.isCardNumberLengthValid(cardNumber, brand), `is`(isLengthValid)
+            CardNumberValidator.isCardNumberLengthValid(cardNumber, brand),
+            `is`(isLengthValid)
         )
     }
 }

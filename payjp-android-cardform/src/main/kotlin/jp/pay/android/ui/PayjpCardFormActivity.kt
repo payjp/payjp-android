@@ -28,10 +28,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.IBinder
 import android.view.KeyEvent
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
@@ -42,24 +39,24 @@ import androidx.lifecycle.observe
 import com.google.android.material.snackbar.Snackbar
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
+import jp.pay.android.databinding.PayjpCardFormActivityBinding
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.ui.extension.showWith
-import jp.pay.android.ui.widget.PayjpAcceptedBrandsView
 import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
+import jp.pay.android.ui.widget.onClickDebounced
 import jp.pay.android.util.nonNull
 import jp.pay.android.verifier.PayjpVerifier
-import jp.pay.android.verifier.ui.PayjpThreeDSecureResultCallback
 
 /**
  * PayjpCardFormActivity show card form.
  *
  */
 internal class PayjpCardFormActivity :
-    AppCompatActivity(R.layout.payjp_card_form_activity),
+    AppCompatActivity(),
     PayjpCardFormView.OnValidateInputListener,
     PayjpCardFormView.CardFormEditorListener {
 
@@ -70,6 +67,18 @@ internal class PayjpCardFormActivity :
         private const val EXTRA_KEY_FACE = "EXTRA_KEY_FACE"
         private const val CARD_FORM_EXTRA_KEY_TOKEN = "DATA"
 
+        fun createIntent(
+            context: Context,
+            tenant: TenantId?,
+            @PayjpCardForm.CardFormFace face: Int
+        ): Intent = Intent(context, PayjpCardFormActivity::class.java)
+            .putExtra(EXTRA_KEY_FACE, face)
+            .apply {
+                if (tenant != null) {
+                    putExtra(EXTRA_KEY_TENANT, tenant.id)
+                }
+            }
+
         fun start(
             activity: Activity,
             requestCode: Int?,
@@ -77,14 +86,8 @@ internal class PayjpCardFormActivity :
             @PayjpCardForm.CardFormFace face: Int
         ) {
             activity.startActivityForResult(
-                Intent(activity, PayjpCardFormActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                    .putExtra(EXTRA_KEY_FACE, face)
-                    .apply {
-                        if (tenant != null) {
-                            putExtra(EXTRA_KEY_TENANT, tenant.id)
-                        }
-                    },
+                createIntent(activity, tenant, face)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
             )
         }
@@ -96,14 +99,8 @@ internal class PayjpCardFormActivity :
             @PayjpCardForm.CardFormFace face: Int
         ) {
             fragment.startActivityForResult(
-                Intent(fragment.requireActivity(), PayjpCardFormActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                    .apply {
-                        if (tenant != null) {
-                            putExtra(EXTRA_KEY_TENANT, tenant.id)
-                            putExtra(EXTRA_KEY_FACE, face)
-                        }
-                    },
+                createIntent(fragment.requireActivity(), tenant, face)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
             )
         }
@@ -119,6 +116,7 @@ internal class PayjpCardFormActivity :
         }
     }
 
+    private lateinit var binding: PayjpCardFormActivityBinding
     private val tenantId: TenantId? by lazy {
         intent?.getStringExtra(EXTRA_KEY_TENANT)?.let { TenantId(it) }
     }
@@ -134,6 +132,8 @@ internal class PayjpCardFormActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = PayjpCardFormActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setTitle(R.string.payjp_card_form_screen_title)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setUpUI()
@@ -142,12 +142,9 @@ internal class PayjpCardFormActivity :
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        PayjpVerifier.handleThreeDSecureResult(
-            requestCode,
-            PayjpThreeDSecureResultCallback { result ->
-                viewModel?.onCompleteCardVerify(result)
-            }
-        )
+        PayjpVerifier.handleThreeDSecureResult(requestCode) { result ->
+            viewModel?.onCompleteCardVerify(result)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -169,20 +166,12 @@ internal class PayjpCardFormActivity :
     }
 
     private fun setUpUI() {
-        val acceptedBrandsView = findViewById<PayjpAcceptedBrandsView>(R.id.accepted_brands)
-        val submitButton = findViewById<Button>(R.id.card_form_button)
-        val submitButtonProgress = findViewById<ProgressBar>(R.id.card_form_button_progress)
-        submitButton.setOnClickListener {
+        binding.cardFormButton.onClickDebounced {
             performSubmitButton(it.windowToken)
         }
-        val loadingView = findViewById<ViewGroup>(R.id.loading_view)
-        val errorView = findViewById<ViewGroup>(R.id.error_view)
-        val reloadContentButton = findViewById<Button>(R.id.reload_content_button)
-        reloadContentButton.setOnClickListener {
+        binding.reloadContentButton.onClickDebounced {
             viewModel?.onClickReload()
         }
-        val errorMessageView = findViewById<TextView>(R.id.error_message)
-        val contentView = findViewById<ViewGroup>(R.id.content_view)
 
         val vmFactory = CardFormScreenViewModel.Factory(
             owner = this,
@@ -196,15 +185,15 @@ internal class PayjpCardFormActivity :
         viewModel = ViewModelProvider(this, vmFactory).get(CardFormScreenViewModel::class.java)
             .also { vm ->
                 lifecycle.addObserver(vm)
-                vm.acceptedBrands.nonNull().observe(this, acceptedBrandsView::setAcceptedBrands)
-                vm.contentViewVisibility.observe(this, contentView::setVisibility)
-                vm.errorViewVisibility.observe(this, errorView::setVisibility)
-                vm.loadingViewVisibility.observe(this, loadingView::setVisibility)
-                vm.reloadContentButtonVisibility.observe(this, reloadContentButton::setVisibility)
-                vm.submitButtonVisibility.observe(this, submitButton::setVisibility)
-                vm.submitButtonProgressVisibility.observe(this, submitButtonProgress::setVisibility)
-                vm.submitButtonIsEnabled.observe(this, submitButton::setEnabled)
-                vm.errorViewText.observe(this, errorMessageView::setText)
+                vm.acceptedBrands.nonNull().observe(this, binding.acceptedBrands::setAcceptedBrands)
+                vm.contentViewVisibility.observe(this, binding.contentView::setVisibility)
+                vm.errorViewVisibility.observe(this, binding.errorView::setVisibility)
+                vm.loadingViewVisibility.observe(this, binding.contentLoadingProgress::setVisibility)
+                vm.reloadContentButtonVisibility.observe(this, binding.reloadContentButton::setVisibility)
+                vm.submitButtonVisibility.observe(this, binding.cardFormButton::setVisibility)
+                vm.submitButtonProgressVisibility.observe(this, binding.cardFormButtonProgress::setVisibility)
+                vm.submitButtonIsEnabled.observe(this, binding.cardFormButton::setEnabled)
+                vm.errorViewText.observe(this, binding.errorMessage::setText)
                 vm.addCardFormCommand.nonNull().observe(this) { brands ->
                     cardFormFragment = addCardFormFragment(brands.toTypedArray())
                     viewModel?.onAddedCardForm()
@@ -257,7 +246,7 @@ internal class PayjpCardFormActivity :
     }
 
     private fun showSnackBarMessage(@StringRes message: Int) {
-        Snackbar.make(findViewById(R.id.content_view), message, Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(binding.contentView, message, Snackbar.LENGTH_SHORT).show()
         viewModel?.onDisplaySnackBarMessage()
     }
 

@@ -22,6 +22,7 @@
  */
 package com.example.payjp.sample
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -32,7 +33,9 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import com.example.payjp.sample.databinding.ActivityCardFormViewSampleBinding
 import jp.pay.android.Payjp
+import jp.pay.android.PayjpTokenOperationStatus
 import jp.pay.android.Task
 import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.model.CardBrand
@@ -40,18 +43,10 @@ import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
-import jp.pay.android.verifier.ui.PayjpThreeDSecureResultCallback
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_create_token_with_validate
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.button_get_token
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.layout_buttons
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.progress_bar
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.switch_card_holder_name
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_content
-import kotlinx.android.synthetic.main.activity_card_form_view_sample.text_token_id
 
 private const val FRAGMENT_CARD_FORM = "FRAGMENT_CARD_FORM"
 
+@SuppressLint("SetTextI18n")
 class CardFormViewSampleActivity :
     AppCompatActivity(),
     PayjpCardFormView.OnValidateInputListener,
@@ -59,10 +54,12 @@ class CardFormViewSampleActivity :
 
     private var createToken: Task<Token>? = null
     private var getToken: Task<Token>? = null
+    private var tokenizeProcessing: Boolean = false
     private lateinit var cardFormFragment: PayjpCardFormAbstractFragment
+    private lateinit var binding: ActivityCardFormViewSampleBinding
 
     override fun onValidateInput(view: PayjpCardFormView, isValid: Boolean) {
-        button_create_token.isEnabled = isValid
+        binding.buttonCreateToken.isEnabled = isValid
     }
 
     override fun onSuccessFetchAcceptedBrands(brands: MutableList<CardBrand>) {
@@ -76,33 +73,37 @@ class CardFormViewSampleActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(restoreTheme().id)
-        setContentView(R.layout.activity_card_form_view_sample)
+        binding = ActivityCardFormViewSampleBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         findCardFormFragment()
-        button_create_token.setOnClickListener {
+        binding.buttonCreateToken.setOnClickListener {
             if (!cardFormFragment.isValid) {
                 return@setOnClickListener
             }
             createToken()
         }
-        button_create_token_with_validate.setOnClickListener {
+        binding.buttonCreateTokenWithValidate.setOnClickListener {
             if (cardFormFragment.validateCardForm()) {
                 createToken()
             }
         }
 
-        button_get_token.setOnClickListener {
-            getToken(text_token_id.text.toString())
+        binding.buttonGetToken.setOnClickListener {
+            getToken(binding.textTokenId.text.toString())
         }
 
-        switch_card_holder_name.setOnCheckedChangeListener { _, isChecked ->
+        binding.switchCardHolderName.setOnCheckedChangeListener { _, isChecked ->
             cardFormFragment.setCardHolderNameInputEnabled(isChecked)
         }
+
+        Payjp.token().getTokenOperationObserver().addListener { updateButtonVisibility() }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         createToken?.cancel()
         getToken?.cancel()
+        Payjp.token().getTokenOperationObserver().removeAllListeners()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -126,72 +127,69 @@ class CardFormViewSampleActivity :
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Payjp.verifier().handleThreeDSecureResult(
-            requestCode,
-            PayjpThreeDSecureResultCallback {
-                if (it.isSuccess()) {
-                    createTokenForTds(it.retrieveThreeDSecureToken())
+        Payjp.verifier().handleThreeDSecureResult(requestCode) {
+            if (it.isSuccess()) {
+                createTokenForTds(it.retrieveThreeDSecureToken())
+            }
+        }
+    }
+
+    private fun createToken() {
+        // create token
+        createToken = cardFormFragment.createToken()
+        tokenizeProcessing = true
+        updateButtonVisibility()
+        binding.textTokenContent.text = "running..."
+        createToken?.enqueue(
+            object : Task.Callback<Token> {
+                override fun onSuccess(data: Token) {
+                    Log.i("CardFormViewSample", "token => $data")
+                    tokenizeProcessing = false
+                    binding.textTokenId.setText(data.id)
+                    binding.textTokenContent.text = "The token has created."
+                    updateButtonVisibility()
+                }
+
+                override fun onError(throwable: Throwable) {
+                    Log.e("CardFormViewSample", "failure creating token", throwable)
+                    if (throwable is PayjpThreeDSecureRequiredException) {
+                        // if support 3DSecure
+                        // NOTE: 3DSecure is a limited feature for now.
+                        Payjp.verifier()
+                            .startThreeDSecureFlow(throwable.token, this@CardFormViewSampleActivity)
+                    } else {
+                        tokenizeProcessing = false
+                        binding.textTokenContent.text = throwable.toString()
+                        updateButtonVisibility()
+                    }
                 }
             }
         )
     }
 
-    private fun createToken() {
-        layout_buttons.visibility = View.INVISIBLE
-        progress_bar.visibility = View.VISIBLE
-        text_token_content.visibility = View.INVISIBLE
-        // create token
-        createToken = cardFormFragment.createToken()
-        createToken?.enqueue(object : Task.Callback<Token> {
-            override fun onSuccess(data: Token) {
-                Log.i("CardFormViewSample", "token => $data")
-                text_token_id.setText(data.id)
-                text_token_content.text = "The token has created."
-                progress_bar.visibility = View.GONE
-                layout_buttons.visibility = View.VISIBLE
-                text_token_content.visibility = View.VISIBLE
-            }
-
-            override fun onError(throwable: Throwable) {
-                Log.e("CardFormViewSample", "failure creating token", throwable)
-                if (throwable is PayjpThreeDSecureRequiredException) {
-                    // if support 3DSecure
-                    // NOTE: 3DSecure is a limited feature for now.
-                    Payjp.verifier()
-                        .startThreeDSecureFlow(throwable.token, this@CardFormViewSampleActivity)
-                } else {
-                    text_token_content.text = throwable.toString()
-                    progress_bar.visibility = View.GONE
-                    layout_buttons.visibility = View.VISIBLE
-                    text_token_content.visibility = View.VISIBLE
-                }
-            }
-        })
-    }
-
     private fun getToken(id: String) {
-        layout_buttons.visibility = View.INVISIBLE
-        progress_bar.visibility = View.VISIBLE
-        text_token_content.visibility = View.INVISIBLE
+        binding.textTokenContent.text = "running..."
         // get token
         getToken = Payjp.token().getToken(id)
-        getToken?.enqueue(object : Task.Callback<Token> {
-            override fun onSuccess(data: Token) {
-                Log.i("CardFormViewSample", "token => $data")
-                text_token_content.text = data.toString()
-                progress_bar.visibility = View.GONE
-                layout_buttons.visibility = View.VISIBLE
-                text_token_content.visibility = View.VISIBLE
-            }
+        tokenizeProcessing = true
+        updateButtonVisibility()
+        getToken?.enqueue(
+            object : Task.Callback<Token> {
+                override fun onSuccess(data: Token) {
+                    Log.i("CardFormViewSample", "token => $data")
+                    tokenizeProcessing = false
+                    binding.textTokenContent.text = data.toString()
+                    updateButtonVisibility()
+                }
 
-            override fun onError(throwable: Throwable) {
-                Log.e("CardFormViewSample", "failure creating token", throwable)
-                text_token_content.text = throwable.toString()
-                progress_bar.visibility = View.GONE
-                layout_buttons.visibility = View.VISIBLE
-                text_token_content.visibility = View.VISIBLE
+                override fun onError(throwable: Throwable) {
+                    Log.e("CardFormViewSample", "failure creating token", throwable)
+                    tokenizeProcessing = false
+                    binding.textTokenContent.text = throwable.toString()
+                    updateButtonVisibility()
+                }
             }
-        })
+        )
     }
 
     private fun findCardFormFragment() {
@@ -246,29 +244,39 @@ class CardFormViewSampleActivity :
     }
 
     private fun createTokenForTds(tdsToken: ThreeDSecureToken) {
-        layout_buttons.visibility = View.INVISIBLE
-        progress_bar.visibility = View.VISIBLE
-        text_token_content.visibility = View.INVISIBLE
         // create token by 3DS
         createToken = Payjp.token().createToken(tdsToken)
-        createToken?.enqueue(object : Task.Callback<Token> {
-            override fun onSuccess(data: Token) {
-                Log.i("CardFormViewSample", "token => $data")
-                text_token_id.setText(data.id)
-                text_token_content.text = "The token has created."
-                progress_bar.visibility = View.GONE
-                layout_buttons.visibility = View.VISIBLE
-                text_token_content.visibility = View.VISIBLE
-            }
+        tokenizeProcessing = true
+        updateButtonVisibility()
+        binding.textTokenContent.text = "running..."
+        createToken?.enqueue(
+            object : Task.Callback<Token> {
+                override fun onSuccess(data: Token) {
+                    Log.i("CardFormViewSample", "token => $data")
+                    tokenizeProcessing = false
+                    binding.textTokenId.setText(data.id)
+                    binding.textTokenContent.text = "The token has created."
+                    updateButtonVisibility()
+                }
 
-            override fun onError(throwable: Throwable) {
-                Log.e("CardFormViewSample", "failure creating token", throwable)
-                text_token_content.text = throwable.toString()
-                progress_bar.visibility = View.GONE
-                layout_buttons.visibility = View.VISIBLE
-                text_token_content.visibility = View.VISIBLE
+                override fun onError(throwable: Throwable) {
+                    Log.e("CardFormViewSample", "failure creating token", throwable)
+                    tokenizeProcessing = false
+                    binding.textTokenContent.text = throwable.toString()
+                    updateButtonVisibility()
+                }
             }
-        })
+        )
+    }
+
+    private fun updateButtonVisibility() {
+        if (!tokenizeProcessing && Payjp.token().getTokenOperationObserver().status == PayjpTokenOperationStatus.ACCEPTABLE) {
+            binding.layoutButtons.visibility = View.VISIBLE
+            binding.progressBar.visibility = View.GONE
+        } else {
+            binding.layoutButtons.visibility = View.INVISIBLE
+            binding.progressBar.visibility = View.VISIBLE
+        }
     }
 }
 

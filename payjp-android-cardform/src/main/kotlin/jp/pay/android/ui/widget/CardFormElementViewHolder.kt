@@ -27,15 +27,17 @@ import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
 import android.view.KeyEvent
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.autofill.AutofillId
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import jp.pay.android.R
+import jp.pay.android.databinding.PayjpCardFormElementCvcLayoutBinding
+import jp.pay.android.databinding.PayjpCardFormElementExpirationLayoutBinding
+import jp.pay.android.databinding.PayjpCardFormElementHolderNameLayoutBinding
+import jp.pay.android.databinding.PayjpCardFormElementNumberLayoutBinding
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput
 import jp.pay.android.plugin.CardScannerPlugin
@@ -47,18 +49,17 @@ internal typealias OnCardFormElementEditorAction = (type: CardFormElementType, v
 internal typealias OnCardFormElementFocusChanged = (type: CardFormElementType, view: View, hasFocus: Boolean) -> Unit
 internal typealias OnCardFormElementKeyDownDeleteWithEmpty = (type: CardFormElementType, view: View) -> Boolean
 
-internal sealed class CardFormElementViewHolder(
+internal sealed class CardFormElementViewHolder<V : ViewBinding>(
     type: CardFormElementType,
-    parent: ViewGroup,
-    layoutId: Int,
-    inputLayoutId: Int,
-    inputEditTextId: Int,
+    binding: V,
+    protected val inputLayout: TextInputLayout,
+    protected val editText: TextInputEditText,
     onTextChanged: OnCardFormElementTextChanged,
     onEditorAction: OnCardFormElementEditorAction,
     onFocusChanged: OnCardFormElementFocusChanged,
     onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
     autofillId: Any?
-) : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(layoutId, parent, false)) {
+) : RecyclerView.ViewHolder(binding.root) {
 
     private val inputTextWatcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable) {}
@@ -69,8 +70,6 @@ internal sealed class CardFormElementViewHolder(
             onTextChanged.invoke(type, s, start, before, count)
         }
     }
-    protected val inputLayout: TextInputLayout = itemView.findViewById(inputLayoutId)
-    protected val editText: TextInputEditText = itemView.findViewById(inputEditTextId)
 
     init {
         editText.addTextChangedListener(inputTextWatcher)
@@ -113,7 +112,7 @@ internal sealed class CardFormElementViewHolder(
     }
 
     class CardFormNumberElement(
-        parent: ViewGroup,
+        binding: PayjpCardFormElementNumberLayoutBinding,
         cardNumberFormatter: CardNumberFormatTextWatcher,
         scannerPlugin: CardScannerPlugin?,
         onClickScannerIcon: View.OnClickListener?,
@@ -124,12 +123,11 @@ internal sealed class CardFormElementViewHolder(
         onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
         autofillId: Any?
     ) :
-        CardFormElementViewHolder(
+        CardFormElementViewHolder<PayjpCardFormElementNumberLayoutBinding>(
             CardFormElementType.Number,
-            parent,
-            R.layout.payjp_card_form_element_number_layout,
-            R.id.input_layout_number,
-            R.id.input_edit_number,
+            binding,
+            binding.content.inputLayoutNumber,
+            binding.content.inputEditNumber,
             onTextChanged,
             onEditorAction,
             onFocusChanged,
@@ -163,7 +161,7 @@ internal sealed class CardFormElementViewHolder(
     }
 
     class CardFormExpirationElement(
-        parent: ViewGroup,
+        binding: PayjpCardFormElementExpirationLayoutBinding,
         expirationFormatter: TextWatcher,
         onTextChanged: OnCardFormElementTextChanged,
         onEditorAction: OnCardFormElementEditorAction,
@@ -171,11 +169,11 @@ internal sealed class CardFormElementViewHolder(
         onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
         autofillId: Any?
     ) :
-        CardFormElementViewHolder(
+        CardFormElementViewHolder<PayjpCardFormElementExpirationLayoutBinding>(
             CardFormElementType.Expiration,
-            parent, R.layout.payjp_card_form_element_expiration_layout,
-            R.id.input_layout_expiration,
-            R.id.input_edit_expiration,
+            binding,
+            binding.content.inputLayoutExpiration,
+            binding.content.inputEditExpiration,
             onTextChanged,
             onEditorAction,
             onFocusChanged,
@@ -201,19 +199,18 @@ internal sealed class CardFormElementViewHolder(
     }
 
     class CardFormHolderNameElement(
-        parent: ViewGroup,
+        binding: PayjpCardFormElementHolderNameLayoutBinding,
         onTextChanged: OnCardFormElementTextChanged,
         onEditorAction: OnCardFormElementEditorAction,
         onFocusChanged: OnCardFormElementFocusChanged,
         onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
         autofillId: Any?
     ) :
-        CardFormElementViewHolder(
+        CardFormElementViewHolder<PayjpCardFormElementHolderNameLayoutBinding>(
             CardFormElementType.HolderName,
-            parent,
-            R.layout.payjp_card_form_element_holder_name_layout,
-            R.id.input_layout_holder_name,
-            R.id.input_edit_holder_name,
+            binding,
+            binding.content.inputLayoutHolderName,
+            binding.content.inputEditHolderName,
             onTextChanged,
             onEditorAction,
             onFocusChanged,
@@ -231,19 +228,18 @@ internal sealed class CardFormElementViewHolder(
     }
 
     class CardFormCvcElement(
-        parent: ViewGroup,
+        binding: PayjpCardFormElementCvcLayoutBinding,
         onTextChanged: OnCardFormElementTextChanged,
         onEditorAction: OnCardFormElementEditorAction,
         onFocusChanged: OnCardFormElementFocusChanged,
         onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
         autofillId: Any?
     ) :
-        CardFormElementViewHolder(
+        CardFormElementViewHolder<PayjpCardFormElementCvcLayoutBinding>(
             CardFormElementType.Cvc,
-            parent,
-            R.layout.payjp_card_form_element_cvc_layout,
-            R.id.input_layout_cvc,
-            R.id.input_edit_cvc,
+            binding,
+            binding.content.inputLayoutCvc,
+            binding.content.inputEditCvc,
             onTextChanged,
             onEditorAction,
             onFocusChanged,

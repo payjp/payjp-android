@@ -29,34 +29,7 @@ apply plugin: 'org.jetbrains.dokka'
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
 apply from: rootProject.file("gradle/dependencies-test.gradle")
-
-android {
-    compileSdkVersion rootProject.sdkVersion
-
-    defaultConfig {
-        minSdkVersion rootProject.minSdkVersion
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    sourceSets.all {
-        java.srcDirs += "src/${name}/kotlin"
-    }
-
-    testOptions {
-        unitTests {
-            returnDefaultValues = true
-            includeAndroidResources = true
-        }
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-
-    buildFeatures {
-        buildConfig = false
-    }
-}
+apply from: rootProject.file("gradle/android-common.gradle")
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
