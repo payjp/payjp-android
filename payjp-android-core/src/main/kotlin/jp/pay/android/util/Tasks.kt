@@ -23,6 +23,7 @@
 package jp.pay.android.util
 
 import jp.pay.android.Task
+import java.lang.IllegalStateException
 
 /**
  * Utility of [Task]
@@ -80,6 +81,22 @@ object Tasks {
             override fun isCanceled(): Boolean = false
 
             override fun cancel() {}
+        }
+    }
+
+    fun <T> never(): Task<T> {
+        return object : Task<T> {
+            override fun run(): T {
+                throw IllegalStateException("never")
+            }
+
+            override fun enqueue(callback: Task.Callback<T>) {}
+
+            override fun isExecuted(): Boolean = false
+
+            override fun cancel() {}
+
+            override fun isCanceled(): Boolean = false
         }
     }
 }

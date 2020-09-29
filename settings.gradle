@@ -28,5 +28,4 @@ include ':payjp-android-core',
         ':payjp-android-cardio',
         ':payjp-android-coroutine',
         ':common-test',
-        ':documentation',
         ':sample'

@@ -21,6 +21,11 @@ or alternatively using `brew cask install fastlane`
 fastlane android check
 ```
 Runs all the tests
+### android apidocs
+```
+fastlane android apidocs
+```
+Generate API docs
 ### android create_pr_to_public
 ```
 fastlane android create_pr_to_public

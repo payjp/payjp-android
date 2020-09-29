@@ -33,10 +33,10 @@ import jp.pay.android.model.ApiError
  * @param apiError error information from api response
  * @param source raw json string
  */
-class PayjpApiException(
+open class PayjpApiException(
     override val message: String,
     override val cause: Throwable,
-    val httpStatusCode: Int,
-    val apiError: ApiError,
-    val source: String?
+    open val httpStatusCode: Int,
+    open val apiError: ApiError,
+    open val source: String?
 ) : RuntimeException(message, cause)

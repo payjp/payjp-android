@@ -32,25 +32,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import jp.pay.android.PayjpLogger
 import jp.pay.android.verifier.PayjpVerifier
-import jp.pay.android.verifier.R
+import jp.pay.android.verifier.databinding.PayjpWebActivityBinding
 
 /**
  * PayjpWebActivity
  *
  */
-class PayjpWebActivity :
-    AppCompatActivity(R.layout.payjp_web_activity),
-    LifecycleObserver {
+class PayjpWebActivity : AppCompatActivity(), LifecycleObserver {
 
     companion object {
-        private const val EXTRA_KEY_START_URI = "EXTRA_KEY_START_URI"
-        private const val EXTRA_KEY_CALLBACK_URI = "EXTRA_KEY_CALLBACK_URI"
-        private const val EXTRA_KEY_TITLE = "EXTRA_KEY_TITLE"
+        internal const val EXTRA_KEY_START_URI = "EXTRA_KEY_START_URI"
+        internal const val EXTRA_KEY_CALLBACK_URI = "EXTRA_KEY_CALLBACK_URI"
+        internal const val EXTRA_KEY_TITLE = "EXTRA_KEY_TITLE"
 
         fun createIntent(context: Context, startUri: Uri, callbackUri: Uri, title: String): Intent {
             return Intent(context, PayjpWebActivity::class.java)
@@ -72,11 +69,13 @@ class PayjpWebActivity :
         intent.getStringExtra(EXTRA_KEY_TITLE)
     }
 
-    private lateinit var webView: VerifierWebView
+    private lateinit var binding: PayjpWebActivityBinding
     private val logger: PayjpLogger = PayjpVerifier.logger()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = PayjpWebActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setUpUI()
         lifecycle.addObserver(this)
@@ -89,8 +88,8 @@ class PayjpWebActivity :
     }
 
     override fun onBackPressed() {
-        if (webView.canGoBack()) {
-            webView.goBack()
+        if (binding.webView.canGoBack()) {
+            binding.webView.goBack()
         } else {
             super.onBackPressed()
         }
@@ -115,44 +114,44 @@ class PayjpWebActivity :
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun cleanUpWebView() {
-        webView.destroy()
+        binding.webView.destroy()
     }
 
     private fun startLoad() {
-        webView.loadUrl(startUri.toString())
+        binding.webView.loadUrl(startUri.toString())
     }
 
     private fun setUpUI() {
-        webView = findViewById(R.id.web_view)
-        val swipeRefresh = findViewById<SwipeRefreshLayout>(R.id.swipe_refresh)
-        webView.addInterceptor { uri ->
-            logger.d("interceptor uri: $uri")
-            if (!URLUtil.isNetworkUrl(uri.toString())) {
-                openExternal(uri)
-                true
-            } else {
-                false
+        binding.webView.run {
+            addInterceptor { uri ->
+                logger.d("interceptor uri: $uri")
+                if (!URLUtil.isNetworkUrl(uri.toString())) {
+                    openExternal(uri)
+                    true
+                } else {
+                    false
+                }
             }
-        }
-        webView.addLoadStateWatcher(
-            WebViewLoadingDelegate(
-                logger = logger,
-                errorView = findViewById(R.id.error_view),
-                progressBar = findViewById(R.id.progress_bar),
-                swipeRefresh = swipeRefresh
+            addLoadStateWatcher(
+                WebViewLoadingDelegate(
+                    logger = logger,
+                    errorView = binding.errorView,
+                    progressBar = binding.progressBar,
+                    swipeRefresh = binding.swipeRefresh
+                )
             )
-        )
-        webView.addOnFinishedLoadState { _, url ->
-            if (url.startsWith(callbackUri.toString())) {
-                logger.d("url matches with callbackUri $url")
-                redirectWithResult(Uri.parse(url))
-                setResult(Activity.RESULT_OK)
-                finish()
+            addOnFinishedLoadState { _, url ->
+                if (url.startsWith(callbackUri.toString())) {
+                    logger.d("url matches with callbackUri $url")
+                    redirectWithResult(Uri.parse(url))
+                    setResult(Activity.RESULT_OK)
+                    finish()
+                }
             }
         }
-        swipeRefresh.setOnChildScrollUpCallback { _, _ -> webView.scrollY > 10 }
-        swipeRefresh.setOnRefreshListener {
-            webView.reload()
+        binding.swipeRefresh.run {
+            setOnChildScrollUpCallback { _, _ -> binding.webView.scrollY > 10 }
+            setOnRefreshListener { binding.webView.reload() }
         }
     }
 

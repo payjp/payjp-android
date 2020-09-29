@@ -24,20 +24,12 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
+apply from: rootProject.file("gradle/android-common.gradle")
+
 android {
-    compileSdkVersion rootProject.sdkVersion
-
-    defaultConfig {
-        minSdkVersion rootProject.minSdkVersion
-    }
-
     lintOptions {
         abortOnError false
         disable['InvalidPackage']
-    }
-
-    buildFeatures {
-        buildConfig = false
     }
 }
 

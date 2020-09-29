@@ -67,11 +67,11 @@ object PayjpCardForm {
         tokenService: PayjpTokenService,
         cardScannerPlugin: CardScannerPlugin?,
         handler: PayjpTokenBackgroundHandler?,
-        callbackExecutor: Executor
+        callbackExecutor: Executor?
     ) {
         this.tokenService = tokenService
         this.cardScannerPlugin = cardScannerPlugin
-        tokenHandlerExecutor = handler?.let {
+        tokenHandlerExecutor = if (handler != null && callbackExecutor != null) {
             TokenHandlerExecutorImpl(
                 handler = handler,
                 backgroundExecutor = newBackgroundExecutor(),
@@ -79,7 +79,7 @@ object PayjpCardForm {
                 callbackExecutor = callbackExecutor,
                 logger = logger
             )
-        }
+        } else null
     }
 
     private fun newBackgroundExecutor() = Executors.newSingleThreadExecutor { r ->

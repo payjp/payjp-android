@@ -25,6 +25,8 @@ package jp.pay.android.ui
 import android.content.Context
 import jp.pay.android.R
 import jp.pay.android.exception.PayjpApiException
+import jp.pay.android.exception.PayjpCardException
+import jp.pay.android.exception.PayjpRateLimitException
 import java.io.IOException
 
 /**
@@ -38,10 +40,9 @@ internal class ContextErrorTranslator(context: Context) : ErrorTranslator {
 
     override fun translate(throwable: Throwable): CharSequence {
         return when (throwable) {
+            is PayjpCardException -> throwable.apiError.message
+            is PayjpRateLimitException -> context.getString(R.string.payjp_card_form_screen_error_rate_limit_exceeded)
             is PayjpApiException -> when (throwable.httpStatusCode) {
-                // Use response message if status is 402 payment error.
-                // Other than that, use fixed message to avoid system message exposure.
-                402 -> throwable.apiError.message
                 in 500 until 600 -> context.getString(R.string.payjp_card_form_screen_error_server)
                 else -> context.getString(R.string.payjp_card_form_screen_error_application)
             }

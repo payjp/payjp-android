@@ -3,7 +3,7 @@ version: 2
 docker_env:
   - &defaults
     docker:
-      - image: circleci/android:api-28-alpha
+      - image: circleci/android:api-29
         environment:
           JAVA_OPTS: '-Xmx2048m -XX:MaxMetaspaceSize=512m'
           GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError" -Dkotlin.incremental=false'
@@ -48,7 +48,7 @@ shared_build_steps:
         cp ./.android-sdk-license "$ANDROID_HOME/licenses/android-sdk-license"
   - run: &bundle_install
       name: bundle install for fastlane
-      command: bundle install --path=vendor/bundle --clean
+      command: bundle install --path=vendor/bundle --clean --jobs 4 --retry 3
   - run: &generate_cache_key
       name: Generate cache key
       command: scripts/checksum.sh /tmp/checksum.txt
