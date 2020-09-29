@@ -48,7 +48,7 @@ shared_build_steps:
         cp ./.android-sdk-license "$ANDROID_HOME/licenses/android-sdk-license"
   - run: &bundle_install
       name: bundle install for fastlane
-      command: bundle install --path=vendor/bundle --clean
+      command: bundle install --path=vendor/bundle --clean --jobs 4 --retry 3
   - run: &generate_cache_key
       name: Generate cache key
       command: scripts/checksum.sh /tmp/checksum.txt
