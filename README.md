@@ -37,7 +37,7 @@ implementation 'jp.pay:payjp-android-coroutine:$latest_version'
 
 ## リファレンス
 
-https://payjp.github.io/payjp-android/-modules.html
+https://payjp.github.io/payjp-android/payjp-android/
 
 ## License
 
