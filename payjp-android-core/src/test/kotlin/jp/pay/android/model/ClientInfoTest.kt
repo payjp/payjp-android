@@ -58,6 +58,7 @@ class ClientInfoTest {
             bindingsName = "jp.pay.android",
             bindingsVersion = "1.1.0",
             bindingsPlugin = null,
+            cardFormType = null,
             uname = "Android/10",
             platform = "android",
             publisher = "payjp"
@@ -71,6 +72,7 @@ class ClientInfoTest {
             bindingsName = "jp.pay.android",
             bindingsVersion = "1.1.0",
             bindingsPlugin = "jp.pay.kitagawa/1.0.0",
+            cardFormType = null,
             uname = "Android/10",
             platform = "android",
             publisher = "payjp"
@@ -84,6 +86,7 @@ class ClientInfoTest {
             bindingsName = "jp.pay.android",
             bindingsVersion = "1.1.0",
             bindingsPlugin = "jp.pay.kitagawa/1.0.0",
+            cardFormType = "cardDisplay",
             uname = "Android/10",
             platform = "android",
             publisher = "payjp"
@@ -98,6 +101,7 @@ class ClientInfoTest {
   "bindings_name": "jp.pay.android",
   "bindings_version": "1.1.0",
   "bindings_plugin": "jp.pay.kitagawa/1.0.0",
+  "card_form_type": "cardDisplay",
   "uname": "Android/10",
   "platform": "android",
   "publisher": "payjp"
