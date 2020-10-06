@@ -78,6 +78,14 @@ jobs:
       - restore_cache: *restore_cache_gem
       - run: *bundle_install
       - run: bundle exec fastlane android create_pr_to_public
+  create_pr_to_update_docs:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: *set_env
+      - restore_cache: *restore_cache_gem
+      - run: *bundle_install
+      - run: bundle exec fastlane android create_pr_to_update_docs
   firebase_test_lab_robo:
     <<: *defaults
     steps:
@@ -89,7 +97,7 @@ jobs:
       - run: *bundle_install
       - restore_cache: *restore_cache_gradle
       - run: bundle exec fastlane android test_robo_sample
-  develop_updated:
+  distribute_sample_app:
     <<: *defaults
     steps:
       - checkout
@@ -112,13 +120,19 @@ workflows:
           filters:
             branches:
               only: master
+      - create_pr_to_update_docs:
+          requires:
+            - build
+          filters:
+            branches:
+              only: develop
       - firebase_test_lab_robo:
           requires:
             - build
           filters:
             branches:
               only: develop
-      - develop_updated:
+      - distribute_sample_app:
           requires:
             - build
           filters:
