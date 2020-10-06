@@ -26,6 +26,11 @@ Runs all the tests
 fastlane android apidocs
 ```
 Generate API docs
+### android create_pr_to_update_docs
+```
+fastlane android create_pr_to_update_docs
+```
+Create PR to update docs
 ### android create_pr_to_public
 ```
 fastlane android create_pr_to_public
