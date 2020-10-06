@@ -1,7 +1,0 @@
-$dokka.format:html-v1
-$dokka.linkExtension:html
-
-jp.pay.android.verifier
-jp.pay.android.verifier.ui
-jp.pay.android.verifier.util
-
