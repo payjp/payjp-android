@@ -23,6 +23,7 @@ platform :android do
 
   desc "Generate API docs"
   lane :apidocs do
+    sh("rm -rf ../docs")
     gradle(task: "dokkaHtmlCollector")
   end
 

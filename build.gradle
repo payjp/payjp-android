@@ -65,6 +65,7 @@ subprojects {
 
 tasks.named("dokkaHtmlCollector") {
     outputDirectory.set(rootProject.file("docs"))
+    moduleName.set("payjp-android")
 }
 
 ext {

@@ -1,9 +1,0 @@
-$dokka.format:html-v1
-$dokka.linkExtension:html
-
-jp.pay.android
-jp.pay.android.exception
-jp.pay.android.model
-jp.pay.android.network
-jp.pay.android.util
-
