@@ -26,14 +26,13 @@ import android.app.Activity
 import android.app.Application
 import android.app.Instrumentation
 import android.content.Intent
-import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.launchActivity
+import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
-import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.PayjpTokenOperationObserverService
@@ -49,6 +48,7 @@ import jp.pay.android.verifier.R
 import jp.pay.android.verifier.testing.PayjpVerifierTestRule
 import jp.pay.android.verifier.testing.TestEntryActivity
 import org.hamcrest.Matchers.`is`
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -69,9 +69,6 @@ class PayjpThreeDSecureStepActivityTest {
 
     @Mock
     private lateinit var mockTokenService: PayjpTokenService
-
-    @get:Rule
-    val intentRule = IntentsTestRule(PayjpThreeDSecureStepActivity::class.java)
 
     @get:Rule
     val payjpRule = PayjpVerifierTestRule(
@@ -97,9 +94,15 @@ class PayjpThreeDSecureStepActivityTest {
 
     @Before
     fun setUp() {
+        Intents.init()
         MockitoAnnotations.initMocks(this)
         Mockito.`when`(mockTokenService.getPublicKey())
             .thenReturn(TEST_PUBLIC_KEY)
+    }
+
+    @After
+    fun tearDown() {
+        Intents.release()
     }
 
     @Test
@@ -156,8 +159,6 @@ class PayjpThreeDSecureStepActivityTest {
             tdsToken = tdsToken
         )
         val scenario = launchActivity<PayjpThreeDSecureStepActivity>(intent)
-
-        assertThat(scenario.state, `is`(Lifecycle.State.DESTROYED))
         assertThat(scenario.result.resultCode, `is`(Activity.RESULT_CANCELED))
         assertThat(PayjpThreeDSecureStepActivity.getResult().isCanceled(), `is`(true))
     }
