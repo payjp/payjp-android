@@ -22,6 +22,7 @@
  */
 package jp.pay.android.ui
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -245,6 +246,9 @@ internal class PayjpCardFormActivity :
         }
     }
 
+    // FIXME: Remove SuppressLint Annotation after the issue is fixed.
+    // https://github.com/material-components/material-components-android/issues/504
+    @SuppressLint("WrongConstant")
     private fun showSnackBarMessage(@StringRes message: Int) {
         Snackbar.make(binding.contentView, message, Snackbar.LENGTH_SHORT).show()
         viewModel?.onDisplaySnackBarMessage()
