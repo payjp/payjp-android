@@ -33,6 +33,7 @@ class ClientInfo internal constructor(
     @Json(name = "bindings_name") val bindingsName: String,
     @Json(name = "bindings_version") val bindingsVersion: String,
     @Json(name = "bindings_plugin") val bindingsPlugin: String?,
+    @Json(name = "card_form_type") val cardFormType: String?,
     val uname: String,
     val platform: String,
     val publisher: String
@@ -47,17 +48,31 @@ class ClientInfo internal constructor(
         }
     }.toString()
 
-    class Builder {
-        private val bindingsName: String = "jp.pay.android"
-        private val bindingsVersion: String = BuildConfig.VERSION_NAME
-        private val uname: String = "Android/${Build.VERSION.RELEASE}; ${Build.DEVICE}; ${Build.BRAND}; ${Build.MODEL}"
-        private val platform: String = "android"
+    fun toBuilder(): Builder = Builder(
+        bindingsName = bindingsName,
+        bindingsVersion = bindingsVersion,
+        uname = uname,
+        platform = platform,
+    ).apply {
+        setPlugin(bindingsPlugin)
+        setPublisher(publisher)
+        setCardFormType(cardFormType)
+    }
+
+    class Builder(
+        private val bindingsName: String = "jp.pay.android",
+        private val bindingsVersion: String = BuildConfig.VERSION_NAME,
+        private val uname: String = "Android/${Build.VERSION.RELEASE}; ${Build.DEVICE}; ${Build.BRAND}; ${Build.MODEL}",
+        private val platform: String = "android",
+    ) {
         private var publisher: String = "payjp"
         private var bindingsPlugin: String? = null
+        private var cardFormType: String? = null
 
         fun build(): ClientInfo = ClientInfo(
             bindingsName = bindingsName,
             bindingsVersion = bindingsVersion,
+            cardFormType = cardFormType,
             uname = uname,
             platform = platform,
             publisher = publisher,
@@ -70,6 +85,10 @@ class ClientInfo internal constructor(
 
         fun setPlugin(plugin: String?) = apply {
             this.bindingsPlugin = plugin
+        }
+
+        fun setCardFormType(cardFormType: String?) = apply {
+            this.cardFormType = cardFormType
         }
     }
 }

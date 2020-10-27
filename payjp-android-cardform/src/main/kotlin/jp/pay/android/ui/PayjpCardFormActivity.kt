@@ -139,6 +139,17 @@ internal class PayjpCardFormActivity :
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setUpUI()
         cardFormFragment = findCardFormFragment()
+
+        PayjpCardForm.clientInfoInterceptorProvider()?.getClientInfoInterceptor()?.applyClientInfoExtra {
+            setCardFormType(PayjpCardForm.getCardFormFaceString(face))
+        }
+    }
+
+    override fun onDestroy() {
+        PayjpCardForm.clientInfoInterceptorProvider()?.getClientInfoInterceptor()?.applyClientInfoExtra {
+            setCardFormType(null)
+        }
+        super.onDestroy()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
