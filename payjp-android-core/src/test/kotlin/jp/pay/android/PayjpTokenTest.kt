@@ -39,6 +39,7 @@ import jp.pay.android.model.ClientInfo
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.network.TokenApiClientFactory.createApiClient
+import jp.pay.android.network.TokenApiClientFactory.createHeaderInterceptor
 import jp.pay.android.network.TokenApiClientFactory.createOkHttp
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -95,30 +96,36 @@ class PayjpTokenTest {
         clientInfo = ClientInfo.Builder().build()
     )
 
+    private fun createTokenService(): PayjpTokenService =
+        PayjpToken(
+            configuration = configuration,
+            interceptor = createInterceptor(),
+            payjpApi = createApi()
+        )
+
     private fun createApi(): PayjpApi {
         val baseUrl = mockWebServer.url("/").toString()
         return createApiClient(
             baseUrl = baseUrl,
             okHttpClient = createOkHttp(
                 baseUrl = baseUrl,
-                locale = Locale.US,
-                clientInfo = ClientInfo.Builder().build(),
-                debuggable = false
-            )
-                .newBuilder()
-                .build(),
+                debuggable = false,
+                interceptor = createInterceptor()
+            ),
             callbackExecutor = CurrentThreadExecutor()
         )
     }
+
+    private fun createInterceptor() = createHeaderInterceptor(
+        locale = Locale.US,
+        clientInfo = ClientInfo.Builder().build()
+    )
 
     @Test
     fun createToken_ok() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
 
-        PayjpToken(
-            configuration = configuration,
-            payjpApi = createApi()
-        )
+        createTokenService()
             .createToken(
                 number = "4242424242424242",
                 cvc = "123",
@@ -156,10 +163,7 @@ class PayjpTokenTest {
     fun createToken_ok_without_name() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
 
-        PayjpToken(
-            configuration = configuration,
-            payjpApi = createApi()
-        )
+        createTokenService()
             .createToken(
                 number = "4242424242424242",
                 cvc = "123",
@@ -181,10 +185,7 @@ class PayjpTokenTest {
     fun createToken_ok_with_tenant() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
 
-        PayjpToken(
-            configuration = configuration,
-            payjpApi = createApi()
-        )
+        createTokenService()
             .createToken(
                 number = "4242424242424242",
                 cvc = "123",
@@ -208,10 +209,7 @@ class PayjpTokenTest {
     fun createToken_auth_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(401).setBody(ERROR_AUTH))
 
-        val task = PayjpToken(
-            configuration = configuration,
-            payjpApi = createApi()
-        )
+        val task = createTokenService()
             .createToken(
                 number = "4242424242424242",
                 cvc = "123",
@@ -237,10 +235,7 @@ class PayjpTokenTest {
     fun createToken_card_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(402).setBody(ERROR_CARD_DECLINED))
 
-        val task = PayjpToken(
-            configuration = configuration,
-            payjpApi = createApi()
-        )
+        val task = createTokenService()
             .createToken(
                 number = "4242424242424242",
                 cvc = "123",
@@ -266,10 +261,7 @@ class PayjpTokenTest {
     fun createToken_server_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(501))
 
-        val task = PayjpToken(
-            configuration = configuration,
-            payjpApi = createApi()
-        )
+        val task = createTokenService()
             .createToken(
                 number = "4242424242424242",
                 cvc = "123",
@@ -289,10 +281,7 @@ class PayjpTokenTest {
     fun createToken_over_capacity_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(429).setBody(ERROR_OVER_CAPACITY))
 
-        val task = PayjpToken(
-            configuration = configuration,
-            payjpApi = createApi()
-        )
+        val task = createTokenService()
             .createToken(
                 number = "4242424242424242",
                 cvc = "123",
@@ -335,10 +324,7 @@ class PayjpTokenTest {
             }
         )
 
-        val task = PayjpToken(
-            configuration = configuration,
-            payjpApi = createApi()
-        )
+        val task = createTokenService()
             .createToken(
                 number = "4242424242424242",
                 cvc = "123",
@@ -360,10 +346,7 @@ class PayjpTokenTest {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
 
         val tdsToken = ThreeDSecureToken("tds_xxx")
-        PayjpToken(
-            configuration = configuration,
-            payjpApi = createApi()
-        )
+        createTokenService()
             .createToken(tdsToken)
             .run()
             .let { token ->
@@ -391,10 +374,7 @@ class PayjpTokenTest {
     fun getToken_ok() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
 
-        PayjpToken(
-            configuration = configuration,
-            payjpApi = createApi()
-        )
+        createTokenService()
             .getToken("tok_5ca06b51685e001723a2c3b4aeb4")
             .run()
             .let { token ->
@@ -418,10 +398,7 @@ class PayjpTokenTest {
     fun getToken_auth_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(401).setBody(ERROR_AUTH))
 
-        val task = PayjpToken(
-            configuration = configuration,
-            payjpApi = createApi()
-        )
+        val task = createTokenService()
             .getToken("tok_5ca06b51685e001723a2c3b4aeb4")
 
         try {
@@ -441,10 +418,7 @@ class PayjpTokenTest {
     fun getToken_client_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(404).setBody(ERROR_INVALID_ID))
 
-        val task = PayjpToken(
-            configuration = configuration,
-            payjpApi = createApi()
-        )
+        val task = createTokenService()
             .getToken("tok_587af2665fdced4742e5fbb3ecfcaa")
 
         try {
@@ -464,10 +438,7 @@ class PayjpTokenTest {
     fun getToken_server_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(501))
 
-        val task = PayjpToken(
-            configuration = configuration,
-            payjpApi = createApi()
-        )
+        val task = createTokenService()
             .getToken("tok_5ca06b51685e001723a2c3b4aeb4")
 
         try {
@@ -481,10 +452,7 @@ class PayjpTokenTest {
     fun getAcceptedBrands_ok() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(ACCEPTED_BRANDS_FULL))
 
-        PayjpToken(
-            configuration = configuration,
-            payjpApi = createApi()
-        )
+        createTokenService()
             .getAcceptedBrands()
             .run()
             .let { response ->
@@ -518,10 +486,7 @@ class PayjpTokenTest {
     fun getAcceptedBrands_empty() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(ACCEPTED_BRANDS_EMPTY))
 
-        PayjpToken(
-            configuration = configuration,
-            payjpApi = createApi()
-        )
+        createTokenService()
             .getAcceptedBrands()
             .run()
             .let { response ->
@@ -544,10 +509,7 @@ class PayjpTokenTest {
     fun getAcceptedBrands_tenant() {
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(ACCEPTED_BRANDS_FULL))
 
-        PayjpToken(
-            configuration = configuration,
-            payjpApi = createApi()
-        )
+        createTokenService()
             .getAcceptedBrands(TenantId("foobar"))
             .run()
             .let { response ->
