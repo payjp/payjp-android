@@ -85,6 +85,7 @@ ext {
     constraint = "2.0.2"
     recyclerview = "1.1.0"
     cardio = "5.5.1"
+    annotation = '1.1.0'
 
     isCi = "true" == System.getenv("CI")
     preDexEnabled = "true" == System.getProperty("pre-dex", "true")

@@ -33,20 +33,24 @@ import java.util.Locale
  */
 internal class CustomHeaderInterceptor(
     private val locale: Locale,
-    client: ClientInfo,
+    private var client: ClientInfo,
     moshi: Moshi
-) : Interceptor {
+) : Interceptor, ClientInfoInterceptor {
 
     private val userAgent = UserAgent.create(client)
-    private val clientInfoJson = moshi.adapter<ClientInfo>(ClientInfo::class.java).toJson(client)
+    private val clientInfoAdapter = moshi.adapter<ClientInfo>(ClientInfo::class.java)
 
     override fun intercept(chain: Interceptor.Chain?): Response {
         val newRequest = chain!!.request().newBuilder()
             .header("user-agent", userAgent)
             .header("locale", locale.language)
-            .header("X-Payjp-Client-User-Agent", clientInfoJson)
+            .header("X-Payjp-Client-User-Agent", clientInfoAdapter.toJson(client))
             .build()
 
         return chain.proceed(newRequest)
+    }
+
+    override fun applyClientInfoExtra(func: ClientInfo.Builder.() -> Unit) {
+        client = client.toBuilder().apply(func).build()
     }
 }

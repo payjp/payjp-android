@@ -22,27 +22,11 @@
  */
 package jp.pay.android.network
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.annotation.RestrictTo
 import jp.pay.android.model.ClientInfo
-import org.hamcrest.Matchers.`is`
-import org.junit.Assert.assertThat
-import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class UserAgentTest {
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+fun interface ClientInfoInterceptor {
 
-    @Test
-    fun create() {
-        val clientInfo = ClientInfo(
-            bindingsName = "jp.pay.android",
-            bindingsVersion = "1.1.0",
-            bindingsPlugin = "plugin/1.0.0",
-            cardFormType = "cardDisplay",
-            uname = "Android/10",
-            platform = "android",
-            publisher = "payjp"
-        )
-        assertThat(UserAgent.create(clientInfo), `is`("jp.pay.android/1.1.0@plugin/1.0.0; Android/10"))
-    }
+    fun applyClientInfoExtra(func: ClientInfo.Builder.() -> Unit)
 }

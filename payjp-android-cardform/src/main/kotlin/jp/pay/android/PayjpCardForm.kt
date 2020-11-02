@@ -29,6 +29,7 @@ import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.TenantId
+import jp.pay.android.network.ClientInfoInterceptorProvider
 import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.ui.PayjpCardFormActivity
 import jp.pay.android.ui.PayjpCardFormResultCallback
@@ -53,6 +54,12 @@ object PayjpCardForm {
     annotation class CardFormFace
     const val FACE_MULTI_LINE = 0
     const val FACE_CARD_DISPLAY = 1
+
+    internal fun getCardFormFaceString(@CardFormFace face: Int): String? = when (face) {
+        FACE_CARD_DISPLAY -> "cardDisplay"
+        FACE_MULTI_LINE -> "multiLine"
+        else -> null
+    }
 
     internal const val CARD_FORM_DELIMITER_NUMBER = '-'
     internal const val CARD_FORM_DELIMITER_NUMBER_DISPLAY = ' '
@@ -95,6 +102,10 @@ object PayjpCardForm {
     internal fun tokenHandlerExecutor(): TokenHandlerExecutor? = tokenHandlerExecutor
 
     internal fun cardScannerPlugin(): CardScannerPlugin? = cardScannerPlugin
+
+    internal fun clientInfoInterceptorProvider(): ClientInfoInterceptorProvider? {
+        return tokenService() as? ClientInfoInterceptorProvider
+    }
 
     /**
      * Start card form screen from Activity.

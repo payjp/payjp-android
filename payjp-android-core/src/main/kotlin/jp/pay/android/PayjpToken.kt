@@ -27,6 +27,10 @@ import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
+import jp.pay.android.network.ClientInfoInterceptor
+import jp.pay.android.network.ClientInfoInterceptorProvider
+import jp.pay.android.network.CustomHeaderInterceptor
+import jp.pay.android.network.TokenApiClientFactory
 import jp.pay.android.network.TokenApiClientFactory.createApiClient
 import jp.pay.android.network.TokenApiClientFactory.createOkHttp
 import java.nio.charset.Charset
@@ -40,9 +44,24 @@ import java.nio.charset.Charset
  */
 class PayjpToken internal constructor(
     private val configuration: PayjpTokenConfiguration,
+    private val interceptor: CustomHeaderInterceptor,
     private val payjpApi: PayjpApi,
     private val tokenOperationObserver: PayjpTokenOperationObserverInternal = PayjpTokenOperationObserver
-) : PayjpTokenService {
+) : PayjpTokenService, ClientInfoInterceptorProvider {
+
+    internal constructor(configuration: PayjpTokenConfiguration, interceptor: CustomHeaderInterceptor) : this(
+        configuration = configuration,
+        interceptor = interceptor,
+        payjpApi = createApiClient(
+            baseUrl = PayjpConstants.API_ENDPOINT,
+            okHttpClient = createOkHttp(
+                baseUrl = PayjpConstants.API_ENDPOINT,
+                debuggable = configuration.debugEnabled,
+                interceptor = interceptor,
+            ),
+            callbackExecutor = configuration.callbackExecutor
+        )
+    )
 
     /**
      * Constructor for configuration.
@@ -51,15 +70,9 @@ class PayjpToken internal constructor(
      */
     constructor(configuration: PayjpTokenConfiguration) : this(
         configuration = configuration,
-        payjpApi = createApiClient(
-            baseUrl = PayjpConstants.API_ENDPOINT,
-            okHttpClient = createOkHttp(
-                baseUrl = PayjpConstants.API_ENDPOINT,
-                locale = configuration.locale,
-                clientInfo = configuration.clientInfo,
-                debuggable = configuration.debugEnabled
-            ),
-            callbackExecutor = configuration.callbackExecutor
+        interceptor = TokenApiClientFactory.createHeaderInterceptor(
+            locale = configuration.locale,
+            clientInfo = configuration.clientInfo
         )
     )
 
@@ -111,6 +124,8 @@ class PayjpToken internal constructor(
     }
 
     override fun getTokenOperationObserver(): PayjpTokenOperationObserverService = tokenOperationObserver
+
+    override fun getClientInfoInterceptor(): ClientInfoInterceptor = interceptor
 
     private fun createAuthorization(publicKey: String) =
         "$publicKey:".toByteArray(Charset.forName("UTF-8"))

@@ -31,6 +31,7 @@ import jp.pay.android.model.ClientInfo
 import jp.pay.android.model.DateUnixTimeJsonAdapter
 import jp.pay.android.model.ThreeDSecureStatus
 import okhttp3.Dispatcher
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -51,11 +52,15 @@ internal object TokenApiClientFactory {
             .build()
     }
 
+    fun createHeaderInterceptor(
+        locale: Locale,
+        clientInfo: ClientInfo
+    ): CustomHeaderInterceptor = CustomHeaderInterceptor(locale, clientInfo, moshi)
+
     fun createOkHttp(
         baseUrl: String,
-        locale: Locale,
-        clientInfo: ClientInfo,
-        debuggable: Boolean = false
+        debuggable: Boolean = false,
+        interceptor: Interceptor
     ): OkHttpClient =
         OkHttpClient.Builder()
             .retryOnConnectionFailure(false)
@@ -64,7 +69,7 @@ internal object TokenApiClientFactory {
                     ThreeDSecureTokenRetriever(baseUrl = baseUrl, moshi = moshi)
                 )
             )
-            .addInterceptor(CustomHeaderInterceptor(locale, clientInfo, moshi))
+            .addInterceptor(interceptor)
             .apply {
                 if (debuggable) {
                     addNetworkInterceptor(
