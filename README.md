@@ -1,5 +1,5 @@
 # PAY.JP Android SDK
-[![Build Status](https://travis-ci.org/payjp/payjp-android.svg?branch=master)](https://travis-ci.org/payjp/payjp-android)
+![Build and Test](https://github.com/payjp/payjp-android/workflows/Build%20and%20Test/badge.svg?branch=master)
 [![Maven Central](https://img.shields.io/maven-central/v/jp.pay/payjp-android.svg)](https://oss.sonatype.org/content/groups/public/jp/pay/payjp-android/)
 
 オンライン決済サービス「[PAY.JP](https://pay.jp/)」のAndroidアプリ組込み用のSDKです。
