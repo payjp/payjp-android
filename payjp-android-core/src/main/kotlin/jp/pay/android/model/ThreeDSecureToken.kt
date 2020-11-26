@@ -25,7 +25,7 @@ package jp.pay.android.model
 import android.net.Uri
 import android.os.Parcelable
 import jp.pay.android.PayjpConstants
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 /**
  * 3-D Secure token object
