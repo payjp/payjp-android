@@ -24,18 +24,14 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'org.jetbrains.dokka'
-apply plugin: 'kotlin-android-extensions'
 
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
 apply from: rootProject.file("gradle/dependencies-test.gradle")
 apply from: rootProject.file("gradle/android-common.gradle")
 
 android {
-    androidExtensions {
-        features = ["parcelize"]
-    }
-
     buildFeatures {
         viewBinding = true
     }
