@@ -27,17 +27,9 @@ import android.os.Parcelable
 import jp.pay.android.PayjpConstants
 import kotlinx.parcelize.Parcelize
 
-/**
- * 3-D Secure token object
- * used for 3DS verification.
- *
- * @param id id
- */
 @Parcelize
-@Deprecated(
-    message = "ThreeDSecureToken has been deprecated."
-)
-data class ThreeDSecureToken(val id: String) : Parcelable {
+data class TokenId(val id: String) : Parcelable {
+
     private fun getVerificationBaseUri(): Uri = Uri.parse(PayjpConstants.API_ENDPOINT)
         .buildUpon()
         .appendPath("tds")

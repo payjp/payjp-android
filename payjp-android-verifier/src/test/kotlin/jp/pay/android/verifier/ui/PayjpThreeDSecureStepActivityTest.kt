@@ -108,17 +108,18 @@ class PayjpThreeDSecureStepActivityTest {
     @Test
     fun open_tds_step_intent() {
         val tdsId = "tds_123"
+        val tdsToken = ThreeDSecureToken(id = tdsId)
         val scenario = launchActivity<TestEntryActivity>(
             Intent(ApplicationProvider.getApplicationContext(), TestEntryActivity::class.java)
         )
         scenario.onActivity {
             PayjpVerifier.startThreeDSecureFlow(
-                threeDSecureToken = ThreeDSecureToken(id = tdsId),
+                threeDSecureToken = tdsToken,
                 activity = it
             )
 
             intended(hasComponent(PayjpThreeDSecureStepActivity::class.java.name))
-            intended(hasExtra(PayjpThreeDSecureStepActivity.EXTRA_KEY_TDS, tdsId))
+            intended(hasExtra(PayjpThreeDSecureStepActivity.EXTRA_KEY_TDS_TOKEN, tdsToken))
         }
     }
 
