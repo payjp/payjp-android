@@ -62,9 +62,23 @@ sealed class PayjpThreeDSecureResult {
      * Get out token from result. If it is not success, throw exception.
      *
      */
+    @Deprecated(
+        message = "ThreeDSecureToken has been deprecated.",
+        replaceWith = ReplaceWith("retrieveSuccessData()")
+    )
     fun retrieveThreeDSecureToken(): ThreeDSecureToken {
         val success = this as? Success
             ?: throw IllegalStateException("Cannot call retrieveToken() when it is not success")
         return success.threeDSecureToken
+    }
+
+    /**
+     * Get out tokenId from result. If it is not success, throw exception.
+     *
+     */
+    fun retrieveTokenId(): TokenId {
+        val success = this as? SuccessTokenId
+            ?: throw IllegalStateException("Cannot call retrieveToken() when it is not success")
+        return success.id
     }
 }

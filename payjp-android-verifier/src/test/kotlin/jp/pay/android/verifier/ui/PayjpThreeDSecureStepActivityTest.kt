@@ -43,6 +43,7 @@ import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
+import jp.pay.android.model.TokenId
 import jp.pay.android.verifier.PayjpVerifier
 import jp.pay.android.verifier.R
 import jp.pay.android.verifier.testing.PayjpVerifierTestRule
@@ -107,8 +108,7 @@ class PayjpThreeDSecureStepActivityTest {
 
     @Test
     fun open_tds_step_intent() {
-        val tdsId = "tds_123"
-        val tdsToken = ThreeDSecureToken(id = tdsId)
+        val tdsToken = ThreeDSecureToken(id = "tds_123")
         val scenario = launchActivity<TestEntryActivity>(
             Intent(ApplicationProvider.getApplicationContext(), TestEntryActivity::class.java)
         )
@@ -120,6 +120,23 @@ class PayjpThreeDSecureStepActivityTest {
 
             intended(hasComponent(PayjpThreeDSecureStepActivity::class.java.name))
             intended(hasExtra(PayjpThreeDSecureStepActivity.EXTRA_KEY_TDS_TOKEN, tdsToken))
+        }
+    }
+
+    @Test
+    fun open_tds_step_intent_with_token_id() {
+        val tokenId = TokenId(id = "tok_123")
+        val scenario = launchActivity<TestEntryActivity>(
+            Intent(ApplicationProvider.getApplicationContext(), TestEntryActivity::class.java)
+        )
+        scenario.onActivity {
+            PayjpVerifier.startThreeDSecureFlow(
+                tokenId = tokenId,
+                activity = it
+            )
+
+            intended(hasComponent(PayjpThreeDSecureStepActivity::class.java.name))
+            intended(hasExtra(PayjpThreeDSecureStepActivity.EXTRA_KEY_TOKEN_ID, tokenId))
         }
     }
 
@@ -148,6 +165,30 @@ class PayjpThreeDSecureStepActivityTest {
     }
 
     @Test
+    fun open_tds_intent_with_token_id() {
+        val tokenId = TokenId(id = "tok_123")
+        val expectedStartUri = tokenId.getVerificationEntryUri(
+            publicKey = TEST_PUBLIC_KEY,
+            redirectUrlName = TEST_TDS_REDIRECT_NAME
+        )
+        val expectedCallbackUri = tokenId.getVerificationFinishUri()
+        val expectedTitle = ApplicationProvider.getApplicationContext<Application>()
+            .getString(R.string.payjp_verifier_card_verify_title)
+
+        val intent = PayjpThreeDSecureStepActivity.createLaunchIntent(
+            context = ApplicationProvider.getApplicationContext(),
+            tokenId = tokenId
+        )
+        val scenario = launchActivity<PayjpThreeDSecureStepActivity>(intent)
+        scenario.onActivity {
+            intended(hasComponent(PayjpWebActivity::class.java.name))
+            intended(hasExtra(PayjpWebActivity.EXTRA_KEY_START_URI, expectedStartUri.toString()))
+            intended(hasExtra(PayjpWebActivity.EXTRA_KEY_CALLBACK_URI, expectedCallbackUri.toString()))
+            intended(hasExtra(PayjpWebActivity.EXTRA_KEY_TITLE, expectedTitle))
+        }
+    }
+
+    @Test
     fun finish_if_tds_flow_canceled() {
         val tdsToken = ThreeDSecureToken(id = "tds_123")
         // prepare onActivityResult
@@ -158,6 +199,23 @@ class PayjpThreeDSecureStepActivityTest {
         val intent = PayjpThreeDSecureStepActivity.createLaunchIntent(
             context = ApplicationProvider.getApplicationContext(),
             tdsToken = tdsToken
+        )
+        val scenario = launchActivity<PayjpThreeDSecureStepActivity>(intent)
+        assertThat(scenario.result.resultCode, `is`(Activity.RESULT_CANCELED))
+        assertThat(PayjpThreeDSecureStepActivity.getResult().isCanceled(), `is`(true))
+    }
+
+    @Test
+    fun finish_if_tds_flow_canceled_with_token_id() {
+        val tokenId = TokenId(id = "tok_123")
+        // prepare onActivityResult
+        intending(
+            hasComponent(PayjpWebActivity::class.java.name)
+        ).respondWith(Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null))
+
+        val intent = PayjpThreeDSecureStepActivity.createLaunchIntent(
+            context = ApplicationProvider.getApplicationContext(),
+            tokenId = tokenId
         )
         val scenario = launchActivity<PayjpThreeDSecureStepActivity>(intent)
         assertThat(scenario.result.resultCode, `is`(Activity.RESULT_CANCELED))
@@ -185,6 +243,30 @@ class PayjpThreeDSecureStepActivityTest {
             val result = PayjpThreeDSecureStepActivity.getResult()
             assertThat(result.isSuccess(), `is`(true))
             assertThat(result.retrieveThreeDSecureToken(), `is`(tdsToken))
+            assertThat(scenario.result.resultCode, `is`(Activity.RESULT_OK))
+        }
+    }
+
+    @Test
+    fun finish_with_tokenId_result_from_received_intent() {
+        val tokenId = TokenId(id = "tok_123")
+
+        val intent = PayjpThreeDSecureStepActivity.createLaunchIntent(
+            context = ApplicationProvider.getApplicationContext(),
+            tokenId = tokenId
+        )
+        val callbackIntent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            PayjpThreeDSecureStepActivity::class.java
+        ).setData(tokenId.getVerificationFinishUri())
+
+        val scenario = launchActivity<PayjpThreeDSecureStepActivity>(intent)
+        scenario.onActivity {
+            it.onNewIntentInternal(callbackIntent)
+
+            val result = PayjpThreeDSecureStepActivity.getResult()
+            assertThat(result.isSuccess(), `is`(true))
+            assertThat(result.retrieveTokenId(), `is`(tokenId))
             assertThat(scenario.result.resultCode, `is`(Activity.RESULT_OK))
         }
     }
