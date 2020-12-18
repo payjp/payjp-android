@@ -82,6 +82,9 @@ class PayjpThreeDSecureStepActivityTest {
             override fun createToken(threeDSecureToken: ThreeDSecureToken): Task<Token> =
                 mockTokenService.createToken(threeDSecureToken)
 
+            override fun finishTokenThreeDSecure(tokenId: TokenId): Task<Token> =
+                mockTokenService.finishTokenThreeDSecure(tokenId)
+
             override fun getToken(id: String): Task<Token> = mockTokenService.getToken(id)
 
             override fun getAcceptedBrands(tenantId: TenantId?): Task<CardBrandsAcceptedResponse> =
