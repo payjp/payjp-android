@@ -130,9 +130,7 @@ class CardFormViewSampleActivity :
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Payjp.verifier().handleThreeDSecureResult(requestCode) {
-            if (it.isSuccess()) {
-                createTokenForTds(it)
-            }
+            createTokenForTds(it)
         }
     }
 
@@ -253,12 +251,11 @@ class CardFormViewSampleActivity :
     }
 
     private fun createTokenForTds(result: PayjpThreeDSecureResult) {
-        createToken = when (result) {
-            is PayjpThreeDSecureResult.Success -> Payjp.token().createToken(result.threeDSecureToken)
-            is PayjpThreeDSecureResult.SuccessTokenId -> Payjp.token().finishTokenThreeDSecure(result.id)
-            else -> return
-        }
-        val callback = object : Task.Callback<Token> {
+        createToken = Payjp.verifier().completeTokenThreeDSecure(result) ?: return
+        tokenizeProcessing = true
+        updateButtonVisibility()
+        binding.textTokenContent.text = "running..."
+        createToken?.enqueue(object : Task.Callback<Token> {
             override fun onSuccess(data: Token) {
                 Log.i("CardFormViewSample", "token => $data")
                 tokenizeProcessing = false
@@ -273,11 +270,7 @@ class CardFormViewSampleActivity :
                 binding.textTokenContent.text = throwable.toString()
                 updateButtonVisibility()
             }
-        }
-        tokenizeProcessing = true
-        updateButtonVisibility()
-        binding.textTokenContent.text = "running..."
-        createToken?.enqueue(callback)
+        })
     }
 
     private fun updateButtonVisibility() {
