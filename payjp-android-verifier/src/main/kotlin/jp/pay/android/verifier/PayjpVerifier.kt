@@ -26,9 +26,11 @@ import android.app.Activity
 import androidx.annotation.MainThread
 import jp.pay.android.PayjpLogger
 import jp.pay.android.PayjpTokenService
+import jp.pay.android.Task
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.model.TokenId
+import jp.pay.android.verifier.ui.PayjpThreeDSecureResult
 import jp.pay.android.verifier.ui.PayjpThreeDSecureResultCallback
 import jp.pay.android.verifier.ui.PayjpThreeDSecureStepActivity
 
@@ -130,5 +132,11 @@ object PayjpVerifier {
         if (requestCode == REQUEST_CODE_VERIFY_LAUNCHER) {
             callback.onResult(PayjpThreeDSecureStepActivity.getResult())
         }
+    }
+
+    fun completeTokenThreeDSecure(result: PayjpThreeDSecureResult): Task<Token>? = when (result) {
+        is PayjpThreeDSecureResult.Success -> tokenService().createToken(result.threeDSecureToken)
+        is PayjpThreeDSecureResult.SuccessTokenId -> tokenService().finishTokenThreeDSecure(result.id)
+        else -> null
     }
 }
