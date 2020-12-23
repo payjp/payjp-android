@@ -39,10 +39,12 @@ import jp.pay.android.PayjpTokenOperationStatus
 import jp.pay.android.Task
 import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.model.CardBrand
-import jp.pay.android.model.ThreeDSecureToken
+import jp.pay.android.model.ThreeDSecureStatus
 import jp.pay.android.model.Token
+import jp.pay.android.model.extension.retrieveId
 import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
+import jp.pay.android.verifier.ui.PayjpThreeDSecureResult
 
 private const val FRAGMENT_CARD_FORM = "FRAGMENT_CARD_FORM"
 
@@ -129,7 +131,7 @@ class CardFormViewSampleActivity :
         super.onActivityResult(requestCode, resultCode, data)
         Payjp.verifier().handleThreeDSecureResult(requestCode) {
             if (it.isSuccess()) {
-                createTokenForTds(it.retrieveThreeDSecureToken())
+                createTokenForTds(it)
             }
         }
     }
@@ -144,10 +146,17 @@ class CardFormViewSampleActivity :
             object : Task.Callback<Token> {
                 override fun onSuccess(data: Token) {
                     Log.i("CardFormViewSample", "token => $data")
-                    tokenizeProcessing = false
-                    binding.textTokenId.setText(data.id)
-                    binding.textTokenContent.text = "The token has created."
-                    updateButtonVisibility()
+                    if (data.card.threeDSecureStatus == ThreeDSecureStatus.UNVERIFIED) {
+                        // if support 3DSecure
+                        // NOTE: 3DSecure is a limited feature for now.
+                        Payjp.verifier()
+                            .startThreeDSecureFlow(data.retrieveId(), this@CardFormViewSampleActivity)
+                    } else {
+                        tokenizeProcessing = false
+                        binding.textTokenId.setText(data.id)
+                        binding.textTokenContent.text = "The token has created."
+                        updateButtonVisibility()
+                    }
                 }
 
                 override fun onError(throwable: Throwable) {
@@ -243,30 +252,32 @@ class CardFormViewSampleActivity :
         AppCompatDelegate.setDefaultNightMode(mode)
     }
 
-    private fun createTokenForTds(tdsToken: ThreeDSecureToken) {
-        // create token by 3DS
-        createToken = Payjp.token().createToken(tdsToken)
+    private fun createTokenForTds(result: PayjpThreeDSecureResult) {
+        createToken = when (result) {
+            is PayjpThreeDSecureResult.Success -> Payjp.token().createToken(result.threeDSecureToken)
+            is PayjpThreeDSecureResult.SuccessTokenId -> Payjp.token().finishTokenThreeDSecure(result.id)
+            else -> return
+        }
+        val callback = object : Task.Callback<Token> {
+            override fun onSuccess(data: Token) {
+                Log.i("CardFormViewSample", "token => $data")
+                tokenizeProcessing = false
+                binding.textTokenId.setText(data.id)
+                binding.textTokenContent.text = "The token has created."
+                updateButtonVisibility()
+            }
+
+            override fun onError(throwable: Throwable) {
+                Log.e("CardFormViewSample", "failure creating token", throwable)
+                tokenizeProcessing = false
+                binding.textTokenContent.text = throwable.toString()
+                updateButtonVisibility()
+            }
+        }
         tokenizeProcessing = true
         updateButtonVisibility()
         binding.textTokenContent.text = "running..."
-        createToken?.enqueue(
-            object : Task.Callback<Token> {
-                override fun onSuccess(data: Token) {
-                    Log.i("CardFormViewSample", "token => $data")
-                    tokenizeProcessing = false
-                    binding.textTokenId.setText(data.id)
-                    binding.textTokenContent.text = "The token has created."
-                    updateButtonVisibility()
-                }
-
-                override fun onError(throwable: Throwable) {
-                    Log.e("CardFormViewSample", "failure creating token", throwable)
-                    tokenizeProcessing = false
-                    binding.textTokenContent.text = throwable.toString()
-                    updateButtonVisibility()
-                }
-            }
-        )
+        createToken?.enqueue(callback)
     }
 
     private fun updateButtonVisibility() {
