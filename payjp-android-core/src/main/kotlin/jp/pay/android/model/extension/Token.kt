@@ -20,15 +20,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.exception
+package jp.pay.android.model.extension
 
-import jp.pay.android.model.ThreeDSecureToken
-import java.io.IOException
+import jp.pay.android.model.Token
+import jp.pay.android.model.TokenId
 
-/**
- * Exception indicate the tokenization has suspended due to required 3DS verification.
- *
- * @param token 3DS token
- */
-@Deprecated("ThreeDSecureToken has been deprecated.")
-class PayjpThreeDSecureRequiredException(val token: ThreeDSecureToken) : IOException()
+fun Token.retrieveId(): TokenId = TokenId(id = id)

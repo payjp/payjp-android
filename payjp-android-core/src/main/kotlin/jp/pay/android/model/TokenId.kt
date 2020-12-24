@@ -20,15 +20,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.exception
+package jp.pay.android.model
 
-import jp.pay.android.model.ThreeDSecureToken
-import java.io.IOException
+import android.net.Uri
+import android.os.Parcelable
+import jp.pay.android.PayjpConstants
+import kotlinx.parcelize.Parcelize
 
-/**
- * Exception indicate the tokenization has suspended due to required 3DS verification.
- *
- * @param token 3DS token
- */
-@Deprecated("ThreeDSecureToken has been deprecated.")
-class PayjpThreeDSecureRequiredException(val token: ThreeDSecureToken) : IOException()
+@Parcelize
+data class TokenId(val id: String) : Parcelable {
+
+    private fun getVerificationBaseUri(): Uri = Uri.parse(PayjpConstants.API_ENDPOINT)
+        .buildUpon()
+        .appendPath("tds")
+        .appendPath(id)
+        .build()
+
+    fun getVerificationEntryUri(publicKey: String, redirectUrlName: String? = null): Uri =
+        getVerificationBaseUri()
+            .buildUpon()
+            .appendPath("start")
+            .appendQueryParameter("publickey", publicKey)
+            .apply {
+                if (redirectUrlName != null) {
+                    appendQueryParameter("back", redirectUrlName)
+                }
+            }
+            .build()
+
+    fun getVerificationFinishUri(): Uri = getVerificationBaseUri()
+        .buildUpon()
+        .appendPath("finish")
+        .build()
+}

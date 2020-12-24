@@ -31,6 +31,7 @@ import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
+import jp.pay.android.model.TokenId
 import jp.pay.android.ui.widget.PayjpCardFormView
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -61,8 +62,12 @@ suspend fun PayjpTokenService.createTokenSuspend(param: PayjpTokenParam): Token 
  * @return token
  * @see [PayjpTokenService.createToken]
  */
+@Deprecated("ThreeDSecureToken has been deprecated.")
 suspend fun PayjpTokenService.createTokenSuspend(threeDSecureToken: ThreeDSecureToken): Token =
     createToken(threeDSecureToken).toSuspend()
+
+suspend fun PayjpTokenService.finishTokenTdsSuspend(tokenId: TokenId): Token =
+    finishTokenThreeDSecure(tokenId).toSuspend()
 
 /**
  * Get token by suspend function.

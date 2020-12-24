@@ -23,6 +23,7 @@
 package jp.pay.android.verifier.ui
 
 import jp.pay.android.model.ThreeDSecureToken
+import jp.pay.android.model.TokenId
 
 /**
  * State represents of result form the activity that verify card on web.
@@ -34,7 +35,13 @@ sealed class PayjpThreeDSecureResult {
      *
      * @param threeDSecureToken 3DS token
      */
+    @Deprecated(
+        message = "ThreeDSecureToken has been deprecated. It will be removed in future.",
+        replaceWith = ReplaceWith("SuccessTokenId")
+    )
     data class Success(val threeDSecureToken: ThreeDSecureToken) : PayjpThreeDSecureResult()
+
+    data class SuccessTokenId(val id: TokenId) : PayjpThreeDSecureResult()
 
     /**
      * Canceled
@@ -44,7 +51,7 @@ sealed class PayjpThreeDSecureResult {
     /**
      * Return it is success.
      */
-    fun isSuccess(): Boolean = this is Success
+    fun isSuccess(): Boolean = this is Success || this is SuccessTokenId
 
     /**
      * Return it is canceled.
@@ -55,9 +62,23 @@ sealed class PayjpThreeDSecureResult {
      * Get out token from result. If it is not success, throw exception.
      *
      */
+    @Deprecated(
+        message = "ThreeDSecureToken has been deprecated.",
+        replaceWith = ReplaceWith("retrieveSuccessData()")
+    )
     fun retrieveThreeDSecureToken(): ThreeDSecureToken {
         val success = this as? Success
             ?: throw IllegalStateException("Cannot call retrieveToken() when it is not success")
         return success.threeDSecureToken
+    }
+
+    /**
+     * Get out tokenId from result. If it is not success, throw exception.
+     *
+     */
+    fun retrieveTokenId(): TokenId {
+        val success = this as? SuccessTokenId
+            ?: throw IllegalStateException("Cannot call retrieveToken() when it is not success")
+        return success.id
     }
 }

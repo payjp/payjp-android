@@ -38,6 +38,7 @@ import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ClientInfo
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.ThreeDSecureToken
+import jp.pay.android.model.TokenId
 import jp.pay.android.network.TokenApiClientFactory.createApiClient
 import jp.pay.android.network.TokenApiClientFactory.createHeaderInterceptor
 import jp.pay.android.network.TokenApiClientFactory.createOkHttp
@@ -367,6 +368,31 @@ class PayjpTokenTest {
                     "three_d_secure_token=${tdsToken.id}",
                     request.body.readString(Charset.forName("utf-8"))
                 )
+            }
+    }
+
+    @Test
+    fun finishTokenTds() {
+        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
+
+        val tokenId = TokenId(id = "tok_5ca06b51685e001723a2c3b4aeb4")
+        createTokenService()
+            .finishTokenThreeDSecure(tokenId)
+            .run()
+            .let { token ->
+                assertEquals("tok_5ca06b51685e001723a2c3b4aeb4", token.id)
+                assertEquals("car_e3ccd4e0959f45e7c75bacc4be90", token.card.id)
+            }
+
+        mockWebServer.takeRequest()
+            .let { request ->
+                assertEquals("POST", request.method)
+                assertEquals("/tokens/${tokenId.id}/tds_finish", request.path)
+                assertEquals(
+                    "Basic cGtfdGVzdF8wMzgzYTFiOGY5MWU4YTZlM2VhMGUyYTk6",
+                    request.getHeader("Authorization")
+                )
+                assertEquals("en", request.getHeader("Locale"))
             }
     }
 
