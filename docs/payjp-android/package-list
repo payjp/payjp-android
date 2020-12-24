@@ -6,6 +6,7 @@ jp.pay.android.cardio
 jp.pay.android.coroutine
 jp.pay.android.exception
 jp.pay.android.model
+jp.pay.android.model.extension
 jp.pay.android.network
 jp.pay.android.plugin
 jp.pay.android.ui
