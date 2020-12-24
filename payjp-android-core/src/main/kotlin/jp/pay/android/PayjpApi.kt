@@ -52,11 +52,18 @@ internal interface PayjpApi {
         @Field("tenant") tenant: String?
     ): ResultCall<Token>
 
+    @Deprecated("ThreeDSecureToken has been deprecated.")
     @POST("tokens")
     @FormUrlEncoded
     fun createToken(
         @Header("Authorization") authorization: String,
         @Field("three_d_secure_token") tdsId: String
+    ): ResultCall<Token>
+
+    @POST("tokens/{id}/tds_finish")
+    fun finishTokenThreeDSecure(
+        @Header("Authorization") authorization: String,
+        @Path("id") id: String
     ): ResultCall<Token>
 
     @GET("tokens/{id}")

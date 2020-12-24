@@ -30,12 +30,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class ThreeDSecureTokenTest {
+class TokenIdTest {
     @Test
     fun getTdsEntryUri() {
         val id = "tds_xxx"
-        val token = ThreeDSecureToken(id)
-        val uri = token.getVerificationEntryUri(
+        val tokenId = TokenId(id = id)
+        val uri = tokenId.getVerificationEntryUri(
             publicKey = "pk_zzzz"
         )
         assertThat(
@@ -47,8 +47,8 @@ class ThreeDSecureTokenTest {
     @Test
     fun getTdsEntryUri_withRedirect() {
         val id = "tds_xxx"
-        val token = ThreeDSecureToken(id)
-        val uri = token.getVerificationEntryUri(
+        val tokenId = TokenId(id = id)
+        val uri = tokenId.getVerificationEntryUri(
             publicKey = "pk_zzzz",
             redirectUrlName = "app"
         )
@@ -61,9 +61,9 @@ class ThreeDSecureTokenTest {
     @Test
     fun getTdsFinishUri() {
         val id = "tds_xxx"
-        val token = ThreeDSecureToken(id)
+        val tokenId = TokenId(id = id)
         assertThat(
-            token.getVerificationFinishUri().toString(),
+            tokenId.getVerificationFinishUri().toString(),
             `is`("${PayjpConstants.API_ENDPOINT}tds/$id/finish")
         )
     }

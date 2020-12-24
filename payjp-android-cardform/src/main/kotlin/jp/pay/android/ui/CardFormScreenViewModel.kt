@@ -44,13 +44,17 @@ import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
+import jp.pay.android.model.ThreeDSecureStatus
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
+import jp.pay.android.model.TokenId
+import jp.pay.android.model.extension.retrieveId
 import jp.pay.android.ui.extension.combineLatest
 import jp.pay.android.ui.extension.startWith
 import jp.pay.android.util.delegateLiveData
 import jp.pay.android.verifier.ui.PayjpThreeDSecureResult
 import java.io.IOException
+import java.lang.IllegalStateException
 
 internal class CardFormScreenViewModel(
     private val handle: SavedStateHandle,
@@ -72,6 +76,7 @@ internal class CardFormScreenViewModel(
     override val errorViewText: MutableLiveData<CharSequence> by handle.delegateLiveData()
     override val success: MutableLiveData<Token> by handle.delegateLiveData()
     override val startVerifyCommand: MutableLiveData<ThreeDSecureToken> by handle.delegateLiveData()
+    override val startVerifyWithTokenIdCommand: MutableLiveData<TokenId> by handle.delegateLiveData()
     override val snackBarMessage: MutableLiveData<Int> by handle.delegateLiveData()
     // private property
     private var fetchAcceptedBrandsTask: Task<CardBrandsAcceptedResponse>? = null
@@ -135,7 +140,11 @@ internal class CardFormScreenViewModel(
     override fun onCompleteCardVerify(result: PayjpThreeDSecureResult) {
         if (result.isSuccess()) {
             tokenizeProcessing.value = true
-            createTokenWithTdsToken(result.retrieveThreeDSecureToken())
+            when (result) {
+                is PayjpThreeDSecureResult.Success -> createTokenWithTdsToken(result.threeDSecureToken)
+                is PayjpThreeDSecureResult.SuccessTokenId -> finishTokenTds(result.id)
+                else -> throw IllegalStateException("illegal result: $result")
+            }
         } else {
             snackBarMessage.value = R.string.payjp_card_form_message_cancel_verification
             tokenizeProcessing.value = false
@@ -148,6 +157,7 @@ internal class CardFormScreenViewModel(
 
     override fun onStartedVerify() {
         startVerifyCommand.value = null
+        startVerifyWithTokenIdCommand.value = null
     }
 
     override fun onDisplayedErrorMessage() {
@@ -201,11 +211,21 @@ internal class CardFormScreenViewModel(
         }
     }
 
+    private fun finishTokenTds(tokenId: TokenId) {
+        fetchTokenTask = tokenService.finishTokenThreeDSecure(tokenId).also {
+            enqueueTokenTask(it)
+        }
+    }
+
     private fun enqueueTokenTask(task: Task<Token>) {
         task.enqueue(
             object : Task.Callback<Token> {
                 override fun onSuccess(data: Token) {
-                    postTokenHandlerOrComplete(data)
+                    if (data.card.threeDSecureStatus == ThreeDSecureStatus.UNVERIFIED) {
+                        startVerifyWithTokenIdCommand.value = data.retrieveId()
+                    } else {
+                        postTokenHandlerOrComplete(data)
+                    }
                 }
 
                 override fun onError(throwable: Throwable) {

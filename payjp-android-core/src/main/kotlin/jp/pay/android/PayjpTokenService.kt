@@ -26,6 +26,7 @@ import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
+import jp.pay.android.model.TokenId
 
 /**
  * interface for retrieve and create token.
@@ -68,7 +69,16 @@ interface PayjpTokenService {
      * @param threeDSecureToken 3DS token
      * @return task to create token.
      */
+    @Deprecated("ThreeDSecureToken has been deprecated.")
     fun createToken(threeDSecureToken: ThreeDSecureToken): Task<Token>
+
+    /**
+     * Complete 3DS flow
+     *
+     * @param tokenId token id
+     * @return task to get completed token
+     */
+    fun finishTokenThreeDSecure(tokenId: TokenId): Task<Token>
 
     /**
      * Retrieve token from token id.

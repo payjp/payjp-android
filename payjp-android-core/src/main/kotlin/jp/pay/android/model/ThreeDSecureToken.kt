@@ -34,6 +34,9 @@ import kotlinx.parcelize.Parcelize
  * @param id id
  */
 @Parcelize
+@Deprecated(
+    message = "ThreeDSecureToken has been deprecated."
+)
 data class ThreeDSecureToken(val id: String) : Parcelable {
     private fun getVerificationBaseUri(): Uri = Uri.parse(PayjpConstants.API_ENDPOINT)
         .buildUpon()
