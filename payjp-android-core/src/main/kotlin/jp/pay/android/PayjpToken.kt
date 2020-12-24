@@ -27,6 +27,7 @@ import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
+import jp.pay.android.model.TokenId
 import jp.pay.android.network.ClientInfoInterceptor
 import jp.pay.android.network.ClientInfoInterceptorProvider
 import jp.pay.android.network.CustomHeaderInterceptor
@@ -102,6 +103,14 @@ class PayjpToken internal constructor(
         return payjpApi.createToken(
             authorization = authorization,
             tdsId = threeDSecureToken.id
+        ).let { this.wrapWithObserver(it) }
+    }
+
+    override fun finishTokenThreeDSecure(tokenId: TokenId): Task<Token> {
+        checkTokenOperationStatus()
+        return payjpApi.finishTokenThreeDSecure(
+            authorization = authorization,
+            id = tokenId.id
         ).let { this.wrapWithObserver(it) }
     }
 

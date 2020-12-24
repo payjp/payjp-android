@@ -30,4 +30,5 @@ import java.io.IOException
  *
  * @param token 3DS token
  */
+@Deprecated("ThreeDSecureToken has been deprecated.")
 class PayjpThreeDSecureRequiredException(val token: ThreeDSecureToken) : IOException()

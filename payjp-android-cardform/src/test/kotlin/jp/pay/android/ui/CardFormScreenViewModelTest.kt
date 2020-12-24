@@ -36,8 +36,10 @@ import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
+import jp.pay.android.model.ThreeDSecureStatus
 import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
+import jp.pay.android.model.TokenId
 import jp.pay.android.testing.FakeTokenOperationObserver
 import jp.pay.android.util.Tasks
 import jp.pay.android.verifier.ui.PayjpThreeDSecureResult
@@ -377,6 +379,22 @@ class CardFormScreenViewModelTest {
     }
 
     @Test
+    fun start_verify_if_tds_unverified() {
+        val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
+        val tokenId = TokenId("tok_xxx")
+        val card = TestStubs.newCard(threeDSecureStatus = ThreeDSecureStatus.UNVERIFIED)
+        val token = TestStubs.newToken(id = tokenId.id, card = card)
+        viewModel.onCreateToken(Tasks.success(token))
+        viewModel.run {
+            assertThat(success.value, nullValue())
+            assertThat(startVerifyWithTokenIdCommand.value, `is`(tokenId))
+            assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.VISIBLE))
+        }
+        verify(mockTokenHandlerExecutor, never()).post(anyNullable(), anyNullable())
+    }
+
+    @Test
     fun clear_start_verify_command_after_command() {
         val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
         val tdsToken = ThreeDSecureToken(id = "tds_xxx")
@@ -385,6 +403,18 @@ class CardFormScreenViewModelTest {
         assertThat(viewModel.startVerifyCommand.value, `is`(tdsToken))
         viewModel.onStartedVerify()
         assertThat(viewModel.startVerifyCommand.value, nullValue())
+    }
+
+    @Test
+    fun clear_start_verify_tokenId_command_after_command() {
+        val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
+        val tokenId = TokenId("tok_xxx")
+        val card = TestStubs.newCard(threeDSecureStatus = ThreeDSecureStatus.UNVERIFIED)
+        val token = TestStubs.newToken(id = tokenId.id, card = card)
+        viewModel.onCreateToken(Tasks.success(token))
+        assertThat(viewModel.startVerifyWithTokenIdCommand.value, `is`(tokenId))
+        viewModel.onStartedVerify()
+        assertThat(viewModel.startVerifyWithTokenIdCommand.value, nullValue())
     }
 
     @Test
@@ -475,6 +505,72 @@ class CardFormScreenViewModelTest {
             assertThat(success.value, nullValue())
         }
         verify(mockTokenService).createToken(tdsToken)
+        verify(mockTokenHandlerExecutor, never()).post(anyNullable(), anyNullable())
+
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.ACCEPTABLE
+
+        viewModel.run {
+            assertThat(submitButtonVisibility.value, `is`(View.VISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.GONE))
+        }
+    }
+
+    @Test
+    fun onCompleteCardVerify_success_with_tokenId_createToken_success() {
+        val tokenId = TokenId("tok_xxx")
+        val cardUnverified = TestStubs.newCard(threeDSecureStatus = ThreeDSecureStatus.UNVERIFIED)
+        val tokenUnverified = TestStubs.newToken(id = tokenId.id, card = cardUnverified)
+        val tokenCompleted = TestStubs.newToken(
+            id = tokenId.id,
+            card = cardUnverified.copy(threeDSecureStatus = ThreeDSecureStatus.VERIFIED)
+        )
+
+        `when`(mockTokenService.finishTokenThreeDSecure(tokenId)).thenReturn(Tasks.success(tokenCompleted))
+        val handlerExecutor = RecordingHandlerExecutor()
+        val viewModel = createViewModel(tokenHandlerExecutor = handlerExecutor)
+
+        viewModel.onCreateToken(Tasks.success(tokenUnverified))
+        viewModel.onCompleteCardVerify(PayjpThreeDSecureResult.SuccessTokenId(tokenId))
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.THROTTLED
+
+        viewModel.run {
+            assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.VISIBLE))
+        }
+        verify(mockTokenService).finishTokenThreeDSecure(tokenId)
+
+        handlerExecutor.callback?.invoke(PayjpTokenBackgroundHandler.CardFormStatus.Complete())
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.ACCEPTABLE
+
+        viewModel.run {
+            assertThat(success.value, `is`(tokenCompleted))
+            assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.GONE))
+        }
+    }
+
+    @Test
+    fun onCompleteCardVerify_success_with_tokenId_createToken_failure() {
+        val tokenId = TokenId("tok_xxx")
+        val cardUnverified = TestStubs.newCard(threeDSecureStatus = ThreeDSecureStatus.UNVERIFIED)
+        val tokenUnverified = TestStubs.newToken(id = tokenId.id, card = cardUnverified)
+        val error = RuntimeException("omg")
+        val message = "message"
+        `when`(mockTokenService.finishTokenThreeDSecure(tokenId)).thenReturn(Tasks.failure(error))
+        `when`(mockErrorTranslator.translate(error)).thenReturn(message)
+        val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
+
+        viewModel.onCreateToken(Tasks.success(tokenUnverified))
+        viewModel.onCompleteCardVerify(PayjpThreeDSecureResult.SuccessTokenId(tokenId))
+        FakeTokenOperationObserver.status = PayjpTokenOperationStatus.THROTTLED
+
+        viewModel.run {
+            assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
+            assertThat(submitButtonProgressVisibility.value, `is`(View.VISIBLE))
+            assertThat(errorDialogMessage.value, `is`(message as CharSequence))
+            assertThat(success.value, nullValue())
+        }
+        verify(mockTokenService).finishTokenThreeDSecure(tokenId)
         verify(mockTokenHandlerExecutor, never()).post(anyNullable(), anyNullable())
 
         FakeTokenOperationObserver.status = PayjpTokenOperationStatus.ACCEPTABLE
