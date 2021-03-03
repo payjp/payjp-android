@@ -45,7 +45,7 @@ internal class ContextErrorTranslator(context: Context) : ErrorTranslator {
             is PayjpApiException -> when (throwable.httpStatusCode) {
                 in 500 until 600 -> context.getString(R.string.payjp_card_form_screen_error_server)
                 else -> context.getString(R.string.payjp_card_form_screen_error_application)
-            }
+            } + " (code:${throwable.apiError.code})"
             is IOException -> context.getString(R.string.payjp_card_form_screen_error_network)
             else -> context.getString(R.string.payjp_card_form_screen_error_unknown)
         }
