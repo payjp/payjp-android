@@ -85,14 +85,15 @@ class ContextErrorTranslatorTest {
     }
 
     @Test
-    fun translate_api_error_401_to_own_message() {
+    fun translate_api_error_401_to_fixed_message_with_code() {
         val message = "omg"
+        val code = "unauthorized"
         val error = PayjpApiException(
             message = message,
             cause = RuntimeException(),
             httpStatusCode = 401,
             apiError = ApiError(
-                code = "unauthorized",
+                code = code,
                 message = message,
                 type = "client_error"
             ),
@@ -100,19 +101,41 @@ class ContextErrorTranslatorTest {
         )
         assertThat(
             ContextErrorTranslator(mockContext).translate(error).toString(),
-            `is`(mockErrorMessageApplication)
+            `is`("$mockErrorMessageApplication (code:$code)")
         )
     }
 
     @Test
-    fun translate_api_error_500_to_own_message() {
+    fun translate_api_error_403_to_fixed_message_with_code() {
         val message = "omg"
+        val code = "card_flagged"
         val error = PayjpApiException(
             message = message,
             cause = RuntimeException(),
-            httpStatusCode = 500,
+            httpStatusCode = 403,
             apiError = ApiError(
-                code = "pg_wrong",
+                code = code,
+                message = message,
+                type = "forbidden"
+            ),
+            source = ""
+        )
+        assertThat(
+            ContextErrorTranslator(mockContext).translate(error).toString(),
+            `is`("$mockErrorMessageApplication (code:$code)")
+        )
+    }
+
+    @Test
+    fun translate_api_error_502_to_own_message() {
+        val message = "omg"
+        val code = "maintenance"
+        val error = PayjpApiException(
+            message = message,
+            cause = RuntimeException(),
+            httpStatusCode = 502,
+            apiError = ApiError(
+                code = code,
                 message = message,
                 type = "server_error"
             ),
@@ -120,7 +143,7 @@ class ContextErrorTranslatorTest {
         )
         assertThat(
             ContextErrorTranslator(mockContext).translate(error).toString(),
-            `is`(mockErrorMessageServer)
+            `is`("$mockErrorMessageServer (code:$code)")
         )
     }
 
