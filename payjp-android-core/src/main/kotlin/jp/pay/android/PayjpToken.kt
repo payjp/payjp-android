@@ -25,7 +25,6 @@ package jp.pay.android
 import android.util.Base64
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
-import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.model.TokenId
 import jp.pay.android.network.ClientInfoInterceptor
@@ -95,14 +94,6 @@ class PayjpToken internal constructor(
             expYear = param.expYear,
             name = param.name,
             tenant = param.tenantId?.id
-        ).let { this.wrapWithObserver(it) }
-    }
-
-    override fun createToken(threeDSecureToken: ThreeDSecureToken): Task<Token> {
-        checkTokenOperationStatus()
-        return payjpApi.createToken(
-            authorization = authorization,
-            tdsId = threeDSecureToken.id
         ).let { this.wrapWithObserver(it) }
     }
 

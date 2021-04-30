@@ -64,11 +64,6 @@ internal object TokenApiClientFactory {
     ): OkHttpClient =
         OkHttpClient.Builder()
             .retryOnConnectionFailure(false)
-            .addNetworkInterceptor(
-                ThreeDSecureRedirectionInterceptor(
-                    ThreeDSecureTokenRetriever(baseUrl = baseUrl, moshi = moshi)
-                )
-            )
             .addInterceptor(interceptor)
             .apply {
                 if (debuggable) {

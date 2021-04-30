@@ -37,7 +37,6 @@ import com.example.payjp.sample.databinding.ActivityCardFormViewSampleBinding
 import jp.pay.android.Payjp
 import jp.pay.android.PayjpTokenOperationStatus
 import jp.pay.android.Task
-import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ThreeDSecureStatus
 import jp.pay.android.model.Token
@@ -159,16 +158,9 @@ class CardFormViewSampleActivity :
 
                 override fun onError(throwable: Throwable) {
                     Log.e("CardFormViewSample", "failure creating token", throwable)
-                    if (throwable is PayjpThreeDSecureRequiredException) {
-                        // if support 3DSecure
-                        // NOTE: 3DSecure is a limited feature for now.
-                        Payjp.verifier()
-                            .startThreeDSecureFlow(throwable.token, this@CardFormViewSampleActivity)
-                    } else {
-                        tokenizeProcessing = false
-                        binding.textTokenContent.text = throwable.toString()
-                        updateButtonVisibility()
-                    }
+                    tokenizeProcessing = false
+                    binding.textTokenContent.text = throwable.toString()
+                    updateButtonVisibility()
                 }
             }
         )

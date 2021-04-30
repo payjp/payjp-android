@@ -22,7 +22,6 @@
  */
 package jp.pay.android.verifier.ui
 
-import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.TokenId
 
 /**
@@ -33,14 +32,8 @@ sealed class PayjpThreeDSecureResult {
     /**
      * Success
      *
-     * @param threeDSecureToken 3DS token
+     * @param id token id
      */
-    @Deprecated(
-        message = "ThreeDSecureToken has been deprecated. It will be removed in future.",
-        replaceWith = ReplaceWith("SuccessTokenId")
-    )
-    data class Success(val threeDSecureToken: ThreeDSecureToken) : PayjpThreeDSecureResult()
-
     data class SuccessTokenId(val id: TokenId) : PayjpThreeDSecureResult()
 
     /**
@@ -51,26 +44,12 @@ sealed class PayjpThreeDSecureResult {
     /**
      * Return it is success.
      */
-    fun isSuccess(): Boolean = this is Success || this is SuccessTokenId
+    fun isSuccess(): Boolean = this is SuccessTokenId
 
     /**
      * Return it is canceled.
      */
     fun isCanceled(): Boolean = this === Canceled
-
-    /**
-     * Get out token from result. If it is not success, throw exception.
-     *
-     */
-    @Deprecated(
-        message = "ThreeDSecureToken has been deprecated.",
-        replaceWith = ReplaceWith("retrieveSuccessData()")
-    )
-    fun retrieveThreeDSecureToken(): ThreeDSecureToken {
-        val success = this as? Success
-            ?: throw IllegalStateException("Cannot call retrieveToken() when it is not success")
-        return success.threeDSecureToken
-    }
 
     /**
      * Get out tokenId from result. If it is not success, throw exception.

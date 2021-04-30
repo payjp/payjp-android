@@ -31,10 +31,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.payjp.sample.databinding.ActivityCardFormViewSampleBinding
 import jp.pay.android.Payjp
 import jp.pay.android.coroutine.createTokenSuspend
+import jp.pay.android.coroutine.finishTokenTdsSuspend
 import jp.pay.android.coroutine.getTokenSuspend
-import jp.pay.android.exception.PayjpThreeDSecureRequiredException
-import jp.pay.android.model.ThreeDSecureToken
+import jp.pay.android.model.ThreeDSecureStatus
 import jp.pay.android.model.Token
+import jp.pay.android.model.TokenId
+import jp.pay.android.model.extension.retrieveId
 import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -82,28 +84,30 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
         super.onActivityResult(requestCode, resultCode, data)
         Payjp.verifier().handleThreeDSecureResult(requestCode) {
             if (it.isSuccess()) {
-                createToken(tdsToken = it.retrieveThreeDSecureToken())
+                createToken(tokenId = it.retrieveTokenId())
             } else {
                 Toast.makeText(this, "3-D Secure canceled.", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun createToken(tdsToken: ThreeDSecureToken? = null) = launch {
+    private fun createToken(tokenId: TokenId? = null) = launch {
         binding.layoutButtons.visibility = View.INVISIBLE
         binding.progressBar.visibility = View.VISIBLE
         binding.textTokenContent.visibility = View.INVISIBLE
         try {
             val token = withContext(Dispatchers.IO) {
-                if (tdsToken == null) {
+                if (tokenId == null) {
                     cardFormFragment.createTokenSuspend()
                 } else {
-                    Payjp.token().createTokenSuspend(tdsToken)
+                    Payjp.token().finishTokenTdsSuspend(tokenId = tokenId)
                 }
             }
-            updateSuccessUI(token)
-        } catch (e: PayjpThreeDSecureRequiredException) {
-            Payjp.verifier().startThreeDSecureFlow(e.token, this@CoroutineSampleActivity)
+            if (token.card.threeDSecureStatus == ThreeDSecureStatus.UNVERIFIED) {
+                Payjp.verifier().startThreeDSecureFlow(token.retrieveId(), this@CoroutineSampleActivity)
+            } else {
+                updateSuccessUI(token)
+            }
         } catch (t: Throwable) {
             updateErrorUI(t, "failure creating token")
         }

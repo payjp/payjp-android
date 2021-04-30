@@ -28,7 +28,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
-import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.TokenId
 import jp.pay.android.verifier.PayjpVerifier
 
@@ -45,7 +44,6 @@ class PayjpThreeDSecureStepActivity : AppCompatActivity() {
     }
 
     companion object {
-        internal const val EXTRA_KEY_TDS_TOKEN = "EXTRA_KEY_TDS_TOKEN"
         internal const val EXTRA_KEY_TOKEN_ID = "EXTRA_KEY_TOKEN_ID"
         internal val intentHolder: IntentHolder = IntentHolder()
 
@@ -55,48 +53,30 @@ class PayjpThreeDSecureStepActivity : AppCompatActivity() {
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
 
-        @Deprecated("ThreeDSecureToken has been deprecated. Please use Token instead.")
-        internal fun createLaunchIntent(context: Context, tdsToken: ThreeDSecureToken): Intent {
-            return Intent(context, PayjpThreeDSecureStepActivity::class.java)
-                .putExtra(EXTRA_KEY_TDS_TOKEN, tdsToken)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        }
-
         internal fun getResult(): PayjpThreeDSecureResult {
             val intent = intentHolder.pop()
             PayjpVerifier.logger().d("getResult intent: $intent")
             val uri = intent?.data
-            // FIXME: API互換性のために見つからなければフォールバックする
             val resource = intent?.getParcelableExtra<TokenId>(EXTRA_KEY_TOKEN_ID)
-                ?: intent?.getParcelableExtra<ThreeDSecureToken>(EXTRA_KEY_TDS_TOKEN)
             return when {
                 uri == null -> PayjpThreeDSecureResult.Canceled
                 resource is TokenId -> PayjpThreeDSecureResult.SuccessTokenId(id = resource)
-                resource is ThreeDSecureToken -> PayjpThreeDSecureResult.Success(threeDSecureToken = resource)
                 else -> PayjpThreeDSecureResult.Canceled
             }
         }
     }
 
     private var currentTokenId: TokenId? = null
-    private var currentTdsToken: ThreeDSecureToken? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState?.containsKey(EXTRA_KEY_TDS_TOKEN) == true ||
-            savedInstanceState?.containsKey(EXTRA_KEY_TOKEN_ID) == true
-        ) {
+        if (savedInstanceState?.containsKey(EXTRA_KEY_TOKEN_ID) == true) {
             currentTokenId = savedInstanceState.getParcelable(EXTRA_KEY_TOKEN_ID)
-            currentTdsToken = savedInstanceState.getParcelable(EXTRA_KEY_TDS_TOKEN)
         } else {
             intent.getParcelableExtra<TokenId>(EXTRA_KEY_TOKEN_ID)?.let { tokenId ->
                 currentTokenId = tokenId
                 intentHolder.pop()
                 PayjpVerifier.openThreeDSecure(tokenId, this)
-            } ?: intent.getParcelableExtra<ThreeDSecureToken>(EXTRA_KEY_TDS_TOKEN)?.let { tdsToken ->
-                currentTdsToken = tdsToken
-                intentHolder.pop()
-                PayjpVerifier.openThreeDSecure(tdsToken, this)
             }
         }
     }
@@ -116,8 +96,6 @@ class PayjpThreeDSecureStepActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         currentTokenId?.let { tokenId ->
             outState.putParcelable(EXTRA_KEY_TOKEN_ID, tokenId)
-        } ?: currentTdsToken?.let { tdsToken ->
-            outState.putParcelable(EXTRA_KEY_TDS_TOKEN, tdsToken)
         }
     }
 
@@ -127,7 +105,6 @@ class PayjpThreeDSecureStepActivity : AppCompatActivity() {
         intent?.data?.let { uri ->
             intentHolder.intent = Intent().setData(uri)
                 .putExtra(EXTRA_KEY_TOKEN_ID, currentTokenId)
-                .putExtra(EXTRA_KEY_TDS_TOKEN, currentTdsToken)
             setResult(Activity.RESULT_OK)
             finish()
         }
