@@ -43,7 +43,6 @@ import jp.pay.android.R
 import jp.pay.android.databinding.PayjpCardFormActivityBinding
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.TenantId
-import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.model.TokenId
 import jp.pay.android.ui.extension.showWith
@@ -214,7 +213,6 @@ internal class PayjpCardFormActivity :
                 vm.errorDialogMessage.nonNull().observe(this, this::showErrorMessage)
                 vm.success.nonNull().observe(this, this::finishWithSuccess)
                 vm.startVerifyCommand.nonNull().observe(this, this::startVerify)
-                vm.startVerifyWithTokenIdCommand.nonNull().observe(this, this::startVerify)
                 vm.snackBarMessage.nonNull().observe(this, this::showSnackBarMessage)
             }
     }
@@ -281,11 +279,6 @@ internal class PayjpCardFormActivity :
         val data = Intent().putExtra(CARD_FORM_EXTRA_KEY_TOKEN, token)
         setResult(Activity.RESULT_OK, data)
         finish()
-    }
-
-    private fun startVerify(tdsToken: ThreeDSecureToken) {
-        PayjpVerifier.startThreeDSecureFlow(tdsToken, this)
-        viewModel?.onStartedVerify()
     }
 
     private fun startVerify(tokenId: TokenId) {

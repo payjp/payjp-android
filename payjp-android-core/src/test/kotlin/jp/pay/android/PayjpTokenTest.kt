@@ -26,7 +26,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.exception.PayjpApiException
 import jp.pay.android.exception.PayjpCardException
 import jp.pay.android.exception.PayjpRateLimitException
-import jp.pay.android.exception.PayjpThreeDSecureRequiredException
 import jp.pay.android.fixtures.ACCEPTED_BRANDS_EMPTY
 import jp.pay.android.fixtures.ACCEPTED_BRANDS_FULL
 import jp.pay.android.fixtures.ERROR_AUTH
@@ -37,15 +36,12 @@ import jp.pay.android.fixtures.TOKEN_OK
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ClientInfo
 import jp.pay.android.model.TenantId
-import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.TokenId
 import jp.pay.android.network.TokenApiClientFactory.createApiClient
 import jp.pay.android.network.TokenApiClientFactory.createHeaderInterceptor
 import jp.pay.android.network.TokenApiClientFactory.createOkHttp
-import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.RecordedRequest
 import org.hamcrest.Matchers.contains
 import org.hamcrest.Matchers.empty
 import org.junit.After
@@ -57,7 +53,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import retrofit2.HttpException
 import java.io.IOException
-import java.lang.RuntimeException
 import java.nio.charset.Charset
 import java.util.Locale
 import java.util.concurrent.Executor
@@ -302,73 +297,6 @@ class PayjpTokenTest {
             assertEquals("over_capacity", e.apiError.code)
             assertEquals(ERROR_OVER_CAPACITY, e.source)
         }
-    }
-
-    @Test
-    fun createToken_returns_tds() {
-        val tdsId = "tds_abcd1234"
-        mockWebServer.setDispatcher(
-            object : Dispatcher() {
-                override fun dispatch(request: RecordedRequest): MockResponse = when (request.path) {
-                    "/tokens" ->
-                        MockResponse()
-                            .setResponseCode(200)
-                            .setHeader("Location", "${mockWebServer.url("/")}tds/$tdsId/start")
-                            .setBody(
-                                """
-{ "object": "three_d_secure_token", "id": "$tdsId" }
-                                """.trimIndent()
-                            )
-                    "/tds/$tdsId/start" -> MockResponse().setResponseCode(200).setBody(TOKEN_OK)
-                    else -> throw RuntimeException("unknown path -> ${request.path}")
-                }
-            }
-        )
-
-        val task = createTokenService()
-            .createToken(
-                number = "4242424242424242",
-                cvc = "123",
-                expMonth = "02",
-                expYear = "2020",
-                name = "TARO YAMADA"
-            )
-
-        try {
-            task.run()
-            fail()
-        } catch (e: PayjpThreeDSecureRequiredException) {
-            assertEquals(tdsId, e.token.id)
-        }
-    }
-
-    @Test
-    fun createToken_by_card() {
-        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
-
-        val tdsToken = ThreeDSecureToken("tds_xxx")
-        createTokenService()
-            .createToken(tdsToken)
-            .run()
-            .let { token ->
-                assertEquals("tok_5ca06b51685e001723a2c3b4aeb4", token.id)
-                assertEquals("car_e3ccd4e0959f45e7c75bacc4be90", token.card.id)
-            }
-
-        mockWebServer.takeRequest()
-            .let { request ->
-                assertEquals("POST", request.method)
-                assertEquals("/tokens", request.path)
-                assertEquals(
-                    "Basic cGtfdGVzdF8wMzgzYTFiOGY5MWU4YTZlM2VhMGUyYTk6",
-                    request.getHeader("Authorization")
-                )
-                assertEquals("en", request.getHeader("Locale"))
-                assertEquals(
-                    "three_d_secure_token=${tdsToken.id}",
-                    request.body.readString(Charset.forName("utf-8"))
-                )
-            }
     }
 
     @Test

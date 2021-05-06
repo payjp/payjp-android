@@ -38,7 +38,6 @@ import jp.pay.android.TestStubs
 import jp.pay.android.anyNullable
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId
-import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.model.TokenId
 import jp.pay.android.testing.FakeTokenOperationObserver
@@ -73,9 +72,6 @@ class PayjpCardFormActivityMultiLineTest {
 
             override fun createToken(param: PayjpTokenParam): Task<Token> =
                 mockTokenService.createToken(param)
-
-            override fun createToken(threeDSecureToken: ThreeDSecureToken): Task<Token> =
-                mockTokenService.createToken(threeDSecureToken)
 
             override fun finishTokenThreeDSecure(tokenId: TokenId): Task<Token> =
                 mockTokenService.finishTokenThreeDSecure(tokenId)

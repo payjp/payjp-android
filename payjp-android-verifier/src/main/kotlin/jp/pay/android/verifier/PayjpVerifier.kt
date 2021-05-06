@@ -27,7 +27,6 @@ import androidx.annotation.MainThread
 import jp.pay.android.PayjpLogger
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.Task
-import jp.pay.android.model.ThreeDSecureToken
 import jp.pay.android.model.Token
 import jp.pay.android.model.TokenId
 import jp.pay.android.verifier.ui.PayjpThreeDSecureResult
@@ -75,15 +74,6 @@ object PayjpVerifier {
     }
 
     @MainThread
-    @Deprecated(
-        message = "ThreeDSecureToken has been deprecated. Please use Token instead."
-    )
-    fun startThreeDSecureFlow(threeDSecureToken: ThreeDSecureToken, activity: Activity) {
-        val intent = PayjpThreeDSecureStepActivity.createLaunchIntent(activity, threeDSecureToken)
-        activity.startActivityForResult(intent, REQUEST_CODE_VERIFY_LAUNCHER)
-    }
-
-    @MainThread
     internal fun openThreeDSecure(tokenId: TokenId, activity: Activity) {
         val intent = webBrowserResolver.resolve(
             context = activity,
@@ -92,28 +82,6 @@ object PayjpVerifier {
                 redirectUrlName = threeDSecureRedirectName
             ),
             callbackUri = tokenId.getVerificationFinishUri()
-        )
-        if (intent == null) {
-            logger.w("Any activity which open Web not found.")
-        } else {
-            logger.d("Intent $intent")
-            logger.d("data ${intent.data}")
-            activity.startActivityForResult(intent, REQUEST_CODE_VERIFY)
-        }
-    }
-
-    @MainThread
-    @Deprecated(
-        message = "ThreeDSecureToken has been deprecated. Please use Token instead."
-    )
-    internal fun openThreeDSecure(threeDSecureToken: ThreeDSecureToken, activity: Activity) {
-        val intent = webBrowserResolver.resolve(
-            context = activity,
-            uri = threeDSecureToken.getVerificationEntryUri(
-                publicKey = tokenService().getPublicKey(),
-                redirectUrlName = threeDSecureRedirectName
-            ),
-            callbackUri = threeDSecureToken.getVerificationFinishUri()
         )
         if (intent == null) {
             logger.w("Any activity which open Web not found.")
@@ -135,7 +103,6 @@ object PayjpVerifier {
     }
 
     fun completeTokenThreeDSecure(result: PayjpThreeDSecureResult): Task<Token>? = when (result) {
-        is PayjpThreeDSecureResult.Success -> tokenService().createToken(result.threeDSecureToken)
         is PayjpThreeDSecureResult.SuccessTokenId -> tokenService().finishTokenThreeDSecure(result.id)
         else -> null
     }
