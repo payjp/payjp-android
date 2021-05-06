@@ -63,7 +63,7 @@ internal interface CardFormScreenContract {
         val errorDialogMessage: LiveData<CharSequence>
         val errorViewText: LiveData<CharSequence>
         val success: LiveData<Token>
-        val startVerifyWithTokenIdCommand: LiveData<TokenId>
+        val startVerifyCommand: LiveData<TokenId>
         val snackBarMessage: LiveData<Int>
     }
 }

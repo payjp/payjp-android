@@ -73,7 +73,7 @@ internal class CardFormScreenViewModel(
     override val errorDialogMessage: MutableLiveData<CharSequence> by handle.delegateLiveData()
     override val errorViewText: MutableLiveData<CharSequence> by handle.delegateLiveData()
     override val success: MutableLiveData<Token> by handle.delegateLiveData()
-    override val startVerifyWithTokenIdCommand: MutableLiveData<TokenId> by handle.delegateLiveData()
+    override val startVerifyCommand: MutableLiveData<TokenId> by handle.delegateLiveData()
     override val snackBarMessage: MutableLiveData<Int> by handle.delegateLiveData()
     // private property
     private var fetchAcceptedBrandsTask: Task<CardBrandsAcceptedResponse>? = null
@@ -152,7 +152,7 @@ internal class CardFormScreenViewModel(
     }
 
     override fun onStartedVerify() {
-        startVerifyWithTokenIdCommand.value = null
+        startVerifyCommand.value = null
     }
 
     override fun onDisplayedErrorMessage() {
@@ -211,7 +211,7 @@ internal class CardFormScreenViewModel(
             object : Task.Callback<Token> {
                 override fun onSuccess(data: Token) {
                     if (data.card.threeDSecureStatus == ThreeDSecureStatus.UNVERIFIED) {
-                        startVerifyWithTokenIdCommand.value = data.retrieveId()
+                        startVerifyCommand.value = data.retrieveId()
                     } else {
                         postTokenHandlerOrComplete(data)
                     }

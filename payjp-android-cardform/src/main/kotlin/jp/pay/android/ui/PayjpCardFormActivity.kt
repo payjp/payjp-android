@@ -212,7 +212,7 @@ internal class PayjpCardFormActivity :
                 }
                 vm.errorDialogMessage.nonNull().observe(this, this::showErrorMessage)
                 vm.success.nonNull().observe(this, this::finishWithSuccess)
-                vm.startVerifyWithTokenIdCommand.nonNull().observe(this, this::startVerify)
+                vm.startVerifyCommand.nonNull().observe(this, this::startVerify)
                 vm.snackBarMessage.nonNull().observe(this, this::showSnackBarMessage)
             }
     }

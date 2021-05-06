@@ -369,7 +369,7 @@ class CardFormScreenViewModelTest {
         viewModel.onCreateToken(Tasks.success(token))
         viewModel.run {
             assertThat(success.value, nullValue())
-            assertThat(startVerifyWithTokenIdCommand.value, `is`(tokenId))
+            assertThat(startVerifyCommand.value, `is`(tokenId))
             assertThat(submitButtonVisibility.value, `is`(View.INVISIBLE))
             assertThat(submitButtonProgressVisibility.value, `is`(View.VISIBLE))
         }
@@ -383,9 +383,9 @@ class CardFormScreenViewModelTest {
         val card = TestStubs.newCard(threeDSecureStatus = ThreeDSecureStatus.UNVERIFIED)
         val token = TestStubs.newToken(id = tokenId.id, card = card)
         viewModel.onCreateToken(Tasks.success(token))
-        assertThat(viewModel.startVerifyWithTokenIdCommand.value, `is`(tokenId))
+        assertThat(viewModel.startVerifyCommand.value, `is`(tokenId))
         viewModel.onStartedVerify()
-        assertThat(viewModel.startVerifyWithTokenIdCommand.value, nullValue())
+        assertThat(viewModel.startVerifyCommand.value, nullValue())
     }
 
     @Test
