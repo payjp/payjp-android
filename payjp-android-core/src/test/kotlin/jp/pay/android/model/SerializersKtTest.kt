@@ -61,7 +61,8 @@ class SerializersKtTest {
                 putString("meta_a", "a")
                 putBoolean("meta_true", true)
             },
-            threeDSecureStatus = ThreeDSecureStatus.VERIFIED
+            threeDSecureStatus = ThreeDSecureStatus.VERIFIED,
+            `object` = "card"
         )
     }
 
@@ -86,7 +87,8 @@ class SerializersKtTest {
             card = cardFulFilled,
             livemode = true,
             used = false,
-            created = Date(1577804400L * 1000)
+            created = Date(1577804400L * 1000),
+            `object` = "token"
         )
     }
 
