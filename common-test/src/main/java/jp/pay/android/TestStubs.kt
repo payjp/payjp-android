@@ -52,7 +52,8 @@ object TestStubs {
         customer: String? = null,
         cvcCheck: String = "unchecked",
         metadata: Bundle = Bundle.EMPTY,
-        threeDSecureStatus: ThreeDSecureStatus? = null
+        threeDSecureStatus: ThreeDSecureStatus? = null,
+        `object`: String = "card"
     ): Card = Card(
         id = id,
         name = name,
@@ -73,7 +74,8 @@ object TestStubs {
         customer = customer,
         cvcCheck = cvcCheck,
         metadata = metadata,
-        threeDSecureStatus = threeDSecureStatus
+        threeDSecureStatus = threeDSecureStatus,
+        `object` = `object`
     )
 
     fun newToken(
@@ -82,12 +84,14 @@ object TestStubs {
         card: Card = newCard(seed),
         livemode: Boolean = card.livemode,
         used: Boolean = false,
-        created: Date = Date(seed.toLong())
+        created: Date = Date(seed.toLong()),
+        `object`: String = "token"
     ): Token = Token(
         id = id,
         card = card,
         livemode = livemode,
         used = used,
-        created = created
+        created = created,
+        `object` = `object`
     )
 }

@@ -39,7 +39,8 @@ data class Token(
     val created: Date,
     val id: String,
     val livemode: Boolean,
-    val used: Boolean
+    val used: Boolean,
+    val `object`: String
 ) : Parcelable {
 
     override fun hashCode(): Int = id.hashCode()
