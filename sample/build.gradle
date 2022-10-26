@@ -38,6 +38,7 @@ buildscript {
 }
 
 android {
+    namespace 'com.example.payjp.sample'
     compileSdkVersion rootProject.sdkVersion
 
     defaultConfig {
