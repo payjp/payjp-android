@@ -29,17 +29,19 @@
         <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing"
                 android:value="false" />
 
-        <activity android:name=".ui.PayjpThreeDSecureStepActivity"
+        <activity android:name="jp.pay.android.verifier.ui.PayjpThreeDSecureStepActivity"
                 android:theme="@style/Payjp.Theme.Translucent"
                 android:launchMode="singleTop"
+                android:exported="false"
                 android:enabled="true"/>
 
         <activity
-                android:name=".ui.PayjpWebActivity"
+                android:name="jp.pay.android.verifier.ui.PayjpWebActivity"
                 android:enabled="true"
                 android:exported="false" />
 
-        <activity android:name=".testing.TestEntryActivity"
+        <activity android:name="jp.pay.android.verifier.testing.TestEntryActivity"
+                android:exported="false"
                 android:enabled="true" />
 
     </application>

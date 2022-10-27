@@ -79,13 +79,12 @@ internal class VerifierWebView @JvmOverloads constructor(
         clearCache(true)
         removeAllViews()
         webChromeClient = null
-        webViewClient = null
         loadStateWatchers.clear()
         interceptors.clear()
         super.destroy()
     }
 
-    override fun loadUrl(url: String?) {
+    override fun loadUrl(url: String) {
         if (intercept(Uri.parse(url))) {
             return
         }
@@ -159,7 +158,6 @@ internal class VerifierWebView @JvmOverloads constructor(
             displayZoomControls = false
             databaseEnabled = true
             domStorageEnabled = true
-            setAppCacheEnabled(true)
             @SuppressLint("SetJavaScriptEnabled")
             javaScriptEnabled = true
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {

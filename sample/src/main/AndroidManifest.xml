@@ -28,7 +28,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".SampleApplication"
+        android:name="com.example.payjp.sample.SampleApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -37,17 +37,23 @@
         android:theme="@style/AppTheme"
         android:fullBackupContent="false"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".TopActivity">
+        <activity android:name="com.example.payjp.sample.TopActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".GenerateTokenSampleActivity" />
-        <activity android:name=".GenerateTokenSampleJavaActivity" />
-        <activity android:name=".CardFormViewSampleActivity" />
-        <activity android:name=".CardFormViewSampleJavaActivity" />
-        <activity android:name=".CoroutineSampleActivity" />
+        <activity android:name="com.example.payjp.sample.GenerateTokenSampleActivity"
+            android:exported="false" />
+        <activity android:name="com.example.payjp.sample.GenerateTokenSampleJavaActivity"
+            android:exported="false" />
+        <activity android:name="com.example.payjp.sample.CardFormViewSampleActivity"
+            android:exported="false" />
+        <activity android:name="com.example.payjp.sample.CardFormViewSampleJavaActivity"
+            android:exported="false" />
+        <activity android:name="com.example.payjp.sample.CoroutineSampleActivity"
+            android:exported="false" />
 
         <activity android:name="jp.pay.android.verifier.ui.PayjpThreeDSecureStepActivity"
                 android:enabled="true"

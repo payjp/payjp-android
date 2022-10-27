@@ -71,7 +71,7 @@ tasks.named("dokkaHtmlCollector") {
 ext {
 
     minSdkVersion = 16
-    sdkVersion = 29
+    sdkVersion = 33
 
     okHttp = "3.12.12"
     moshi = "1.9.3"

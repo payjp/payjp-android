@@ -25,7 +25,7 @@
 
     <application>
 
-        <activity android:name=".ui.PayjpThreeDSecureStepActivity"
+        <activity android:name="jp.pay.android.verifier.ui.PayjpThreeDSecureStepActivity"
                 android:theme="@style/Payjp.Theme.Translucent"
                 android:launchMode="singleTop"
                 android:enabled="true"/>

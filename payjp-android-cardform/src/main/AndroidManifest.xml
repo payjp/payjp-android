@@ -25,13 +25,13 @@
 
     <application>
         <activity
-                android:name=".ui.PayjpCardFormActivity"
+                android:name="jp.pay.android.ui.PayjpCardFormActivity"
                 android:theme="@style/Payjp.Theme.CardForm"
                 android:enabled="true"
                 android:exported="false" />
 
         <activity
-                android:name=".verifier.ui.PayjpWebActivity"
+                android:name="jp.pay.android.verifier.ui.PayjpWebActivity"
                 android:theme="@style/Payjp.Theme.CardForm"
                 android:enabled="true"
                 android:exported="false" />

@@ -119,7 +119,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-base:18.1.0'
 
     // debug
-    implementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-5'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

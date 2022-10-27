@@ -32,19 +32,19 @@ sealed class PayjpLogger {
 
     open fun debuggable(): Boolean = false
 
-    open fun v(message: String?) {}
+    open fun v(message: String) {}
 
-    open fun d(message: String?) {}
+    open fun d(message: String) {}
 
-    open fun i(message: String?) {}
+    open fun i(message: String) {}
 
-    open fun w(message: String?) {}
+    open fun w(message: String) {}
 
-    open fun w(message: String?, throwable: Throwable?) {}
+    open fun w(message: String, throwable: Throwable?) {}
 
-    open fun e(message: String?) {}
+    open fun e(message: String) {}
 
-    open fun e(message: String?, throwable: Throwable?) {}
+    open fun e(message: String, throwable: Throwable?) {}
 
     object None : PayjpLogger()
 
@@ -53,31 +53,31 @@ sealed class PayjpLogger {
 
         override fun debuggable(): Boolean = true
 
-        override fun v(message: String?) {
+        override fun v(message: String) {
             Log.v(TAG, message)
         }
 
-        override fun d(message: String?) {
+        override fun d(message: String) {
             Log.d(TAG, message)
         }
 
-        override fun i(message: String?) {
+        override fun i(message: String) {
             Log.i(TAG, message)
         }
 
-        override fun w(message: String?) {
+        override fun w(message: String) {
             Log.w(TAG, message)
         }
 
-        override fun w(message: String?, throwable: Throwable?) {
+        override fun w(message: String, throwable: Throwable?) {
             Log.w(TAG, message, throwable)
         }
 
-        override fun e(message: String?) {
+        override fun e(message: String) {
             Log.e(TAG, message)
         }
 
-        override fun e(message: String?, throwable: Throwable?) {
+        override fun e(message: String, throwable: Throwable?) {
             Log.e(TAG, message, throwable)
         }
     }
