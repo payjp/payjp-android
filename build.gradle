@@ -27,7 +27,7 @@ buildscript {
     ext.kotlin_version = '1.4.20'
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.2'
@@ -95,7 +95,7 @@ ext {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven { url "https://oss.sonatype.org/content/groups/public/" }
     }
 }
