@@ -30,14 +30,15 @@ apply plugin: 'com.google.firebase.appdistribution'
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath 'com.google.firebase:firebase-appdistribution-gradle:2.0.0'
+        classpath 'com.google.firebase:firebase-appdistribution-gradle:3.0.3'
     }
 }
 
 android {
+    namespace 'com.example.payjp.sample'
     compileSdkVersion rootProject.sdkVersion
 
     defaultConfig {
@@ -115,10 +116,10 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofit"
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit"
 
-    implementation 'com.google.android.gms:play-services-base:17.4.0'
+    implementation 'com.google.android.gms:play-services-base:18.1.0'
 
     // debug
-    implementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-5'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -34,3 +34,7 @@ dependencies {
     implementation "io.card:android-sdk:$cardio"
     implementation "androidx.fragment:fragment:$fragment"
 }
+
+android {
+    namespace 'jp.pay.android.cardio'
+}

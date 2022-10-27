@@ -33,3 +33,7 @@ dependencies {
     api project(':payjp-android-core')
     api project(':payjp-android-cardform')
 }
+
+android {
+    namespace 'jp.pay.android'
+}

@@ -37,3 +37,7 @@ dependencies {
 
     testImplementation project(":common-test")
 }
+
+android {
+    namespace 'jp.pay.android.coroutine'
+}
