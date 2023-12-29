@@ -26,10 +26,26 @@ apply plugin: 'kotlin-android'
 
 apply from: rootProject.file("gradle/android-common.gradle")
 
+<<<<<<< Updated upstream:common-test/build.gradle
 android {
     lintOptions {
         abortOnError false
         disable['InvalidPackage']
+=======
+import android.app.Application;
+
+import jp.pay.android.PayjpToken;
+import jp.pay.android.PayjpTokenConfiguration;
+
+public class MainApplication extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        PayjpToken.init(new PayjpTokenConfiguration.Builder("pk_live_f4c60f43e03da808ae6f9f53")
+                .setDebugEnabled(BuildConfig.DEBUG)
+                .build());
+>>>>>>> Stashed changes:sample-java/src/main/java/com/example/payjp/samplejava/MainApplication.java
     }
 }
 

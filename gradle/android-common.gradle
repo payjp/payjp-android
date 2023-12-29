@@ -59,4 +59,15 @@ android {
     buildFeatures {
         buildConfig = false
     }
+<<<<<<< Updated upstream:gradle/android-common.gradle
 }
+=======
+}
+
+dependencies {
+    //implementation project(':payjp')
+    implementation "jp.pay:payjp-android:$latest_version"
+
+    implementation "com.android.support:appcompat-v7:$supportLib"
+}
+>>>>>>> Stashed changes:sample-java/build.gradle
