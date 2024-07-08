@@ -66,7 +66,7 @@ class PayjpWebActivity : AppCompatActivity(), LifecycleObserver {
     }
 
     private val customTitle: String by lazy {
-        intent.getStringExtra(EXTRA_KEY_TITLE)
+        intent.getStringExtra(EXTRA_KEY_TITLE) ?: ""
     }
 
     private lateinit var binding: PayjpWebActivityBinding

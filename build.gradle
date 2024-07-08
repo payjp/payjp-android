@@ -27,11 +27,11 @@ buildscript {
     ext.kotlin_version = '1.4.20'
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
-        classpath 'com.google.gms:google-services:4.3.4'
+        classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath 'com.google.gms:google-services:4.3.14'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -71,7 +71,7 @@ tasks.named("dokkaHtmlCollector") {
 ext {
 
     minSdkVersion = 16
-    sdkVersion = 29
+    sdkVersion = 33
 
     okHttp = "3.12.12"
     moshi = "1.9.3"
@@ -95,7 +95,7 @@ ext {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven { url "https://oss.sonatype.org/content/groups/public/" }
     }
 }
