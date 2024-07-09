@@ -27,7 +27,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-parcelize'
 apply plugin: 'org.jetbrains.dokka'
 
-apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+//apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
 apply from: rootProject.file("gradle/dependencies-test.gradle")
 apply from: rootProject.file("gradle/android-common.gradle")
 
@@ -54,7 +54,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle"
     implementation "com.google.android.material:material:$material"
     implementation "androidx.constraintlayout:constraintlayout:$constraint"
-    implementation 'com.google.android.gms:play-services-base:17.4.0'
+    implementation 'com.google.android.gms:play-services-base:18.5.0'
 
     testImplementation project(":common-test")
 }

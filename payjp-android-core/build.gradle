@@ -27,7 +27,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-parcelize'
 apply plugin: 'org.jetbrains.dokka'
 
-apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+//apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
 apply from: rootProject.file("gradle/dependencies-test.gradle")
 apply from: rootProject.file("gradle/android-common.gradle")
 

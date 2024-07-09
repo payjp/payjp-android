@@ -27,11 +27,10 @@ apply plugin: 'kotlin-android'
 apply from: rootProject.file("gradle/android-common.gradle")
 
 android {
-    lintOptions {
-        abortOnError false
-        disable['InvalidPackage']
-    }
     namespace 'jp.pay.android'
+    lint {
+        abortOnError false
+    }
 }
 
 dependencies {
