@@ -29,10 +29,10 @@ apply plugin: 'org.jetbrains.dokka'
 apply from: rootProject.file("gradle/android-common.gradle")
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation libs.kotlin.stdlib
     api project(':payjp-android-main')
-    implementation "io.card:android-sdk:$cardio"
-    implementation "androidx.fragment:fragment:$fragment"
+    implementation libs.cardio
+    implementation libs.androidx.fragment
 }
 
 android {

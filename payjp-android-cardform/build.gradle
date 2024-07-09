@@ -39,22 +39,22 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation libs.kotlin.stdlib
     implementation project(':payjp-android-core')
     api project(':payjp-android-verifier')
 
-    implementation "androidx.fragment:fragment:$fragment"
-    implementation "androidx.appcompat:appcompat:$appcompat"
-    implementation "androidx.recyclerview:recyclerview:$recyclerview"
-    implementation "androidx.viewpager2:viewpager2:1.0.0"
-    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle"
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle"
-    implementation "com.google.android.material:material:$material"
-    implementation "androidx.constraintlayout:constraintlayout:$constraint"
-    implementation 'com.google.android.gms:play-services-base:18.5.0'
+    implementation libs.androidx.fragment
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.recyclerview
+    implementation libs.androidx.viewpager2
+    implementation libs.androidx.lifecycle.common.java8
+    implementation libs.androidx.lifecycle.extensions
+    implementation libs.androidx.lifecycle.viewmodel.ktx
+    implementation libs.androidx.lifecycle.viewmodel.savedstate
+    implementation libs.androidx.lifecycle.livedata.ktx
+    implementation libs.androidx.material
+    implementation libs.androidx.constraint
+    implementation libs.play.services.base
 
     testImplementation project(":common-test")
 }

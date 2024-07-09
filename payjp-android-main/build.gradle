@@ -29,7 +29,7 @@ apply plugin: 'org.jetbrains.dokka'
 apply from: rootProject.file("gradle/android-common.gradle")
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation libs.kotlin.stdlib
     api project(':payjp-android-core')
     api project(':payjp-android-cardform')
 }

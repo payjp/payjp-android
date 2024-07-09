@@ -33,7 +33,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.google.firebase:firebase-appdistribution-gradle:3.0.3'
+        classpath libs.firebase.appdistribution.gradle
     }
 }
 
@@ -93,28 +93,28 @@ dependencies {
 //    implementation "jp.pay:payjp-android-cardio:$VERSION_NAME"
 //    implementation "jp.pay:payjp-android-coroutine:$VERSION_NAME"
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutine"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine"
-    implementation "androidx.appcompat:appcompat:$appcompat"
-    implementation "androidx.recyclerview:recyclerview:$recyclerview"
-    implementation "com.google.android.material:material:$material"
+    implementation libs.kotlin.stdlib
+    implementation libs.kotlinx.coroutines.core
+    implementation libs.kotlinx.coroutines.android
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.recyclerview
+    implementation libs.androidx.material
 
     // card scan
-    implementation "io.card:android-sdk:$cardio"
+    implementation libs.cardio
 
     // api
-    implementation "com.squareup.okhttp3:okhttp:$okHttp"
-    implementation "com.squareup.okhttp3:logging-interceptor:$okHttp"
-    implementation "com.squareup.moshi:moshi:$moshi"
-    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi"
-    implementation "com.squareup.retrofit2:retrofit:$retrofit"
-    implementation "com.squareup.retrofit2:converter-moshi:$retrofit"
+    implementation libs.okHttp3.core
+    implementation libs.okHttp3.loggingInterceptor
+    implementation libs.moshi.core
+    kapt libs.moshi.codegen
+    implementation libs.retrofit.core
+    implementation libs.retrofit.moshi
 
-    implementation 'com.google.android.gms:play-services-base:18.5.0'
+    implementation libs.play.services.base
 
     // debug
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
+    debugImplementation libs.leakcanary.android
 }
 
 apply plugin: 'com.google.gms.google-services'

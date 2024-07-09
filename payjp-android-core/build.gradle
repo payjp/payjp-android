@@ -44,16 +44,16 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation libs.kotlin.stdlib
 
-    implementation "com.squareup.okhttp3:okhttp:$okHttp"
-    implementation "com.squareup.okhttp3:logging-interceptor:$okHttp"
-    implementation "com.squareup.moshi:moshi:$moshi"
-    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi"
-    implementation "com.squareup.retrofit2:retrofit:$retrofit"
-    implementation "com.squareup.retrofit2:converter-moshi:$retrofit"
-    implementation "androidx.annotation:annotation:$annotation"
+    implementation libs.okHttp3.core
+    implementation libs.okHttp3.loggingInterceptor
+    implementation libs.moshi.core
+    kapt libs.moshi.codegen
+    implementation libs.retrofit.core
+    implementation libs.retrofit.moshi
+    implementation libs.androidx.annotation
 
-    testImplementation "com.squareup.okhttp3:mockwebserver:$okHttp"
+    testImplementation libs.okHttp3.mockServer
     testImplementation project(":common-test")
 }

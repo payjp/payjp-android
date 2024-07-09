@@ -38,22 +38,22 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation libs.kotlin.stdlib
     api project(':payjp-android-core')
 
-    implementation "androidx.fragment:fragment:$fragment"
-    implementation "androidx.appcompat:appcompat:$appcompat"
-    implementation "androidx.recyclerview:recyclerview:$recyclerview"
-    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle"
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle"
-    implementation "com.google.android.material:material:$material"
-    implementation "androidx.constraintlayout:constraintlayout:$constraint"
+    implementation libs.androidx.fragment
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.recyclerview
+    implementation libs.androidx.lifecycle.common.java8
+    implementation libs.androidx.lifecycle.extensions
+    implementation libs.androidx.lifecycle.viewmodel.ktx
+    implementation libs.androidx.lifecycle.livedata.ktx
+    implementation libs.androidx.material
+    implementation libs.androidx.constraint
 
-    implementation "androidx.webkit:webkit:1.2.0"
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
-    implementation "androidx.browser:browser:1.2.0"
+    implementation libs.androidx.webkit
+    implementation libs.androidx.swiperefreshlayout
+    implementation libs.androidx.browser
 
     testImplementation project(":common-test")
 }
