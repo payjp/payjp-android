@@ -20,12 +20,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-parcelize'
-apply plugin: 'org.jetbrains.dokka'
+plugins {
+    id 'com.android.library'
+    id 'kotlin-parcelize'
+    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrains.dokka)
+    alias(libs.plugins.google.devtools.ksp)
+}
 
 //apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
 apply from: rootProject.file("gradle/dependencies-test.gradle")
@@ -49,7 +50,7 @@ dependencies {
     implementation libs.okHttp3.core
     implementation libs.okHttp3.loggingInterceptor
     implementation libs.moshi.core
-    kapt libs.moshi.codegen
+    ksp libs.moshi.codegen
     implementation libs.retrofit.core
     implementation libs.retrofit.moshi
     implementation libs.androidx.annotation

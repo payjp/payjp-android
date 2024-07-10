@@ -20,21 +20,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-
-apply plugin: 'com.google.firebase.appdistribution'
-
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath libs.firebase.appdistribution.gradle
-    }
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.google.devtools.ksp)
+    alias(libs.plugins.jetbrains.kotlin.android)
 }
 
 android {
@@ -47,10 +36,6 @@ android {
         targetSdkVersion rootProject.sdkVersion
         versionCode rootProject.numberOfCommits
         versionName VERSION_NAME
-
-        firebaseAppDistribution {
-            groups="internal-tester"
-        }
     }
 
     sourceSets.configureEach {
@@ -74,13 +59,13 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    kotlin {
+        jvmToolchain 17
     }
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -107,23 +92,10 @@ dependencies {
     implementation libs.okHttp3.core
     implementation libs.okHttp3.loggingInterceptor
     implementation libs.moshi.core
-    kapt libs.moshi.codegen
+    ksp libs.moshi.codegen
     implementation libs.retrofit.core
     implementation libs.retrofit.moshi
 
-    implementation libs.play.services.base
-
     // debug
     debugImplementation libs.leakcanary.android
-}
-
-apply plugin: 'com.google.gms.google-services'
-
-android.applicationVariants.configureEach { variant ->
-    // Remove google services plugin if credential does not exists.
-    project.tasks.each { t ->
-        if (t.name.toLowerCase().contains("googleservices")) {
-            t.enabled = project.file("google-services.json").exists()
-        }
-    }
 }
