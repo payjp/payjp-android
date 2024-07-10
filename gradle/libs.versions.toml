@@ -11,7 +11,6 @@ browser = "1.2.0"
 leakcanaryAndroid = "2.14"
 okHttp3 = "3.12.12"
 moshi = "1.15.1"
-playServicesBase = "18.5.0"
 retrofit = "2.6.4"
 lifecycle = "2.2.0"
 mockito = "5.12.0"
@@ -59,7 +58,6 @@ okHttp3-loggingInterceptor = { group = "com.squareup.okhttp3", name = "logging-i
 okHttp3-mockServer = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "okHttp3" }
 moshi-core = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
 moshi-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
-play-services-base = { module = "com.google.android.gms:play-services-base", version.ref = "playServicesBase" }
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
