@@ -28,7 +28,7 @@ plugins {
 
 android {
     namespace 'com.example.payjp.sample'
-    compileSdkVersion rootProject.sdkVersion
+    compileSdk rootProject.sdkVersion
 
     defaultConfig {
         applicationId "com.example.payjp.sample"
@@ -50,8 +50,6 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            debuggable true
-            zipAlignEnabled true
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
