@@ -26,6 +26,7 @@ robolectric = "4.12.2"
 swiperefreshlayout = "1.1.0"
 viewpager2 = "1.0.0"
 webkit = "1.2.0"
+mavenpublish = "0.29.0"
 
 [libraries]
 
@@ -69,3 +70,4 @@ jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = 
 jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 diffplug-spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenpublish" }

@@ -24,9 +24,9 @@ plugins {
     id 'com.android.library'
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.jetbrains.dokka)
+    alias(libs.plugins.maven.publish)
 }
 
-//apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
 apply from: rootProject.file("gradle/android-common.gradle")
 
 dependencies {
