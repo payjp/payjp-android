@@ -85,9 +85,9 @@ class CardTest {
             .fromJson(CARD_HAS_METADATA)
             ?.apply {
                 assertEquals(id, "car_e3ccd4e0959f45e7c75bacc4be90")
-                assertEquals(metadata.get("user_id"), "id")
-                assertEquals(metadata.get("user_verified"), true)
-                assertEquals(metadata.get("user_tags"), "[car, bike]")
+                assertEquals(metadata.getString("user_id"), "id")
+                assertEquals(metadata.getBoolean("user_verified"), true)
+                assertEquals(metadata.getString("user_tags"), "[car, bike]")
             } ?: fail("card is null")
     }
 

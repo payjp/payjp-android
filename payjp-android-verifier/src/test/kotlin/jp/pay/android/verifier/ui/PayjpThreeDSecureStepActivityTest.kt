@@ -96,7 +96,7 @@ class PayjpThreeDSecureStepActivityTest {
     @Before
     fun setUp() {
         Intents.init()
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         Mockito.`when`(mockTokenService.getPublicKey())
             .thenReturn(TEST_PUBLIC_KEY)
     }

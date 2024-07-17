@@ -31,8 +31,8 @@ import jp.pay.android.model.CardBrand.VISA
 import jp.pay.android.validator.CardBrandDetectorService
 import jp.pay.android.validator.CardNumberInputTransformer
 import jp.pay.android.validator.CardNumberValidatorService
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -247,7 +247,7 @@ internal class CardNumberInputTest(
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         `when`(mockDetector.detectWithDigits(anyString())).thenReturn(data.detectedBrand)
         `when`(mockNumberValidator.isCardNumberLengthValid(anyString(), anyNullable())).thenReturn(
             data.isLengthValid

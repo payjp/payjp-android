@@ -24,9 +24,9 @@ package jp.pay.android.model
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.squareup.moshi.Moshi
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.startsWith
-import org.junit.Assert.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 

@@ -29,8 +29,8 @@ import jp.pay.android.exception.PayjpApiException
 import jp.pay.android.exception.PayjpCardException
 import jp.pay.android.exception.PayjpRateLimitException
 import jp.pay.android.model.ApiError
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -53,7 +53,7 @@ class ContextErrorTranslatorTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         `when`(mockContext.applicationContext)
             .thenReturn(mockContext)
         `when`(mockContext.getString(R.string.payjp_card_form_screen_error_unknown))

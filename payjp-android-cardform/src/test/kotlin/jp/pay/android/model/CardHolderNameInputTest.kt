@@ -24,8 +24,8 @@ package jp.pay.android.model
 
 import jp.pay.android.R
 import jp.pay.android.validator.CardHolderNameInputTransformer
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
