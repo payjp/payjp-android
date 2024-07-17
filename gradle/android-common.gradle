@@ -21,6 +21,10 @@
  * SOFTWARE.
  */
 
+kotlin {
+    jvmToolchain 17
+}
+
 android {
     compileSdkVersion rootProject.sdkVersion
     defaultConfig {
@@ -30,9 +34,6 @@ android {
 
     sourceSets.all {
         java.srcDirs += "src/${name}/kotlin"
-    }
-    kotlin {
-        jvmToolchain 17
     }
 
     testOptions {
