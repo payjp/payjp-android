@@ -53,7 +53,7 @@ jobs:
 
   deploy:
     # only run on master branch
-    if: github.ref == 'refs/heads/master'
+    # if: github.ref == 'refs/heads/master' TODO: test
     needs: build
     runs-on: ubuntu-latest
     steps:
