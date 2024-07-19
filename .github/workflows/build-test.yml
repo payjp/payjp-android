@@ -15,7 +15,7 @@ on:
 
 env:
   CACHE_NUMBER: 0 # increment to truncate cache
-  USER_JAVA_VERSION: "17"
+  USER_JAVA_VERSION: 21
 
 jobs:
   build:

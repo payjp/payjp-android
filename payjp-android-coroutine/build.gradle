@@ -41,3 +41,11 @@ dependencies {
 android {
     namespace 'jp.pay.android.coroutine'
 }
+
+mavenPublishing {
+    // workaround for issue that dokka with JDK 17
+    // see: https://github.com/Kotlin/dokka/issues/2956
+    // the second whether to publish a sources jar
+    // the third whether to publish a javadoc jar
+    configure(new com.vanniktech.maven.publish.AndroidSingleVariantLibrary("release", true, false))
+}
