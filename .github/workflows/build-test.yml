@@ -15,7 +15,7 @@ on:
 
 env:
   CACHE_NUMBER: 0 # increment to truncate cache
-  USER_JAVA_VERSION: 21
+  USER_JAVA_VERSION: 17
 
 jobs:
   build:
@@ -53,7 +53,7 @@ jobs:
 
   deploy:
     # only run on master branch
-    # if: github.ref == 'refs/heads/master' TODO: test
+    if: github.ref == 'refs/heads/master'
     needs: build
     runs-on: ubuntu-latest
     steps:
