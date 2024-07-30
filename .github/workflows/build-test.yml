@@ -51,13 +51,22 @@ jobs:
       - name: Run all checks
         run: bundle exec fastlane android check
 
-  deploy:
+  deploy-snapshot:
     # only run on master branch
     if: github.ref == 'refs/heads/master'
     needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # look up version name from gradle.properties, and only snapshot version can be deployed
+      - run: |
+          VERSION_NAME=$(grep "VERSION_NAME" gradle.properties | cut -d'=' -f2)
+          if [[ $VERSION_NAME == *"SNAPSHOT"* ]]; then
+            echo "Deploying snapshot version $VERSION_NAME"
+          else
+            echo "Not deploying non-snapshot version $VERSION_NAME"
+            exit 0
+          fi
       - uses: actions/setup-java@v4
         with:
           java-version: ${{ env.USER_JAVA_VERSION }}
