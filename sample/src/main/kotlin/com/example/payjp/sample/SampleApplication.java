@@ -23,12 +23,6 @@
 package com.example.payjp.sample;
 
 import android.app.Application;
-import android.os.Build;
-import android.util.Log;
-
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.security.ProviderInstaller;
 
 import jp.pay.android.Payjp;
 import jp.pay.android.PayjpConfiguration;
@@ -56,15 +50,15 @@ public class SampleApplication extends Application {
         super.onCreate();
 
         // For Modern TLS
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-            try {
-                ProviderInstaller.installIfNeeded(this);
-            } catch (GooglePlayServicesRepairableException e) {
-                Log.e("payjp-android", "error ssl setup", e);
-            } catch (GooglePlayServicesNotAvailableException e) {
-                Log.e("payjp-android", "error ssl setup", e);
-            }
-        }
+//        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+//            try {
+//                ProviderInstaller.installIfNeeded(this);
+//            } catch (GooglePlayServicesRepairableException e) {
+//                Log.e("payjp-android", "error ssl setup", e);
+//            } catch (GooglePlayServicesNotAvailableException e) {
+//                Log.e("payjp-android", "error ssl setup", e);
+//            }
+//        }
 
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);

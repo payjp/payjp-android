@@ -26,6 +26,7 @@ import android.app.Activity
 import android.app.Application
 import android.app.Instrumentation
 import android.content.Intent
+import androidx.test.core.app.ActivityScenario.launchActivityForResult
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.launchActivity
 import androidx.test.espresso.intent.Intents
@@ -95,7 +96,7 @@ class PayjpThreeDSecureStepActivityTest {
     @Before
     fun setUp() {
         Intents.init()
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         Mockito.`when`(mockTokenService.getPublicKey())
             .thenReturn(TEST_PUBLIC_KEY)
     }
@@ -108,7 +109,7 @@ class PayjpThreeDSecureStepActivityTest {
     @Test
     fun open_tds_step_intent_with_token_id() {
         val tokenId = TokenId(id = "tok_123")
-        val scenario = launchActivity<TestEntryActivity>(
+        val scenario = launchActivityForResult<TestEntryActivity>(
             Intent(ApplicationProvider.getApplicationContext(), TestEntryActivity::class.java)
         )
         scenario.onActivity {
@@ -158,7 +159,7 @@ class PayjpThreeDSecureStepActivityTest {
             context = ApplicationProvider.getApplicationContext(),
             tokenId = tokenId
         )
-        val scenario = launchActivity<PayjpThreeDSecureStepActivity>(intent)
+        val scenario = launchActivityForResult<PayjpThreeDSecureStepActivity>(intent)
         assertThat(scenario.result.resultCode, `is`(Activity.RESULT_CANCELED))
         assertThat(PayjpThreeDSecureStepActivity.getResult().isCanceled(), `is`(true))
     }
@@ -176,7 +177,7 @@ class PayjpThreeDSecureStepActivityTest {
             PayjpThreeDSecureStepActivity::class.java
         ).setData(tokenId.getVerificationFinishUri())
 
-        val scenario = launchActivity<PayjpThreeDSecureStepActivity>(intent)
+        val scenario = launchActivityForResult<PayjpThreeDSecureStepActivity>(intent)
         scenario.onActivity {
             it.onNewIntentInternal(callbackIntent)
 

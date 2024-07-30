@@ -20,19 +20,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+plugins {
+    id 'com.android.library'
+    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrains.dokka)
+    alias(libs.plugins.maven.publish)
+}
 
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'org.jetbrains.dokka'
-
-apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
 apply from: rootProject.file("gradle/dependencies-test.gradle")
 apply from: rootProject.file("gradle/android-common.gradle")
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutine"
+    implementation libs.kotlin.stdlib
+    implementation libs.kotlinx.coroutines.core
     api project(':payjp-android-main')
 
     testImplementation project(":common-test")
@@ -40,4 +40,12 @@ dependencies {
 
 android {
     namespace 'jp.pay.android.coroutine'
+}
+
+mavenPublishing {
+    // workaround for issue that dokka with JDK 17
+    // see: https://github.com/Kotlin/dokka/issues/2956
+    // the second whether to publish a sources jar
+    // the third whether to publish a javadoc jar
+    configure(new com.vanniktech.maven.publish.AndroidSingleVariantLibrary("release", true, false))
 }

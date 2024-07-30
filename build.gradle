@@ -22,23 +22,13 @@
  */
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-
-buildscript {
-    ext.kotlin_version = '1.4.20'
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.2'
-        classpath 'com.google.gms:google-services:4.3.14'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
 plugins {
-    id "com.diffplug.spotless" version "5.6.1"
-    id "org.jetbrains.dokka" version "1.4.10"
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.jetbrains.kotlin.android) apply false
+    alias(libs.plugins.google.devtools.ksp) apply false
+    alias(libs.plugins.maven.publish) apply false
+    alias(libs.plugins.diffplug.spotless)
+    alias(libs.plugins.jetbrains.dokka)
 }
 
 subprojects {
@@ -69,35 +59,9 @@ tasks.named("dokkaHtmlCollector") {
 }
 
 ext {
-
     minSdkVersion = 16
     sdkVersion = 33
-
-    okHttp = "3.12.12"
-    moshi = "1.9.3"
-    retrofit = "2.6.4"
-    lifecycle = "2.2.0"
-    mockito = "2.28.2"
-    coroutine = "1.3.7"
-    appcompat = "1.2.0"
-    fragment = "1.2.5"
-    material = "1.2.1"
-    constraint = "2.0.2"
-    recyclerview = "1.1.0"
-    cardio = "5.5.1"
-    annotation = '1.1.0'
-
-    isCi = "true" == System.getenv("CI")
-    preDexEnabled = "true" == System.getProperty("pre-dex", "true")
     numberOfCommits = numberOfCommits()
-}
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url "https://oss.sonatype.org/content/groups/public/" }
-    }
 }
 
 def numberOfCommits() {

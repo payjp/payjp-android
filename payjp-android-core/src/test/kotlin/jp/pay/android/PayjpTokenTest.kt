@@ -42,11 +42,11 @@ import jp.pay.android.network.TokenApiClientFactory.createHeaderInterceptor
 import jp.pay.android.network.TokenApiClientFactory.createOkHttp
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.contains
 import org.hamcrest.Matchers.empty
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThat
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test

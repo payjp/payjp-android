@@ -26,8 +26,8 @@ import jp.pay.android.R
 import jp.pay.android.anyNullable
 import jp.pay.android.validator.CardExpirationInputTransformer
 import jp.pay.android.validator.CardExpirationProcessorService
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -99,7 +99,7 @@ internal class CardExpirationInputTest(
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         `when`(processor.processExpirationMonthYear(anyString(), anyChar())).thenReturn(mockMonthYear)
         `when`(processor.validateMonth(anyString())).thenReturn(mockValidateMonth)
         `when`(processor.processCardExpiration(anyNullable(), anyNullable())).thenReturn(mockExpiration)

@@ -20,22 +20,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.library'
+    alias(libs.plugins.jetbrains.kotlin.android)
+}
 
 apply from: rootProject.file("gradle/android-common.gradle")
 
 android {
-    lintOptions {
-        abortOnError false
-        disable['InvalidPackage']
-    }
     namespace 'jp.pay.android'
+    lint {
+        abortOnError false
+    }
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation libs.kotlin.stdlib
     implementation project(':payjp-android-core')
-    implementation "org.mockito:mockito-core:$mockito"
+    implementation libs.mockito.core
 }

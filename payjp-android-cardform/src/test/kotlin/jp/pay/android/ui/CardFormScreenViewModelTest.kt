@@ -41,9 +41,9 @@ import jp.pay.android.model.TokenId
 import jp.pay.android.testing.FakeTokenOperationObserver
 import jp.pay.android.util.Tasks
 import jp.pay.android.verifier.ui.PayjpThreeDSecureResult
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.nullValue
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -66,7 +66,7 @@ class CardFormScreenViewModelTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         `when`(mockTokenService.getTokenOperationObserver())
             .thenReturn(FakeTokenOperationObserver)
         FakeTokenOperationObserver.reset()

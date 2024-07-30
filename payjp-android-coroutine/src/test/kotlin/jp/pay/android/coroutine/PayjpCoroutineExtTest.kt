@@ -32,8 +32,8 @@ import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.ui.widget.PayjpCardFormView
 import jp.pay.android.util.Tasks
 import kotlinx.coroutines.runBlocking
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.assertThat
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
@@ -61,7 +61,7 @@ class PayjpCoroutineExtTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
     }
 
     @Test

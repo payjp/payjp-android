@@ -88,7 +88,7 @@ class PayjpCardFormActivityMultiLineTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         mockRecipes = PayjpMockTokenServiceRecipes(mockTokenService)
         FakeTokenOperationObserver.reset()
     }

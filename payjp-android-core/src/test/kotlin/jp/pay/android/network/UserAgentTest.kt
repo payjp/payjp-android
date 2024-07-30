@@ -24,8 +24,8 @@ package jp.pay.android.network
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.model.ClientInfo
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 

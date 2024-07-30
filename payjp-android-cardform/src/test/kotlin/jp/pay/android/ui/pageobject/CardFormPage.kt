@@ -25,7 +25,6 @@ package jp.pay.android.ui.pageobject
 import android.view.View
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.action.ViewActions.click
@@ -42,7 +41,7 @@ import org.hamcrest.Matcher
 internal object CardFormPage {
 
     fun launchCardDisplay(): ActivityScenario<PayjpCardFormActivity> {
-        return launchActivity(
+        return ActivityScenario.launchActivityForResult(
             PayjpCardFormActivity.createIntent(
                 context = ApplicationProvider.getApplicationContext(),
                 tenant = null,
@@ -52,7 +51,7 @@ internal object CardFormPage {
     }
 
     fun launchMultiLine(): ActivityScenario<PayjpCardFormActivity> {
-        return launchActivity(
+        return ActivityScenario.launchActivityForResult(
             PayjpCardFormActivity.createIntent(
                 context = ApplicationProvider.getApplicationContext(),
                 tenant = null,

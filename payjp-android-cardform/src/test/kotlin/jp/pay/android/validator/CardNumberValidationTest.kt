@@ -26,8 +26,8 @@ import jp.pay.android.model.CardBrand
 import jp.pay.android.validator.CardNumberValidatorService.CardNumberLengthStatus.MATCH
 import jp.pay.android.validator.CardNumberValidatorService.CardNumberLengthStatus.TOO_LONG
 import jp.pay.android.validator.CardNumberValidatorService.CardNumberLengthStatus.TOO_SHORT
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner

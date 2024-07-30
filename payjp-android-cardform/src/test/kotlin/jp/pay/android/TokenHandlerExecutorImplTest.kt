@@ -24,9 +24,9 @@ package jp.pay.android
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.PayjpTokenBackgroundHandler.CardFormStatus
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.instanceOf
-import org.junit.Assert.assertThat
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
@@ -48,7 +48,7 @@ class TokenHandlerExecutorImplTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
     }
 
     @Test

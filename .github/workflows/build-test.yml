@@ -4,46 +4,81 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - "README.md"
+      - "docs/**"
   pull_request:
+    paths-ignore:
+      - "README.md"
+      - "docs/**"
   workflow_dispatch:
 
 env:
   CACHE_NUMBER: 0 # increment to truncate cache
-  USER_JAVA_VERSION: 11.x
+  USER_JAVA_VERSION: 17
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-java@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           java-version: ${{ env.USER_JAVA_VERSION }}
-      # configure cache
-      - name: Cache Gradle
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.gradle/cache
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/*/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-${{ env.CACHE_NUMBER }}-
-            ${{ runner.os }}-gradle-
+          distribution: "zulu"
+      - uses: gradle/actions/setup-gradle@v3
       - name: Cache Gems
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: vendor/bundle
           key: ${{ runner.os }}-gems-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-gems-${{ env.CACHE_NUMBER }}-
             ${{ runner.os }}-gems-
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.0.0"
       - name: Install gems
         run: |
-          sudo gem install bundler -N
+          gem install bundler -N --user-install
+          echo "$(ruby -e 'print Gem.user_dir')/bin" >> $GITHUB_PATH
           bundle update --bundler
           bundle config set deployment 'true'
           bundle config set clean 'true'
+          bundle config set path 'vendor/bundle'
           bundle install --jobs 4 --retry 3
       - name: Run all checks
         run: bundle exec fastlane android check
+
+  deploy-snapshot:
+    # only run on master branch
+    if: github.ref == 'refs/heads/master'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # look up version name from gradle.properties, and only snapshot version can be deployed
+      - run: |
+          VERSION_NAME=$(grep "VERSION_NAME" gradle.properties | cut -d'=' -f2)
+          if [[ $VERSION_NAME == *"SNAPSHOT"* ]]; then
+            echo "Deploying snapshot version $VERSION_NAME"
+          else
+            echo "Not deploying non-snapshot version $VERSION_NAME"
+            exit 0
+          fi
+      - uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.USER_JAVA_VERSION }}
+          distribution: "zulu"
+      - uses: gradle/actions/setup-gradle@v3
+
+      - name: publish to sonatype
+        run: |
+          ./gradlew publish
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.GPG_KEY_ID }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_KEY_PASSWORD }}

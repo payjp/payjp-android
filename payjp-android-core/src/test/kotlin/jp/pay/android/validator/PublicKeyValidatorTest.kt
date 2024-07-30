@@ -22,8 +22,8 @@
  */
 package jp.pay.android.validator
 
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.Assert.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
