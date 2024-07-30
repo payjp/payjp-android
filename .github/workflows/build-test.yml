@@ -53,7 +53,7 @@ jobs:
 
   deploy-snapshot:
     # only run on master branch
-    if: github.ref == 'refs/heads/master'
+    # if: github.ref == 'refs/heads/master' FIXME: test
     needs: build
     runs-on: ubuntu-latest
     steps:
