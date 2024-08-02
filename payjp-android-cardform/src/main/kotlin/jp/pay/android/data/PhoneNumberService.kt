@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2021 PAY, Inc.
+ * Copyright (c) 2024 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,35 +20,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.testing
+package jp.pay.android.data
 
-import jp.pay.android.PayjpCardForm
-import jp.pay.android.PayjpLogger
-import jp.pay.android.PayjpTokenBackgroundHandler
-import jp.pay.android.PayjpTokenService
-import jp.pay.android.plugin.CardScannerPlugin
-import org.junit.rules.ExternalResource
-import java.util.Locale
-import java.util.concurrent.Executor
+import android.content.Context
+import jp.pay.android.model.CountryCode
 
 /**
- * Test rule that configure PayjpService
+ * Service for phone number.
  */
-class PayjpCardFormTestRule(
-    private val tokenService: PayjpTokenService,
-    private val handler: PayjpTokenBackgroundHandler? = null,
-    private val callbackExecutor: Executor? = null,
-    private val cardScannerPlugin: CardScannerPlugin? = null
-) : ExternalResource() {
+internal interface PhoneNumberService {
 
-    override fun before() {
-        PayjpCardForm.configure(
-            logger = PayjpLogger.get(debugEnabled = true),
-            tokenService = tokenService,
-            handler = handler,
-            callbackExecutor = callbackExecutor,
-            cardScannerPlugin = cardScannerPlugin,
-            locale = Locale("en")
-        )
-    }
+    /**
+     * Return all country codes.
+     */
+    fun getAllCountryCodes(context: Context): List<CountryCode>
+
+    /**
+     * Find country code by region.
+     */
+    fun findCountryCodeByRegion(context: Context, region: String): CountryCode?
+
+    /**
+     * Return default country code.
+     */
+    fun defaultCountryCode(): CountryCode
+
+    /**
+     * Return normalized phone number formatted by E.164.
+     * @param context context
+     * @param phoneNumber phone number
+     * @param countryCode country code
+     * @return normalized phone number or null if failed to parse
+     */
+    fun normalize(context: Context, phoneNumber: String, countryCode: CountryCode): String?
+
+    /**
+     * Return example phone number.
+     * @param context context
+     * @param countryCode country code
+     */
+    fun examplePhoneNumber(context: Context, countryCode: CountryCode): String
 }

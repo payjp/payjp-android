@@ -27,6 +27,8 @@ import android.content.Intent
 import androidx.annotation.IntDef
 import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
+import jp.pay.android.data.PhoneNumberService
+import jp.pay.android.data.PhoneNumberServiceImpl
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.TenantId
 import jp.pay.android.network.ClientInfoInterceptorProvider
@@ -36,6 +38,7 @@ import jp.pay.android.ui.PayjpCardFormResultCallback
 import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
 import jp.pay.android.ui.widget.PayjpCardFormCardDisplayFragment
 import jp.pay.android.ui.widget.PayjpCardFormFragment
+import java.util.Locale
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
@@ -68,13 +71,15 @@ object PayjpCardForm {
     private var cardScannerPlugin: CardScannerPlugin? = null
     private var tokenService: PayjpTokenService? = null
     private var tokenHandlerExecutor: TokenHandlerExecutor? = null
+    private var phoneNumberService: PhoneNumberService? = null
 
     fun configure(
         logger: PayjpLogger,
         tokenService: PayjpTokenService,
         cardScannerPlugin: CardScannerPlugin?,
         handler: PayjpTokenBackgroundHandler?,
-        callbackExecutor: Executor?
+        callbackExecutor: Executor?,
+        locale: Locale
     ) {
         this.tokenService = tokenService
         this.cardScannerPlugin = cardScannerPlugin
@@ -87,6 +92,7 @@ object PayjpCardForm {
                 logger = logger
             )
         } else null
+        this.phoneNumberService = PhoneNumberServiceImpl(locale)
     }
 
     private fun newBackgroundExecutor() = Executors.newSingleThreadExecutor { r ->
@@ -105,6 +111,10 @@ object PayjpCardForm {
 
     internal fun clientInfoInterceptorProvider(): ClientInfoInterceptorProvider? {
         return tokenService() as? ClientInfoInterceptorProvider
+    }
+
+    internal fun phoneNumberService(): PhoneNumberService = checkNotNull(phoneNumberService) {
+        "You must initialize Payjp first"
     }
 
     /**

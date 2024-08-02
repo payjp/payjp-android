@@ -59,7 +59,8 @@ object Payjp {
             tokenService = payjpToken,
             cardScannerPlugin = configuration.cardScannerPlugin,
             handler = configuration.tokenBackgroundHandler,
-            callbackExecutor = configuration.callbackExecutor
+            callbackExecutor = configuration.callbackExecutor,
+            locale = configuration.locale
         )
         PayjpVerifier.configure(
             logger = logger,

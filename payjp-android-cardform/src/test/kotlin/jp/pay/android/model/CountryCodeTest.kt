@@ -20,24 +20,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android
+package jp.pay.android.model
 
-sealed class CardRobot {
-    abstract val number: String
-    abstract val exp: String
-    abstract val cvc: String
-    abstract val name: String
-    abstract val countryRegion: String
-    abstract val countryCode: Int
-    abstract val phoneNumber: String
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.`is`
+import org.junit.Test
+import org.junit.runner.RunWith
+import java.util.Locale
 
-    data object SandboxVisa : CardRobot() {
-        override val number: String = "4242424242424242"
-        override val exp: String = "12/30"
-        override val cvc: String = "123"
-        override val name: String = "TARO YAMADA"
-        override val countryRegion: String = "JP"
-        override val countryCode: Int = 81
-        override val phoneNumber: String = "09012345678"
+@RunWith(AndroidJUnit4::class)
+class CountryCodeTest {
+
+    @Test
+    fun emoji() {
+        val countryCode = CountryCode("JP", 81)
+        assertThat(countryCode.emoji, `is`("🇯🇵"))
+    }
+
+    @Test
+    fun shortName() {
+        val countryCode = CountryCode("JP", 81)
+        assertThat(countryCode.shortName, `is`("🇯🇵 (+81)"))
+    }
+
+    @Test
+    fun searchDescription() {
+        val countryCode = CountryCode("JP", 81, Locale("en"))
+        assertThat(countryCode.searchDescription, `is`("🇯🇵 JP Japan (+81)"))
     }
 }

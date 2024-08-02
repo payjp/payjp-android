@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2021 PAY, Inc.
+ * Copyright (c) 2024 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,24 +20,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android
+package jp.pay.android.model
 
-sealed class CardRobot {
-    abstract val number: String
-    abstract val exp: String
-    abstract val cvc: String
-    abstract val name: String
-    abstract val countryRegion: String
-    abstract val countryCode: Int
-    abstract val phoneNumber: String
+import java.util.Locale
 
-    data object SandboxVisa : CardRobot() {
-        override val number: String = "4242424242424242"
-        override val exp: String = "12/30"
-        override val cvc: String = "123"
-        override val name: String = "TARO YAMADA"
-        override val countryRegion: String = "JP"
-        override val countryCode: Int = 81
-        override val phoneNumber: String = "09012345678"
+internal data class CountryCode(val region: String, val code: Int, val displayLocale: Locale = Locale.getDefault()) {
+    val emoji: String? = createEmoji(region)
+    val locale: Locale = Locale("", region)
+    val shortName: String
+        get() = "$emoji (+$code)"
+    val searchDescription: String
+        get() = "$emoji $region ${locale.getDisplayCountry(displayLocale)} (+$code)"
+
+    companion object {
+        /**
+         * Create emoji from region code.
+         * @param region region code (e.g. JP)
+         * @return emoji (e.g. 🇯🇵)
+         */
+        fun createEmoji(region: String): String? {
+            if (region.length != 2) {
+                return null
+            }
+            return region.uppercase()
+                .map { char ->
+                    Character.codePointAt("$char", 0) - 0x41 + 0x1F1E6
+                }.joinToString("") {
+                    String(Character.toChars(it))
+                }
+        }
     }
 }
