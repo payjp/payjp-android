@@ -34,9 +34,9 @@ import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.IntentCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
 import com.google.android.material.snackbar.Snackbar
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
@@ -107,7 +107,9 @@ internal class PayjpCardFormActivity :
         }
 
         fun onActivityResult(data: Intent?, callback: PayjpCardFormResultCallback) {
-            val token = data?.getParcelableExtra<Token>(CARD_FORM_EXTRA_KEY_TOKEN)
+            val token = data?.let {
+                IntentCompat.getParcelableExtra(it, CARD_FORM_EXTRA_KEY_TOKEN, Token::class.java)
+            }
             val result = if (token != null) {
                 PayjpCardFormResult.Success(token = token)
             } else {

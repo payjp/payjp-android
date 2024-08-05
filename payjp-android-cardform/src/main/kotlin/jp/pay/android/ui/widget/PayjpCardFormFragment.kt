@@ -27,6 +27,7 @@ import android.text.InputFilter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.BundleCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.transition.TransitionManager
 import com.google.android.material.textfield.TextInputLayout
@@ -86,7 +87,7 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = PayjpCardFormViewBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -203,7 +204,9 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
     override fun createViewModel(): CardFormViewModel {
         val tenantId = arguments?.getString(ARGS_TENANT_ID)?.let { TenantId(it) }
         val holderNameEnabled = arguments?.getBoolean(ARGS_HOLDER_NAME_ENABLED) ?: true
-        val acceptedBrandArray = arguments?.getParcelableArray(ARGS_ACCEPTED_BRANDS)
+        val acceptedBrandArray = arguments?.let {
+            BundleCompat.getParcelableArray(it, ARGS_ACCEPTED_BRANDS, CardBrand::class.java)
+        }
         val factory = CardFormViewModel.Factory(
             tokenService = PayjpCardForm.tokenService(),
             cardNumberInputTransformer = CardNumberInputTransformer(),

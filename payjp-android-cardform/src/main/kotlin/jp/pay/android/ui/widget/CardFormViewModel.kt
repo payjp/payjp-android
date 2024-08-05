@@ -23,13 +23,12 @@
 package jp.pay.android.ui.widget
 
 import android.view.inputmethod.EditorInfo
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.distinctUntilChanged
@@ -52,6 +51,7 @@ import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.util.OneOffValue
 import jp.pay.android.util.Tasks
+import jp.pay.android.util.nonNull
 import jp.pay.android.validator.CardCvcInputTransformerService
 import jp.pay.android.validator.CardInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformerService
@@ -77,7 +77,7 @@ internal class CardFormViewModel(
     holderNameEnabledDefault: Boolean,
     acceptedBrandsPreset: List<CardBrand>?,
     private val phoneNumberService: PhoneNumberService
-) : ViewModel(), CardFormViewModelOutput, CardFormViewModelInput, LifecycleObserver {
+) : ViewModel(), CardFormViewModelOutput, CardFormViewModelInput, DefaultLifecycleObserver {
 
     override val cardNumberInput = MutableLiveData<CardNumberInput>()
     override val cardNumberError: LiveData<Int?>
@@ -141,7 +141,7 @@ internal class CardFormViewModel(
                 forceValidate(cardCvcInput, cardCvcInputTransformer)
             }
         }
-        cardNumberBrand.observeForever(brandObserver)
+        cardNumberBrand.nonNull().observeForever(brandObserver)
         cardNumberValid = cardNumberInput.map { it.valid }
         cardExpirationValid = cardExpirationInput.map { it.valid }
         cardCvcValid = cardCvcInput.map { it.valid }
@@ -152,13 +152,14 @@ internal class CardFormViewModel(
         cardPhoneNumberCountryCode.value = cardPhoneNumberCountryCode.value ?: phoneNumberService.defaultCountryCode()
         cardPhoneNumberError = cardPhoneNumberInput.map(this::retrieveError).distinctUntilChanged()
         countryCodeObserver = Observer {
+
             if (it != cardPhoneNumberInputTransformer.currentCountryCode) {
                 // If country code changed, revalidate phone number.
                 cardPhoneNumberInputTransformer.currentCountryCode = it
                 forceValidate(cardPhoneNumberInput, cardPhoneNumberInputTransformer)
             }
         }
-        cardPhoneNumberCountryCode.observeForever(countryCodeObserver)
+        cardPhoneNumberCountryCode.nonNull().observeForever(countryCodeObserver)
     }
 
     override fun onCleared() {
@@ -229,7 +230,11 @@ internal class CardFormViewModel(
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    override fun onStart(owner: LifecycleOwner) {
+        super.onStart(owner)
+        fetchAcceptedBrands()
+    }
+
     fun fetchAcceptedBrands() {
         if (cardNumberInputTransformer.acceptedBrands == null) {
             task = tokenService.getAcceptedBrands(tenantId)

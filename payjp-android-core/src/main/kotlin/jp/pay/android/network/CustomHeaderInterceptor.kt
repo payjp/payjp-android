@@ -40,8 +40,8 @@ internal class CustomHeaderInterceptor(
     private val userAgent = UserAgent.create(client)
     private val clientInfoAdapter = moshi.adapter<ClientInfo>(ClientInfo::class.java)
 
-    override fun intercept(chain: Interceptor.Chain?): Response {
-        val newRequest = chain!!.request().newBuilder()
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val newRequest = chain.request().newBuilder()
             .header("user-agent", userAgent)
             .header("locale", locale.language)
             .header("X-Payjp-Client-User-Agent", clientInfoAdapter.toJson(client))

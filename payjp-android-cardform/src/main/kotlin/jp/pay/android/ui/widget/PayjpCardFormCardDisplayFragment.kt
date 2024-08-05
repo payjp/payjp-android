@@ -29,6 +29,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.autofill.AutofillManager
 import android.view.inputmethod.EditorInfo
+import androidx.core.os.BundleCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.ViewPager2
@@ -253,7 +254,7 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
 
     override fun createViewModel(): CardFormViewModel {
         val tenantId = arguments?.getString(ARGS_TENANT_ID)?.let { TenantId(it) }
-        val acceptedBrandArray = arguments?.getParcelableArray(ARGS_ACCEPTED_BRANDS)
+        val acceptedBrandArray = arguments?.let { BundleCompat.getParcelableArray(it, ARGS_ACCEPTED_BRANDS, CardBrand::class.java) }
         val factory = CardFormViewModel.Factory(
             tokenService = PayjpCardForm.tokenService(),
             cardNumberInputTransformer = CardNumberInputTransformer(),
