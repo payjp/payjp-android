@@ -22,23 +22,12 @@
   ~ SOFTWARE.
   -->
 
-<com.google.android.material.textfield.TextInputLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/input_layout_holder_name"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/payjp_card_form_holder_name_label">
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/payjp_card_form_element_margin"
+        android:layout_marginRight="@dimen/payjp_card_form_element_margin">
 
-    <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/input_edit_holder_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autofillHints="name"
-            android:imeOptions="flagNoExtractUi|actionNext|flagNoAccessoryAction"
-            android:inputType="textVisiblePassword"
-            android:maxLines="1"
-            tools:targetApi="o"
-            tools:text="TARO YAMADA" />
+    <include android:id="@+id/content" layout="@layout/payjp_card_form_part_email_layout" />
 
-</com.google.android.material.textfield.TextInputLayout>
+</FrameLayout>

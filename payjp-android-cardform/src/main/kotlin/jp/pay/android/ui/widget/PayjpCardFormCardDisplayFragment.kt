@@ -30,7 +30,6 @@ import android.view.ViewGroup
 import android.view.autofill.AutofillManager
 import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.textfield.TextInputEditText
@@ -41,9 +40,11 @@ import jp.pay.android.model.CardBrand
 import jp.pay.android.model.TenantId
 import jp.pay.android.util.autoCleared
 import jp.pay.android.validator.CardCvcInputTransformer
+import jp.pay.android.validator.CardEmailInputTransformer
 import jp.pay.android.validator.CardExpirationInputTransformer
 import jp.pay.android.validator.CardHolderNameInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformer
+import jp.pay.android.validator.CardPhoneNumberInputTransformer
 import kotlin.math.abs
 
 class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
@@ -114,7 +115,7 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
             cardNumberFormatter = cardNumberFormatter,
             cardExpirationFormatter = CardExpirationFormatTextWatcher(delimiterExpiration),
             scannerPlugin = PayjpCardForm.cardScannerPlugin(),
-            onClickScannerIcon = View.OnClickListener {
+            onClickScannerIcon = {
                 PayjpCardForm.cardScannerPlugin()?.startScanActivity(this)
             },
             onElementTextChanged = { type, s, _, _, _ ->
@@ -124,6 +125,8 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
                         CardFormElementType.Expiration -> inputCardExpiration(s.toString())
                         CardFormElementType.Cvc -> inputCardCvc(s.toString())
                         CardFormElementType.HolderName -> inputCardHolderName(s.toString())
+                        CardFormElementType.Email -> inputEmail(s.toString())
+                        CardFormElementType.PhoneNumber -> inputPhoneNumber(s.toString())
                     }
                 }
             },
@@ -157,11 +160,16 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
                 binding.cardDisplay.updateFocus(type, hasFocus)
             },
             onElementKeyDownDeleteWithEmpty = { type, _ ->
-                type.prev()?.let(adapter::getPositionForElementType)?.let { moveToPosition(it) }
+                type.prev().let(adapter::getPositionForElementType).let { moveToPosition(it) }
                 true
             },
             onCardNumberInputChanged = binding.cardDisplay::setCardNumber,
-            autofillManager = autofillManager
+            autofillManager = autofillManager,
+            onClickCountryCode = {
+                startSearchCountryCode()
+            },
+            countryCode = viewModel?.cardPhoneNumberCountryCode?.value
+                ?: PayjpCardForm.phoneNumberService().defaultCountryCode()
         )
         binding.formElementPager.adapter = adapter
         binding.formElementPager.offscreenPageLimit = 2
@@ -222,6 +230,18 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
                 adapter.notifyDataSetChanged()
                 binding.cardDisplay.setBrand(brand)
             }
+            cardEmailInput.observe(viewLifecycleOwner) { email ->
+                adapter.cardEmailInput = email
+                adapter.notifyCardFormElementChanged(CardFormElementType.Email)
+            }
+            cardPhoneNumberInput.observe(viewLifecycleOwner) { phoneNumber ->
+                adapter.cardPhoneNumberInput = phoneNumber
+                adapter.notifyCardFormElementChanged(CardFormElementType.PhoneNumber)
+            }
+            cardPhoneNumberCountryCode.observe(viewLifecycleOwner) { countryCode ->
+                adapter.countryCode = countryCode
+                adapter.notifyCardFormElementChanged(CardFormElementType.PhoneNumber)
+            }
             showErrorImmediately.observe(viewLifecycleOwner) {
                 adapter.showErrorImmediately = it
             }
@@ -235,16 +255,20 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
         val tenantId = arguments?.getString(ARGS_TENANT_ID)?.let { TenantId(it) }
         val acceptedBrandArray = arguments?.getParcelableArray(ARGS_ACCEPTED_BRANDS)
         val factory = CardFormViewModel.Factory(
-            tokenService = checkNotNull(PayjpCardForm.tokenService()) {
-                "You must initialize Payjp first"
-            },
+            tokenService = PayjpCardForm.tokenService(),
             cardNumberInputTransformer = CardNumberInputTransformer(),
             cardExpirationInputTransformer = CardExpirationInputTransformer(delimiter = delimiterExpiration),
             cardCvcInputTransformer = CardCvcInputTransformer(),
             cardHolderNameInputTransformer = CardHolderNameInputTransformer,
+            cardEmailInputTransformer = CardEmailInputTransformer(),
+            cardPhoneNumberInputTransformer = CardPhoneNumberInputTransformer(
+                context = requireContext(),
+                service = PayjpCardForm.phoneNumberService()
+            ),
             tenantId = tenantId,
             holderNameEnabledDefault = true,
-            acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>()
+            acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>(),
+            phoneNumberService = PayjpCardForm.phoneNumberService()
         )
         return ViewModelProvider(requireActivity(), factory).get(CardFormViewModel::class.java)
     }

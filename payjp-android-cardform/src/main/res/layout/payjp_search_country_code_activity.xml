@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~
-  ~ Copyright (c) 2020 PAY, Inc.
+  ~ Copyright (c) 2024 PAY, Inc.
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -21,24 +20,30 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
   -->
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.PayjpSearchCountryCodeActivity">
 
-<com.google.android.material.textfield.TextInputLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/input_layout_holder_name"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/payjp_card_form_holder_name_label">
+        android:theme="@style/PayjpToolbar">
 
-    <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/input_edit_holder_name"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/payjp_search_country_code_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autofillHints="name"
-            android:imeOptions="flagNoExtractUi|actionNext|flagNoAccessoryAction"
-            android:inputType="textVisiblePassword"
-            android:maxLines="1"
-            tools:targetApi="o"
-            tools:text="TARO YAMADA" />
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"/>
 
-</com.google.android.material.textfield.TextInputLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/payjp_country_code_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -28,6 +28,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.pressImeActionButton
 import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -136,6 +137,8 @@ internal object CardFormPage {
             inputExpiration(cardRobot.exp)
             inputCvc(cardRobot.cvc)
             inputHolderName(cardRobot.name)
+            inputEmail(cardRobot.email)
+            inputPhoneNumber(cardRobot.phoneNumber)
         }
 
         fun inputNumber(number: String) {
@@ -156,6 +159,17 @@ internal object CardFormPage {
         fun inputHolderName(holderName: String) {
             onView(withId(R.id.input_edit_holder_name))
                 .perform(scrollTo(), replaceText(holderName))
+                .perform(pressImeActionButton())
+        }
+
+        fun inputEmail(email: String) {
+            onView(withId(R.id.input_edit_email))
+                .perform(scrollTo(), replaceText(email))
+        }
+
+        fun inputPhoneNumber(phoneNumber: String) {
+            onView(withId(R.id.input_edit_phone_number))
+                .perform(scrollTo(), replaceText(phoneNumber))
         }
 
         fun clickSubmitButton() {

@@ -26,6 +26,7 @@
     <color name="payjp_primaryColor">#198fcc</color>
     <color name="payjp_primaryDarkColor">#00629b</color>
     <color name="payjp_secondaryColor">#69737f</color>
+    <color name="payjp_colorOnPrimarySurface">#ddffffff</color>
     <color name="payjp_card_display_background">#515151</color>
     <color name="payjp_card_display_text_color">#ddffffff</color>
     <color name="payjp_card_display_text_color_hint">#60ffffff</color>

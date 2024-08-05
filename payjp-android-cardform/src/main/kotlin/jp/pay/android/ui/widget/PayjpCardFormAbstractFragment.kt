@@ -32,15 +32,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.observe
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
 import jp.pay.android.Task
 import jp.pay.android.exception.PayjpInvalidCardFormException
 import jp.pay.android.model.Token
 import jp.pay.android.plugin.CardScannerPlugin
+import jp.pay.android.ui.PayjpSearchCountryCodeActivity
+import jp.pay.android.ui.PayjpSearchCountryCodeActivity.Companion.EXTRA_REGION
 import jp.pay.android.ui.widget.PayjpCardFormView.CardFormEditorListener
 import jp.pay.android.ui.widget.PayjpCardFormView.OnFetchAcceptedBrandsListener
 import jp.pay.android.ui.widget.PayjpCardFormView.OnValidateInputListener
@@ -61,6 +64,17 @@ abstract class PayjpCardFormAbstractFragment :
         private set
     internal var viewModel: CardFormViewModel? = null
         private set
+    protected val searchCountryCodeLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK && result.data != null) {
+            result?.data?.getStringExtra(EXTRA_REGION)?.let { region ->
+                PayjpCardForm.phoneNumberService().findCountryCodeByRegion(requireContext(), region)?.let { countryCode ->
+                    viewModel?.selectCountryCode(countryCode)
+                }
+            }
+        }
+    }
 
     internal abstract fun createViewModel(): CardFormViewModel
 
@@ -164,4 +178,9 @@ abstract class PayjpCardFormAbstractFragment :
             }
             else -> false
         }
+
+    protected fun startSearchCountryCode() {
+        val intent = Intent(requireActivity(), PayjpSearchCountryCodeActivity::class.java)
+        searchCountryCodeLauncher.launch(intent)
+    }
 }

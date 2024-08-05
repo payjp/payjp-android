@@ -66,6 +66,7 @@
 <!--        <item name="colorPrimary">@color/primaryColor</item>-->
 <!--        <item name="colorPrimaryDark">@color/primaryDarkColor</item>-->
 <!--        <item name="colorSecondary">@color/secondaryColor</item>-->
+<!--        <item name="colorOnPrimarySurface">@color/primaryTextColor</item>-->
 <!--    </style>-->
 
 </resources>

@@ -23,6 +23,7 @@
 package jp.pay.android.ui.widget
 
 import jp.pay.android.Task
+import jp.pay.android.model.CountryCode
 import jp.pay.android.model.Token
 
 internal interface CardFormViewModelInput {
@@ -34,6 +35,12 @@ internal interface CardFormViewModelInput {
     fun inputCardCvc(input: String)
 
     fun inputCardHolderName(input: String)
+
+    fun inputEmail(input: String)
+
+    fun selectCountryCode(countryCode: CountryCode)
+
+    fun inputPhoneNumber(input: String)
 
     fun updateCardHolderNameEnabled(enabled: Boolean)
 

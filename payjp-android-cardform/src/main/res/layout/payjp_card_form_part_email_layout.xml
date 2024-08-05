@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~
-  ~ Copyright (c) 2020 PAY, Inc.
+  ~ Copyright (c) 2024 PAY, Inc.
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -22,23 +21,21 @@
   ~ SOFTWARE.
   -->
 
-<com.google.android.material.textfield.TextInputLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/input_layout_holder_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/payjp_card_form_holder_name_label">
+<com.google.android.material.textfield.TextInputLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/input_layout_email"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="@string/payjp_card_form_email_label">
 
     <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/input_edit_holder_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autofillHints="name"
-            android:imeOptions="flagNoExtractUi|actionNext|flagNoAccessoryAction"
-            android:inputType="textVisiblePassword"
-            android:maxLines="1"
-            tools:targetApi="o"
-            tools:text="TARO YAMADA" />
+        android:id="@+id/input_edit_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints="emailAddress"
+        android:imeOptions="flagNoExtractUi|actionNext"
+        android:inputType="textEmailAddress"
+        android:maxLines="1"
+        tools:text="test@example.com" />
 
 </com.google.android.material.textfield.TextInputLayout>

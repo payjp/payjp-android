@@ -29,20 +29,24 @@ import jp.pay.android.CardRobot
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.TestStubs
 import jp.pay.android.anyNullable
+import jp.pay.android.data.PhoneNumberService
 import jp.pay.android.exception.PayjpInvalidCardFormException
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardBrandsAcceptedResponse
+import jp.pay.android.model.CardComponentInput
 import jp.pay.android.model.CardComponentInput.CardCvcInput
 import jp.pay.android.model.CardComponentInput.CardExpirationInput
 import jp.pay.android.model.CardComponentInput.CardHolderNameInput
 import jp.pay.android.model.CardComponentInput.CardNumberInput
 import jp.pay.android.model.CardExpiration
+import jp.pay.android.model.CountryCode
 import jp.pay.android.model.FormInputError
 import jp.pay.android.model.TenantId
 import jp.pay.android.util.Tasks
 import jp.pay.android.validator.CardCvcInputTransformerService
 import jp.pay.android.validator.CardInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformerService
+import jp.pay.android.validator.CardPhoneNumberInputTransformerService
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.nullValue
@@ -64,6 +68,8 @@ internal class CardFormViewModelTest {
     @Mock
     private lateinit var mockTokenService: PayjpTokenService
     @Mock
+    private lateinit var mockPhoneNumberService: PhoneNumberService
+    @Mock
     private lateinit var cardNumberInputTransformer: CardNumberInputTransformerService
     @Mock
     private lateinit var cardExpirationInputTransformer: CardInputTransformer<CardExpirationInput>
@@ -73,6 +79,10 @@ internal class CardFormViewModelTest {
     private lateinit var cardHolderNameInputTransformer: CardInputTransformer<CardHolderNameInput>
     @Mock
     private lateinit var cardNumberErrorObserver: Observer<in Int?>
+    @Mock
+    private lateinit var cardEmailInputTransformer: CardInputTransformer<CardComponentInput.CardEmailInput>
+    @Mock
+    private lateinit var cardPhoneNumberInputTransformer: CardPhoneNumberInputTransformerService
 
     @Before
     fun setUp() {
@@ -89,9 +99,12 @@ internal class CardFormViewModelTest {
         cardExpirationInputTransformer = cardExpirationInputTransformer,
         cardCvcInputTransformer = cardCvcInputTransformer,
         cardHolderNameInputTransformer = cardHolderNameInputTransformer,
+        cardEmailInputTransformer = cardEmailInputTransformer,
+        cardPhoneNumberInputTransformer = cardPhoneNumberInputTransformer,
         tenantId = tenantId,
         holderNameEnabledDefault = holderNameEnabled,
-        acceptedBrandsPreset = acceptedBrandList
+        acceptedBrandsPreset = acceptedBrandList,
+        phoneNumberService = mockPhoneNumberService
     ).apply {
         cardNumberError.observeForever { }
         cardExpirationError.observeForever { }
@@ -107,6 +120,8 @@ internal class CardFormViewModelTest {
         cardCvcValid.observeForever { }
         errorFetchAcceptedBrands.observeForever { }
         acceptedBrands.observeForever { }
+        cardPhoneNumberError.observeForever { }
+        cardPhoneNumberCountryCode.observeForever { }
 
         cardNumberError.observeForever(cardNumberErrorObserver)
     }
@@ -115,7 +130,9 @@ internal class CardFormViewModelTest {
         number: String = "4242424242424242",
         expiration: CardExpiration = CardExpiration("12", "2030"),
         cvc: String = "123",
-        name: String = "JANE DOE"
+        name: String = "JANE DOE",
+        email: String = "test@example.com",
+        phoneNumber: String = "+819012345678",
     ) {
         `when`(cardNumberInputTransformer.transform(anyString()))
             .thenReturn(CardNumberInput("4242424242424242", number, null, CardBrand.VISA))
@@ -125,6 +142,10 @@ internal class CardFormViewModelTest {
             .thenReturn(CardCvcInput("123", cvc, null))
         `when`(cardHolderNameInputTransformer.transform(anyString()))
             .thenReturn(CardHolderNameInput("JANE DOE", name, null))
+        `when`(cardEmailInputTransformer.transform(anyString()))
+            .thenReturn(CardComponentInput.CardEmailInput("test@example.com", email, null))
+        `when`(cardPhoneNumberInputTransformer.transform(anyString()))
+            .thenReturn(CardComponentInput.CardPhoneNumberInput("09012345678", phoneNumber, null))
     }
 
     @Test
@@ -207,6 +228,9 @@ internal class CardFormViewModelTest {
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
             inputCardHolderName(robot.name)
+            inputEmail(robot.email)
+            selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
+            inputPhoneNumber(robot.phoneNumber)
             assertThat(isValid.value, `is`(true))
         }
     }
@@ -223,6 +247,9 @@ internal class CardFormViewModelTest {
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
             inputCardHolderName(robot.name)
+            inputEmail(robot.email)
+            selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
+            inputPhoneNumber(robot.phoneNumber)
             assertThat(isValid.value, `is`(false))
         }
     }
@@ -235,6 +262,9 @@ internal class CardFormViewModelTest {
             inputCardNumber(robot.number)
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
+            inputEmail(robot.email)
+            selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
+            inputPhoneNumber(robot.phoneNumber)
             assertThat(isValid.value, `is`(false))
             updateCardHolderNameEnabled(false)
             assertThat(isValid.value, `is`(true))
@@ -515,6 +545,9 @@ internal class CardFormViewModelTest {
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
             inputCardHolderName(robot.name)
+            inputEmail(robot.email)
+            selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
+            inputPhoneNumber(robot.phoneNumber)
             createToken().run()
             verify(mockTokenService).createToken(
                 number = "4242424242424242",
@@ -553,6 +586,9 @@ internal class CardFormViewModelTest {
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
             inputCardHolderName(robot.name)
+            inputEmail(robot.email)
+            selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
+            inputPhoneNumber(robot.phoneNumber)
             createToken().run()
             verify(mockTokenService).createToken(
                 number = "4242424242424242",

@@ -35,11 +35,14 @@ import androidx.viewbinding.ViewBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import jp.pay.android.databinding.PayjpCardFormElementCvcLayoutBinding
+import jp.pay.android.databinding.PayjpCardFormElementEmailLayoutBinding
 import jp.pay.android.databinding.PayjpCardFormElementExpirationLayoutBinding
 import jp.pay.android.databinding.PayjpCardFormElementHolderNameLayoutBinding
 import jp.pay.android.databinding.PayjpCardFormElementNumberLayoutBinding
+import jp.pay.android.databinding.PayjpCardFormElementPhoneNumberLayoutBinding
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput
+import jp.pay.android.model.CountryCode
 import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.ui.extension.addOnTextChanged
 import jp.pay.android.ui.extension.setErrorOrNull
@@ -51,7 +54,7 @@ internal typealias OnCardFormElementKeyDownDeleteWithEmpty = (type: CardFormElem
 
 internal sealed class CardFormElementViewHolder<V : ViewBinding>(
     type: CardFormElementType,
-    binding: V,
+    protected val binding: V,
     protected val inputLayout: TextInputLayout,
     protected val editText: TextInputEditText,
     onTextChanged: OnCardFormElementTextChanged,
@@ -263,6 +266,74 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
             setTextDisablingInputWatcher(input)
             setInputError(input, showErrorImmediately)
             this.brand = brand
+        }
+    }
+
+    class CardFormEmailElement(
+        binding: PayjpCardFormElementEmailLayoutBinding,
+        onTextChanged: OnCardFormElementTextChanged,
+        onEditorAction: OnCardFormElementEditorAction,
+        onFocusChanged: OnCardFormElementFocusChanged,
+        onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
+        autofillId: Any?
+    ) :
+        CardFormElementViewHolder<PayjpCardFormElementEmailLayoutBinding>(
+            CardFormElementType.Email,
+            binding,
+            binding.content.inputLayoutEmail,
+            binding.content.inputEditEmail,
+            onTextChanged,
+            onEditorAction,
+            onFocusChanged,
+            onKeyDownDeleteWithEmpty,
+            autofillId
+        ) {
+
+        fun bindData(
+            input: CardComponentInput.CardEmailInput?,
+            showErrorImmediately: Boolean
+        ) {
+            setTextDisablingInputWatcher(input)
+            setInputError(input, showErrorImmediately)
+        }
+    }
+
+    class CardFormPhoneNumberElement(
+        binding: PayjpCardFormElementPhoneNumberLayoutBinding,
+        onClickCountryCode: View.OnClickListener?,
+        onTextChanged: OnCardFormElementTextChanged,
+        onEditorAction: OnCardFormElementEditorAction,
+        onFocusChanged: OnCardFormElementFocusChanged,
+        onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
+        autofillId: Any?
+    ) :
+        CardFormElementViewHolder<PayjpCardFormElementPhoneNumberLayoutBinding>(
+            CardFormElementType.PhoneNumber,
+            binding,
+            binding.content.inputLayoutPhoneNumber,
+            binding.content.inputEditPhoneNumber,
+            onTextChanged,
+            onEditorAction,
+            onFocusChanged,
+            onKeyDownDeleteWithEmpty,
+            autofillId
+        ) {
+        init {
+            binding.content.inputLayoutCountryCode.setEndIconOnClickListener(onClickCountryCode)
+            // both input country code and phone number should be ready for focus change
+            binding.content.inputEditCountryCode.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+                onFocusChanged.invoke(CardFormElementType.PhoneNumber, v, hasFocus)
+            }
+        }
+
+        fun bindData(
+            input: CardComponentInput.CardPhoneNumberInput?,
+            countryCode: CountryCode,
+            showErrorImmediately: Boolean
+        ) {
+            binding.content.inputEditCountryCode.setText(countryCode.shortName)
+            setTextDisablingInputWatcher(input)
+            setInputError(input, showErrorImmediately)
         }
     }
 }
