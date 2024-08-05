@@ -36,6 +36,8 @@
     <string name="payjp_card_form_error_no_cvc">セキュリティコードを入力してください</string>
     <string name="payjp_card_form_error_invalid_cvc">正しいセキュリティコードを入力してください</string>
     <string name="payjp_card_form_error_no_holder_name">カード名義を入力してください</string>
+    <string name="payjp_card_form_error_no_email">メールアドレスを入力してください</string>
+    <string name="payjp_card_form_error_invalid_email">正しいメールアドレスを入力してください</string>
     <string name="payjp_card_form_error_no_phone_number">電話番号を入力してください</string>
     <string name="payjp_card_form_error_invalid_phone_number">正しい電話番号を入力してください</string>
     <string name="payjp_card_scanner_permission_denied_title">カードの読み取り</string>
