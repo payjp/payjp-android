@@ -202,6 +202,32 @@ class PayjpTokenTest {
     }
 
     @Test
+    fun createToken_ok_with_email_and_phone() {
+        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
+
+        createTokenService()
+            .createToken(
+                number = "4242424242424242",
+                cvc = "123",
+                expMonth = "02",
+                expYear = "2020",
+                email = "test@example.com",
+                phone = "+819012345678"
+            )
+            .run()
+
+        assertEquals(
+            "card%5Bnumber%5D=4242424242424242" +
+                "&card%5Bcvc%5D=123" +
+                "&card%5Bexp_month%5D=02" +
+                "&card%5Bexp_year%5D=2020" +
+                "&card%5Bemail%5D=test%40example.com" +
+                "&card%5Bphone%5D=%2B819012345678",
+            mockWebServer.takeRequest().body.readString(Charset.forName("utf-8"))
+        )
+    }
+
+    @Test
     fun createToken_auth_error() {
         mockWebServer.enqueue(MockResponse().setResponseCode(401).setBody(ERROR_AUTH))
 

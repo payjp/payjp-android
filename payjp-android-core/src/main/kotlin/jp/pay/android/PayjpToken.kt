@@ -93,7 +93,9 @@ class PayjpToken internal constructor(
             expMonth = param.expMonth,
             expYear = param.expYear,
             name = param.name,
-            tenant = param.tenantId?.id
+            tenant = param.tenantId?.id,
+            email = param.email,
+            phone = param.phone,
         ).let { this.wrapWithObserver(it) }
     }
 

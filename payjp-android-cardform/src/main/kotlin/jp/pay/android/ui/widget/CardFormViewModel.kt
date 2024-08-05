@@ -221,7 +221,9 @@ internal class CardFormViewModel(
                 expYear = checkNotNull(cardExpirationInput.value?.value).year,
                 cvc = checkNotNull(cardCvcInput.value?.value),
                 name = name,
-                tenantId = tenantId
+                tenantId = tenantId,
+                email = cardEmailInput.value?.value,
+                phone = cardPhoneNumberInput.value?.value,
             )
         } else {
             Tasks.failure(

@@ -151,7 +151,7 @@ internal class CardFormViewModelTest {
     @Test
     fun acceptedBrands_injectAt_init() {
         val brands = listOf(CardBrand.VISA, CardBrand.MASTER_CARD)
-        val viewModel = createViewModel(acceptedBrandList = brands)
+        createViewModel(acceptedBrandList = brands)
         verify(cardNumberInputTransformer).acceptedBrands = brands
     }
 
@@ -529,7 +529,9 @@ internal class CardFormViewModelTest {
                 expMonth = anyString(),
                 expYear = anyString(),
                 name = anyString(),
-                tenantId = anyNullable()
+                tenantId = anyNullable(),
+                email = anyString(),
+                phone = anyString(),
             )
         )
             .thenReturn(Tasks.success(TestStubs.newToken()))
@@ -555,7 +557,9 @@ internal class CardFormViewModelTest {
                 expYear = "2030",
                 cvc = "123",
                 name = "JANE DOE",
-                tenantId = null
+                tenantId = null,
+                email = "test@example.com",
+                phone = "+819012345678",
             )
         }
     }
@@ -569,7 +573,9 @@ internal class CardFormViewModelTest {
                 expMonth = anyString(),
                 expYear = anyString(),
                 name = anyString(),
-                tenantId = anyNullable()
+                tenantId = anyNullable(),
+                email = anyString(),
+                phone = anyString(),
             )
         )
             .thenReturn(Tasks.success(TestStubs.newToken()))
@@ -596,7 +602,9 @@ internal class CardFormViewModelTest {
                 expYear = "2030",
                 cvc = "123",
                 name = "JANE DOE",
-                tenantId = tenantId
+                tenantId = tenantId,
+                email = "test@example.com",
+                phone = "+819012345678",
             )
         }
     }

@@ -33,6 +33,8 @@ import jp.pay.android.model.TenantId
  * @param expYear card expiration year (4 digits e.g. 2020 -> `2020`)
  * @param name card holder name
  * @param tenantId optional tenant id (only for platform)
+ * @param email email
+ * @param phone phone number formatted by E.164 (e.g. +819012345678)
  */
 data class PayjpTokenParam(
     val number: String,
@@ -40,7 +42,9 @@ data class PayjpTokenParam(
     val expMonth: String,
     val expYear: String,
     val name: String?,
-    val tenantId: TenantId?
+    val tenantId: TenantId?,
+    val email: String?,
+    val phone: String?,
 ) {
 
     /**
@@ -60,6 +64,8 @@ data class PayjpTokenParam(
 
         private var name: String? = null
         private var tenantId: TenantId? = null
+        private var email: String? = null
+        private var phone: String? = null
 
         /**
          * Set card holder name
@@ -77,11 +83,25 @@ data class PayjpTokenParam(
         fun tenantId(tenantId: TenantId?): Builder = apply { this.tenantId = tenantId }
 
         /**
+         * Set email
+         *
+         * @param email email
+         */
+        fun email(email: String?): Builder = apply { this.email = email }
+
+        /**
+         * Set phone number
+         *
+         * @param phone phone number
+         */
+        fun phone(phone: String?): Builder = apply { this.phone = phone }
+
+        /**
          * Build param
          *
          * @return param object.
          */
         fun build(): PayjpTokenParam =
-            PayjpTokenParam(number, cvc, expMonth, expYear, name, tenantId)
+            PayjpTokenParam(number, cvc, expMonth, expYear, name, tenantId, email, phone)
     }
 }

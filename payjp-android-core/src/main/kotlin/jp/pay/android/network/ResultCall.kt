@@ -29,6 +29,7 @@ import jp.pay.android.exception.PayjpCardException
 import jp.pay.android.exception.PayjpRateLimitException
 import jp.pay.android.model.ErrorEnvelope
 import okhttp3.Request
+import okio.Timeout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.HttpException
@@ -121,4 +122,6 @@ internal class ResultCall<T>(
     override fun clone(): Call<T> = ResultCall(moshi, callbackExecutor, delegate)
 
     override fun request(): Request = delegate.request()
+
+    override fun timeout(): Timeout = delegate.timeout()
 }
