@@ -20,13 +20,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.validator
+package jp.pay.android.model
 
-import jp.pay.android.model.CardComponentInput
-import jp.pay.android.model.CountryCode
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-internal interface CardPhoneNumberInputTransformerService :
-    CardInputTransformer<CardComponentInput.CardPhoneNumberInput> {
-    var currentCountryCode: CountryCode?
-    fun injectPreset(region: String, number: String?): CardComponentInput.CardPhoneNumberInput
+/**
+ * TDS attribute.
+ * see [https://help.pay.jp/ja/articles/9556161]
+ */
+sealed class TdsAttribute<T> : Parcelable {
+    abstract val preset: T?
+
+    @Parcelize
+    data class Email(
+        override val preset: String? = null
+    ) : TdsAttribute<String>()
+
+    @Parcelize
+    data class Phone(
+        val region: String,
+        val number: String? = null,
+    ) : TdsAttribute<Pair<String, String?>>() {
+        override val preset: Pair<String, String?>
+            get() = region to number
+    }
+
+    companion object {
+        fun defaults(): Array<TdsAttribute<*>> = arrayOf(Email())
+    }
 }

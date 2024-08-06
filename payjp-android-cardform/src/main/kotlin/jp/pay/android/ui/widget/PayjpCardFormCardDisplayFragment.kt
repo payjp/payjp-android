@@ -38,6 +38,7 @@ import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
 import jp.pay.android.databinding.PayjpCardFormViewCardDisplayBinding
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.TdsAttribute
 import jp.pay.android.model.TenantId
 import jp.pay.android.util.autoCleared
 import jp.pay.android.validator.CardCvcInputTransformer
@@ -53,6 +54,7 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
     companion object {
         private const val ARGS_TENANT_ID = "ARGS_TENANT_ID"
         private const val ARGS_ACCEPTED_BRANDS = "ARGS_ACCEPTED_BRANDS"
+        private const val ARGS_TDS_ATTRIBUTES = "ARGS_TDS_ATTRIBUTES"
 
         /**
          * Create new fragment instance with args
@@ -64,12 +66,14 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
         @JvmStatic
         fun newInstance(
             tenantId: TenantId? = null,
-            acceptedBrands: Array<CardBrand>? = null
+            acceptedBrands: Array<CardBrand>? = null,
+            tdsAttributes: Array<TdsAttribute<*>>,
         ): PayjpCardFormCardDisplayFragment =
             PayjpCardFormCardDisplayFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARGS_TENANT_ID, tenantId?.id)
                     putParcelableArray(ARGS_ACCEPTED_BRANDS, acceptedBrands)
+                    putParcelableArray(ARGS_TDS_ATTRIBUTES, tdsAttributes)
                 }
             }
     }
@@ -113,6 +117,10 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
         }
 
         adapter = CardFormElementAdapter(
+            inputTypes = CardFormElementType.createList(
+                viewModel!!.cardEmailEnabled,
+                viewModel!!.cardPhoneNumberEnabled,
+            ),
             cardNumberFormatter = cardNumberFormatter,
             cardExpirationFormatter = CardExpirationFormatTextWatcher(delimiterExpiration),
             scannerPlugin = PayjpCardForm.cardScannerPlugin(),
@@ -255,6 +263,9 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
     override fun createViewModel(): CardFormViewModel {
         val tenantId = arguments?.getString(ARGS_TENANT_ID)?.let { TenantId(it) }
         val acceptedBrandArray = arguments?.let { BundleCompat.getParcelableArray(it, ARGS_ACCEPTED_BRANDS, CardBrand::class.java) }
+        val tdsAttributes = arguments?.let {
+            BundleCompat.getParcelableArray(it, ARGS_TDS_ATTRIBUTES, TdsAttribute::class.java)
+        }
         val factory = CardFormViewModel.Factory(
             tokenService = PayjpCardForm.tokenService(),
             cardNumberInputTransformer = CardNumberInputTransformer(),
@@ -268,8 +279,9 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
             ),
             tenantId = tenantId,
             holderNameEnabledDefault = true,
-            acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>(),
-            phoneNumberService = PayjpCardForm.phoneNumberService()
+            acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>() ?: emptyList(),
+            phoneNumberService = PayjpCardForm.phoneNumberService(),
+            tdsAttributes = tdsAttributes?.filterIsInstance<TdsAttribute<*>>() ?: emptyList(),
         )
         return ViewModelProvider(requireActivity(), factory).get(CardFormViewModel::class.java)
     }

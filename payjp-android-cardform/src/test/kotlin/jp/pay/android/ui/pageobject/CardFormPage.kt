@@ -36,6 +36,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import jp.pay.android.CardRobot
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
+import jp.pay.android.model.TdsAttribute
 import jp.pay.android.ui.PayjpCardFormActivity
 import org.hamcrest.Matcher
 
@@ -46,7 +47,11 @@ internal object CardFormPage {
             PayjpCardFormActivity.createIntent(
                 context = ApplicationProvider.getApplicationContext(),
                 tenant = null,
-                face = PayjpCardForm.FACE_CARD_DISPLAY
+                face = PayjpCardForm.FACE_CARD_DISPLAY,
+                tdsAttributes = arrayOf(
+                    TdsAttribute.Email(),
+                    TdsAttribute.Phone("JP"),
+                )
             )
         )
     }
@@ -56,7 +61,11 @@ internal object CardFormPage {
             PayjpCardFormActivity.createIntent(
                 context = ApplicationProvider.getApplicationContext(),
                 tenant = null,
-                face = PayjpCardForm.FACE_MULTI_LINE
+                face = PayjpCardForm.FACE_MULTI_LINE,
+                tdsAttributes = arrayOf(
+                    TdsAttribute.Email(),
+                    TdsAttribute.Phone("JP"),
+                )
             )
         )
     }

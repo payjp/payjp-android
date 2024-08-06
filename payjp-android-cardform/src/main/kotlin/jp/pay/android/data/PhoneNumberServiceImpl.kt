@@ -33,7 +33,7 @@ internal class PhoneNumberServiceImpl(
 ) : PhoneNumberService {
     private var phoneNumberUtilOrNull: PhoneNumberUtil? = null
     private fun phoneNumberUtil(context: Context): PhoneNumberUtil {
-        return phoneNumberUtilOrNull ?: PhoneNumberUtil.createInstance(context).also {
+        return phoneNumberUtilOrNull ?: PhoneNumberUtil.createInstance(context.applicationContext).also {
             phoneNumberUtilOrNull = it
         }
     }

@@ -52,4 +52,9 @@ internal class CardPhoneNumberInputTransformer(
         }
         return CardComponentInput.CardPhoneNumberInput(input, normalized, errorMessage)
     }
+
+    override fun injectPreset(region: String, number: String?): CardComponentInput.CardPhoneNumberInput {
+        currentCountryCode = service.findCountryCodeByRegion(context, region) ?: service.defaultCountryCode()
+        return transform(number)
+    }
 }

@@ -41,6 +41,7 @@ import jp.pay.android.model.CardComponentInput.CardNumberInput
 import jp.pay.android.model.CardExpiration
 import jp.pay.android.model.CountryCode
 import jp.pay.android.model.FormInputError
+import jp.pay.android.model.TdsAttribute
 import jp.pay.android.model.TenantId
 import jp.pay.android.util.Tasks
 import jp.pay.android.validator.CardCvcInputTransformerService
@@ -92,7 +93,11 @@ internal class CardFormViewModelTest {
     private fun createViewModel(
         tenantId: TenantId? = null,
         holderNameEnabled: Boolean = true,
-        acceptedBrandList: List<CardBrand>? = null
+        acceptedBrandList: List<CardBrand> = emptyList(),
+        tdsAttributes: List<TdsAttribute<*>> = listOf(
+            TdsAttribute.Email(),
+            TdsAttribute.Phone("JP"),
+        ),
     ) = CardFormViewModel(
         tokenService = mockTokenService,
         cardNumberInputTransformer = cardNumberInputTransformer,
@@ -104,7 +109,8 @@ internal class CardFormViewModelTest {
         tenantId = tenantId,
         holderNameEnabledDefault = holderNameEnabled,
         acceptedBrandsPreset = acceptedBrandList,
-        phoneNumberService = mockPhoneNumberService
+        phoneNumberService = mockPhoneNumberService,
+        tdsAttributes = tdsAttributes,
     ).apply {
         cardNumberError.observeForever { }
         cardExpirationError.observeForever { }

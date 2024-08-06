@@ -50,8 +50,10 @@ internal interface CardFormViewModelOutput {
     val acceptedBrands: LiveData<OneOffValue<List<CardBrand>>>
     val showErrorImmediately: LiveData<Boolean>
     val currentPrimaryInput: LiveData<CardFormElementType>
+    val cardEmailEnabled: Boolean
     val cardEmailInput: LiveData<CardComponentInput.CardEmailInput>
     val cardEmailError: LiveData<Int?>
+    val cardPhoneNumberEnabled: Boolean
     val cardPhoneNumberCountryCode: LiveData<CountryCode>
     val cardPhoneNumberInput: LiveData<CardComponentInput.CardPhoneNumberInput>
     val cardPhoneNumberError: LiveData<Int?>

@@ -49,6 +49,7 @@ import jp.pay.android.ui.widget.CardFormElementViewHolder.CardFormNumberElement
 import jp.pay.android.ui.widget.CardFormElementViewHolder.CardFormPhoneNumberElement
 
 internal class CardFormElementAdapter(
+    private val inputTypes: List<CardFormElementType>,
     private val cardNumberFormatter: CardNumberFormatTextWatcher,
     private val cardExpirationFormatter: TextWatcher,
     private val scannerPlugin: CardScannerPlugin?,
@@ -83,7 +84,7 @@ internal class CardFormElementAdapter(
     var cardPhoneNumberInput: CardComponentInput.CardPhoneNumberInput? = null
     var brand: CardBrand = CardBrand.UNKNOWN
     var showErrorImmediately: Boolean = false
-    private val itemSize = CardFormElementType.entries.size
+    private val itemSize = inputTypes.size
     private val autofillIds: List<Any>
 
     init {
@@ -203,7 +204,7 @@ internal class CardFormElementAdapter(
         }
     }
 
-    override fun getItemViewType(position: Int): Int = position
+    override fun getItemViewType(position: Int): Int = inputTypes[position].ordinal
 
     override fun getItemCount(): Int = itemSize
 

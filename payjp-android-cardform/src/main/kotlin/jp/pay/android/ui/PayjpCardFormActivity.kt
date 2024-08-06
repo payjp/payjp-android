@@ -42,6 +42,7 @@ import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
 import jp.pay.android.databinding.PayjpCardFormActivityBinding
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.TdsAttribute
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.model.TokenId
@@ -66,14 +67,17 @@ internal class PayjpCardFormActivity :
         private const val FRAGMENT_CARD_FORM = "FRAGMENT_CARD_FORM"
         private const val EXTRA_KEY_TENANT = "EXTRA_KEY_TENANT"
         private const val EXTRA_KEY_FACE = "EXTRA_KEY_FACE"
+        private const val EXTRA_KEY_TDS_ATTRIBUTES = "EXTRA_KEY_TDS_ATTRIBUTES"
         private const val CARD_FORM_EXTRA_KEY_TOKEN = "DATA"
 
         fun createIntent(
             context: Context,
             tenant: TenantId?,
-            @PayjpCardForm.CardFormFace face: Int
+            @PayjpCardForm.CardFormFace face: Int,
+            tdsAttributes: Array<TdsAttribute<*>>,
         ): Intent = Intent(context, PayjpCardFormActivity::class.java)
             .putExtra(EXTRA_KEY_FACE, face)
+            .putExtra(EXTRA_KEY_TDS_ATTRIBUTES, tdsAttributes)
             .apply {
                 if (tenant != null) {
                     putExtra(EXTRA_KEY_TENANT, tenant.id)
@@ -84,10 +88,11 @@ internal class PayjpCardFormActivity :
             activity: Activity,
             requestCode: Int?,
             tenant: TenantId?,
-            @PayjpCardForm.CardFormFace face: Int
+            @PayjpCardForm.CardFormFace face: Int,
+            tdsAttributes: Array<TdsAttribute<*>>,
         ) {
             activity.startActivityForResult(
-                createIntent(activity, tenant, face)
+                createIntent(activity, tenant, face, tdsAttributes)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
             )
@@ -97,10 +102,11 @@ internal class PayjpCardFormActivity :
             fragment: Fragment,
             requestCode: Int?,
             tenant: TenantId?,
-            @PayjpCardForm.CardFormFace face: Int
+            @PayjpCardForm.CardFormFace face: Int,
+            tdsAttributes: Array<TdsAttribute<*>>,
         ) {
             fragment.startActivityForResult(
-                createIntent(fragment.requireActivity(), tenant, face)
+                createIntent(fragment.requireActivity(), tenant, face, tdsAttributes)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
             )
@@ -126,6 +132,14 @@ internal class PayjpCardFormActivity :
     private val face: Int by lazy {
         intent?.getIntExtra(EXTRA_KEY_FACE, PayjpCardForm.FACE_MULTI_LINE)
             ?: PayjpCardForm.FACE_MULTI_LINE
+    }
+    private val tdsAttributes: Array<TdsAttribute<*>> by lazy {
+        intent?.let {
+            IntentCompat.getParcelableArrayExtra(it, EXTRA_KEY_TDS_ATTRIBUTES, TdsAttribute::class.java)
+        }
+            ?.filterIsInstance<TdsAttribute<*>>()
+            ?.toTypedArray()
+            ?: emptyArray()
     }
     private val inputMethodManager: InputMethodManager by lazy {
         getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -225,7 +239,8 @@ internal class PayjpCardFormActivity :
                 holderNameEnabled = true,
                 tenantId = tenantId,
                 acceptedBrands = acceptedBrands,
-                face = face
+                face = face,
+                tdsAttributes = tdsAttributes,
             ).also { fragment ->
                 manager
                     .beginTransaction().apply {

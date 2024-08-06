@@ -36,6 +36,7 @@ import com.example.payjp.sample.databinding.ActivityTopBinding
 import com.example.payjp.sample.databinding.CardSampleBinding
 import jp.pay.android.Payjp
 import jp.pay.android.PayjpCardForm
+import jp.pay.android.model.TdsAttribute
 
 typealias OnClickSample = (sample: TopActivity.Sample) -> Unit
 
@@ -102,11 +103,17 @@ class TopActivity : AppCompatActivity() {
     }
 
     private fun startCardForm() {
-        Payjp.cardForm().start(this)
+        Payjp.cardForm().start(
+            this,
+            tdsAttributes = arrayOf(
+                TdsAttribute.Email("test@example.com"),
+                TdsAttribute.Phone("JP", "09012345678")
+            )
+        )
     }
 
     private fun startCardFormCardFace() {
-        Payjp.cardForm().start(this, face = PayjpCardForm.FACE_CARD_DISPLAY)
+        Payjp.cardForm().start(this, face = PayjpCardForm.FACE_CARD_DISPLAY, tdsAttributes = emptyArray())
     }
 
     class TopAdapter(

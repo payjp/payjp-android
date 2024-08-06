@@ -47,6 +47,7 @@ import jp.pay.android.model.CardComponentInput.CardNumberInput
 import jp.pay.android.model.CardComponentInput.CardPhoneNumberInput
 import jp.pay.android.model.CardExpiration
 import jp.pay.android.model.CountryCode
+import jp.pay.android.model.TdsAttribute
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.util.OneOffValue
@@ -75,8 +76,9 @@ internal class CardFormViewModel(
     private val cardPhoneNumberInputTransformer: CardPhoneNumberInputTransformerService,
     private val tenantId: TenantId?,
     holderNameEnabledDefault: Boolean,
-    acceptedBrandsPreset: List<CardBrand>?,
-    private val phoneNumberService: PhoneNumberService
+    acceptedBrandsPreset: List<CardBrand>,
+    private val phoneNumberService: PhoneNumberService,
+    private val tdsAttributes: List<TdsAttribute<*>>,
 ) : ViewModel(), CardFormViewModelOutput, CardFormViewModelInput, DefaultLifecycleObserver {
 
     override val cardNumberInput = MutableLiveData<CardNumberInput>()
@@ -99,8 +101,10 @@ internal class CardFormViewModel(
     override val acceptedBrands: MutableLiveData<OneOffValue<List<CardBrand>>> = MutableLiveData()
     override val showErrorImmediately = MutableLiveData<Boolean>()
     override val currentPrimaryInput: MutableLiveData<CardFormElementType> = MutableLiveData()
+    override val cardEmailEnabled: Boolean
     override val cardEmailInput = MutableLiveData<CardComponentInput.CardEmailInput>()
     override val cardEmailError: LiveData<Int?>
+    override val cardPhoneNumberEnabled: Boolean
     override val cardPhoneNumberCountryCode: MutableLiveData<CountryCode> = MutableLiveData()
     override val cardPhoneNumberInput: MutableLiveData<CardPhoneNumberInput> = MutableLiveData()
     override val cardPhoneNumberError: LiveData<Int?>
@@ -146,13 +150,22 @@ internal class CardFormViewModel(
         cardExpirationValid = cardExpirationInput.map { it.valid }
         cardCvcValid = cardCvcInput.map { it.valid }
         currentPrimaryInput.value = CardFormElementType.Number
+        // TDS Attributes settings
         // Email
+        cardEmailEnabled = tdsAttributes.any { it is TdsAttribute.Email }
         cardEmailError = cardEmailInput.map(this::retrieveError).distinctUntilChanged()
+        tdsAttributes.filterIsInstance<TdsAttribute.Email>().firstOrNull()?.preset?.let {
+            cardEmailInput.value = cardEmailInputTransformer.transform(it)
+        }
         // Phone Number
+        cardPhoneNumberEnabled = tdsAttributes.any { it is TdsAttribute.Phone }
+        tdsAttributes.filterIsInstance<TdsAttribute.Phone>().firstOrNull()?.preset?.let { (region, number) ->
+            cardPhoneNumberInput.value = cardPhoneNumberInputTransformer.injectPreset(region, number)
+            cardPhoneNumberInputTransformer.currentCountryCode?.let { selectCountryCode(it) }
+        }
         cardPhoneNumberCountryCode.value = cardPhoneNumberCountryCode.value ?: phoneNumberService.defaultCountryCode()
         cardPhoneNumberError = cardPhoneNumberInput.map(this::retrieveError).distinctUntilChanged()
         countryCodeObserver = Observer {
-
             if (it != cardPhoneNumberInputTransformer.currentCountryCode) {
                 // If country code changed, revalidate phone number.
                 cardPhoneNumberInputTransformer.currentCountryCode = it
@@ -259,8 +272,8 @@ internal class CardFormViewModel(
         cardExpirationInput.value?.valid == true &&
         cardCvcInput.value?.valid == true &&
         (cardHolderNameEnabled.value == false || cardHolderNameInput.value?.valid == true) &&
-        cardEmailInput.value?.valid == true &&
-        cardPhoneNumberInput.value?.valid == true
+        (!cardEmailEnabled || cardEmailInput.value?.valid == true) &&
+        (!cardPhoneNumberEnabled || cardPhoneNumberInput.value?.valid == true)
 
     private fun retrieveError(input: CardComponentInput<*>?): Int? {
         return input?.errorMessage?.take(showErrorImmediately.value != true)
@@ -311,8 +324,9 @@ internal class CardFormViewModel(
         private val cardPhoneNumberInputTransformer: CardPhoneNumberInputTransformerService,
         private val tenantId: TenantId? = null,
         private val holderNameEnabledDefault: Boolean = true,
-        private val acceptedBrands: List<CardBrand>? = null,
-        private val phoneNumberService: PhoneNumberService
+        private val acceptedBrands: List<CardBrand>,
+        private val phoneNumberService: PhoneNumberService,
+        private val tdsAttributes: List<TdsAttribute<*>>,
     ) : ViewModelProvider.NewInstanceFactory() {
 
         @Suppress("UNCHECKED_CAST")
@@ -328,7 +342,8 @@ internal class CardFormViewModel(
                 tenantId = tenantId,
                 holderNameEnabledDefault = holderNameEnabledDefault,
                 acceptedBrandsPreset = acceptedBrands,
-                phoneNumberService = phoneNumberService
+                phoneNumberService = phoneNumberService,
+                tdsAttributes = tdsAttributes,
             ) as T
         }
     }

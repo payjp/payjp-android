@@ -41,4 +41,20 @@ internal enum class CardFormElementType {
     fun next(): CardFormElementType = entries.toTypedArray().let { values ->
         values[min(ordinal + 1, values.lastIndex)]
     }
+
+    companion object {
+        fun createList(
+            emailEnabled: Boolean,
+            phoneNumberEnabled: Boolean
+        ): List<CardFormElementType> {
+            return listOfNotNull(
+                Number,
+                Expiration,
+                Cvc,
+                HolderName,
+                Email.takeIf { emailEnabled },
+                PhoneNumber.takeIf { phoneNumberEnabled }
+            )
+        }
+    }
 }
