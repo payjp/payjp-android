@@ -101,10 +101,6 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
         }
     }
 
-    override fun setCardHolderNameInputEnabled(enabled: Boolean) {
-        // no-op
-    }
-
     override fun setUpUI(view: ViewGroup) {
         binding.formElementPager.run {
             isFocusableInTouchMode = false
@@ -278,7 +274,6 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
                 service = PayjpCardForm.phoneNumberService()
             ),
             tenantId = tenantId,
-            holderNameEnabledDefault = true,
             acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>() ?: emptyList(),
             phoneNumberService = PayjpCardForm.phoneNumberService(),
             tdsAttributes = tdsAttributes?.filterIsInstance<TdsAttribute<*>>() ?: emptyList(),

@@ -37,9 +37,7 @@ internal interface CardFormViewModelOutput {
     val cardCvcError: LiveData<Int?>
     val cardHolderNameInput: LiveData<CardComponentInput.CardHolderNameInput>
     val cardHolderNameError: LiveData<Int?>
-    val cardHolderNameEnabled: LiveData<Boolean>
     val cardCvcInput: LiveData<CardComponentInput.CardCvcInput>
-    val cvcImeOptions: LiveData<Int>
     val cardNumberBrand: LiveData<CardBrand>
     val cardExpiration: LiveData<CardExpiration?>
     val isValid: LiveData<Boolean>

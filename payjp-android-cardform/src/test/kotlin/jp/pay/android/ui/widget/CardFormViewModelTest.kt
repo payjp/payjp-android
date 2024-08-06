@@ -22,7 +22,6 @@
  */
 package jp.pay.android.ui.widget
 
-import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.Observer
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.CardRobot
@@ -92,7 +91,6 @@ internal class CardFormViewModelTest {
 
     private fun createViewModel(
         tenantId: TenantId? = null,
-        holderNameEnabled: Boolean = true,
         acceptedBrandList: List<CardBrand> = emptyList(),
         tdsAttributes: List<TdsAttribute<*>> = listOf(
             TdsAttribute.Email(),
@@ -107,7 +105,6 @@ internal class CardFormViewModelTest {
         cardEmailInputTransformer = cardEmailInputTransformer,
         cardPhoneNumberInputTransformer = cardPhoneNumberInputTransformer,
         tenantId = tenantId,
-        holderNameEnabledDefault = holderNameEnabled,
         acceptedBrandsPreset = acceptedBrandList,
         phoneNumberService = mockPhoneNumberService,
         tdsAttributes = tdsAttributes,
@@ -116,8 +113,6 @@ internal class CardFormViewModelTest {
         cardExpirationError.observeForever { }
         cardCvcError.observeForever { }
         cardHolderNameError.observeForever { }
-        cardHolderNameEnabled.observeForever { }
-        cvcImeOptions.observeForever { }
         cardNumberBrand.observeForever { }
         cardExpiration.observeForever { }
         isValid.observeForever { }
@@ -258,32 +253,6 @@ internal class CardFormViewModelTest {
             inputPhoneNumber(robot.phoneNumber)
             assertThat(isValid.value, `is`(false))
         }
-    }
-
-    @Test
-    fun not_required_card_holder_name_if_not_enabled() {
-        val robot = CardRobot.SandboxVisa
-        mockCorrectInput()
-        createViewModel().run {
-            inputCardNumber(robot.number)
-            inputCardExpiration(robot.exp)
-            inputCardCvc(robot.cvc)
-            inputEmail(robot.email)
-            selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
-            inputPhoneNumber(robot.phoneNumber)
-            assertThat(isValid.value, `is`(false))
-            updateCardHolderNameEnabled(false)
-            assertThat(isValid.value, `is`(true))
-        }
-    }
-
-    @Test
-    fun cvcImeOptions() {
-        val viewModel = createViewModel()
-        viewModel.updateCardHolderNameEnabled(false)
-        assertThat(viewModel.cvcImeOptions.value, `is`(EditorInfo.IME_ACTION_DONE))
-        viewModel.updateCardHolderNameEnabled(true)
-        assertThat(viewModel.cvcImeOptions.value, `is`(EditorInfo.IME_ACTION_NEXT))
     }
 
     @Test

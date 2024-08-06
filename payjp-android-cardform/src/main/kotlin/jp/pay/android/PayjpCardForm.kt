@@ -180,7 +180,6 @@ object PayjpCardForm {
     /**
      * Create new fragment instance with args
      *
-     * @param holderNameEnabled a option it require card holder name or not.
      * @param tenantId a option for platform tenant.
      * @param acceptedBrands accepted brands. if it is null, the fragment try to get them.
      * @param tdsAttributes additional attributes for 3DS. The default is [TdsAttribute.Email].
@@ -195,17 +194,15 @@ object PayjpCardForm {
         )
     )
     fun newFragment(
-        holderNameEnabled: Boolean = true,
         tenantId: TenantId? = null,
         acceptedBrands: Array<CardBrand>? = null,
         tdsAttributes: Array<TdsAttribute<*>> = TdsAttribute.defaults(),
     ): PayjpCardFormFragment =
-        PayjpCardFormFragment.newInstance(holderNameEnabled, tenantId, acceptedBrands, tdsAttributes)
+        PayjpCardFormFragment.newInstance(tenantId, acceptedBrands, tdsAttributes)
 
     /**
      * Create new Fragment instance that inherited [PayjpCardFormAbstractFragment].
      *
-     * @param holderNameEnabled a option it require card holder name or not.
      * @param tenantId a option for platform tenant.
      * @param acceptedBrands accepted brands. if it is null, the fragment try to get them.
      * @param face form appearance type. cf. [PayjpCardForm.CardFormFace]
@@ -213,13 +210,12 @@ object PayjpCardForm {
      */
     @JvmOverloads
     fun newCardFormFragment(
-        holderNameEnabled: Boolean = true,
         tenantId: TenantId? = null,
         acceptedBrands: Array<CardBrand>? = null,
         @CardFormFace face: Int = FACE_MULTI_LINE,
         tdsAttributes: Array<TdsAttribute<*>> = TdsAttribute.defaults(),
     ): PayjpCardFormAbstractFragment = when (face) {
-        FACE_MULTI_LINE -> PayjpCardFormFragment.newInstance(holderNameEnabled, tenantId, acceptedBrands, tdsAttributes)
+        FACE_MULTI_LINE -> PayjpCardFormFragment.newInstance(tenantId, acceptedBrands, tdsAttributes)
         FACE_CARD_DISPLAY -> PayjpCardFormCardDisplayFragment.newInstance(tenantId, acceptedBrands, tdsAttributes)
         else -> throw IllegalArgumentException("unknown face $face")
     }

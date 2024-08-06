@@ -236,7 +236,6 @@ internal class PayjpCardFormActivity :
     private fun addCardFormFragment(acceptedBrands: Array<CardBrand>): PayjpCardFormAbstractFragment? {
         return supportFragmentManager.let { manager ->
             PayjpCardForm.newCardFormFragment(
-                holderNameEnabled = true,
                 tenantId = tenantId,
                 acceptedBrands = acceptedBrands,
                 face = face,

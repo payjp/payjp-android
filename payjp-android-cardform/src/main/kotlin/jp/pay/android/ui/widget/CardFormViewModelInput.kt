@@ -42,8 +42,6 @@ internal interface CardFormViewModelInput {
 
     fun inputPhoneNumber(input: String)
 
-    fun updateCardHolderNameEnabled(enabled: Boolean)
-
     fun validate()
 
     fun createToken(): Task<Token>

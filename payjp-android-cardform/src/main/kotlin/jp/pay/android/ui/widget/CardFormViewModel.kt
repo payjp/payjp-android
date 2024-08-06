@@ -22,7 +22,6 @@
  */
 package jp.pay.android.ui.widget
 
-import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
@@ -75,7 +74,6 @@ internal class CardFormViewModel(
     private val cardEmailInputTransformer: CardInputTransformer<CardComponentInput.CardEmailInput>,
     private val cardPhoneNumberInputTransformer: CardPhoneNumberInputTransformerService,
     private val tenantId: TenantId?,
-    holderNameEnabledDefault: Boolean,
     acceptedBrandsPreset: List<CardBrand>,
     private val phoneNumberService: PhoneNumberService,
     private val tdsAttributes: List<TdsAttribute<*>>,
@@ -88,8 +86,6 @@ internal class CardFormViewModel(
     override val cardCvcError: LiveData<Int?>
     override val cardHolderNameInput = MutableLiveData<CardHolderNameInput>()
     override val cardHolderNameError: LiveData<Int?>
-    override val cardHolderNameEnabled = MutableLiveData<Boolean>()
-    override val cvcImeOptions: LiveData<Int>
     override val cardNumberBrand: LiveData<CardBrand>
     override val cardExpiration: LiveData<CardExpiration?>
     override val isValid: LiveData<Boolean>
@@ -113,21 +109,12 @@ internal class CardFormViewModel(
     private val countryCodeObserver: Observer<CountryCode>
 
     init {
-        cardHolderNameEnabled.value = holderNameEnabledDefault
         cardNumberInputTransformer.acceptedBrands = acceptedBrandsPreset
-        cvcImeOptions = cardHolderNameEnabled.map {
-            if (it) {
-                EditorInfo.IME_ACTION_NEXT
-            } else {
-                EditorInfo.IME_ACTION_DONE
-            }
-        }
         isValid = MediatorLiveData<Boolean>().apply {
             addSource(cardNumberInput) { value = checkValid() }
             addSource(cardExpirationInput) { value = checkValid() }
             addSource(cardCvcInput) { value = checkValid() }
             addSource(cardHolderNameInput) { value = checkValid() }
-            addSource(cardHolderNameEnabled) { value = checkValid() }
             addSource(cardEmailInput) { value = checkValid() }
             addSource(cardPhoneNumberInput) { value = checkValid() }
         }
@@ -206,11 +193,6 @@ internal class CardFormViewModel(
         inputComponent(input, cardPhoneNumberInput, cardPhoneNumberInputTransformer)
     }
 
-    override fun updateCardHolderNameEnabled(enabled: Boolean) {
-        showErrorImmediately.value = false
-        this.cardHolderNameEnabled.value = enabled
-    }
-
     override fun validate() {
         showErrorImmediately.value = true
         forceValidate(cardNumberInput, cardNumberInputTransformer)
@@ -223,17 +205,12 @@ internal class CardFormViewModel(
 
     override fun createToken(): Task<Token> {
         return if (isValid.value == true) {
-            val name = if (cardHolderNameEnabled.value == true) {
-                cardHolderNameInput.value?.value
-            } else {
-                null
-            }
             tokenService.createToken(
                 number = checkNotNull(cardNumberInput.value?.value),
                 expMonth = checkNotNull(cardExpirationInput.value?.value).month,
                 expYear = checkNotNull(cardExpirationInput.value?.value).year,
                 cvc = checkNotNull(cardCvcInput.value?.value),
-                name = name,
+                name = cardHolderNameInput.value?.value,
                 tenantId = tenantId,
                 email = cardEmailInput.value?.value,
                 phone = cardPhoneNumberInput.value?.value,
@@ -271,7 +248,7 @@ internal class CardFormViewModel(
     private fun checkValid() = cardNumberInput.value?.valid == true &&
         cardExpirationInput.value?.valid == true &&
         cardCvcInput.value?.valid == true &&
-        (cardHolderNameEnabled.value == false || cardHolderNameInput.value?.valid == true) &&
+        cardHolderNameInput.value?.valid == true &&
         (!cardEmailEnabled || cardEmailInput.value?.valid == true) &&
         (!cardPhoneNumberEnabled || cardPhoneNumberInput.value?.valid == true)
 
@@ -323,7 +300,6 @@ internal class CardFormViewModel(
         private val cardEmailInputTransformer: CardInputTransformer<CardComponentInput.CardEmailInput>,
         private val cardPhoneNumberInputTransformer: CardPhoneNumberInputTransformerService,
         private val tenantId: TenantId? = null,
-        private val holderNameEnabledDefault: Boolean = true,
         private val acceptedBrands: List<CardBrand>,
         private val phoneNumberService: PhoneNumberService,
         private val tdsAttributes: List<TdsAttribute<*>>,
@@ -340,7 +316,6 @@ internal class CardFormViewModel(
                 cardEmailInputTransformer = cardEmailInputTransformer,
                 cardPhoneNumberInputTransformer = cardPhoneNumberInputTransformer,
                 tenantId = tenantId,
-                holderNameEnabledDefault = holderNameEnabledDefault,
                 acceptedBrandsPreset = acceptedBrands,
                 phoneNumberService = phoneNumberService,
                 tdsAttributes = tdsAttributes,

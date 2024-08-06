@@ -30,7 +30,6 @@ import android.view.ViewGroup
 import androidx.core.os.BundleCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.ViewModelProvider
-import androidx.transition.TransitionManager
 import com.google.android.material.textfield.TextInputLayout
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.databinding.PayjpCardFormViewBinding
@@ -52,7 +51,6 @@ import jp.pay.android.validator.CardPhoneNumberInputTransformer
 class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
 
     companion object {
-        private const val ARGS_HOLDER_NAME_ENABLED = "ARGS_HOLDER_NAME_ENABLED"
         private const val ARGS_TENANT_ID = "ARGS_TENANT_ID"
         private const val ARGS_ACCEPTED_BRANDS = "ARGS_ACCEPTED_BRANDS"
         private const val ARGS_TDS_ATTRIBUTES = "ARGS_TDS_ATTRIBUTES"
@@ -60,21 +58,19 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
         /**
          * Create new fragment instance with args
          *
-         * @param holderNameEnabled a option it require card holder name or not.
          * @param tenantId a option for platform tenant.
          * @param acceptedBrands accepted brands. if it is null, the fragment try to get them.
+         * @param tdsAttributes a option for 3D secure attributes.
          * @return fragment
          */
         @JvmStatic
         fun newInstance(
-            holderNameEnabled: Boolean = true,
             tenantId: TenantId? = null,
             acceptedBrands: Array<CardBrand>? = null,
             tdsAttributes: Array<TdsAttribute<*>>,
         ): PayjpCardFormFragment =
             PayjpCardFormFragment().apply {
                 arguments = Bundle().apply {
-                    putBoolean(ARGS_HOLDER_NAME_ENABLED, holderNameEnabled)
                     putString(ARGS_TENANT_ID, tenantId?.id)
                     putParcelableArray(ARGS_ACCEPTED_BRANDS, acceptedBrands)
                     putParcelableArray(ARGS_TDS_ATTRIBUTES, tdsAttributes)
@@ -102,16 +98,6 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
         binding.layoutExpiration.inputEditExpiration.requestFocusFromTouch()
     }
 
-    override fun setCardHolderNameInputEnabled(enabled: Boolean) {
-        if (viewModel == null) {
-            arguments = Bundle(arguments).apply {
-                putBoolean(ARGS_HOLDER_NAME_ENABLED, enabled)
-            }
-        } else {
-            viewModel?.updateCardHolderNameEnabled(enabled)
-        }
-    }
-
     override fun setUpUI(view: ViewGroup) {
         // add formatter
         binding.layoutNumber.inputEditNumber.addTextChangedListener(cardNumberFormatter)
@@ -133,22 +119,10 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
         // editor
         // TODO: switch last form
         binding.layoutHolderName.inputEditHolderName.setOnEditorActionListener(this::onEditorAction)
-        binding.layoutCvc.inputEditCvc.setOnEditorActionListener { v, actionId, event ->
-            if (viewModel?.cardHolderNameEnabled?.value == false) {
-                onEditorAction(v, actionId, event)
-            } else {
-                false
-            }
-        }
 
         viewModel?.apply {
             binding.layoutEmail.root.isGone = !cardEmailEnabled
             binding.layoutPhoneNumber.root.isGone = !cardPhoneNumberEnabled
-            cardHolderNameEnabled.observe(viewLifecycleOwner) {
-                binding.layoutHolderName.inputLayoutHolderName.isGone = !it
-                TransitionManager.beginDelayedTransition(view)
-            }
-            cvcImeOptions.observe(viewLifecycleOwner, binding.layoutCvc.inputEditCvc::setImeOptions)
             cardNumberBrand.observe(viewLifecycleOwner) {
                 cardNumberFormatter.brand = it
                 binding.layoutCvc.inputEditCvc.filters =
@@ -221,7 +195,6 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
 
     override fun createViewModel(): CardFormViewModel {
         val tenantId = arguments?.getString(ARGS_TENANT_ID)?.let { TenantId(it) }
-        val holderNameEnabled = arguments?.getBoolean(ARGS_HOLDER_NAME_ENABLED) ?: true
         val acceptedBrandArray = arguments?.let {
             BundleCompat.getParcelableArray(it, ARGS_ACCEPTED_BRANDS, CardBrand::class.java)
         }
@@ -240,7 +213,6 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
                 service = PayjpCardForm.phoneNumberService()
             ),
             tenantId = tenantId,
-            holderNameEnabledDefault = holderNameEnabled,
             acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>() ?: emptyList(),
             phoneNumberService = PayjpCardForm.phoneNumberService(),
             tdsAttributes = tdsAttributes?.filterIsInstance<TdsAttribute<*>>() ?: emptyList(),
