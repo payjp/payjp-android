@@ -127,6 +127,7 @@ internal class CardFormViewModelTest {
         cardNumberError.observeForever(cardNumberErrorObserver)
     }
 
+    @Suppress("LongParameterList")
     private fun mockCorrectInput(
         number: String = "4242424242424242",
         expiration: CardExpiration = CardExpiration("12", "2030"),
@@ -251,6 +252,90 @@ internal class CardFormViewModelTest {
             inputEmail(robot.email)
             selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
             inputPhoneNumber(robot.phoneNumber)
+            assertThat(isValid.value, `is`(false))
+        }
+    }
+
+    @Test
+    fun isValid_if_email_is_not_enabled_allow_empty() {
+        val robot = CardRobot.SandboxVisa
+        mockCorrectInput()
+        createViewModel(tdsAttributes = listOf(TdsAttribute.Phone("JP"))).run {
+            inputCardNumber(robot.number)
+            inputCardExpiration(robot.exp)
+            inputCardCvc(robot.cvc)
+            inputCardHolderName(robot.name)
+            selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
+            inputPhoneNumber(robot.phoneNumber)
+            assertThat(isValid.value, `is`(true))
+        }
+    }
+
+    @Test
+    fun isValid_if_phone_is_not_enabled_allow_empty() {
+        val robot = CardRobot.SandboxVisa
+        mockCorrectInput()
+        createViewModel(tdsAttributes = listOf(TdsAttribute.Email())).run {
+            inputCardNumber(robot.number)
+            inputCardExpiration(robot.exp)
+            inputCardCvc(robot.cvc)
+            inputCardHolderName(robot.name)
+            inputEmail(robot.email)
+            assertThat(isValid.value, `is`(true))
+        }
+    }
+
+    @Test
+    fun isValid_if_phone_and_email_is_not_enabled_allow_empty() {
+        val robot = CardRobot.SandboxVisa
+        mockCorrectInput()
+        createViewModel(tdsAttributes = emptyList()).run {
+            inputCardNumber(robot.number)
+            inputCardExpiration(robot.exp)
+            inputCardCvc(robot.cvc)
+            inputCardHolderName(robot.name)
+            assertThat(isValid.value, `is`(true))
+        }
+    }
+
+    @Test
+    fun isValid_if_both_phone_and_email_is_enabled_allow_phone_empty() {
+        val robot = CardRobot.SandboxVisa
+        mockCorrectInput()
+        createViewModel(tdsAttributes = listOf(TdsAttribute.Email(), TdsAttribute.Phone("JP"))).run {
+            inputCardNumber(robot.number)
+            inputCardExpiration(robot.exp)
+            inputCardCvc(robot.cvc)
+            inputCardHolderName(robot.name)
+            inputEmail(robot.email)
+            assertThat(isValid.value, `is`(true))
+        }
+    }
+
+    @Test
+    fun isValid_if_both_phone_and_email_is_enabled_allow_email_empty() {
+        val robot = CardRobot.SandboxVisa
+        mockCorrectInput()
+        createViewModel(tdsAttributes = listOf(TdsAttribute.Email(), TdsAttribute.Phone("JP"))).run {
+            inputCardNumber(robot.number)
+            inputCardExpiration(robot.exp)
+            inputCardCvc(robot.cvc)
+            inputCardHolderName(robot.name)
+            selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
+            inputPhoneNumber(robot.phoneNumber)
+            assertThat(isValid.value, `is`(true))
+        }
+    }
+
+    @Test
+    fun isValid_if_both_phone_and_email_is_enabled_not_allow_both_invalid() {
+        val robot = CardRobot.SandboxVisa
+        mockCorrectInput()
+        createViewModel(tdsAttributes = listOf(TdsAttribute.Email(), TdsAttribute.Phone("JP"))).run {
+            inputCardNumber(robot.number)
+            inputCardExpiration(robot.exp)
+            inputCardCvc(robot.cvc)
+            inputCardHolderName(robot.name)
             assertThat(isValid.value, `is`(false))
         }
     }

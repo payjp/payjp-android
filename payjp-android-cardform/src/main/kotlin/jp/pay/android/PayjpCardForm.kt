@@ -46,6 +46,7 @@ import java.util.concurrent.Executors
 /**
  * Card form client.
  */
+@Suppress("TooManyFunctions")
 object PayjpCardForm {
 
     /**
@@ -74,6 +75,7 @@ object PayjpCardForm {
     private var tokenHandlerExecutor: TokenHandlerExecutor? = null
     private var phoneNumberService: PhoneNumberService? = null
 
+    @Suppress("LongParameterList")
     fun configure(
         logger: PayjpLogger,
         tokenService: PayjpTokenService,

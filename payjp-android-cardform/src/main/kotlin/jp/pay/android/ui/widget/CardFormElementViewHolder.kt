@@ -47,11 +47,23 @@ import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.ui.extension.addOnTextChanged
 import jp.pay.android.ui.extension.setErrorOrNull
 
-internal typealias OnCardFormElementTextChanged = (type: CardFormElementType, s: CharSequence, start: Int, before: Int, count: Int) -> Unit
-internal typealias OnCardFormElementEditorAction = (type: CardFormElementType, v: TextView, actionId: Int, event: KeyEvent?) -> Boolean
+internal typealias OnCardFormElementTextChanged = (
+    type: CardFormElementType,
+    s: CharSequence,
+    start: Int,
+    before: Int,
+    count: Int
+) -> Unit
+internal typealias OnCardFormElementEditorAction = (
+    type: CardFormElementType,
+    v: TextView,
+    actionId: Int,
+    event: KeyEvent?
+) -> Boolean
 internal typealias OnCardFormElementFocusChanged = (type: CardFormElementType, view: View, hasFocus: Boolean) -> Unit
 internal typealias OnCardFormElementKeyDownDeleteWithEmpty = (type: CardFormElementType, view: View) -> Boolean
 
+@Suppress("LongParameterList")
 internal sealed class CardFormElementViewHolder<V : ViewBinding>(
     type: CardFormElementType,
     protected val binding: V,
@@ -65,9 +77,9 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val inputTextWatcher = object : TextWatcher {
-        override fun afterTextChanged(s: Editable) {}
+        override fun afterTextChanged(s: Editable) = Unit
 
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             onTextChanged.invoke(type, s, start, before, count)

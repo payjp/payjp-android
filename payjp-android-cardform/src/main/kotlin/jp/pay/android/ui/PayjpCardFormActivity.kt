@@ -233,7 +233,7 @@ internal class PayjpCardFormActivity :
             }
     }
 
-    private fun addCardFormFragment(acceptedBrands: Array<CardBrand>): PayjpCardFormAbstractFragment? {
+    private fun addCardFormFragment(acceptedBrands: Array<CardBrand>): PayjpCardFormAbstractFragment {
         return supportFragmentManager.let { manager ->
             PayjpCardForm.newCardFormFragment(
                 tenantId = tenantId,

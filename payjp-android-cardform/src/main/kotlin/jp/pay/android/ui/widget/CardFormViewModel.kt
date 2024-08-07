@@ -60,9 +60,6 @@ import jp.pay.android.validator.CardPhoneNumberInputTransformerService
 /**
  * ViewModel for [PayjpCardFormFragment]
  *
- * @param tokenService service to fetch token
- * @param tenantId for platform
- * @param holderNameEnabledDefault whether enable holder name input or not
  */
 @Suppress("LongParameterList", "TooManyFunctions")
 internal class CardFormViewModel(
@@ -245,12 +242,23 @@ internal class CardFormViewModel(
         }
     }
 
-    private fun checkValid() = cardNumberInput.value?.valid == true &&
-        cardExpirationInput.value?.valid == true &&
-        cardCvcInput.value?.valid == true &&
-        cardHolderNameInput.value?.valid == true &&
-        (!cardEmailEnabled || cardEmailInput.value?.valid == true) &&
-        (!cardPhoneNumberEnabled || cardPhoneNumberInput.value?.valid == true)
+    private fun checkValid(): Boolean {
+        val basicInputIsValid = cardNumberInput.value?.valid == true &&
+            cardExpirationInput.value?.valid == true &&
+            cardCvcInput.value?.valid == true &&
+            cardHolderNameInput.value?.valid == true
+        val tdsAttributesAreValid = when {
+            cardEmailEnabled && cardPhoneNumberEnabled -> {
+                // If both input is enabled, either one should be valid.
+                // but
+                cardEmailInput.value?.valid == true || cardPhoneNumberInput.value?.valid == true
+            }
+            cardEmailEnabled -> cardEmailInput.value?.valid == true
+            cardPhoneNumberEnabled -> cardPhoneNumberInput.value?.valid == true
+            else -> true
+        }
+        return basicInputIsValid && tdsAttributesAreValid
+    }
 
     private fun retrieveError(input: CardComponentInput<*>?): Int? {
         return input?.errorMessage?.take(showErrorImmediately.value != true)

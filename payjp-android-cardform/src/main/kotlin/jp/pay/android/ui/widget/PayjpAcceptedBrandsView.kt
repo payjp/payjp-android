@@ -22,6 +22,7 @@
  */
 package jp.pay.android.ui.widget
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -44,10 +45,9 @@ class PayjpAcceptedBrandsView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : RecyclerView(context, attrs, defStyle) {
 
-    private val acceptedBrandsAdapter: AcceptedBrandAdapter
+    private val acceptedBrandsAdapter: AcceptedBrandAdapter = AcceptedBrandAdapter(context)
 
     init {
-        acceptedBrandsAdapter = AcceptedBrandAdapter(context)
         adapter = acceptedBrandsAdapter
         layoutManager = LinearLayoutManager(context, HORIZONTAL, false)
         isFocusableInTouchMode = false
@@ -64,6 +64,7 @@ class PayjpAcceptedBrandsView @JvmOverloads constructor(
      *
      * @param brands brand list.
      */
+    @SuppressLint("NotifyDataSetChanged")
     fun setAcceptedBrands(brands: List<CardBrand>) {
         acceptedBrandsAdapter.list = brands.toList()
         acceptedBrandsAdapter.notifyDataSetChanged()
