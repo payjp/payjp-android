@@ -101,6 +101,7 @@ internal class CardFormViewModel(
     override val cardPhoneNumberCountryCode: MutableLiveData<CountryCode> = MutableLiveData()
     override val cardPhoneNumberInput: MutableLiveData<CardPhoneNumberInput> = MutableLiveData()
     override val cardPhoneNumberError: LiveData<Int?>
+    override val lastInput: CardFormElementType
     private var task: Task<CardBrandsAcceptedResponse>? = null
     private val brandObserver: Observer<CardBrand>
     private val countryCodeObserver: Observer<CountryCode>
@@ -157,6 +158,11 @@ internal class CardFormViewModel(
             }
         }
         cardPhoneNumberCountryCode.nonNull().observeForever(countryCodeObserver)
+        lastInput = when {
+            cardPhoneNumberEnabled -> CardFormElementType.PhoneNumber
+            cardEmailEnabled -> CardFormElementType.Email
+            else -> CardFormElementType.HolderName
+        }
     }
 
     override fun onCleared() {

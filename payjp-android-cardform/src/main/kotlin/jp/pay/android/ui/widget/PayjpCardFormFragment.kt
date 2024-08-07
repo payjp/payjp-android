@@ -116,9 +116,6 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
         binding.layoutPhoneNumber.inputLayoutCountryCode.setEndIconOnClickListener {
             startSearchCountryCode()
         }
-        // editor
-        // TODO: switch last form
-        binding.layoutHolderName.inputEditHolderName.setOnEditorActionListener(this::onEditorAction)
 
         viewModel?.apply {
             binding.layoutEmail.root.isGone = !cardEmailEnabled
@@ -190,6 +187,12 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
             binding.layoutPhoneNumber.inputEditPhoneNumber.addOnTextChanged { s, _, _, _ ->
                 inputPhoneNumber(s.toString())
             }
+            binding.layoutHolderName.inputEditHolderName
+            when (lastInput) {
+                CardFormElementType.Email -> binding.layoutEmail.inputEditEmail
+                CardFormElementType.PhoneNumber -> binding.layoutPhoneNumber.inputEditPhoneNumber
+                else -> binding.layoutHolderName.inputEditHolderName
+            }.setOnEditorActionListener(this@PayjpCardFormFragment::onEditorAction)
         }
     }
 

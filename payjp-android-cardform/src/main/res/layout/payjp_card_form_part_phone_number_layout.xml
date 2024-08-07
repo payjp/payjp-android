@@ -42,6 +42,8 @@
             android:layout_height="wrap_content"
             android:editable="false"
             android:inputType="none"
+            android:imeOptions="actionNext"
+            android:focusable="false"
             android:lines="1"
             tools:ignore="Deprecated"
             tools:text="🇯🇵(+81)" />

@@ -55,4 +55,5 @@ internal interface CardFormViewModelOutput {
     val cardPhoneNumberCountryCode: LiveData<CountryCode>
     val cardPhoneNumberInput: LiveData<CardComponentInput.CardPhoneNumberInput>
     val cardPhoneNumberError: LiveData<Int?>
+    val lastInput: CardFormElementType
 }

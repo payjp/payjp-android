@@ -61,7 +61,8 @@ internal class CardFormElementAdapter(
     private val onCardNumberInputChanged: (s: CharSequence) -> Unit,
     autofillManager: AutofillManager?,
     private val onClickCountryCode: View.OnClickListener?,
-    var countryCode: CountryCode
+    var countryCode: CountryCode,
+    private val lastInputElementType: CardFormElementType,
 ) : RecyclerView.Adapter<CardFormElementViewHolder<*>>() {
 
     companion object {
@@ -115,6 +116,7 @@ internal class CardFormElementAdapter(
         val type = CardFormElementType.entries[viewType]
         val autofillId = autofillIds.getOrNull(type.ordinal)
         val inflater = LayoutInflater.from(parent.context)
+        val isLast = lastInputElementType == type
         return when (type) {
             CardFormElementType.Number -> CardFormNumberElement(
                 PayjpCardFormElementNumberLayoutBinding.inflate(inflater, parent, false),
@@ -126,7 +128,8 @@ internal class CardFormElementAdapter(
                 onElementFocusChanged,
                 onCardNumberInputChanged,
                 onElementKeyDownDeleteWithEmpty,
-                autofillId
+                autofillId,
+                isLast,
             )
             CardFormElementType.Expiration -> CardFormExpirationElement(
                 PayjpCardFormElementExpirationLayoutBinding.inflate(inflater, parent, false),
@@ -135,7 +138,8 @@ internal class CardFormElementAdapter(
                 onElementEditorAction,
                 onElementFocusChanged,
                 onElementKeyDownDeleteWithEmpty,
-                autofillId
+                autofillId,
+                isLast,
             )
             CardFormElementType.Cvc -> CardFormCvcElement(
                 PayjpCardFormElementCvcLayoutBinding.inflate(inflater, parent, false),
@@ -143,7 +147,8 @@ internal class CardFormElementAdapter(
                 onElementEditorAction,
                 onElementFocusChanged,
                 onElementKeyDownDeleteWithEmpty,
-                autofillId
+                autofillId,
+                isLast,
             )
             CardFormElementType.HolderName -> CardFormHolderNameElement(
                 PayjpCardFormElementHolderNameLayoutBinding.inflate(inflater, parent, false),
@@ -151,7 +156,8 @@ internal class CardFormElementAdapter(
                 onElementEditorAction,
                 onElementFocusChanged,
                 onElementKeyDownDeleteWithEmpty,
-                autofillId
+                autofillId,
+                isLast,
             )
             CardFormElementType.Email -> CardFormEmailElement(
                 PayjpCardFormElementEmailLayoutBinding.inflate(inflater, parent, false),
@@ -159,7 +165,8 @@ internal class CardFormElementAdapter(
                 onElementEditorAction,
                 onElementFocusChanged,
                 onElementKeyDownDeleteWithEmpty,
-                autofillId
+                autofillId,
+                isLast,
             )
             CardFormElementType.PhoneNumber -> CardFormPhoneNumberElement(
                 PayjpCardFormElementPhoneNumberLayoutBinding.inflate(inflater, parent, false),
@@ -168,7 +175,8 @@ internal class CardFormElementAdapter(
                 onElementEditorAction,
                 onElementFocusChanged,
                 onElementKeyDownDeleteWithEmpty,
-                autofillId
+                autofillId,
+                isLast,
             )
         }
     }

@@ -90,7 +90,7 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = PayjpCardFormViewCardDisplayBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -136,12 +136,13 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
                 }
             },
             onElementEditorAction = { type, v, actionId, event ->
-                when (type) {
-                    CardFormElementType.HolderName -> onEditorAction(v, actionId, event)
-                    else -> if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                        type.next()?.let(adapter::getPositionForElementType)?.let { moveToPosition(it) }
+                when {
+                    type == viewModel?.lastInput -> onEditorAction(v, actionId, event)
+                    actionId == EditorInfo.IME_ACTION_NEXT -> {
+                        type.next().let(adapter::getPositionForElementType).let { moveToPosition(it) }
                         true
-                    } else false
+                    }
+                    else -> false
                 }
             },
             onElementFocusChanged = { type, _, hasFocus ->
@@ -174,7 +175,8 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
                 startSearchCountryCode()
             },
             countryCode = viewModel?.cardPhoneNumberCountryCode?.value
-                ?: PayjpCardForm.phoneNumberService().defaultCountryCode()
+                ?: PayjpCardForm.phoneNumberService().defaultCountryCode(),
+            lastInputElementType = viewModel?.lastInput ?: CardFormElementType.HolderName,
         )
         binding.formElementPager.adapter = adapter
         binding.formElementPager.offscreenPageLimit = 2
@@ -278,7 +280,7 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
             phoneNumberService = PayjpCardForm.phoneNumberService(),
             tdsAttributes = tdsAttributes?.filterIsInstance<TdsAttribute<*>>() ?: emptyList(),
         )
-        return ViewModelProvider(requireActivity(), factory).get(CardFormViewModel::class.java)
+        return ViewModelProvider(requireActivity(), factory)[CardFormViewModel::class.java]
     }
 
     private fun moveToPosition(position: Int, smoothScroll: Boolean = true) {
