@@ -140,7 +140,7 @@ class PayjpWebActivity : AppCompatActivity(), LifecycleObserver {
                     swipeRefresh = binding.swipeRefresh
                 )
             )
-            addOnFinishedLoadState { _, url ->
+            addOnStartedLoadState { _, url ->
                 if (url.startsWith(callbackUri.toString())) {
                     logger.d("url matches with callbackUri $url")
                     redirectWithResult(Uri.parse(url))
