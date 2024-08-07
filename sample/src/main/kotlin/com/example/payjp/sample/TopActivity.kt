@@ -113,7 +113,11 @@ class TopActivity : AppCompatActivity() {
     }
 
     private fun startCardFormCardFace() {
-        Payjp.cardForm().start(this, face = PayjpCardForm.FACE_CARD_DISPLAY, tdsAttributes = emptyArray())
+        Payjp.cardForm().start(
+            activity = this,
+            face = PayjpCardForm.FACE_CARD_DISPLAY,
+            tdsAttributes = arrayOf(TdsAttribute.Email()),
+        )
     }
 
     class TopAdapter(
