@@ -32,11 +32,20 @@ import kotlinx.parcelize.Parcelize
 sealed class TdsAttribute<T> : Parcelable {
     abstract val preset: T?
 
+    /**
+     * Email attribute.
+     * @param preset preset value for card form.
+     */
     @Parcelize
     data class Email(
         override val preset: String? = null
     ) : TdsAttribute<String>()
 
+    /**
+     * Phone attribute.
+     * @param region region code for phone number. (ISO 3166-1 alpha-2)
+     * @param number preset phone number for card form.
+     */
     @Parcelize
     data class Phone(
         val region: String,
@@ -47,6 +56,14 @@ sealed class TdsAttribute<T> : Parcelable {
     }
 
     companion object {
-        fun defaults(): Array<TdsAttribute<*>> = arrayOf(Email())
+        /**
+         * Default TDS attributes.
+         * It is available to change from this.
+         * for example following cases:
+         * - add preset values.
+         * - only use email or phone.
+         * - never request email nor phone.
+         */
+        fun defaults(): Array<TdsAttribute<*>> = arrayOf(Email(), Phone(region = "JP"))
     }
 }
