@@ -261,7 +261,7 @@ internal class VerifierWebView @JvmOverloads constructor(
                 }
                 .create()
 
-        private fun createErrorMessage(error: SslError): String? {
+        private fun createErrorMessage(error: SslError): String {
             val cert = error.certificate
             val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US)
             val result = StringBuilder()

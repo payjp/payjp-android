@@ -28,6 +28,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.IntentCompat
+import androidx.core.os.BundleCompat
 import jp.pay.android.model.TokenId
 import jp.pay.android.verifier.PayjpVerifier
 
@@ -54,10 +56,10 @@ class PayjpThreeDSecureStepActivity : AppCompatActivity() {
         }
 
         internal fun getResult(): PayjpThreeDSecureResult {
-            val intent = intentHolder.pop()
+            val intent = intentHolder.pop() ?: return PayjpThreeDSecureResult.Canceled
             PayjpVerifier.logger().d("getResult intent: $intent")
-            val uri = intent?.data
-            val resource = intent?.getParcelableExtra<TokenId>(EXTRA_KEY_TOKEN_ID)
+            val uri = intent.data
+            val resource = IntentCompat.getParcelableExtra(intent, EXTRA_KEY_TOKEN_ID, TokenId::class.java)
             return when {
                 uri == null -> PayjpThreeDSecureResult.Canceled
                 resource is TokenId -> PayjpThreeDSecureResult.SuccessTokenId(id = resource)
@@ -71,12 +73,14 @@ class PayjpThreeDSecureStepActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState?.containsKey(EXTRA_KEY_TOKEN_ID) == true) {
-            currentTokenId = savedInstanceState.getParcelable(EXTRA_KEY_TOKEN_ID)
+            currentTokenId = BundleCompat.getParcelable(savedInstanceState, EXTRA_KEY_TOKEN_ID, TokenId::class.java)
         } else {
-            intent.getParcelableExtra<TokenId>(EXTRA_KEY_TOKEN_ID)?.let { tokenId ->
-                currentTokenId = tokenId
-                intentHolder.pop()
-                PayjpVerifier.openThreeDSecure(tokenId, this)
+            intent?.let { i ->
+                IntentCompat.getParcelableExtra(i, EXTRA_KEY_TOKEN_ID, TokenId::class.java)?.let { tokenId ->
+                    currentTokenId = tokenId
+                    intentHolder.pop()
+                    PayjpVerifier.openThreeDSecure(tokenId, this)
+                }
             }
         }
     }

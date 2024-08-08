@@ -97,26 +97,6 @@
 
         </FrameLayout>
 
-        <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:padding="8dp">
-
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="カード名義入力を有効にする" />
-
-            <Switch
-                    android:id="@+id/switch_card_holder_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:checked="true" />
-        </FrameLayout>
-
         <EditText
                 android:id="@+id/text_token_id"
                 android:layout_width="match_parent"

@@ -71,8 +71,6 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
         });
         binding.buttonGetToken.setOnClickListener(view ->
                 getToken(binding.textTokenId.getText().toString()));
-        binding.switchCardHolderName.setOnCheckedChangeListener((view, isChecked) ->
-                cardFormFragment.setCardHolderNameInputEnabled(isChecked));
     }
 
     @Override

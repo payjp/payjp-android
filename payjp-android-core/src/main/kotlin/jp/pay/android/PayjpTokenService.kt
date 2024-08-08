@@ -43,6 +43,8 @@ interface PayjpTokenService {
      * @param expYear card expiration year (4 digits e.g. 2020 -> `2020`)
      * @param name card holder name
      * @param tenantId tenant id (only for platform)
+     * @param email email
+     * @param phone phone
      * @return task to create token.
      */
     fun createToken(
@@ -51,8 +53,12 @@ interface PayjpTokenService {
         expMonth: String,
         expYear: String,
         name: String? = null,
-        tenantId: TenantId? = null
-    ): Task<Token> = createToken(PayjpTokenParam(number, cvc, expMonth, expYear, name, tenantId))
+        tenantId: TenantId? = null,
+        email: String? = null,
+        phone: String? = null,
+    ): Task<Token> = createToken(
+        PayjpTokenParam(number, cvc, expMonth, expYear, name, tenantId, email, phone)
+    )
 
     /**
      * Create token from param

@@ -29,42 +29,59 @@ import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.View
 import android.view.autofill.AutofillId
+import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import jp.pay.android.databinding.PayjpCardFormElementCvcLayoutBinding
+import jp.pay.android.databinding.PayjpCardFormElementEmailLayoutBinding
 import jp.pay.android.databinding.PayjpCardFormElementExpirationLayoutBinding
 import jp.pay.android.databinding.PayjpCardFormElementHolderNameLayoutBinding
 import jp.pay.android.databinding.PayjpCardFormElementNumberLayoutBinding
+import jp.pay.android.databinding.PayjpCardFormElementPhoneNumberLayoutBinding
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput
+import jp.pay.android.model.CountryCode
 import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.ui.extension.addOnTextChanged
 import jp.pay.android.ui.extension.setErrorOrNull
 
-internal typealias OnCardFormElementTextChanged = (type: CardFormElementType, s: CharSequence, start: Int, before: Int, count: Int) -> Unit
-internal typealias OnCardFormElementEditorAction = (type: CardFormElementType, v: TextView, actionId: Int, event: KeyEvent?) -> Boolean
+internal typealias OnCardFormElementTextChanged = (
+    type: CardFormElementType,
+    s: CharSequence,
+    start: Int,
+    before: Int,
+    count: Int
+) -> Unit
+internal typealias OnCardFormElementEditorAction = (
+    type: CardFormElementType,
+    v: TextView,
+    actionId: Int,
+    event: KeyEvent?
+) -> Boolean
 internal typealias OnCardFormElementFocusChanged = (type: CardFormElementType, view: View, hasFocus: Boolean) -> Unit
 internal typealias OnCardFormElementKeyDownDeleteWithEmpty = (type: CardFormElementType, view: View) -> Boolean
 
+@Suppress("LongParameterList")
 internal sealed class CardFormElementViewHolder<V : ViewBinding>(
     type: CardFormElementType,
-    binding: V,
+    protected val binding: V,
     protected val inputLayout: TextInputLayout,
     protected val editText: TextInputEditText,
     onTextChanged: OnCardFormElementTextChanged,
     onEditorAction: OnCardFormElementEditorAction,
     onFocusChanged: OnCardFormElementFocusChanged,
     onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
-    autofillId: Any?
+    autofillId: Any?,
+    isLastInput: Boolean,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val inputTextWatcher = object : TextWatcher {
-        override fun afterTextChanged(s: Editable) {}
+        override fun afterTextChanged(s: Editable) = Unit
 
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             onTextChanged.invoke(type, s, start, before, count)
@@ -93,6 +110,7 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
                 editText.autofillId = it
             }
         }
+        editText.imeOptions = if (isLastInput) EditorInfo.IME_ACTION_DONE else EditorInfo.IME_ACTION_NEXT
     }
 
     protected fun setTextDisablingInputWatcher(input: CardComponentInput<*>?) {
@@ -121,7 +139,8 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
         onFocusChanged: OnCardFormElementFocusChanged,
         onNumberInputChanged: (s: CharSequence) -> Unit,
         onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
-        autofillId: Any?
+        autofillId: Any?,
+        isLastInput: Boolean,
     ) :
         CardFormElementViewHolder<PayjpCardFormElementNumberLayoutBinding>(
             CardFormElementType.Number,
@@ -132,7 +151,8 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
             onEditorAction,
             onFocusChanged,
             onKeyDownDeleteWithEmpty,
-            autofillId
+            autofillId,
+            isLastInput,
         ) {
 
         init {
@@ -167,7 +187,8 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
         onEditorAction: OnCardFormElementEditorAction,
         onFocusChanged: OnCardFormElementFocusChanged,
         onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
-        autofillId: Any?
+        autofillId: Any?,
+        isLastInput: Boolean,
     ) :
         CardFormElementViewHolder<PayjpCardFormElementExpirationLayoutBinding>(
             CardFormElementType.Expiration,
@@ -178,7 +199,8 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
             onEditorAction,
             onFocusChanged,
             onKeyDownDeleteWithEmpty,
-            autofillId
+            autofillId,
+            isLastInput,
         ) {
 
         init {
@@ -204,7 +226,8 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
         onEditorAction: OnCardFormElementEditorAction,
         onFocusChanged: OnCardFormElementFocusChanged,
         onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
-        autofillId: Any?
+        autofillId: Any?,
+        isLastInput: Boolean,
     ) :
         CardFormElementViewHolder<PayjpCardFormElementHolderNameLayoutBinding>(
             CardFormElementType.HolderName,
@@ -215,7 +238,8 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
             onEditorAction,
             onFocusChanged,
             onKeyDownDeleteWithEmpty,
-            autofillId
+            autofillId,
+            isLastInput,
         ) {
 
         fun bindData(
@@ -233,7 +257,8 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
         onEditorAction: OnCardFormElementEditorAction,
         onFocusChanged: OnCardFormElementFocusChanged,
         onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
-        autofillId: Any?
+        autofillId: Any?,
+        isLastInput: Boolean,
     ) :
         CardFormElementViewHolder<PayjpCardFormElementCvcLayoutBinding>(
             CardFormElementType.Cvc,
@@ -244,7 +269,8 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
             onEditorAction,
             onFocusChanged,
             onKeyDownDeleteWithEmpty,
-            autofillId
+            autofillId,
+            isLastInput,
         ) {
         private var brand: CardBrand = CardBrand.UNKNOWN
             set(value) {
@@ -263,6 +289,78 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
             setTextDisablingInputWatcher(input)
             setInputError(input, showErrorImmediately)
             this.brand = brand
+        }
+    }
+
+    class CardFormEmailElement(
+        binding: PayjpCardFormElementEmailLayoutBinding,
+        onTextChanged: OnCardFormElementTextChanged,
+        onEditorAction: OnCardFormElementEditorAction,
+        onFocusChanged: OnCardFormElementFocusChanged,
+        onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
+        autofillId: Any?,
+        isLastInput: Boolean,
+    ) :
+        CardFormElementViewHolder<PayjpCardFormElementEmailLayoutBinding>(
+            CardFormElementType.Email,
+            binding,
+            binding.content.inputLayoutEmail,
+            binding.content.inputEditEmail,
+            onTextChanged,
+            onEditorAction,
+            onFocusChanged,
+            onKeyDownDeleteWithEmpty,
+            autofillId,
+            isLastInput,
+        ) {
+
+        fun bindData(
+            input: CardComponentInput.CardEmailInput?,
+            showErrorImmediately: Boolean
+        ) {
+            setTextDisablingInputWatcher(input)
+            setInputError(input, showErrorImmediately)
+        }
+    }
+
+    class CardFormPhoneNumberElement(
+        binding: PayjpCardFormElementPhoneNumberLayoutBinding,
+        onClickCountryCode: View.OnClickListener?,
+        onTextChanged: OnCardFormElementTextChanged,
+        onEditorAction: OnCardFormElementEditorAction,
+        onFocusChanged: OnCardFormElementFocusChanged,
+        onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
+        autofillId: Any?,
+        isLastInput: Boolean,
+    ) :
+        CardFormElementViewHolder<PayjpCardFormElementPhoneNumberLayoutBinding>(
+            CardFormElementType.PhoneNumber,
+            binding,
+            binding.content.inputLayoutPhoneNumber,
+            binding.content.inputEditPhoneNumber,
+            onTextChanged,
+            onEditorAction,
+            onFocusChanged,
+            onKeyDownDeleteWithEmpty,
+            autofillId,
+            isLastInput,
+        ) {
+        init {
+            binding.content.inputLayoutCountryCode.setEndIconOnClickListener(onClickCountryCode)
+            // both input country code and phone number should be ready for focus change
+            binding.content.inputEditCountryCode.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+                onFocusChanged.invoke(CardFormElementType.PhoneNumber, v, hasFocus)
+            }
+        }
+
+        fun bindData(
+            input: CardComponentInput.CardPhoneNumberInput?,
+            countryCode: CountryCode,
+            showErrorImmediately: Boolean
+        ) {
+            binding.content.inputEditCountryCode.setText(countryCode.shortName)
+            setTextDisablingInputWatcher(input)
+            setInputError(input, showErrorImmediately)
         }
     }
 }

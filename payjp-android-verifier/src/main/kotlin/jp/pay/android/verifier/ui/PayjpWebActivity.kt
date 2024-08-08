@@ -29,9 +29,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.webkit.URLUtil
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
 import jp.pay.android.PayjpLogger
@@ -42,7 +41,7 @@ import jp.pay.android.verifier.databinding.PayjpWebActivityBinding
  * PayjpWebActivity
  *
  */
-class PayjpWebActivity : AppCompatActivity(), LifecycleObserver {
+class PayjpWebActivity : AppCompatActivity(), DefaultLifecycleObserver {
 
     companion object {
         internal const val EXTRA_KEY_START_URI = "EXTRA_KEY_START_URI"
@@ -73,7 +72,7 @@ class PayjpWebActivity : AppCompatActivity(), LifecycleObserver {
     private val logger: PayjpLogger = PayjpVerifier.logger()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        super<AppCompatActivity>.onCreate(savedInstanceState)
         binding = PayjpWebActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -95,8 +94,17 @@ class PayjpWebActivity : AppCompatActivity(), LifecycleObserver {
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    fun startSafeBrowse() {
+    override fun onCreate(owner: LifecycleOwner) {
+        super<DefaultLifecycleObserver>.onCreate(owner)
+        startSafeBrowse()
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        super<DefaultLifecycleObserver>.onDestroy(owner)
+        cleanUpWebView()
+    }
+
+    private fun startSafeBrowse() {
         if (WebViewFeature.isFeatureSupported(WebViewFeature.START_SAFE_BROWSING)) {
             WebViewCompat.startSafeBrowsing(this) { success ->
                 if (success) {
@@ -112,8 +120,7 @@ class PayjpWebActivity : AppCompatActivity(), LifecycleObserver {
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun cleanUpWebView() {
+    private fun cleanUpWebView() {
         binding.webView.destroy()
     }
 

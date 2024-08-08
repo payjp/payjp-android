@@ -69,10 +69,6 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
         binding.buttonGetToken.setOnClickListener {
             getToken(binding.textTokenId.text.toString())
         }
-
-        binding.switchCardHolderName.setOnCheckedChangeListener { _, isChecked ->
-            cardFormFragment.setCardHolderNameInputEnabled(isChecked)
-        }
     }
 
     override fun onDestroy() {

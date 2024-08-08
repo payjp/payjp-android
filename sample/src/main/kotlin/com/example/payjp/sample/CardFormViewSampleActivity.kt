@@ -93,10 +93,6 @@ class CardFormViewSampleActivity :
             getToken(binding.textTokenId.text.toString())
         }
 
-        binding.switchCardHolderName.setOnCheckedChangeListener { _, isChecked ->
-            cardFormFragment.setCardHolderNameInputEnabled(isChecked)
-        }
-
         Payjp.token().getTokenOperationObserver().addListener { updateButtonVisibility() }
     }
 

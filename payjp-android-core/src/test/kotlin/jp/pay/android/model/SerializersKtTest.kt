@@ -49,6 +49,8 @@ class SerializersKtTest {
             fingerprint = "f",
             livemode = true,
             customer = "c",
+            email = "test@example.com",
+            phone = "+819012345678",
             country = "JP",
             addressState = "state",
             addressZip = "zip",
@@ -77,7 +79,9 @@ class SerializersKtTest {
             addressLine1 = null,
             addressLine2 = null,
             metadata = Bundle.EMPTY,
-            threeDSecureStatus = null
+            threeDSecureStatus = null,
+            email = null,
+            phone = null,
         )
     }
 
@@ -125,6 +129,8 @@ class SerializersKtTest {
                 hasEntry("metadata", mapOf("meta_a" to "a", "meta_true" to true))
             )
             assertThat(map, hasEntry<String, Any>("three_d_secure_status", "verified"))
+            assertThat(map, hasEntry<String, Any>("email", "test@example.com"))
+            assertThat(map, hasEntry<String, Any>("phone", "+819012345678"))
         }
     }
 
@@ -142,6 +148,8 @@ class SerializersKtTest {
             assertThat(map, hasEntry<String, Any>("address_line2", null))
             assertThat((map["metadata"] as? Map<*, *>)?.isEmpty(), `is`(true))
             assertThat(map, hasEntry<String, Any>("three_d_secure_status", null))
+            assertThat(map, hasEntry<String, Any>("email", null))
+            assertThat(map, hasEntry<String, Any>("phone", null))
         }
     }
 

@@ -36,6 +36,12 @@
                 android:enabled="true"
                 android:exported="false" />
 
+        <activity
+                android:name="jp.pay.android.ui.PayjpSearchCountryCodeActivity"
+                android:theme="@style/Payjp.Theme.CardForm.NoActionBar"
+                android:enabled="true"
+                android:exported="false" />
+
         <meta-data
                 android:name="preloaded_fonts"
                 android:resource="@array/preloaded_fonts" />

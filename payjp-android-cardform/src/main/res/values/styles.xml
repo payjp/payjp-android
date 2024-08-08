@@ -30,6 +30,8 @@
         <item name="colorPrimary">@color/payjp_primaryColor</item>
         <item name="colorPrimaryDark">@color/payjp_primaryDarkColor</item>
         <item name="colorSecondary">@color/payjp_secondaryColor</item>
+        <item name="colorOnPrimarySurface">@color/payjp_colorOnPrimarySurface</item>
+        <item name="actionBarTheme">@style/PayjpToolbar</item>
     </style>
     <style name="Payjp.Theme.CardForm" parent="Payjp.Theme.BaseCardForm"/>
     
@@ -41,6 +43,15 @@
         <item name="android:fontFamily">@font/space_mono</item>
         <item name="android:textColor">@color/payjp_card_display_text_color</item>
         <item name="android:textColorHint">@color/payjp_card_display_text_color_hint</item>
+    </style>
+
+    <style name="PayjpToolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorPrimary">?attr/colorOnPrimarySurface</item>
+    </style>
+    <style name="Payjp.Theme.CardForm.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBarOverlay">false</item>
     </style>
 
 </resources>

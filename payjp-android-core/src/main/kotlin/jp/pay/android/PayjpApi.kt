@@ -49,7 +49,9 @@ internal interface PayjpApi {
         @Field("card[exp_month]") expMonth: String,
         @Field("card[exp_year]") expYear: String,
         @Field("card[name]") name: String?,
-        @Field("tenant") tenant: String?
+        @Field("tenant") tenant: String?,
+        @Field("card[email]") email: String?,
+        @Field("card[phone]") phone: String?,
     ): ResultCall<Token>
 
     @POST("tokens/{id}/tds_finish")

@@ -50,7 +50,7 @@ internal class ResultCallAdapterFactory(
 
     override fun get(
         returnType: Type,
-        annotations: Array<out Annotation>?,
+        annotations: Array<out Annotation>,
         retrofit: Retrofit
     ): CallAdapter<*, *>? {
         if (getRawType(returnType) != ResultCall::class.java) {

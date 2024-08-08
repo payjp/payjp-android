@@ -27,7 +27,6 @@ import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.ToJson
 import kotlinx.parcelize.Parcelize
-import java.util.Locale
 
 /**
  * Card verification status of 3-D Secure
@@ -67,11 +66,11 @@ enum class ThreeDSecureStatus : Parcelable {
     class JsonAdapter {
 
         @ToJson
-        fun toJson(status: ThreeDSecureStatus): String = status.name.toLowerCase(Locale.US)
+        fun toJson(status: ThreeDSecureStatus): String = status.name.lowercase()
 
         @FromJson
         fun fromJson(status: String): ThreeDSecureStatus {
-            return values().firstOrNull { it.name.toLowerCase(Locale.US) == status }
+            return entries.firstOrNull { it.name.lowercase() == status }
                 ?: throw JsonDataException("unknown status: $status")
         }
     }

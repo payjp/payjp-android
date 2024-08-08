@@ -33,6 +33,7 @@ dependencies {
     implementation libs.kotlin.stdlib
     api project(':payjp-android-main')
     implementation libs.cardio
+    implementation libs.androidx.core.ktx
     implementation libs.androidx.fragment
 }
 

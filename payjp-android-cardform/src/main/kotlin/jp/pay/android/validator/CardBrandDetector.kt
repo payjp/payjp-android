@@ -26,6 +26,6 @@ import jp.pay.android.model.CardBrand
 
 internal object CardBrandDetector : CardBrandDetectorService {
 
-    override fun detectWithDigits(digits: String): CardBrand = CardBrand.values()
+    override fun detectWithDigits(digits: String): CardBrand = CardBrand.entries
         .firstOrNull { brand -> brand.numberRegex.matches(digits) } ?: CardBrand.UNKNOWN
 }

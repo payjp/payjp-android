@@ -29,8 +29,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.autofill.AutofillManager
 import android.view.inputmethod.EditorInfo
+import androidx.core.os.BundleCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.textfield.TextInputEditText
@@ -38,12 +38,15 @@ import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
 import jp.pay.android.databinding.PayjpCardFormViewCardDisplayBinding
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.TdsAttribute
 import jp.pay.android.model.TenantId
 import jp.pay.android.util.autoCleared
 import jp.pay.android.validator.CardCvcInputTransformer
+import jp.pay.android.validator.CardEmailInputTransformer
 import jp.pay.android.validator.CardExpirationInputTransformer
 import jp.pay.android.validator.CardHolderNameInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformer
+import jp.pay.android.validator.CardPhoneNumberInputTransformer
 import kotlin.math.abs
 
 class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
@@ -51,6 +54,7 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
     companion object {
         private const val ARGS_TENANT_ID = "ARGS_TENANT_ID"
         private const val ARGS_ACCEPTED_BRANDS = "ARGS_ACCEPTED_BRANDS"
+        private const val ARGS_TDS_ATTRIBUTES = "ARGS_TDS_ATTRIBUTES"
 
         /**
          * Create new fragment instance with args
@@ -62,12 +66,14 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
         @JvmStatic
         fun newInstance(
             tenantId: TenantId? = null,
-            acceptedBrands: Array<CardBrand>? = null
+            acceptedBrands: Array<CardBrand>? = null,
+            tdsAttributes: Array<TdsAttribute<*>>,
         ): PayjpCardFormCardDisplayFragment =
             PayjpCardFormCardDisplayFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARGS_TENANT_ID, tenantId?.id)
                     putParcelableArray(ARGS_ACCEPTED_BRANDS, acceptedBrands)
+                    putParcelableArray(ARGS_TDS_ATTRIBUTES, tdsAttributes)
                 }
             }
     }
@@ -84,7 +90,7 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = PayjpCardFormViewCardDisplayBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -93,10 +99,6 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
         cardNumber?.let { number ->
             viewModel?.inputCardNumber(number)
         }
-    }
-
-    override fun setCardHolderNameInputEnabled(enabled: Boolean) {
-        // no-op
     }
 
     override fun setUpUI(view: ViewGroup) {
@@ -111,10 +113,14 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
         }
 
         adapter = CardFormElementAdapter(
+            inputTypes = CardFormElementType.createList(
+                viewModel!!.cardEmailEnabled,
+                viewModel!!.cardPhoneNumberEnabled,
+            ),
             cardNumberFormatter = cardNumberFormatter,
             cardExpirationFormatter = CardExpirationFormatTextWatcher(delimiterExpiration),
             scannerPlugin = PayjpCardForm.cardScannerPlugin(),
-            onClickScannerIcon = View.OnClickListener {
+            onClickScannerIcon = {
                 PayjpCardForm.cardScannerPlugin()?.startScanActivity(this)
             },
             onElementTextChanged = { type, s, _, _, _ ->
@@ -124,16 +130,19 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
                         CardFormElementType.Expiration -> inputCardExpiration(s.toString())
                         CardFormElementType.Cvc -> inputCardCvc(s.toString())
                         CardFormElementType.HolderName -> inputCardHolderName(s.toString())
+                        CardFormElementType.Email -> inputEmail(s.toString())
+                        CardFormElementType.PhoneNumber -> inputPhoneNumber(s.toString())
                     }
                 }
             },
             onElementEditorAction = { type, v, actionId, event ->
-                when (type) {
-                    CardFormElementType.HolderName -> onEditorAction(v, actionId, event)
-                    else -> if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                        type.next()?.let(adapter::getPositionForElementType)?.let { moveToPosition(it) }
+                when {
+                    type == viewModel?.lastInput -> onEditorAction(v, actionId, event)
+                    actionId == EditorInfo.IME_ACTION_NEXT -> {
+                        type.next().let(adapter::getPositionForElementType).let { moveToPosition(it) }
                         true
-                    } else false
+                    }
+                    else -> false
                 }
             },
             onElementFocusChanged = { type, _, hasFocus ->
@@ -157,11 +166,17 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
                 binding.cardDisplay.updateFocus(type, hasFocus)
             },
             onElementKeyDownDeleteWithEmpty = { type, _ ->
-                type.prev()?.let(adapter::getPositionForElementType)?.let { moveToPosition(it) }
+                type.prev().let(adapter::getPositionForElementType).let { moveToPosition(it) }
                 true
             },
             onCardNumberInputChanged = binding.cardDisplay::setCardNumber,
-            autofillManager = autofillManager
+            autofillManager = autofillManager,
+            onClickCountryCode = {
+                startSearchCountryCode()
+            },
+            countryCode = viewModel?.cardPhoneNumberCountryCode?.value
+                ?: PayjpCardForm.phoneNumberService().defaultCountryCode(),
+            lastInputElementType = viewModel?.lastInput ?: CardFormElementType.HolderName,
         )
         binding.formElementPager.adapter = adapter
         binding.formElementPager.offscreenPageLimit = 2
@@ -222,6 +237,18 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
                 adapter.notifyDataSetChanged()
                 binding.cardDisplay.setBrand(brand)
             }
+            cardEmailInput.observe(viewLifecycleOwner) { email ->
+                adapter.cardEmailInput = email
+                adapter.notifyCardFormElementChanged(CardFormElementType.Email)
+            }
+            cardPhoneNumberInput.observe(viewLifecycleOwner) { phoneNumber ->
+                adapter.cardPhoneNumberInput = phoneNumber
+                adapter.notifyCardFormElementChanged(CardFormElementType.PhoneNumber)
+            }
+            cardPhoneNumberCountryCode.observe(viewLifecycleOwner) { countryCode ->
+                adapter.countryCode = countryCode
+                adapter.notifyCardFormElementChanged(CardFormElementType.PhoneNumber)
+            }
             showErrorImmediately.observe(viewLifecycleOwner) {
                 adapter.showErrorImmediately = it
             }
@@ -233,20 +260,27 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
 
     override fun createViewModel(): CardFormViewModel {
         val tenantId = arguments?.getString(ARGS_TENANT_ID)?.let { TenantId(it) }
-        val acceptedBrandArray = arguments?.getParcelableArray(ARGS_ACCEPTED_BRANDS)
+        val acceptedBrandArray = arguments?.let { BundleCompat.getParcelableArray(it, ARGS_ACCEPTED_BRANDS, CardBrand::class.java) }
+        val tdsAttributes = arguments?.let {
+            BundleCompat.getParcelableArray(it, ARGS_TDS_ATTRIBUTES, TdsAttribute::class.java)
+        }
         val factory = CardFormViewModel.Factory(
-            tokenService = checkNotNull(PayjpCardForm.tokenService()) {
-                "You must initialize Payjp first"
-            },
+            tokenService = PayjpCardForm.tokenService(),
             cardNumberInputTransformer = CardNumberInputTransformer(),
             cardExpirationInputTransformer = CardExpirationInputTransformer(delimiter = delimiterExpiration),
             cardCvcInputTransformer = CardCvcInputTransformer(),
             cardHolderNameInputTransformer = CardHolderNameInputTransformer,
+            cardEmailInputTransformer = CardEmailInputTransformer(),
+            cardPhoneNumberInputTransformer = CardPhoneNumberInputTransformer(
+                context = requireContext(),
+                service = PayjpCardForm.phoneNumberService()
+            ),
             tenantId = tenantId,
-            holderNameEnabledDefault = true,
-            acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>()
+            acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>() ?: emptyList(),
+            phoneNumberService = PayjpCardForm.phoneNumberService(),
+            tdsAttributes = tdsAttributes?.filterIsInstance<TdsAttribute<*>>() ?: emptyList(),
         )
-        return ViewModelProvider(requireActivity(), factory).get(CardFormViewModel::class.java)
+        return ViewModelProvider(requireActivity(), factory)[CardFormViewModel::class.java]
     }
 
     private fun moveToPosition(position: Int, smoothScroll: Boolean = true) {

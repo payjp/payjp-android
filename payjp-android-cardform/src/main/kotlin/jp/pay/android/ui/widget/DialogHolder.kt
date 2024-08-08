@@ -24,23 +24,22 @@ package jp.pay.android.ui.widget
 
 import android.app.Dialog
 import androidx.activity.ComponentActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 
 /**
  * Dismiss holding dialog onDestroy of observing Activity.
  * (for avoiding memory leak)
  */
-internal class DialogHolder(private val dialog: Dialog) : LifecycleObserver {
+internal class DialogHolder(private val dialog: Dialog) : DefaultLifecycleObserver {
 
     fun show(activity: ComponentActivity) {
         activity.lifecycle.addObserver(this)
         dialog.show()
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun dismiss() {
+    override fun onDestroy(owner: LifecycleOwner) {
+        super.onDestroy(owner)
         dialog.dismiss()
     }
 }

@@ -82,4 +82,22 @@ internal sealed class CardComponentInput<T> {
         override val value: String?,
         override val errorMessage: FormInputError?
     ) : CardComponentInput<String>()
+
+    /**
+     * Email (as TDS Attributes)
+     */
+    internal data class CardEmailInput(
+        override val input: String?,
+        override val value: String?,
+        override val errorMessage: FormInputError?
+    ) : CardComponentInput<String>()
+
+    /**
+     * Phone Number (as TDS Attributes)
+     */
+    internal data class CardPhoneNumberInput(
+        override val input: String?,
+        override val value: String?,
+        override val errorMessage: FormInputError?
+    ) : CardComponentInput<String>()
 }

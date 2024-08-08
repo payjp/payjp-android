@@ -56,7 +56,9 @@ class PayjpCoroutineExtTest {
         expMonth = "12",
         cvc = "123",
         name = null,
-        tenantId = null
+        tenantId = null,
+        email = null,
+        phone = null,
     )
 
     @Before
