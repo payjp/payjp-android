@@ -99,8 +99,8 @@ internal class VerifierWebView @JvmOverloads constructor(
         loadStateWatchers.add(loadStateWatcher)
     }
 
-    fun addOnFinishedLoadState(onFinished: (webView: WebView, url: String) -> Unit) {
-        addLoadStateWatcher(onFinished = onFinished)
+    fun addOnStartedLoadState(onStarted: (webView: WebView, url: String) -> Unit) {
+        addLoadStateWatcher(onStarted = onStarted)
     }
 
     fun addLoadStateWatcher(
