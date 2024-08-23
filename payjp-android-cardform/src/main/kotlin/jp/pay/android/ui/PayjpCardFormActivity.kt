@@ -42,7 +42,7 @@ import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
 import jp.pay.android.databinding.PayjpCardFormActivityBinding
 import jp.pay.android.model.CardBrand
-import jp.pay.android.model.TdsAttribute
+import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.model.TokenId
@@ -74,10 +74,10 @@ internal class PayjpCardFormActivity :
             context: Context,
             tenant: TenantId?,
             @PayjpCardForm.CardFormFace face: Int,
-            tdsAttributes: Array<TdsAttribute<*>>,
+            threeDSecureAttributes: Array<ThreeDSecureAttribute<*>>,
         ): Intent = Intent(context, PayjpCardFormActivity::class.java)
             .putExtra(EXTRA_KEY_FACE, face)
-            .putExtra(EXTRA_KEY_TDS_ATTRIBUTES, tdsAttributes)
+            .putExtra(EXTRA_KEY_TDS_ATTRIBUTES, threeDSecureAttributes)
             .apply {
                 if (tenant != null) {
                     putExtra(EXTRA_KEY_TENANT, tenant.id)
@@ -89,10 +89,10 @@ internal class PayjpCardFormActivity :
             requestCode: Int?,
             tenant: TenantId?,
             @PayjpCardForm.CardFormFace face: Int,
-            tdsAttributes: Array<TdsAttribute<*>>,
+            threeDSecureAttributes: Array<ThreeDSecureAttribute<*>>,
         ) {
             activity.startActivityForResult(
-                createIntent(activity, tenant, face, tdsAttributes)
+                createIntent(activity, tenant, face, threeDSecureAttributes)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
             )
@@ -103,10 +103,10 @@ internal class PayjpCardFormActivity :
             requestCode: Int?,
             tenant: TenantId?,
             @PayjpCardForm.CardFormFace face: Int,
-            tdsAttributes: Array<TdsAttribute<*>>,
+            threeDSecureAttributes: Array<ThreeDSecureAttribute<*>>,
         ) {
             fragment.startActivityForResult(
-                createIntent(fragment.requireActivity(), tenant, face, tdsAttributes)
+                createIntent(fragment.requireActivity(), tenant, face, threeDSecureAttributes)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
             )
@@ -133,11 +133,11 @@ internal class PayjpCardFormActivity :
         intent?.getIntExtra(EXTRA_KEY_FACE, PayjpCardForm.FACE_MULTI_LINE)
             ?: PayjpCardForm.FACE_MULTI_LINE
     }
-    private val tdsAttributes: Array<TdsAttribute<*>> by lazy {
+    private val threeDSecureAttributes: Array<ThreeDSecureAttribute<*>> by lazy {
         intent?.let {
-            IntentCompat.getParcelableArrayExtra(it, EXTRA_KEY_TDS_ATTRIBUTES, TdsAttribute::class.java)
+            IntentCompat.getParcelableArrayExtra(it, EXTRA_KEY_TDS_ATTRIBUTES, ThreeDSecureAttribute::class.java)
         }
-            ?.filterIsInstance<TdsAttribute<*>>()
+            ?.filterIsInstance<ThreeDSecureAttribute<*>>()
             ?.toTypedArray()
             ?: emptyArray()
     }
@@ -239,7 +239,7 @@ internal class PayjpCardFormActivity :
                 tenantId = tenantId,
                 acceptedBrands = acceptedBrands,
                 face = face,
-                tdsAttributes = tdsAttributes,
+                threeDSecureAttributes = threeDSecureAttributes,
             ).also { fragment ->
                 manager
                     .beginTransaction().apply {

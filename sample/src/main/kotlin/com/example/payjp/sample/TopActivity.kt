@@ -36,7 +36,7 @@ import com.example.payjp.sample.databinding.ActivityTopBinding
 import com.example.payjp.sample.databinding.CardSampleBinding
 import jp.pay.android.Payjp
 import jp.pay.android.PayjpCardForm
-import jp.pay.android.model.TdsAttribute
+import jp.pay.android.model.ThreeDSecureAttribute
 
 typealias OnClickSample = (sample: TopActivity.Sample) -> Unit
 
@@ -105,9 +105,9 @@ class TopActivity : AppCompatActivity() {
     private fun startCardForm() {
         Payjp.cardForm().start(
             this,
-            tdsAttributes = arrayOf(
-                TdsAttribute.Email("test@example.com"),
-                TdsAttribute.Phone("JP", "09012345678")
+            threeDSecureAttributes = arrayOf(
+                ThreeDSecureAttribute.Email("test@example.com"),
+                ThreeDSecureAttribute.Phone("JP", "09012345678")
             )
         )
     }
@@ -116,7 +116,7 @@ class TopActivity : AppCompatActivity() {
         Payjp.cardForm().start(
             activity = this,
             face = PayjpCardForm.FACE_CARD_DISPLAY,
-            tdsAttributes = arrayOf(TdsAttribute.Email()),
+            threeDSecureAttributes = arrayOf(ThreeDSecureAttribute.Email()),
         )
     }
 

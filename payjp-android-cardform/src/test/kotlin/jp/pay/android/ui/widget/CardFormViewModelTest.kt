@@ -40,7 +40,7 @@ import jp.pay.android.model.CardComponentInput.CardNumberInput
 import jp.pay.android.model.CardExpiration
 import jp.pay.android.model.CountryCode
 import jp.pay.android.model.FormInputError
-import jp.pay.android.model.TdsAttribute
+import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.model.TenantId
 import jp.pay.android.util.Tasks
 import jp.pay.android.validator.CardCvcInputTransformerService
@@ -92,9 +92,9 @@ internal class CardFormViewModelTest {
     private fun createViewModel(
         tenantId: TenantId? = null,
         acceptedBrandList: List<CardBrand> = emptyList(),
-        tdsAttributes: List<TdsAttribute<*>> = listOf(
-            TdsAttribute.Email(),
-            TdsAttribute.Phone("JP"),
+        threeDSecureAttributes: List<ThreeDSecureAttribute<*>> = listOf(
+            ThreeDSecureAttribute.Email(),
+            ThreeDSecureAttribute.Phone("JP"),
         ),
     ) = CardFormViewModel(
         tokenService = mockTokenService,
@@ -107,7 +107,7 @@ internal class CardFormViewModelTest {
         tenantId = tenantId,
         acceptedBrandsPreset = acceptedBrandList,
         phoneNumberService = mockPhoneNumberService,
-        tdsAttributes = tdsAttributes,
+        threeDSecureAttributes = threeDSecureAttributes,
     ).apply {
         cardNumberError.observeForever { }
         cardExpirationError.observeForever { }
@@ -260,7 +260,7 @@ internal class CardFormViewModelTest {
     fun isValid_if_email_is_not_enabled_allow_empty() {
         val robot = CardRobot.SandboxVisa
         mockCorrectInput()
-        createViewModel(tdsAttributes = listOf(TdsAttribute.Phone("JP"))).run {
+        createViewModel(threeDSecureAttributes = listOf(ThreeDSecureAttribute.Phone("JP"))).run {
             inputCardNumber(robot.number)
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
@@ -275,7 +275,7 @@ internal class CardFormViewModelTest {
     fun isValid_if_phone_is_not_enabled_allow_empty() {
         val robot = CardRobot.SandboxVisa
         mockCorrectInput()
-        createViewModel(tdsAttributes = listOf(TdsAttribute.Email())).run {
+        createViewModel(threeDSecureAttributes = listOf(ThreeDSecureAttribute.Email())).run {
             inputCardNumber(robot.number)
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
@@ -289,7 +289,7 @@ internal class CardFormViewModelTest {
     fun isValid_if_phone_and_email_is_not_enabled_allow_empty() {
         val robot = CardRobot.SandboxVisa
         mockCorrectInput()
-        createViewModel(tdsAttributes = emptyList()).run {
+        createViewModel(threeDSecureAttributes = emptyList()).run {
             inputCardNumber(robot.number)
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
@@ -302,7 +302,7 @@ internal class CardFormViewModelTest {
     fun isValid_if_both_phone_and_email_is_enabled_allow_phone_empty() {
         val robot = CardRobot.SandboxVisa
         mockCorrectInput()
-        createViewModel(tdsAttributes = listOf(TdsAttribute.Email(), TdsAttribute.Phone("JP"))).run {
+        createViewModel(threeDSecureAttributes = listOf(ThreeDSecureAttribute.Email(), ThreeDSecureAttribute.Phone("JP"))).run {
             inputCardNumber(robot.number)
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
@@ -316,7 +316,7 @@ internal class CardFormViewModelTest {
     fun isValid_if_both_phone_and_email_is_enabled_allow_email_empty() {
         val robot = CardRobot.SandboxVisa
         mockCorrectInput()
-        createViewModel(tdsAttributes = listOf(TdsAttribute.Email(), TdsAttribute.Phone("JP"))).run {
+        createViewModel(threeDSecureAttributes = listOf(ThreeDSecureAttribute.Email(), ThreeDSecureAttribute.Phone("JP"))).run {
             inputCardNumber(robot.number)
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
@@ -331,7 +331,7 @@ internal class CardFormViewModelTest {
     fun isValid_if_both_phone_and_email_is_enabled_not_allow_both_invalid() {
         val robot = CardRobot.SandboxVisa
         mockCorrectInput()
-        createViewModel(tdsAttributes = listOf(TdsAttribute.Email(), TdsAttribute.Phone("JP"))).run {
+        createViewModel(threeDSecureAttributes = listOf(ThreeDSecureAttribute.Email(), ThreeDSecureAttribute.Phone("JP"))).run {
             inputCardNumber(robot.number)
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)

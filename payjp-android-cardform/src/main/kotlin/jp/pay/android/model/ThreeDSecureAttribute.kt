@@ -26,10 +26,10 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 /**
- * TDS attribute.
+ * 3-D Secure attribute.
  * see [https://help.pay.jp/ja/articles/9556161]
  */
-sealed class TdsAttribute<T> : Parcelable {
+sealed class ThreeDSecureAttribute<T> : Parcelable {
     abstract val preset: T?
 
     /**
@@ -39,7 +39,7 @@ sealed class TdsAttribute<T> : Parcelable {
     @Parcelize
     data class Email(
         override val preset: String? = null
-    ) : TdsAttribute<String>()
+    ) : ThreeDSecureAttribute<String>()
 
     /**
      * Phone attribute.
@@ -50,20 +50,20 @@ sealed class TdsAttribute<T> : Parcelable {
     data class Phone(
         val region: String,
         val number: String? = null,
-    ) : TdsAttribute<Pair<String, String?>>() {
+    ) : ThreeDSecureAttribute<Pair<String, String?>>() {
         override val preset: Pair<String, String?>
             get() = region to number
     }
 
     companion object {
         /**
-         * Default TDS attributes.
+         * Default 3-D Secure attributes.
          * It is available to change from this.
          * for example following cases:
          * - add preset values.
          * - only use email or phone.
          * - never request email nor phone.
          */
-        fun defaults(): Array<TdsAttribute<*>> = arrayOf(Email(), Phone(region = "JP"))
+        fun defaults(): Array<ThreeDSecureAttribute<*>> = arrayOf(Email(), Phone(region = "JP"))
     }
 }
