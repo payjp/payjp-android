@@ -38,8 +38,8 @@ import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
 import jp.pay.android.databinding.PayjpCardFormViewCardDisplayBinding
 import jp.pay.android.model.CardBrand
-import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.model.TenantId
+import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.util.autoCleared
 import jp.pay.android.validator.CardCvcInputTransformer
 import jp.pay.android.validator.CardEmailInputTransformer

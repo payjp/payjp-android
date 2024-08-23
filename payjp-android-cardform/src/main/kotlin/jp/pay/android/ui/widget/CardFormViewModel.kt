@@ -46,8 +46,8 @@ import jp.pay.android.model.CardComponentInput.CardNumberInput
 import jp.pay.android.model.CardComponentInput.CardPhoneNumberInput
 import jp.pay.android.model.CardExpiration
 import jp.pay.android.model.CountryCode
-import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.model.TenantId
+import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.model.Token
 import jp.pay.android.util.OneOffValue
 import jp.pay.android.util.Tasks

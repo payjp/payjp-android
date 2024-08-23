@@ -34,8 +34,8 @@ import com.google.android.material.textfield.TextInputLayout
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.databinding.PayjpCardFormViewBinding
 import jp.pay.android.model.CardBrand
-import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.model.TenantId
+import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.ui.extension.addOnTextChanged
 import jp.pay.android.ui.extension.cvcIconResourceId
 import jp.pay.android.ui.extension.logoResourceId

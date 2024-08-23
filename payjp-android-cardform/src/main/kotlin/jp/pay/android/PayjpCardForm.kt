@@ -30,8 +30,8 @@ import androidx.fragment.app.Fragment
 import jp.pay.android.data.PhoneNumberService
 import jp.pay.android.data.PhoneNumberServiceImpl
 import jp.pay.android.model.CardBrand
-import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.model.TenantId
+import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.network.ClientInfoInterceptorProvider
 import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.ui.PayjpCardFormActivity

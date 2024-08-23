@@ -42,8 +42,8 @@ import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
 import jp.pay.android.databinding.PayjpCardFormActivityBinding
 import jp.pay.android.model.CardBrand
-import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.model.TenantId
+import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.model.Token
 import jp.pay.android.model.TokenId
 import jp.pay.android.ui.extension.showWith

@@ -40,8 +40,8 @@ import jp.pay.android.model.CardComponentInput.CardNumberInput
 import jp.pay.android.model.CardExpiration
 import jp.pay.android.model.CountryCode
 import jp.pay.android.model.FormInputError
-import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.model.TenantId
+import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.util.Tasks
 import jp.pay.android.validator.CardCvcInputTransformerService
 import jp.pay.android.validator.CardInputTransformer
