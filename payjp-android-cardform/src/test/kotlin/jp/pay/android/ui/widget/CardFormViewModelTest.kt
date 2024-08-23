@@ -121,6 +121,7 @@ internal class CardFormViewModelTest {
         cardCvcValid.observeForever { }
         errorFetchAcceptedBrands.observeForever { }
         acceptedBrands.observeForever { }
+        cardEmailError.observeForever { }
         cardPhoneNumberError.observeForever { }
         cardPhoneNumberCountryCode.observeForever { }
 
@@ -328,7 +329,7 @@ internal class CardFormViewModelTest {
     }
 
     @Test
-    fun isValid_if_both_phone_and_email_is_enabled_not_allow_both_invalid() {
+    fun isValid_if_both_phone_and_email_is_enabled_not_allow_both_empty() {
         val robot = CardRobot.SandboxVisa
         mockCorrectInput()
         createViewModel(threeDSecureAttributes = listOf(ThreeDSecureAttribute.Email(), ThreeDSecureAttribute.Phone("JP"))).run {
@@ -336,6 +337,31 @@ internal class CardFormViewModelTest {
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
             inputCardHolderName(robot.name)
+            assertThat(isValid.value, `is`(false))
+        }
+    }
+
+    @Test
+    fun isValid_if_both_phone_and_email_is_enabled_not_allow_phone_invalid() {
+        val robot = CardRobot.SandboxVisa
+        mockCorrectInput()
+        reset(cardPhoneNumberInputTransformer)
+        `when`(cardPhoneNumberInputTransformer.transform(anyString()))
+            .thenReturn(
+                CardComponentInput.CardPhoneNumberInput(
+                    "123",
+                    null,
+                    FormInputError(jp.pay.android.R.string.payjp_card_form_error_invalid_phone_number, false),
+                )
+            )
+        createViewModel(threeDSecureAttributes = listOf(ThreeDSecureAttribute.Email(), ThreeDSecureAttribute.Phone("JP"))).run {
+            inputCardNumber(robot.number)
+            inputCardExpiration(robot.exp)
+            inputCardCvc(robot.cvc)
+            inputCardHolderName(robot.name)
+            inputEmail(robot.email)
+            selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
+            inputPhoneNumber("123")
             assertThat(isValid.value, `is`(false))
         }
     }

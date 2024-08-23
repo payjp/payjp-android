@@ -33,6 +33,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
 import jp.pay.android.PayjpTokenService
+import jp.pay.android.R
 import jp.pay.android.Task
 import jp.pay.android.data.PhoneNumberService
 import jp.pay.android.exception.PayjpInvalidCardFormException
@@ -255,9 +256,12 @@ internal class CardFormViewModel(
             cardHolderNameInput.value?.valid == true
         val tdsAttributesAreValid = when {
             cardEmailEnabled && cardPhoneNumberEnabled -> {
-                // If both input is enabled, either one should be valid.
-                // but
-                cardEmailInput.value?.valid == true || cardPhoneNumberInput.value?.valid == true
+                // either email or phone number is valid and neither is invalid
+                val eitherIsValid = cardEmailInput.value?.valid == true || cardPhoneNumberInput.value?.valid == true
+                // allow empty
+                val neitherIsInvalid = cardEmailError.value?.takeIf { it != R.string.payjp_card_form_error_no_email } == null &&
+                    cardPhoneNumberError.value?.takeIf { it != R.string.payjp_card_form_error_no_phone_number } == null
+                eitherIsValid && neitherIsInvalid
             }
             cardEmailEnabled -> cardEmailInput.value?.valid == true
             cardPhoneNumberEnabled -> cardPhoneNumberInput.value?.valid == true
