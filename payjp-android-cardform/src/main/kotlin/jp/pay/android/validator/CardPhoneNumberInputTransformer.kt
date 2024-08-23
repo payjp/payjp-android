@@ -44,9 +44,7 @@ internal class CardPhoneNumberInputTransformer(
         val errorMessage = when {
             trimmed.isNullOrEmpty() -> FormInputError(R.string.payjp_card_form_error_no_phone_number, true)
             normalized == null -> {
-                //
-                val maybeTooLong = trimmed.length > service.examplePhoneNumber(context, countryCode).length
-                FormInputError(R.string.payjp_card_form_error_invalid_phone_number, !maybeTooLong)
+                FormInputError(R.string.payjp_card_form_error_invalid_phone_number, false)
             }
             else -> null
         }

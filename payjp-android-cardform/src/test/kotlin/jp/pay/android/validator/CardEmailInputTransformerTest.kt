@@ -43,14 +43,6 @@ class CardEmailInputTransformerTest {
     }
 
     @Test
-    fun transform_invalid() {
-        val transformer = CardEmailInputTransformer()
-        val result = transformer.transform("invalid")
-        assertThat(result.value, `is`(nullValue()))
-        assertThat(result.errorMessage, `is`(FormInputError(R.string.payjp_card_form_error_invalid_email, false)))
-    }
-
-    @Test
     fun transform_valid() {
         val transformer = CardEmailInputTransformer()
         val email = "test@example.com"

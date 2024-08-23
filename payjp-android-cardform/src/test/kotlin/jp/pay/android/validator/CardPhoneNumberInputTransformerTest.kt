@@ -96,7 +96,7 @@ class CardPhoneNumberInputTransformerTest {
     }
 
     @Test
-    fun transform_invalid_not_tooLong() {
+    fun transform_invalid_tooShort() {
         val transformer = CardPhoneNumberInputTransformer(
             context = ApplicationProvider.getApplicationContext(),
             service = mockPhoneNumberService
@@ -107,6 +107,6 @@ class CardPhoneNumberInputTransformerTest {
         `when`(mockPhoneNumberService.examplePhoneNumber(anyNullable(), anyNullable())).thenReturn("09012345678")
         val result = transformer.transform("090123456")
         assertThat(result.value, `is`(nullValue()))
-        assertThat(result.errorMessage, `is`(FormInputError(R.string.payjp_card_form_error_invalid_phone_number, true)))
+        assertThat(result.errorMessage, `is`(FormInputError(R.string.payjp_card_form_error_invalid_phone_number, false)))
     }
 }

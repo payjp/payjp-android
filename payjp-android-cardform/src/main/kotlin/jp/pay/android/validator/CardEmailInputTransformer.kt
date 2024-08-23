@@ -31,7 +31,6 @@ internal class CardEmailInputTransformer : CardInputTransformer<CardComponentInp
         val trimmed = input?.trim()
         val errorMessage = when {
             trimmed.isNullOrEmpty() -> FormInputError(R.string.payjp_card_form_error_no_email, true)
-            !android.util.Patterns.EMAIL_ADDRESS.matcher(trimmed).matches() -> FormInputError(R.string.payjp_card_form_error_invalid_email, false)
             else -> null
         }
         val value = trimmed.takeIf { errorMessage == null }
