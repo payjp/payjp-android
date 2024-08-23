@@ -29,6 +29,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -45,12 +46,12 @@ class TopActivity : AppCompatActivity() {
     private val samples by lazy {
         listOf(
             Sample(
-                "CardFormActivity (Card Display)",
+                "CardFormActivity (FACE_CARD_DISPLAY)",
                 null,
                 this::startCardFormCardFace
             ),
             Sample(
-                "CardFormActivity (Multi Line)",
+                "CardFormActivity (FACE_MULTI_LINE)",
                 null,
                 this::startCardForm
             ),
@@ -59,23 +60,30 @@ class TopActivity : AppCompatActivity() {
                 Intent(this, CardFormViewSampleActivity::class.java)
             ),
             Sample(
-                "CardFormView (Java)",
-                Intent(this, CardFormViewSampleJavaActivity::class.java)
-            ),
-            Sample(
-                "Generate Card Tokens Manually",
-                Intent(this, GenerateTokenSampleActivity::class.java)
-            ),
-            Sample(
-                "Generate Card Tokens Manually (Java)",
-                Intent(this, GenerateTokenSampleJavaActivity::class.java)
-            ),
-            Sample(
-                "Coroutine Extension Example",
+                "CardFormView (Coroutine)",
                 Intent(this, CoroutineSampleActivity::class.java)
             )
         )
     }
+    private val attributesOption: Array<Pair<String, Array<ThreeDSecureAttribute<*>>>> = arrayOf(
+        "email and phone" to arrayOf(
+            ThreeDSecureAttribute.Email(),
+            ThreeDSecureAttribute.Phone(region = "JP"),
+        ),
+        "email only" to arrayOf(
+            ThreeDSecureAttribute.Email()
+        ),
+        "phone only" to arrayOf(
+            ThreeDSecureAttribute.Phone(region = "JP")
+        ),
+        "email only (preset)" to arrayOf(
+            ThreeDSecureAttribute.Email("test@example.com")
+        ),
+        "phone only (preset)" to arrayOf(
+            ThreeDSecureAttribute.Phone("JP", "09012345678")
+        ),
+        "none" to emptyArray()
+    )
 
     private lateinit var binding: ActivityTopBinding
 
@@ -102,23 +110,24 @@ class TopActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    private fun startCardForm() {
-        Payjp.cardForm().start(
-            this,
-            threeDSecureAttributes = arrayOf(
-                ThreeDSecureAttribute.Email("test@example.com"),
-                ThreeDSecureAttribute.Phone("JP", "09012345678")
-            )
-        )
+    private fun startCardForm(face: Int = PayjpCardForm.FACE_MULTI_LINE) {
+        // show selectable alert dialog
+        val items = attributesOption.map { it.first }.toTypedArray()
+        AlertDialog.Builder(this)
+            .setTitle("Select 3DSecureAttributes")
+            .setItems(items) { _, which ->
+                val attributes = attributesOption[which].second
+                Payjp.cardForm().start(
+                    activity = this,
+                    face = face,
+                    threeDSecureAttributes = attributes
+                )
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
-    private fun startCardFormCardFace() {
-        Payjp.cardForm().start(
-            activity = this,
-            face = PayjpCardForm.FACE_CARD_DISPLAY,
-            threeDSecureAttributes = arrayOf(ThreeDSecureAttribute.Email()),
-        )
-    }
+    private fun startCardFormCardFace() = startCardForm(face = PayjpCardForm.FACE_CARD_DISPLAY)
 
     class TopAdapter(
         context: Context,
