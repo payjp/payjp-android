@@ -36,33 +36,30 @@ import androidx.viewbinding.ViewBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import jp.pay.android.databinding.PayjpCardFormElementCvcLayoutBinding
-import jp.pay.android.databinding.PayjpCardFormElementEmailLayoutBinding
 import jp.pay.android.databinding.PayjpCardFormElementExpirationLayoutBinding
 import jp.pay.android.databinding.PayjpCardFormElementHolderNameLayoutBinding
 import jp.pay.android.databinding.PayjpCardFormElementNumberLayoutBinding
-import jp.pay.android.databinding.PayjpCardFormElementPhoneNumberLayoutBinding
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput
-import jp.pay.android.model.CountryCode
 import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.ui.extension.addOnTextChanged
 import jp.pay.android.ui.extension.setErrorOrNull
 
 internal typealias OnCardFormElementTextChanged = (
-    type: CardFormElementType,
+    type: CardFormInputType,
     s: CharSequence,
     start: Int,
     before: Int,
     count: Int
 ) -> Unit
 internal typealias OnCardFormElementEditorAction = (
-    type: CardFormElementType,
+    type: CardFormInputType,
     v: TextView,
     actionId: Int,
     event: KeyEvent?
 ) -> Boolean
 internal typealias OnCardFormElementFocusChanged = (type: CardFormElementType, view: View, hasFocus: Boolean) -> Unit
-internal typealias OnCardFormElementKeyDownDeleteWithEmpty = (type: CardFormElementType, view: View) -> Boolean
+internal typealias OnCardFormElementKeyDownDeleteWithEmpty = (type: CardFormInputType, view: View) -> Boolean
 
 @Suppress("LongParameterList")
 internal sealed class CardFormElementViewHolder<V : ViewBinding>(
@@ -84,7 +81,7 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            onTextChanged.invoke(type, s, start, before, count)
+            onTextChanged.invoke(type.inputTypes().first(), s, start, before, count)
         }
     }
 
@@ -94,7 +91,7 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
             onFocusChanged.invoke(type, v, hasFocus)
         }
         editText.setOnEditorActionListener { v, actionId, event ->
-            onEditorAction.invoke(type, v, actionId, event)
+            onEditorAction.invoke(type.inputTypes().first(), v, actionId, event)
         }
         editText.setOnKeyListener { v, keyCode, event ->
             takeIf {
@@ -102,7 +99,7 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
                     keyCode == KeyEvent.KEYCODE_DEL &&
                     event.action == KeyEvent.ACTION_DOWN
             }?.run {
-                onKeyDownDeleteWithEmpty(type, v)
+                onKeyDownDeleteWithEmpty(type.inputTypes().first(), v)
             } ?: false
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -289,78 +286,6 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
             setTextDisablingInputWatcher(input)
             setInputError(input, showErrorImmediately)
             this.brand = brand
-        }
-    }
-
-    class CardFormEmailElement(
-        binding: PayjpCardFormElementEmailLayoutBinding,
-        onTextChanged: OnCardFormElementTextChanged,
-        onEditorAction: OnCardFormElementEditorAction,
-        onFocusChanged: OnCardFormElementFocusChanged,
-        onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
-        autofillId: Any?,
-        isLastInput: Boolean,
-    ) :
-        CardFormElementViewHolder<PayjpCardFormElementEmailLayoutBinding>(
-            CardFormElementType.Email,
-            binding,
-            binding.content.inputLayoutEmail,
-            binding.content.inputEditEmail,
-            onTextChanged,
-            onEditorAction,
-            onFocusChanged,
-            onKeyDownDeleteWithEmpty,
-            autofillId,
-            isLastInput,
-        ) {
-
-        fun bindData(
-            input: CardComponentInput.CardEmailInput?,
-            showErrorImmediately: Boolean
-        ) {
-            setTextDisablingInputWatcher(input)
-            setInputError(input, showErrorImmediately)
-        }
-    }
-
-    class CardFormPhoneNumberElement(
-        binding: PayjpCardFormElementPhoneNumberLayoutBinding,
-        onClickCountryCode: View.OnClickListener?,
-        onTextChanged: OnCardFormElementTextChanged,
-        onEditorAction: OnCardFormElementEditorAction,
-        onFocusChanged: OnCardFormElementFocusChanged,
-        onKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
-        autofillId: Any?,
-        isLastInput: Boolean,
-    ) :
-        CardFormElementViewHolder<PayjpCardFormElementPhoneNumberLayoutBinding>(
-            CardFormElementType.PhoneNumber,
-            binding,
-            binding.content.inputLayoutPhoneNumber,
-            binding.content.inputEditPhoneNumber,
-            onTextChanged,
-            onEditorAction,
-            onFocusChanged,
-            onKeyDownDeleteWithEmpty,
-            autofillId,
-            isLastInput,
-        ) {
-        init {
-            binding.content.inputLayoutCountryCode.setEndIconOnClickListener(onClickCountryCode)
-            // both input country code and phone number should be ready for focus change
-            binding.content.inputEditCountryCode.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
-                onFocusChanged.invoke(CardFormElementType.PhoneNumber, v, hasFocus)
-            }
-        }
-
-        fun bindData(
-            input: CardComponentInput.CardPhoneNumberInput?,
-            countryCode: CountryCode,
-            showErrorImmediately: Boolean
-        ) {
-            binding.content.inputEditCountryCode.setText(countryCode.shortName)
-            setTextDisablingInputWatcher(input)
-            setInputError(input, showErrorImmediately)
         }
     }
 }

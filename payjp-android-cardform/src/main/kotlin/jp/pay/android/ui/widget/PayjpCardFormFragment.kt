@@ -189,8 +189,8 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
             }
             binding.layoutHolderName.inputEditHolderName
             when (lastInput) {
-                CardFormElementType.Email -> binding.layoutEmail.inputEditEmail
-                CardFormElementType.PhoneNumber -> binding.layoutPhoneNumber.inputEditPhoneNumber
+                CardFormInputType.Email -> binding.layoutEmail.inputEditEmail
+                CardFormInputType.PhoneNumber -> binding.layoutPhoneNumber.inputEditPhoneNumber
                 else -> binding.layoutHolderName.inputEditHolderName
             }.setOnEditorActionListener(this@PayjpCardFormFragment::onEditorAction)
         }

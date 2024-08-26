@@ -94,7 +94,7 @@ internal class CardFormViewModel(
     override val errorFetchAcceptedBrands: MutableLiveData<OneOffValue<Throwable>> = MutableLiveData()
     override val acceptedBrands: MutableLiveData<OneOffValue<List<CardBrand>>> = MutableLiveData()
     override val showErrorImmediately = MutableLiveData<Boolean>()
-    override val currentPrimaryInput: MutableLiveData<CardFormElementType> = MutableLiveData()
+    override val currentPrimaryElement: MutableLiveData<CardFormElementType> = MutableLiveData()
     override val cardEmailEnabled: Boolean
     override val cardEmailInput = MutableLiveData<CardComponentInput.CardEmailInput>()
     override val cardEmailError: LiveData<Int?>
@@ -102,7 +102,7 @@ internal class CardFormViewModel(
     override val cardPhoneNumberCountryCode: MutableLiveData<CountryCode> = MutableLiveData()
     override val cardPhoneNumberInput: MutableLiveData<CardPhoneNumberInput> = MutableLiveData()
     override val cardPhoneNumberError: LiveData<Int?>
-    override val lastInput: CardFormElementType
+    override val lastInput: CardFormInputType
     private var task: Task<CardBrandsAcceptedResponse>? = null
     private val brandObserver: Observer<CardBrand>
     private val countryCodeObserver: Observer<CountryCode>
@@ -135,7 +135,7 @@ internal class CardFormViewModel(
         cardNumberValid = cardNumberInput.map { it.valid }
         cardExpirationValid = cardExpirationInput.map { it.valid }
         cardCvcValid = cardCvcInput.map { it.valid }
-        currentPrimaryInput.value = CardFormElementType.Number
+        currentPrimaryElement.value = CardFormElementType.Number
         // TDS Attributes settings
         // Email
         cardEmailEnabled = threeDSecureAttributes.any { it is ThreeDSecureAttribute.Email }
@@ -160,9 +160,9 @@ internal class CardFormViewModel(
         }
         cardPhoneNumberCountryCode.nonNull().observeForever(countryCodeObserver)
         lastInput = when {
-            cardPhoneNumberEnabled -> CardFormElementType.PhoneNumber
-            cardEmailEnabled -> CardFormElementType.Email
-            else -> CardFormElementType.HolderName
+            cardPhoneNumberEnabled -> CardFormInputType.PhoneNumber
+            cardEmailEnabled -> CardFormInputType.Email
+            else -> CardFormInputType.HolderName
         }
     }
 
@@ -284,7 +284,7 @@ internal class CardFormViewModel(
         val i = transformer.transform(input)
         data.value = i
         if (i.valid && before != i && i !is CardHolderNameInput) {
-            currentPrimaryInput.value = getPrimaryInput()
+            currentPrimaryElement.value = getPrimaryInput()
         }
     }
 
@@ -301,8 +301,8 @@ internal class CardFormViewModel(
             cardExpirationInput.value to CardFormElementType.Expiration,
             cardCvcInput.value to CardFormElementType.Cvc,
             cardHolderNameInput.value to CardFormElementType.HolderName,
-            cardEmailInput.value to CardFormElementType.Email,
-            cardPhoneNumberInput.value to CardFormElementType.PhoneNumber,
+            cardEmailInput.value to CardFormElementType.EmailAndPhoneNumber,
+            cardPhoneNumberInput.value to CardFormElementType.EmailAndPhoneNumber,
         ).firstOrNull { it.first?.valid?.not() ?: true }?.second
 
     /**

@@ -22,30 +22,36 @@
  */
 package jp.pay.android.ui.widget
 
-import kotlin.math.max
-import kotlin.math.min
-
-internal enum class CardFormElementType {
+internal enum class CardFormInputType {
     Number,
     Expiration,
     Cvc,
     HolderName,
-    EmailAndPhoneNumber,
+    Email,
+    PhoneNumber,
     ;
 
-    fun prev(): CardFormElementType = entries.toTypedArray().let { values ->
-        values[max(ordinal - 1, 0)]
+    fun elementType(): CardFormElementType = when (this) {
+        Number -> CardFormElementType.Number
+        Expiration -> CardFormElementType.Expiration
+        Cvc -> CardFormElementType.Cvc
+        HolderName -> CardFormElementType.HolderName
+        Email, PhoneNumber -> CardFormElementType.EmailAndPhoneNumber
     }
 
-    fun next(): CardFormElementType = entries.toTypedArray().let { values ->
-        values[min(ordinal + 1, values.lastIndex)]
-    }
-
-    fun inputTypes(): List<CardFormInputType> = when (this) {
-        Number -> listOf(CardFormInputType.Number)
-        Expiration -> listOf(CardFormInputType.Expiration)
-        Cvc -> listOf(CardFormInputType.Cvc)
-        HolderName -> listOf(CardFormInputType.HolderName)
-        EmailAndPhoneNumber -> listOf(CardFormInputType.Email, CardFormInputType.PhoneNumber)
+    companion object {
+        fun createList(
+            emailEnabled: Boolean,
+            phoneNumberEnabled: Boolean
+        ): List<CardFormInputType> {
+            return listOfNotNull(
+                Number,
+                Expiration,
+                Cvc,
+                HolderName,
+                Email.takeIf { emailEnabled },
+                PhoneNumber.takeIf { phoneNumberEnabled },
+            )
+        }
     }
 }

@@ -113,7 +113,7 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
         }
 
         adapter = CardFormElementAdapter(
-            inputTypes = CardFormElementType.createList(
+            inputTypes = CardFormInputType.createList(
                 viewModel!!.cardEmailEnabled,
                 viewModel!!.cardPhoneNumberEnabled,
             ),
@@ -126,12 +126,12 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
             onElementTextChanged = { type, s, _, _, _ ->
                 viewModel?.run {
                     when (type) {
-                        CardFormElementType.Number -> inputCardNumber(s.toString())
-                        CardFormElementType.Expiration -> inputCardExpiration(s.toString())
-                        CardFormElementType.Cvc -> inputCardCvc(s.toString())
-                        CardFormElementType.HolderName -> inputCardHolderName(s.toString())
-                        CardFormElementType.Email -> inputEmail(s.toString())
-                        CardFormElementType.PhoneNumber -> inputPhoneNumber(s.toString())
+                        CardFormInputType.Number -> inputCardNumber(s.toString())
+                        CardFormInputType.Expiration -> inputCardExpiration(s.toString())
+                        CardFormInputType.Cvc -> inputCardCvc(s.toString())
+                        CardFormInputType.HolderName -> inputCardHolderName(s.toString())
+                        CardFormInputType.Email -> inputEmail(s.toString())
+                        CardFormInputType.PhoneNumber -> inputPhoneNumber(s.toString())
                     }
                 }
             },
@@ -139,7 +139,7 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
                 when {
                     type == viewModel?.lastInput -> onEditorAction(v, actionId, event)
                     actionId == EditorInfo.IME_ACTION_NEXT -> {
-                        type.next().let(adapter::getPositionForElementType).let { moveToPosition(it) }
+                        type.elementType().next().let(adapter::getPositionForElementType).let { moveToPosition(it) }
                         true
                     }
                     else -> false
@@ -147,7 +147,11 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
             },
             onElementFocusChanged = { type, _, hasFocus ->
                 when (type) {
+                    CardFormElementType.EmailAndPhoneNumber -> {
+                        binding.cardDisplay.gone()
+                    }
                     CardFormElementType.Cvc -> {
+                        binding.cardDisplay.visible()
                         if (hasFocus && binding.cardDisplay.isFrontVisible() &&
                             viewModel?.cardNumberBrand?.value != CardBrand.AMEX
                         ) {
@@ -155,6 +159,7 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
                         }
                     }
                     else -> {
+                        binding.cardDisplay.visible()
                         if (hasFocus && !binding.cardDisplay.isFrontVisible()) {
                             binding.cardDisplay.flipToFront()
                         }
@@ -166,7 +171,7 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
                 binding.cardDisplay.updateFocus(type, hasFocus)
             },
             onElementKeyDownDeleteWithEmpty = { type, _ ->
-                type.prev().let(adapter::getPositionForElementType).let { moveToPosition(it) }
+                type.elementType().prev().let(adapter::getPositionForElementType).let { moveToPosition(it) }
                 true
             },
             onCardNumberInputChanged = binding.cardDisplay::setCardNumber,
@@ -176,7 +181,7 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
             },
             countryCode = viewModel?.cardPhoneNumberCountryCode?.value
                 ?: PayjpCardForm.phoneNumberService().defaultCountryCode(),
-            lastInputElementType = viewModel?.lastInput ?: CardFormElementType.HolderName,
+            lastInputType = viewModel?.lastInput ?: CardFormInputType.HolderName,
         )
         binding.formElementPager.adapter = adapter
         binding.formElementPager.offscreenPageLimit = 2
@@ -186,7 +191,7 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
                     val element = adapter.getElementTypeForPosition(position)
 // prevent if current item has changed
                     if (isAdded && binding.formElementPager.currentItem == position) {
-                        val id = CardFormElementAdapter.findEditTextId(element)
+                        val id = adapter.findEditTextId(element)
                         binding.formElementPager.findViewById<TextInputEditText>(id)?.requestFocusFromTouch()
                     }
                 }
@@ -239,20 +244,20 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
             }
             cardEmailInput.observe(viewLifecycleOwner) { email ->
                 adapter.cardEmailInput = email
-                adapter.notifyCardFormElementChanged(CardFormElementType.Email)
+                adapter.notifyCardFormElementChanged(CardFormElementType.EmailAndPhoneNumber)
             }
             cardPhoneNumberInput.observe(viewLifecycleOwner) { phoneNumber ->
                 adapter.cardPhoneNumberInput = phoneNumber
-                adapter.notifyCardFormElementChanged(CardFormElementType.PhoneNumber)
+                adapter.notifyCardFormElementChanged(CardFormElementType.EmailAndPhoneNumber)
             }
             cardPhoneNumberCountryCode.observe(viewLifecycleOwner) { countryCode ->
                 adapter.countryCode = countryCode
-                adapter.notifyCardFormElementChanged(CardFormElementType.PhoneNumber)
+                adapter.notifyCardFormElementChanged(CardFormElementType.EmailAndPhoneNumber)
             }
             showErrorImmediately.observe(viewLifecycleOwner) {
                 adapter.showErrorImmediately = it
             }
-            currentPrimaryInput.observe(viewLifecycleOwner) { input ->
+            currentPrimaryElement.observe(viewLifecycleOwner) { input ->
                 input?.let(adapter::getPositionForElementType)?.let { moveToPosition(it) }
             }
         }

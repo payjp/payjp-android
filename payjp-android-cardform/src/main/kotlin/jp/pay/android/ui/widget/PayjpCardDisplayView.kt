@@ -116,6 +116,14 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
         }
     }
 
+    fun visible() {
+        visibility = VISIBLE
+    }
+
+    fun gone() {
+        visibility = GONE
+    }
+
     fun isFrontVisible() = frontVisible
 
     fun flipToBack() {
@@ -158,8 +166,7 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
                 else -> binding.displayCvcDefault
             }
             CardFormElementType.HolderName -> binding.displayHolder
-            CardFormElementType.Email -> binding.displayHolder
-            CardFormElementType.PhoneNumber -> binding.displayHolder
+            CardFormElementType.EmailAndPhoneNumber -> binding.displayHolder
         }
         view.background = highlightBackground.takeIf { highlighted }
     }
