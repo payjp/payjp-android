@@ -109,14 +109,6 @@ internal class CardFormViewModel(
 
     init {
         cardNumberInputTransformer.acceptedBrands = acceptedBrandsPreset
-        isValid = MediatorLiveData<Boolean>().apply {
-            addSource(cardNumberInput) { value = checkValid() }
-            addSource(cardExpirationInput) { value = checkValid() }
-            addSource(cardCvcInput) { value = checkValid() }
-            addSource(cardHolderNameInput) { value = checkValid() }
-            addSource(cardEmailInput) { value = checkValid() }
-            addSource(cardPhoneNumberInput) { value = checkValid() }
-        }
         showErrorImmediately.value = false
         cardNumberError = cardNumberInput.map(this::retrieveError).distinctUntilChanged()
         cardExpirationError = cardExpirationInput.map(this::retrieveError).distinctUntilChanged()
@@ -163,6 +155,16 @@ internal class CardFormViewModel(
             cardPhoneNumberEnabled -> CardFormInputType.PhoneNumber
             cardEmailEnabled -> CardFormInputType.Email
             else -> CardFormInputType.HolderName
+        }
+        isValid = MediatorLiveData<Boolean>().apply {
+            addSource(cardNumberInput) { value = checkValid() }
+            addSource(cardExpirationInput) { value = checkValid() }
+            addSource(cardCvcInput) { value = checkValid() }
+            addSource(cardHolderNameInput) { value = checkValid() }
+            addSource(cardEmailInput) { value = checkValid() }
+            addSource(cardPhoneNumberInput) { value = checkValid() }
+            addSource(cardEmailError) { value = checkValid() }
+            addSource(cardPhoneNumberError) { value = checkValid() }
         }
     }
 
