@@ -54,6 +54,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/payjp_card_form_margin" />
 
+    <LinearLayout
+        android:id="@+id/additional_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/payjp_card_form_margin"
+        >
+        <include
+            android:id="@+id/additional_info_content"
+            layout="@layout/payjp_card_form_header_additional_info"/>
+
+    </LinearLayout>
+
     <include layout="@layout/payjp_card_form_part_email_layout"
             android:id="@+id/layout_email"
             android:layout_width="match_parent"

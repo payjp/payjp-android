@@ -30,6 +30,7 @@ import android.view.ViewGroup
 import android.view.autofill.AutofillManager
 import android.view.inputmethod.EditorInfo
 import androidx.core.os.BundleCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.ViewPager2
@@ -146,12 +147,10 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
                 }
             },
             onElementFocusChanged = { type, _, hasFocus ->
+                binding.additionalInfo.isVisible = type == CardFormElementType.EmailAndPhoneNumber
+                binding.cardDisplay.isVisible = type != CardFormElementType.EmailAndPhoneNumber
                 when (type) {
-                    CardFormElementType.EmailAndPhoneNumber -> {
-                        binding.cardDisplay.gone()
-                    }
                     CardFormElementType.Cvc -> {
-                        binding.cardDisplay.visible()
                         if (hasFocus && binding.cardDisplay.isFrontVisible() &&
                             viewModel?.cardNumberBrand?.value != CardBrand.AMEX
                         ) {
@@ -159,7 +158,6 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
                         }
                     }
                     else -> {
-                        binding.cardDisplay.visible()
                         if (hasFocus && !binding.cardDisplay.isFrontVisible()) {
                             binding.cardDisplay.flipToFront()
                         }
@@ -260,6 +258,9 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
             currentPrimaryElement.observe(viewLifecycleOwner) { input ->
                 input?.let(adapter::getPositionForElementType)?.let { moveToPosition(it) }
             }
+            // additional info
+            binding.additionalInfo.isVisible = false
+            binding.additionalInfoContent.requiredAtLeastOne.isVisible = cardEmailEnabled && cardPhoneNumberEnabled
         }
     }
 

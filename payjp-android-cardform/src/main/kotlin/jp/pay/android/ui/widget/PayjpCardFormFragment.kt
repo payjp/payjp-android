@@ -28,7 +28,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.BundleCompat
-import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputLayout
 import jp.pay.android.PayjpCardForm
@@ -118,8 +118,8 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
         }
 
         viewModel?.apply {
-            binding.layoutEmail.root.isGone = !cardEmailEnabled
-            binding.layoutPhoneNumber.root.isGone = !cardPhoneNumberEnabled
+            binding.layoutEmail.root.isVisible = cardEmailEnabled
+            binding.layoutPhoneNumber.root.isVisible = cardPhoneNumberEnabled
             cardNumberBrand.observe(viewLifecycleOwner) {
                 cardNumberFormatter.brand = it
                 binding.layoutCvc.inputEditCvc.filters =
@@ -193,6 +193,9 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
                 CardFormInputType.PhoneNumber -> binding.layoutPhoneNumber.inputEditPhoneNumber
                 else -> binding.layoutHolderName.inputEditHolderName
             }.setOnEditorActionListener(this@PayjpCardFormFragment::onEditorAction)
+            // additional info
+            binding.additionalInfo.isVisible = cardEmailEnabled || cardPhoneNumberEnabled
+            binding.additionalInfoContent.requiredAtLeastOne.isVisible = cardEmailEnabled && cardPhoneNumberEnabled
         }
     }
 

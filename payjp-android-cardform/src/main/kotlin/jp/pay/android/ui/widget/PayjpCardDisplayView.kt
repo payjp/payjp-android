@@ -116,14 +116,6 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
         }
     }
 
-    fun visible() {
-        visibility = VISIBLE
-    }
-
-    fun gone() {
-        visibility = GONE
-    }
-
     fun isFrontVisible() = frontVisible
 
     fun flipToBack() {

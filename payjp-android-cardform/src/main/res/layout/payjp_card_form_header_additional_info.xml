@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?><!--
   ~
-  ~ Copyright (c) 2019 PAY, Inc.
+  ~ Copyright (c) 2024 PAY, Inc.
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -22,37 +22,24 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="start"
+    android:baselineAligned="true"
+    android:orientation="horizontal"
+    >
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:importantForAutofill="no"
-        android:orientation="vertical"
-        tools:theme="@style/Payjp.Theme.CardForm"
-        tools:targetApi="o">
-
-    <jp.pay.android.ui.widget.PayjpCardDisplayView
-            android:id="@+id/card_display"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-    <FrameLayout
-        android:id="@+id/additional_info"
-        android:layout_width="match_parent"
+        android:text="@string/payjp_card_form_additional_info_label"
+        android:textAppearance="?textAppearanceSubtitle1"
+        />
+    <TextView
+        android:id="@+id/required_at_least_one"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/payjp_card_form_margin"
-        android:layout_marginStart="@dimen/payjp_card_form_element_margin"
-        android:layout_marginEnd="@dimen/payjp_card_form_element_margin"
-        >
-        <include android:id="@+id/additional_info_content"
-            layout="@layout/payjp_card_form_header_additional_info"/>
-
-    </FrameLayout>
-
-    <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/form_element_pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal"/>
-
+        android:text="@string/payjp_card_form_additional_info_required_at_least_one"
+        android:textAppearance="?textAppearanceCaption"
+        android:layout_marginStart="8dp"
+        />
 </LinearLayout>

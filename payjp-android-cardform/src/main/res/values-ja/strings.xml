@@ -30,6 +30,8 @@
     <string name="payjp_card_form_email_label">メールアドレス</string>
     <string name="payjp_card_form_phone_number_label">電話番号</string>
     <string name="payjp_card_form_country_code_label">国番号</string>
+    <string name="payjp_card_form_additional_info_label">追加情報</string>
+    <string name="payjp_card_form_additional_info_required_at_least_one">※1つ以上入力してください。</string>
 
     <string name="payjp_card_form_error_no_number">カード番号を入力してください</string>
     <string name="payjp_card_form_error_invalid_number">正しいカード番号を入力してください</string>
