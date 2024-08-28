@@ -63,9 +63,8 @@ internal class PhoneNumberServiceImpl(
     override fun normalize(context: Context, phoneNumber: String, countryCode: CountryCode): String? {
         return try {
             phoneNumberUtil(context).run {
-                parse(phoneNumber, countryCode.region)
-                    .takeIf { isValidNumberForRegion(it, countryCode.region) }
-                    ?.let { format(it, PhoneNumberUtil.PhoneNumberFormat.E164) }
+                val number = parse(phoneNumber, countryCode.region)
+                format(number, PhoneNumberUtil.PhoneNumberFormat.E164)
             }
         } catch (e: NumberParseException) {
             null
