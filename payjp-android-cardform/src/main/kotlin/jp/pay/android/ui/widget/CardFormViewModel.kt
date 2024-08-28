@@ -72,7 +72,7 @@ internal class CardFormViewModel(
     private val cardEmailInputTransformer: CardInputTransformer<CardComponentInput.CardEmailInput>,
     private val cardPhoneNumberInputTransformer: CardPhoneNumberInputTransformerService,
     private val tenantId: TenantId?,
-    acceptedBrandsPreset: List<CardBrand>,
+    acceptedBrandsPreset: List<CardBrand>?,
     private val phoneNumberService: PhoneNumberService,
     private val threeDSecureAttributes: List<ThreeDSecureAttribute<*>>,
 ) : ViewModel(), CardFormViewModelOutput, CardFormViewModelInput, DefaultLifecycleObserver {
@@ -320,7 +320,7 @@ internal class CardFormViewModel(
         private val cardEmailInputTransformer: CardInputTransformer<CardComponentInput.CardEmailInput>,
         private val cardPhoneNumberInputTransformer: CardPhoneNumberInputTransformerService,
         private val tenantId: TenantId? = null,
-        private val acceptedBrands: List<CardBrand>,
+        private val acceptedBrands: List<CardBrand>?,
         private val phoneNumberService: PhoneNumberService,
         private val threeDSecureAttributes: List<ThreeDSecureAttribute<*>>,
     ) : ViewModelProvider.NewInstanceFactory() {

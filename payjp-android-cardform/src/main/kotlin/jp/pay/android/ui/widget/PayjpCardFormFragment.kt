@@ -219,7 +219,7 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
                 service = PayjpCardForm.phoneNumberService()
             ),
             tenantId = tenantId,
-            acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>() ?: emptyList(),
+            acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>(),
             phoneNumberService = PayjpCardForm.phoneNumberService(),
             threeDSecureAttributes = threeDSecureAttributes?.filterIsInstance<ThreeDSecureAttribute<*>>() ?: emptyList(),
         )
