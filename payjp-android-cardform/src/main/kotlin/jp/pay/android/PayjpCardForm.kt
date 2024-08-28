@@ -150,7 +150,7 @@ object PayjpCardForm {
      * @param fragment fragment
      * @param requestCode requestCode. The default is [PayjpCardFormActivity.DEFAULT_CARD_FORM_REQUEST_CODE]
      * @param tenant tenant (only for platformer)
-     * @param threeDSecureAttributes additional attributes for 3DS. The default is [ThreeDSecureAttribute.Email].
+     * @param threeDSecureAttributes additional attributes for 3-D Secure. The default is [ThreeDSecureAttribute.defaults].
      */
     @MainThread
     @JvmOverloads
@@ -184,7 +184,7 @@ object PayjpCardForm {
      *
      * @param tenantId a option for platform tenant.
      * @param acceptedBrands accepted brands. if it is null, the fragment try to get them.
-     * @param threeDSecureAttributes additional attributes for 3DS. The default is [ThreeDSecureAttribute.Email].
+     * @param threeDSecureAttributes additional attributes for 3-D Secure. The default is [ThreeDSecureAttribute.defaults].
      * @return fragment
      */
     @JvmOverloads
@@ -208,7 +208,7 @@ object PayjpCardForm {
      * @param tenantId a option for platform tenant.
      * @param acceptedBrands accepted brands. if it is null, the fragment try to get them.
      * @param face form appearance type. cf. [PayjpCardForm.CardFormFace]
-     * @param threeDSecureAttributes additional attributes for 3DS. The default is [ThreeDSecureAttribute.Email].
+     * @param threeDSecureAttributes additional attributes for 3-D Secure. The default is [ThreeDSecureAttribute.defaults].
      */
     @JvmOverloads
     fun newCardFormFragment(
