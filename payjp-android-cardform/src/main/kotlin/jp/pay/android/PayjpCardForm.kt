@@ -30,8 +30,8 @@ import androidx.fragment.app.Fragment
 import jp.pay.android.data.PhoneNumberService
 import jp.pay.android.data.PhoneNumberServiceImpl
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.ExtraAttribute
 import jp.pay.android.model.TenantId
-import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.network.ClientInfoInterceptorProvider
 import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.ui.PayjpCardFormActivity
@@ -135,13 +135,13 @@ object PayjpCardForm {
         requestCode: Int? = null,
         tenant: TenantId? = null,
         @CardFormFace face: Int = FACE_MULTI_LINE,
-        threeDSecureAttributes: Array<ThreeDSecureAttribute<*>> = ThreeDSecureAttribute.defaults(),
+        extraAttributes: Array<ExtraAttribute<*>> = ExtraAttribute.defaults(),
     ) = PayjpCardFormActivity.start(
         activity = activity,
         requestCode = requestCode,
         tenant = tenant,
         face = face,
-        threeDSecureAttributes = threeDSecureAttributes,
+        extraAttributes = extraAttributes,
     )
 
     /**
@@ -150,7 +150,7 @@ object PayjpCardForm {
      * @param fragment fragment
      * @param requestCode requestCode. The default is [PayjpCardFormActivity.DEFAULT_CARD_FORM_REQUEST_CODE]
      * @param tenant tenant (only for platformer)
-     * @param threeDSecureAttributes additional attributes for 3-D Secure. The default is [ThreeDSecureAttribute.defaults].
+     * @param extraAttributes additional attributes for 3-D Secure. The default is [ExtraAttribute.defaults].
      */
     @MainThread
     @JvmOverloads
@@ -159,13 +159,13 @@ object PayjpCardForm {
         requestCode: Int? = null,
         tenant: TenantId? = null,
         @CardFormFace face: Int = FACE_MULTI_LINE,
-        threeDSecureAttributes: Array<ThreeDSecureAttribute<*>> = ThreeDSecureAttribute.defaults(),
+        extraAttributes: Array<ExtraAttribute<*>> = ExtraAttribute.defaults(),
     ) = PayjpCardFormActivity.start(
         fragment = fragment,
         requestCode = requestCode,
         tenant = tenant,
         face = face,
-        threeDSecureAttributes = threeDSecureAttributes,
+        extraAttributes = extraAttributes,
     )
 
     /**
@@ -184,7 +184,7 @@ object PayjpCardForm {
      *
      * @param tenantId a option for platform tenant.
      * @param acceptedBrands accepted brands. if it is null, the fragment try to get them.
-     * @param threeDSecureAttributes additional attributes for 3-D Secure. The default is [ThreeDSecureAttribute.defaults].
+     * @param extraAttributes additional attributes for 3-D Secure. The default is [ExtraAttribute.defaults].
      * @return fragment
      */
     @JvmOverloads
@@ -198,9 +198,9 @@ object PayjpCardForm {
     fun newFragment(
         tenantId: TenantId? = null,
         acceptedBrands: Array<CardBrand>? = null,
-        threeDSecureAttributes: Array<ThreeDSecureAttribute<*>> = ThreeDSecureAttribute.defaults(),
+        extraAttributes: Array<ExtraAttribute<*>> = ExtraAttribute.defaults(),
     ): PayjpCardFormFragment =
-        PayjpCardFormFragment.newInstance(tenantId, acceptedBrands, threeDSecureAttributes)
+        PayjpCardFormFragment.newInstance(tenantId, acceptedBrands, extraAttributes)
 
     /**
      * Create new Fragment instance that inherited [PayjpCardFormAbstractFragment].
@@ -208,17 +208,17 @@ object PayjpCardForm {
      * @param tenantId a option for platform tenant.
      * @param acceptedBrands accepted brands. if it is null, the fragment try to get them.
      * @param face form appearance type. cf. [PayjpCardForm.CardFormFace]
-     * @param threeDSecureAttributes additional attributes for 3-D Secure. The default is [ThreeDSecureAttribute.defaults].
+     * @param extraAttributes additional attributes for 3-D Secure. The default is [ExtraAttribute.defaults].
      */
     @JvmOverloads
     fun newCardFormFragment(
         tenantId: TenantId? = null,
         acceptedBrands: Array<CardBrand>? = null,
         @CardFormFace face: Int = FACE_MULTI_LINE,
-        threeDSecureAttributes: Array<ThreeDSecureAttribute<*>> = ThreeDSecureAttribute.defaults(),
+        extraAttributes: Array<ExtraAttribute<*>> = ExtraAttribute.defaults(),
     ): PayjpCardFormAbstractFragment = when (face) {
-        FACE_MULTI_LINE -> PayjpCardFormFragment.newInstance(tenantId, acceptedBrands, threeDSecureAttributes)
-        FACE_CARD_DISPLAY -> PayjpCardFormCardDisplayFragment.newInstance(tenantId, acceptedBrands, threeDSecureAttributes)
+        FACE_MULTI_LINE -> PayjpCardFormFragment.newInstance(tenantId, acceptedBrands, extraAttributes)
+        FACE_CARD_DISPLAY -> PayjpCardFormCardDisplayFragment.newInstance(tenantId, acceptedBrands, extraAttributes)
         else -> throw IllegalArgumentException("unknown face $face")
     }
 }

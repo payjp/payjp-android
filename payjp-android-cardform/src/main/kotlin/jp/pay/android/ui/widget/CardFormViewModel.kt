@@ -47,8 +47,8 @@ import jp.pay.android.model.CardComponentInput.CardNumberInput
 import jp.pay.android.model.CardComponentInput.CardPhoneNumberInput
 import jp.pay.android.model.CardExpiration
 import jp.pay.android.model.CountryCode
+import jp.pay.android.model.ExtraAttribute
 import jp.pay.android.model.TenantId
-import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.model.Token
 import jp.pay.android.util.OneOffValue
 import jp.pay.android.util.Tasks
@@ -74,7 +74,7 @@ internal class CardFormViewModel(
     private val tenantId: TenantId?,
     acceptedBrandsPreset: List<CardBrand>?,
     private val phoneNumberService: PhoneNumberService,
-    private val threeDSecureAttributes: List<ThreeDSecureAttribute<*>>,
+    private val extraAttributes: List<ExtraAttribute<*>>,
 ) : ViewModel(), CardFormViewModelOutput, CardFormViewModelInput, DefaultLifecycleObserver {
 
     override val cardNumberInput = MutableLiveData<CardNumberInput>()
@@ -130,14 +130,14 @@ internal class CardFormViewModel(
         currentPrimaryElement.value = CardFormElementType.Number
         // TDS Attributes settings
         // Email
-        cardEmailEnabled = threeDSecureAttributes.any { it is ThreeDSecureAttribute.Email }
+        cardEmailEnabled = extraAttributes.any { it is ExtraAttribute.Email }
         cardEmailError = cardEmailInput.map(this::retrieveError).distinctUntilChanged()
-        threeDSecureAttributes.filterIsInstance<ThreeDSecureAttribute.Email>().firstOrNull()?.preset?.let {
+        extraAttributes.filterIsInstance<ExtraAttribute.Email>().firstOrNull()?.preset?.let {
             cardEmailInput.value = cardEmailInputTransformer.transform(it)
         }
         // Phone Number
-        cardPhoneNumberEnabled = threeDSecureAttributes.any { it is ThreeDSecureAttribute.Phone }
-        threeDSecureAttributes.filterIsInstance<ThreeDSecureAttribute.Phone>().firstOrNull()?.preset?.let { (region, number) ->
+        cardPhoneNumberEnabled = extraAttributes.any { it is ExtraAttribute.Phone }
+        extraAttributes.filterIsInstance<ExtraAttribute.Phone>().firstOrNull()?.preset?.let { (region, number) ->
             cardPhoneNumberInput.value = cardPhoneNumberInputTransformer.injectPreset(region, number)
             cardPhoneNumberInputTransformer.currentCountryCode?.let { selectCountryCode(it) }
         }
@@ -322,7 +322,7 @@ internal class CardFormViewModel(
         private val tenantId: TenantId? = null,
         private val acceptedBrands: List<CardBrand>?,
         private val phoneNumberService: PhoneNumberService,
-        private val threeDSecureAttributes: List<ThreeDSecureAttribute<*>>,
+        private val extraAttributes: List<ExtraAttribute<*>>,
     ) : ViewModelProvider.NewInstanceFactory() {
 
         @Suppress("UNCHECKED_CAST")
@@ -338,7 +338,7 @@ internal class CardFormViewModel(
                 tenantId = tenantId,
                 acceptedBrandsPreset = acceptedBrands,
                 phoneNumberService = phoneNumberService,
-                threeDSecureAttributes = threeDSecureAttributes,
+                extraAttributes = extraAttributes,
             ) as T
         }
     }

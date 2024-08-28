@@ -39,9 +39,9 @@ import jp.pay.android.model.CardComponentInput.CardHolderNameInput
 import jp.pay.android.model.CardComponentInput.CardNumberInput
 import jp.pay.android.model.CardExpiration
 import jp.pay.android.model.CountryCode
+import jp.pay.android.model.ExtraAttribute
 import jp.pay.android.model.FormInputError
 import jp.pay.android.model.TenantId
-import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.util.Tasks
 import jp.pay.android.validator.CardCvcInputTransformerService
 import jp.pay.android.validator.CardInputTransformer
@@ -92,9 +92,9 @@ internal class CardFormViewModelTest {
     private fun createViewModel(
         tenantId: TenantId? = null,
         acceptedBrandList: List<CardBrand> = emptyList(),
-        threeDSecureAttributes: List<ThreeDSecureAttribute<*>> = listOf(
-            ThreeDSecureAttribute.Email(),
-            ThreeDSecureAttribute.Phone("JP"),
+        extraAttributes: List<ExtraAttribute<*>> = listOf(
+            ExtraAttribute.Email(),
+            ExtraAttribute.Phone("JP"),
         ),
     ) = CardFormViewModel(
         tokenService = mockTokenService,
@@ -107,7 +107,7 @@ internal class CardFormViewModelTest {
         tenantId = tenantId,
         acceptedBrandsPreset = acceptedBrandList,
         phoneNumberService = mockPhoneNumberService,
-        threeDSecureAttributes = threeDSecureAttributes,
+        extraAttributes = extraAttributes,
     ).apply {
         cardNumberError.observeForever { }
         cardExpirationError.observeForever { }
@@ -261,7 +261,7 @@ internal class CardFormViewModelTest {
     fun isValid_if_email_is_not_enabled_allow_empty() {
         val robot = CardRobot.SandboxVisa
         mockCorrectInput()
-        createViewModel(threeDSecureAttributes = listOf(ThreeDSecureAttribute.Phone("JP"))).run {
+        createViewModel(extraAttributes = listOf(ExtraAttribute.Phone("JP"))).run {
             inputCardNumber(robot.number)
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
@@ -276,7 +276,7 @@ internal class CardFormViewModelTest {
     fun isValid_if_phone_is_not_enabled_allow_empty() {
         val robot = CardRobot.SandboxVisa
         mockCorrectInput()
-        createViewModel(threeDSecureAttributes = listOf(ThreeDSecureAttribute.Email())).run {
+        createViewModel(extraAttributes = listOf(ExtraAttribute.Email())).run {
             inputCardNumber(robot.number)
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
@@ -290,7 +290,7 @@ internal class CardFormViewModelTest {
     fun isValid_if_phone_and_email_is_not_enabled_allow_empty() {
         val robot = CardRobot.SandboxVisa
         mockCorrectInput()
-        createViewModel(threeDSecureAttributes = emptyList()).run {
+        createViewModel(extraAttributes = emptyList()).run {
             inputCardNumber(robot.number)
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
@@ -303,7 +303,7 @@ internal class CardFormViewModelTest {
     fun isValid_if_both_phone_and_email_is_enabled_allow_phone_empty() {
         val robot = CardRobot.SandboxVisa
         mockCorrectInput()
-        createViewModel(threeDSecureAttributes = listOf(ThreeDSecureAttribute.Email(), ThreeDSecureAttribute.Phone("JP"))).run {
+        createViewModel(extraAttributes = listOf(ExtraAttribute.Email(), ExtraAttribute.Phone("JP"))).run {
             inputCardNumber(robot.number)
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
@@ -317,7 +317,7 @@ internal class CardFormViewModelTest {
     fun isValid_if_both_phone_and_email_is_enabled_allow_email_empty() {
         val robot = CardRobot.SandboxVisa
         mockCorrectInput()
-        createViewModel(threeDSecureAttributes = listOf(ThreeDSecureAttribute.Email(), ThreeDSecureAttribute.Phone("JP"))).run {
+        createViewModel(extraAttributes = listOf(ExtraAttribute.Email(), ExtraAttribute.Phone("JP"))).run {
             inputCardNumber(robot.number)
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
@@ -332,7 +332,7 @@ internal class CardFormViewModelTest {
     fun isValid_if_both_phone_and_email_is_enabled_not_allow_both_empty() {
         val robot = CardRobot.SandboxVisa
         mockCorrectInput()
-        createViewModel(threeDSecureAttributes = listOf(ThreeDSecureAttribute.Email(), ThreeDSecureAttribute.Phone("JP"))).run {
+        createViewModel(extraAttributes = listOf(ExtraAttribute.Email(), ExtraAttribute.Phone("JP"))).run {
             inputCardNumber(robot.number)
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
@@ -354,7 +354,7 @@ internal class CardFormViewModelTest {
                     FormInputError(jp.pay.android.R.string.payjp_card_form_error_invalid_phone_number, false),
                 )
             )
-        createViewModel(threeDSecureAttributes = listOf(ThreeDSecureAttribute.Email(), ThreeDSecureAttribute.Phone("JP"))).run {
+        createViewModel(extraAttributes = listOf(ExtraAttribute.Email(), ExtraAttribute.Phone("JP"))).run {
             inputCardNumber(robot.number)
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)

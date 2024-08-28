@@ -84,7 +84,7 @@ internal sealed class CardComponentInput<T> {
     ) : CardComponentInput<String>()
 
     /**
-     * Email (as ThreeDSecure Attributes)
+     * Email (as Extra Attributes)
      */
     internal data class CardEmailInput(
         override val input: String?,
@@ -93,7 +93,7 @@ internal sealed class CardComponentInput<T> {
     ) : CardComponentInput<String>()
 
     /**
-     * Phone Number (as ThreeDSecure Attributes)
+     * Phone Number (as Extra Attributes)
      */
     internal data class CardPhoneNumberInput(
         override val input: String?,

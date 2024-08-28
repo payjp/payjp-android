@@ -42,8 +42,8 @@ import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
 import jp.pay.android.databinding.PayjpCardFormActivityBinding
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.ExtraAttribute
 import jp.pay.android.model.TenantId
-import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.model.Token
 import jp.pay.android.model.TokenId
 import jp.pay.android.ui.extension.showWith
@@ -67,17 +67,17 @@ internal class PayjpCardFormActivity :
         private const val FRAGMENT_CARD_FORM = "FRAGMENT_CARD_FORM"
         private const val EXTRA_KEY_TENANT = "EXTRA_KEY_TENANT"
         private const val EXTRA_KEY_FACE = "EXTRA_KEY_FACE"
-        private const val EXTRA_KEY_TDS_ATTRIBUTES = "EXTRA_KEY_TDS_ATTRIBUTES"
+        private const val EXTRA_KEY_EXTRA_ATTRIBUTES = "EXTRA_KEY_EXTRA_ATTRIBUTES"
         private const val CARD_FORM_EXTRA_KEY_TOKEN = "DATA"
 
         fun createIntent(
             context: Context,
             tenant: TenantId?,
             @PayjpCardForm.CardFormFace face: Int,
-            threeDSecureAttributes: Array<ThreeDSecureAttribute<*>>,
+            extraAttributes: Array<ExtraAttribute<*>>,
         ): Intent = Intent(context, PayjpCardFormActivity::class.java)
             .putExtra(EXTRA_KEY_FACE, face)
-            .putExtra(EXTRA_KEY_TDS_ATTRIBUTES, threeDSecureAttributes)
+            .putExtra(EXTRA_KEY_EXTRA_ATTRIBUTES, extraAttributes)
             .apply {
                 if (tenant != null) {
                     putExtra(EXTRA_KEY_TENANT, tenant.id)
@@ -89,10 +89,10 @@ internal class PayjpCardFormActivity :
             requestCode: Int?,
             tenant: TenantId?,
             @PayjpCardForm.CardFormFace face: Int,
-            threeDSecureAttributes: Array<ThreeDSecureAttribute<*>>,
+            extraAttributes: Array<ExtraAttribute<*>>,
         ) {
             activity.startActivityForResult(
-                createIntent(activity, tenant, face, threeDSecureAttributes)
+                createIntent(activity, tenant, face, extraAttributes)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
             )
@@ -103,10 +103,10 @@ internal class PayjpCardFormActivity :
             requestCode: Int?,
             tenant: TenantId?,
             @PayjpCardForm.CardFormFace face: Int,
-            threeDSecureAttributes: Array<ThreeDSecureAttribute<*>>,
+            extraAttributes: Array<ExtraAttribute<*>>,
         ) {
             fragment.startActivityForResult(
-                createIntent(fragment.requireActivity(), tenant, face, threeDSecureAttributes)
+                createIntent(fragment.requireActivity(), tenant, face, extraAttributes)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
             )
@@ -133,11 +133,11 @@ internal class PayjpCardFormActivity :
         intent?.getIntExtra(EXTRA_KEY_FACE, PayjpCardForm.FACE_MULTI_LINE)
             ?: PayjpCardForm.FACE_MULTI_LINE
     }
-    private val threeDSecureAttributes: Array<ThreeDSecureAttribute<*>> by lazy {
+    private val extraAttributes: Array<ExtraAttribute<*>> by lazy {
         intent?.let {
-            IntentCompat.getParcelableArrayExtra(it, EXTRA_KEY_TDS_ATTRIBUTES, ThreeDSecureAttribute::class.java)
+            IntentCompat.getParcelableArrayExtra(it, EXTRA_KEY_EXTRA_ATTRIBUTES, ExtraAttribute::class.java)
         }
-            ?.filterIsInstance<ThreeDSecureAttribute<*>>()
+            ?.filterIsInstance<ExtraAttribute<*>>()
             ?.toTypedArray()
             ?: emptyArray()
     }
@@ -239,7 +239,7 @@ internal class PayjpCardFormActivity :
                 tenantId = tenantId,
                 acceptedBrands = acceptedBrands,
                 face = face,
-                threeDSecureAttributes = threeDSecureAttributes,
+                extraAttributes = extraAttributes,
             ).also { fragment ->
                 manager
                     .beginTransaction().apply {

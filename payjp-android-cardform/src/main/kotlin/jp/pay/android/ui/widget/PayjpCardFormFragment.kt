@@ -34,8 +34,8 @@ import com.google.android.material.textfield.TextInputLayout
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.databinding.PayjpCardFormViewBinding
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.ExtraAttribute
 import jp.pay.android.model.TenantId
-import jp.pay.android.model.ThreeDSecureAttribute
 import jp.pay.android.ui.extension.addOnTextChanged
 import jp.pay.android.ui.extension.cvcIconResourceId
 import jp.pay.android.ui.extension.logoResourceId
@@ -60,20 +60,20 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
          *
          * @param tenantId a option for platform tenant.
          * @param acceptedBrands accepted brands. if it is null, the fragment try to get them.
-         * @param threeDSecureAttributes a option for 3D secure attributes.
+         * @param extraAttributes a option for 3D secure attributes.
          * @return fragment
          */
         @JvmStatic
         fun newInstance(
             tenantId: TenantId? = null,
             acceptedBrands: Array<CardBrand>? = null,
-            threeDSecureAttributes: Array<ThreeDSecureAttribute<*>>,
+            extraAttributes: Array<ExtraAttribute<*>>,
         ): PayjpCardFormFragment =
             PayjpCardFormFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARGS_TENANT_ID, tenantId?.id)
                     putParcelableArray(ARGS_ACCEPTED_BRANDS, acceptedBrands)
-                    putParcelableArray(ARGS_TDS_ATTRIBUTES, threeDSecureAttributes)
+                    putParcelableArray(ARGS_TDS_ATTRIBUTES, extraAttributes)
                 }
             }
     }
@@ -204,8 +204,8 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
         val acceptedBrandArray = arguments?.let {
             BundleCompat.getParcelableArray(it, ARGS_ACCEPTED_BRANDS, CardBrand::class.java)
         }
-        val threeDSecureAttributes = arguments?.let {
-            BundleCompat.getParcelableArray(it, ARGS_TDS_ATTRIBUTES, ThreeDSecureAttribute::class.java)
+        val extraAttributes = arguments?.let {
+            BundleCompat.getParcelableArray(it, ARGS_TDS_ATTRIBUTES, ExtraAttribute::class.java)
         }
         val factory = CardFormViewModel.Factory(
             tokenService = PayjpCardForm.tokenService(),
@@ -221,7 +221,7 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
             tenantId = tenantId,
             acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>(),
             phoneNumberService = PayjpCardForm.phoneNumberService(),
-            threeDSecureAttributes = threeDSecureAttributes?.filterIsInstance<ThreeDSecureAttribute<*>>() ?: emptyList(),
+            extraAttributes = extraAttributes?.filterIsInstance<ExtraAttribute<*>>() ?: emptyList(),
         )
         return ViewModelProvider(requireActivity(), factory).get(CardFormViewModel::class.java)
     }

@@ -36,7 +36,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import jp.pay.android.CardRobot
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
-import jp.pay.android.model.ThreeDSecureAttribute
+import jp.pay.android.model.ExtraAttribute
 import jp.pay.android.ui.PayjpCardFormActivity
 import org.hamcrest.Matcher
 
@@ -48,9 +48,9 @@ internal object CardFormPage {
                 context = ApplicationProvider.getApplicationContext(),
                 tenant = null,
                 face = PayjpCardForm.FACE_CARD_DISPLAY,
-                threeDSecureAttributes = arrayOf(
-                    ThreeDSecureAttribute.Email(),
-                    ThreeDSecureAttribute.Phone("JP"),
+                extraAttributes = arrayOf(
+                    ExtraAttribute.Email(),
+                    ExtraAttribute.Phone("JP"),
                 )
             )
         )
@@ -62,9 +62,9 @@ internal object CardFormPage {
                 context = ApplicationProvider.getApplicationContext(),
                 tenant = null,
                 face = PayjpCardForm.FACE_MULTI_LINE,
-                threeDSecureAttributes = arrayOf(
-                    ThreeDSecureAttribute.Email(),
-                    ThreeDSecureAttribute.Phone("JP"),
+                extraAttributes = arrayOf(
+                    ExtraAttribute.Email(),
+                    ExtraAttribute.Phone("JP"),
                 )
             )
         )

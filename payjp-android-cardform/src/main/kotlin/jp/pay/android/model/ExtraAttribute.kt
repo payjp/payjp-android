@@ -26,10 +26,11 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 /**
- * 3-D Secure attribute.
+ * Extra attributes for card form.
+ * For now it is mainly used for 3-D Secure.
  * see [https://help.pay.jp/ja/articles/9556161]
  */
-sealed class ThreeDSecureAttribute<T> : Parcelable {
+sealed class ExtraAttribute<T> : Parcelable {
     abstract val preset: T?
 
     /**
@@ -39,18 +40,18 @@ sealed class ThreeDSecureAttribute<T> : Parcelable {
     @Parcelize
     data class Email(
         override val preset: String? = null
-    ) : ThreeDSecureAttribute<String>()
+    ) : ExtraAttribute<String>()
 
     /**
      * Phone attribute.
      * @param region region code for phone number. (ISO 3166-1 alpha-2)
-     * @param number preset phone number for card form.
+     * @param number preset phone number (You can use either an international number or a local.)
      */
     @Parcelize
     data class Phone(
         val region: String,
         val number: String? = null,
-    ) : ThreeDSecureAttribute<Pair<String, String?>>() {
+    ) : ExtraAttribute<Pair<String, String?>>() {
         override val preset: Pair<String, String?>
             get() = region to number
     }
@@ -64,6 +65,6 @@ sealed class ThreeDSecureAttribute<T> : Parcelable {
          * - only use email or phone.
          * - never request email nor phone.
          */
-        fun defaults(): Array<ThreeDSecureAttribute<*>> = arrayOf(Email(), Phone(region = "JP"))
+        fun defaults(): Array<ExtraAttribute<*>> = arrayOf(Email(), Phone(region = "JP"))
     }
 }

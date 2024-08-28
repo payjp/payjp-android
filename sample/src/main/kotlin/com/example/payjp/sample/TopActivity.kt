@@ -37,7 +37,7 @@ import com.example.payjp.sample.databinding.ActivityTopBinding
 import com.example.payjp.sample.databinding.CardSampleBinding
 import jp.pay.android.Payjp
 import jp.pay.android.PayjpCardForm
-import jp.pay.android.model.ThreeDSecureAttribute
+import jp.pay.android.model.ExtraAttribute
 
 typealias OnClickSample = (sample: TopActivity.Sample) -> Unit
 
@@ -65,22 +65,22 @@ class TopActivity : AppCompatActivity() {
             )
         )
     }
-    private val attributesOption: Array<Pair<String, Array<ThreeDSecureAttribute<*>>>> = arrayOf(
+    private val attributesOption: Array<Pair<String, Array<ExtraAttribute<*>>>> = arrayOf(
         "email and phone" to arrayOf(
-            ThreeDSecureAttribute.Email(),
-            ThreeDSecureAttribute.Phone(region = "JP"),
+            ExtraAttribute.Email(),
+            ExtraAttribute.Phone(region = "JP"),
         ),
         "email only" to arrayOf(
-            ThreeDSecureAttribute.Email()
+            ExtraAttribute.Email()
         ),
         "phone only" to arrayOf(
-            ThreeDSecureAttribute.Phone(region = "JP")
+            ExtraAttribute.Phone(region = "JP")
         ),
         "email only (preset)" to arrayOf(
-            ThreeDSecureAttribute.Email("test@example.com")
+            ExtraAttribute.Email("test@example.com")
         ),
         "phone only (preset)" to arrayOf(
-            ThreeDSecureAttribute.Phone("JP", "09012345678")
+            ExtraAttribute.Phone("JP", "09012345678")
         ),
         "none" to emptyArray()
     )
@@ -120,7 +120,7 @@ class TopActivity : AppCompatActivity() {
                 Payjp.cardForm().start(
                     activity = this,
                     face = face,
-                    threeDSecureAttributes = attributes
+                    extraAttributes = attributes
                 )
             }
             .setNegativeButton("Cancel", null)
