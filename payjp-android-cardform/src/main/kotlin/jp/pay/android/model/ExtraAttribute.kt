@@ -45,7 +45,7 @@ sealed class ExtraAttribute<T> : Parcelable {
     /**
      * Phone attribute.
      * @param region region code for phone number. (ISO 3166-1 alpha-2)
-     * @param number preset phone number (You can use either an international number or a local.)
+     * @param number preset phone number.
      */
     @Parcelize
     data class Phone(
