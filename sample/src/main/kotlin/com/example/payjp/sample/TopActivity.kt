@@ -114,9 +114,12 @@ class TopActivity : AppCompatActivity() {
         // show selectable alert dialog
         val items = attributesOption.map { it.first }.toTypedArray()
         AlertDialog.Builder(this)
-            .setTitle("Select 3DSecureAttributes")
+            .setTitle("Select Extra Attributes")
             .setItems(items) { _, which ->
                 val attributes = attributesOption[which].second
+                // You can pass extra attributes to start card form.
+                // attributes are mainly used for 3-D Secure, please see the document.
+                // https://help.pay.jp/ja/articles/9556161
                 Payjp.cardForm().start(
                     activity = this,
                     face = face,
