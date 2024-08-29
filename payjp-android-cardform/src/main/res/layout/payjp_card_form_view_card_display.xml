@@ -35,6 +35,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
+    <FrameLayout
+        android:id="@+id/additional_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/payjp_card_form_margin"
+        android:layout_marginStart="@dimen/payjp_card_form_element_margin"
+        android:layout_marginEnd="@dimen/payjp_card_form_element_margin"
+        >
+        <include android:id="@+id/additional_info_content"
+            layout="@layout/payjp_card_form_header_additional_info"/>
+
+    </FrameLayout>
+
     <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/form_element_pager"
             android:layout_width="match_parent"

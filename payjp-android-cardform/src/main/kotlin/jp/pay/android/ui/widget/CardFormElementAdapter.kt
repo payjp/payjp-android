@@ -32,11 +32,13 @@ import androidx.annotation.IdRes
 import androidx.recyclerview.widget.RecyclerView
 import jp.pay.android.R
 import jp.pay.android.databinding.PayjpCardFormElementCvcLayoutBinding
+import jp.pay.android.databinding.PayjpCardFormElementEmailPhoneLayoutBinding
 import jp.pay.android.databinding.PayjpCardFormElementExpirationLayoutBinding
 import jp.pay.android.databinding.PayjpCardFormElementHolderNameLayoutBinding
 import jp.pay.android.databinding.PayjpCardFormElementNumberLayoutBinding
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput
+import jp.pay.android.model.CountryCode
 import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.ui.widget.CardFormElementViewHolder.CardFormCvcElement
 import jp.pay.android.ui.widget.CardFormElementViewHolder.CardFormExpirationElement
@@ -44,6 +46,7 @@ import jp.pay.android.ui.widget.CardFormElementViewHolder.CardFormHolderNameElem
 import jp.pay.android.ui.widget.CardFormElementViewHolder.CardFormNumberElement
 
 internal class CardFormElementAdapter(
+    private val inputTypes: List<CardFormInputType>,
     private val cardNumberFormatter: CardNumberFormatTextWatcher,
     private val cardExpirationFormatter: TextWatcher,
     private val scannerPlugin: CardScannerPlugin?,
@@ -53,34 +56,30 @@ internal class CardFormElementAdapter(
     private val onElementFocusChanged: OnCardFormElementFocusChanged,
     private val onElementKeyDownDeleteWithEmpty: OnCardFormElementKeyDownDeleteWithEmpty,
     private val onCardNumberInputChanged: (s: CharSequence) -> Unit,
-    autofillManager: AutofillManager?
-) : RecyclerView.Adapter<CardFormElementViewHolder<*>>() {
-
-    companion object {
-        @IdRes
-        fun findEditTextId(element: CardFormElementType): Int = when (element) {
-            CardFormElementType.Number -> R.id.input_edit_number
-            CardFormElementType.Expiration -> R.id.input_edit_expiration
-            CardFormElementType.Cvc -> R.id.input_edit_cvc
-            CardFormElementType.HolderName -> R.id.input_edit_holder_name
-        }
-    }
+    autofillManager: AutofillManager?,
+    private val onClickCountryCode: View.OnClickListener?,
+    var countryCode: CountryCode,
+    private val lastInputType: CardFormInputType,
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var cardNumberInput: CardComponentInput.CardNumberInput? = null
     var cardExpirationInput: CardComponentInput.CardExpirationInput? = null
     var cardHolderNameInput: CardComponentInput.CardHolderNameInput? = null
     var cardCvcInput: CardComponentInput.CardCvcInput? = null
+    var cardEmailInput: CardComponentInput.CardEmailInput? = null
+    var cardPhoneNumberInput: CardComponentInput.CardPhoneNumberInput? = null
     var brand: CardBrand = CardBrand.UNKNOWN
     var showErrorImmediately: Boolean = false
-    private val itemSize = CardFormElementType.values().size
-    private val autofillIds: List<Any>
+    private val elementTypes: List<CardFormElementType> = inputTypes.map { it.elementType() }.distinct()
+    private val itemSize = elementTypes.size
+    private val autofillIds: Map<CardFormInputType, Any>
 
     init {
         setHasStableIds(true)
         autofillIds =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && autofillManager != null) {
-                (0 until itemSize).map { autofillManager.nextAutofillId as Any }.toList()
-            } else emptyList()
+                CardFormInputType.entries.associateWith { autofillManager.nextAutofillId as Any }
+            } else emptyMap()
     }
 
     fun getPositionForElementType(cardFormElementType: CardFormElementType): Int {
@@ -89,7 +88,7 @@ internal class CardFormElementAdapter(
 
     fun getElementTypeForPosition(position: Int): CardFormElementType {
         require(position < itemCount) { "item count is $itemCount" }
-        return CardFormElementType.values()[position]
+        return CardFormElementType.entries[position]
     }
 
     fun notifyCardFormElementChanged(cardFormElementType: CardFormElementType) {
@@ -99,11 +98,10 @@ internal class CardFormElementAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): CardFormElementViewHolder<*> {
-        val type = CardFormElementType.values()[viewType]
-        val autofillId = autofillIds.getOrNull(type.ordinal)
+    ): RecyclerView.ViewHolder {
+        val elementType = CardFormElementType.entries[viewType]
         val inflater = LayoutInflater.from(parent.context)
-        return when (type) {
+        return when (elementType) {
             CardFormElementType.Number -> CardFormNumberElement(
                 PayjpCardFormElementNumberLayoutBinding.inflate(inflater, parent, false),
                 cardNumberFormatter,
@@ -114,7 +112,8 @@ internal class CardFormElementAdapter(
                 onElementFocusChanged,
                 onCardNumberInputChanged,
                 onElementKeyDownDeleteWithEmpty,
-                autofillId
+                autofillIds[CardFormInputType.Number],
+                lastInputType == CardFormInputType.Number,
             )
             CardFormElementType.Expiration -> CardFormExpirationElement(
                 PayjpCardFormElementExpirationLayoutBinding.inflate(inflater, parent, false),
@@ -123,7 +122,8 @@ internal class CardFormElementAdapter(
                 onElementEditorAction,
                 onElementFocusChanged,
                 onElementKeyDownDeleteWithEmpty,
-                autofillId
+                autofillIds[CardFormInputType.Expiration],
+                lastInputType == CardFormInputType.Expiration,
             )
             CardFormElementType.Cvc -> CardFormCvcElement(
                 PayjpCardFormElementCvcLayoutBinding.inflate(inflater, parent, false),
@@ -131,7 +131,8 @@ internal class CardFormElementAdapter(
                 onElementEditorAction,
                 onElementFocusChanged,
                 onElementKeyDownDeleteWithEmpty,
-                autofillId
+                autofillIds[CardFormInputType.Cvc],
+                lastInputType == CardFormInputType.Cvc,
             )
             CardFormElementType.HolderName -> CardFormHolderNameElement(
                 PayjpCardFormElementHolderNameLayoutBinding.inflate(inflater, parent, false),
@@ -139,12 +140,26 @@ internal class CardFormElementAdapter(
                 onElementEditorAction,
                 onElementFocusChanged,
                 onElementKeyDownDeleteWithEmpty,
-                autofillId
+                autofillIds[CardFormInputType.HolderName],
+                lastInputType == CardFormInputType.HolderName,
+            )
+            CardFormElementType.EmailAndPhoneNumber -> CardFormEmailPhoneElementViewHolder(
+                PayjpCardFormElementEmailPhoneLayoutBinding.inflate(inflater, parent, false),
+                inputTypes.contains(CardFormInputType.Email),
+                inputTypes.contains(CardFormInputType.PhoneNumber),
+                onClickCountryCode,
+                onElementTextChanged,
+                onElementEditorAction,
+                onElementFocusChanged,
+                onElementKeyDownDeleteWithEmpty,
+                autofillIds[CardFormInputType.Email],
+                autofillIds[CardFormInputType.PhoneNumber],
+                lastInputType,
             )
         }
     }
 
-    override fun onBindViewHolder(holder: CardFormElementViewHolder<*>, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is CardFormNumberElement -> holder.bindData(
                 cardNumberInput,
@@ -163,12 +178,30 @@ internal class CardFormElementAdapter(
                 cardHolderNameInput,
                 showErrorImmediately
             )
+            is CardFormEmailPhoneElementViewHolder -> holder.bindData(
+                countryCode,
+                cardEmailInput,
+                cardPhoneNumberInput,
+                showErrorImmediately
+            )
         }
     }
 
-    override fun getItemViewType(position: Int): Int = position
+    override fun getItemViewType(position: Int): Int = elementTypes[position].ordinal
 
     override fun getItemCount(): Int = itemSize
 
     override fun getItemId(position: Int): Long = position.toLong()
+
+    @IdRes
+    fun findEditTextId(element: CardFormElementType): Int = when (element) {
+        CardFormElementType.Number -> R.id.input_edit_number
+        CardFormElementType.Expiration -> R.id.input_edit_expiration
+        CardFormElementType.Cvc -> R.id.input_edit_cvc
+        CardFormElementType.HolderName -> R.id.input_edit_holder_name
+        CardFormElementType.EmailAndPhoneNumber -> when {
+            inputTypes.contains(CardFormInputType.Email) -> R.id.input_edit_email
+            else -> R.id.input_edit_phone_number
+        }
+    }
 }

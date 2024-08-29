@@ -27,6 +27,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.ActivityCompat
+import androidx.core.content.IntentCompat
 import androidx.fragment.app.Fragment
 import io.card.payment.CardIOActivity
 import io.card.payment.CreditCard
@@ -64,11 +65,17 @@ object PayjpCardScannerPlugin : CardScannerPlugin {
         data: Intent?,
         listener: CardScannerPlugin.CardScanOnResultListener?
     ): Boolean {
-        if (requestCode != requestCode) {
+        if (requestCode != REQUEST_CODE_OPEN_CARD_IO) {
             return false
         }
-        data?.getParcelableExtra<CreditCard>(CardIOActivity.EXTRA_SCAN_RESULT)?.let { card ->
-            listener?.onScanResult(cardNumber = card.cardNumber)
+        data?.let { intent ->
+            IntentCompat.getParcelableExtra(
+                intent,
+                CardIOActivity.EXTRA_SCAN_RESULT,
+                CreditCard::class.java
+            )?.let { card ->
+                listener?.onScanResult(cardNumber = card.cardNumber)
+            }
         }
         return true
     }

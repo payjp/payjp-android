@@ -45,7 +45,7 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
         latestInsertionSize = after
     }
 
-    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) = Unit
 
     override fun afterTextChanged(s: Editable) {
         if (ignoreChanges) {
@@ -140,6 +140,7 @@ internal class CardNumberFormatTextWatcher(private val delimiter: Char) : TextWa
         return digits
     }
 
+    @Suppress("ReturnCount")
     private fun getAdjustedCursorPosition(original: String, formatted: String, cursor: Int): Int {
         if (cursor == original.length) {
             return formatted.length

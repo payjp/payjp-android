@@ -27,6 +27,11 @@
     <string name="payjp_card_form_expiration_label">Expiration date</string>
     <string name="payjp_card_form_cvc_label">Security code</string>
     <string name="payjp_card_form_holder_name_label">Name</string>
+    <string name="payjp_card_form_email_label">Email</string>
+    <string name="payjp_card_form_phone_number_label">Phone number</string>
+    <string name="payjp_card_form_country_code_label">Country</string>
+    <string name="payjp_card_form_additional_info_label">Additional Information</string>
+    <string name="payjp_card_form_additional_info_required_at_least_one">Please enter at least one.</string>
 
     <string name="payjp_card_form_error_no_number">Please enter a card number.</string>
     <string name="payjp_card_form_error_invalid_number">Please enter a valid card number.</string>
@@ -36,6 +41,9 @@
     <string name="payjp_card_form_error_no_cvc">Please enter a security code.</string>
     <string name="payjp_card_form_error_invalid_cvc">Please enter a valid security code.</string>
     <string name="payjp_card_form_error_no_holder_name">Please enter a card holder name.</string>
+    <string name="payjp_card_form_error_no_email">Please enter an email address.</string>
+    <string name="payjp_card_form_error_no_phone_number">Please enter a phone number.</string>
+    <string name="payjp_card_form_error_invalid_phone_number">Please enter a valid phone number.</string>
     <string name="payjp_card_scanner_permission_denied_title">Scan card</string>
     <string name="payjp_card_scanner_permission_denied_message"><![CDATA[
 The app is not allowed to use the camera.

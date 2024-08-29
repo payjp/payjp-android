@@ -22,20 +22,20 @@
  */
 package jp.pay.android.ui.widget
 
-import android.view.inputmethod.EditorInfo
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
 import jp.pay.android.PayjpTokenService
+import jp.pay.android.R
 import jp.pay.android.Task
+import jp.pay.android.data.PhoneNumberService
 import jp.pay.android.exception.PayjpInvalidCardFormException
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardBrandsAcceptedResponse
@@ -44,32 +44,38 @@ import jp.pay.android.model.CardComponentInput.CardCvcInput
 import jp.pay.android.model.CardComponentInput.CardExpirationInput
 import jp.pay.android.model.CardComponentInput.CardHolderNameInput
 import jp.pay.android.model.CardComponentInput.CardNumberInput
+import jp.pay.android.model.CardComponentInput.CardPhoneNumberInput
 import jp.pay.android.model.CardExpiration
+import jp.pay.android.model.CountryCode
+import jp.pay.android.model.ExtraAttribute
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.util.OneOffValue
 import jp.pay.android.util.Tasks
+import jp.pay.android.util.nonNull
 import jp.pay.android.validator.CardCvcInputTransformerService
 import jp.pay.android.validator.CardInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformerService
+import jp.pay.android.validator.CardPhoneNumberInputTransformerService
 
 /**
  * ViewModel for [PayjpCardFormFragment]
  *
- * @param tokenService service to fetch token
- * @param tenantId for platform
- * @param holderNameEnabledDefault whether enable holder name input or not
  */
+@Suppress("LongParameterList", "TooManyFunctions")
 internal class CardFormViewModel(
     private val tokenService: PayjpTokenService,
     private val cardNumberInputTransformer: CardNumberInputTransformerService,
     private val cardExpirationInputTransformer: CardInputTransformer<CardExpirationInput>,
     private val cardCvcInputTransformer: CardCvcInputTransformerService,
     private val cardHolderNameInputTransformer: CardInputTransformer<CardHolderNameInput>,
+    private val cardEmailInputTransformer: CardInputTransformer<CardComponentInput.CardEmailInput>,
+    private val cardPhoneNumberInputTransformer: CardPhoneNumberInputTransformerService,
     private val tenantId: TenantId?,
-    holderNameEnabledDefault: Boolean,
-    acceptedBrandsPreset: List<CardBrand>?
-) : ViewModel(), CardFormViewModelOutput, CardFormViewModelInput, LifecycleObserver {
+    acceptedBrandsPreset: List<CardBrand>?,
+    private val phoneNumberService: PhoneNumberService,
+    private val extraAttributes: List<ExtraAttribute<*>>,
+) : ViewModel(), CardFormViewModelOutput, CardFormViewModelInput, DefaultLifecycleObserver {
 
     override val cardNumberInput = MutableLiveData<CardNumberInput>()
     override val cardNumberError: LiveData<Int?>
@@ -78,8 +84,6 @@ internal class CardFormViewModel(
     override val cardCvcError: LiveData<Int?>
     override val cardHolderNameInput = MutableLiveData<CardHolderNameInput>()
     override val cardHolderNameError: LiveData<Int?>
-    override val cardHolderNameEnabled = MutableLiveData<Boolean>()
-    override val cvcImeOptions: LiveData<Int>
     override val cardNumberBrand: LiveData<CardBrand>
     override val cardExpiration: LiveData<CardExpiration?>
     override val isValid: LiveData<Boolean>
@@ -90,27 +94,21 @@ internal class CardFormViewModel(
     override val errorFetchAcceptedBrands: MutableLiveData<OneOffValue<Throwable>> = MutableLiveData()
     override val acceptedBrands: MutableLiveData<OneOffValue<List<CardBrand>>> = MutableLiveData()
     override val showErrorImmediately = MutableLiveData<Boolean>()
-    override val currentPrimaryInput: MutableLiveData<CardFormElementType> = MutableLiveData()
+    override val currentPrimaryElement: MutableLiveData<CardFormElementType> = MutableLiveData()
+    override val cardEmailEnabled: Boolean
+    override val cardEmailInput = MutableLiveData<CardComponentInput.CardEmailInput>()
+    override val cardEmailError: LiveData<Int?>
+    override val cardPhoneNumberEnabled: Boolean
+    override val cardPhoneNumberCountryCode: MutableLiveData<CountryCode> = MutableLiveData()
+    override val cardPhoneNumberInput: MutableLiveData<CardPhoneNumberInput> = MutableLiveData()
+    override val cardPhoneNumberError: LiveData<Int?>
+    override val lastInput: CardFormInputType
     private var task: Task<CardBrandsAcceptedResponse>? = null
     private val brandObserver: Observer<CardBrand>
+    private val countryCodeObserver: Observer<CountryCode>
 
     init {
-        cardHolderNameEnabled.value = holderNameEnabledDefault
         cardNumberInputTransformer.acceptedBrands = acceptedBrandsPreset
-        cvcImeOptions = cardHolderNameEnabled.map {
-            if (it) {
-                EditorInfo.IME_ACTION_NEXT
-            } else {
-                EditorInfo.IME_ACTION_DONE
-            }
-        }
-        isValid = MediatorLiveData<Boolean>().apply {
-            addSource(cardNumberInput) { value = checkValid() }
-            addSource(cardExpirationInput) { value = checkValid() }
-            addSource(cardCvcInput) { value = checkValid() }
-            addSource(cardHolderNameInput) { value = checkValid() }
-            addSource(cardHolderNameEnabled) { value = checkValid() }
-        }
         showErrorImmediately.value = false
         cardNumberError = cardNumberInput.map(this::retrieveError).distinctUntilChanged()
         cardExpirationError = cardExpirationInput.map(this::retrieveError).distinctUntilChanged()
@@ -125,17 +123,56 @@ internal class CardFormViewModel(
                 forceValidate(cardCvcInput, cardCvcInputTransformer)
             }
         }
-        cardNumberBrand.observeForever(brandObserver)
+        cardNumberBrand.nonNull().observeForever(brandObserver)
         cardNumberValid = cardNumberInput.map { it.valid }
         cardExpirationValid = cardExpirationInput.map { it.valid }
         cardCvcValid = cardCvcInput.map { it.valid }
-        currentPrimaryInput.value = CardFormElementType.Number
+        currentPrimaryElement.value = CardFormElementType.Number
+        // TDS Attributes settings
+        // Email
+        cardEmailEnabled = extraAttributes.any { it is ExtraAttribute.Email }
+        cardEmailError = cardEmailInput.map(this::retrieveError).distinctUntilChanged()
+        extraAttributes.filterIsInstance<ExtraAttribute.Email>().firstOrNull()?.preset?.let {
+            cardEmailInput.value = cardEmailInputTransformer.transform(it)
+        }
+        // Phone Number
+        cardPhoneNumberEnabled = extraAttributes.any { it is ExtraAttribute.Phone }
+        extraAttributes.filterIsInstance<ExtraAttribute.Phone>().firstOrNull()?.preset?.let { (region, number) ->
+            cardPhoneNumberInput.value = cardPhoneNumberInputTransformer.injectPreset(region, number)
+            cardPhoneNumberInputTransformer.currentCountryCode?.let { selectCountryCode(it) }
+        }
+        cardPhoneNumberCountryCode.value = cardPhoneNumberCountryCode.value ?: phoneNumberService.defaultCountryCode()
+        cardPhoneNumberError = cardPhoneNumberInput.map(this::retrieveError).distinctUntilChanged()
+        countryCodeObserver = Observer {
+            if (it != cardPhoneNumberInputTransformer.currentCountryCode) {
+                // If country code changed, revalidate phone number.
+                cardPhoneNumberInputTransformer.currentCountryCode = it
+                forceValidate(cardPhoneNumberInput, cardPhoneNumberInputTransformer)
+            }
+        }
+        cardPhoneNumberCountryCode.nonNull().observeForever(countryCodeObserver)
+        lastInput = when {
+            cardPhoneNumberEnabled -> CardFormInputType.PhoneNumber
+            cardEmailEnabled -> CardFormInputType.Email
+            else -> CardFormInputType.HolderName
+        }
+        isValid = MediatorLiveData<Boolean>().apply {
+            addSource(cardNumberInput) { value = checkValid() }
+            addSource(cardExpirationInput) { value = checkValid() }
+            addSource(cardCvcInput) { value = checkValid() }
+            addSource(cardHolderNameInput) { value = checkValid() }
+            addSource(cardEmailInput) { value = checkValid() }
+            addSource(cardPhoneNumberInput) { value = checkValid() }
+            addSource(cardEmailError) { value = checkValid() }
+            addSource(cardPhoneNumberError) { value = checkValid() }
+        }
     }
 
     override fun onCleared() {
         task?.cancel()
         task = null
         cardNumberBrand.removeObserver(brandObserver)
+        cardPhoneNumberCountryCode.removeObserver(countryCodeObserver)
     }
 
     override fun inputCardNumber(input: String) =
@@ -150,9 +187,16 @@ internal class CardFormViewModel(
     override fun inputCardHolderName(input: String) =
         inputComponent(input, cardHolderNameInput, cardHolderNameInputTransformer)
 
-    override fun updateCardHolderNameEnabled(enabled: Boolean) {
-        showErrorImmediately.value = false
-        this.cardHolderNameEnabled.value = enabled
+    override fun inputEmail(input: String) {
+        inputComponent(input, cardEmailInput, cardEmailInputTransformer)
+    }
+
+    override fun selectCountryCode(countryCode: CountryCode) {
+        cardPhoneNumberCountryCode.value = countryCode
+    }
+
+    override fun inputPhoneNumber(input: String) {
+        inputComponent(input, cardPhoneNumberInput, cardPhoneNumberInputTransformer)
     }
 
     override fun validate() {
@@ -161,22 +205,21 @@ internal class CardFormViewModel(
         forceValidate(cardExpirationInput, cardExpirationInputTransformer)
         forceValidate(cardCvcInput, cardCvcInputTransformer)
         forceValidate(cardHolderNameInput, cardHolderNameInputTransformer)
+        forceValidate(cardEmailInput, cardEmailInputTransformer)
+        forceValidate(cardPhoneNumberInput, cardPhoneNumberInputTransformer)
     }
 
     override fun createToken(): Task<Token> {
         return if (isValid.value == true) {
-            val name = if (cardHolderNameEnabled.value == true) {
-                cardHolderNameInput.value?.value
-            } else {
-                null
-            }
             tokenService.createToken(
                 number = checkNotNull(cardNumberInput.value?.value),
                 expMonth = checkNotNull(cardExpirationInput.value?.value).month,
                 expYear = checkNotNull(cardExpirationInput.value?.value).year,
                 cvc = checkNotNull(cardCvcInput.value?.value),
-                name = name,
-                tenantId = tenantId
+                name = cardHolderNameInput.value?.value,
+                tenantId = tenantId,
+                email = cardEmailInput.value?.value,
+                phone = cardPhoneNumberInput.value?.value,
             )
         } else {
             Tasks.failure(
@@ -185,7 +228,11 @@ internal class CardFormViewModel(
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    override fun onStart(owner: LifecycleOwner) {
+        super.onStart(owner)
+        fetchAcceptedBrands()
+    }
+
     fun fetchAcceptedBrands() {
         if (cardNumberInputTransformer.acceptedBrands == null) {
             task = tokenService.getAcceptedBrands(tenantId)
@@ -204,10 +251,26 @@ internal class CardFormViewModel(
         }
     }
 
-    private fun checkValid() = cardNumberInput.value?.valid == true &&
-        cardExpirationInput.value?.valid == true &&
-        cardCvcInput.value?.valid == true &&
-        (cardHolderNameEnabled.value == false || cardHolderNameInput.value?.valid == true)
+    private fun checkValid(): Boolean {
+        val basicInputIsValid = cardNumberInput.value?.valid == true &&
+            cardExpirationInput.value?.valid == true &&
+            cardCvcInput.value?.valid == true &&
+            cardHolderNameInput.value?.valid == true
+        val tdsAttributesAreValid = when {
+            cardEmailEnabled && cardPhoneNumberEnabled -> {
+                // either email or phone number is valid and neither is invalid
+                val eitherIsValid = cardEmailInput.value?.valid == true || cardPhoneNumberInput.value?.valid == true
+                // allow empty
+                val neitherIsInvalid = cardEmailError.value?.takeIf { it != R.string.payjp_card_form_error_no_email } == null &&
+                    cardPhoneNumberError.value?.takeIf { it != R.string.payjp_card_form_error_no_phone_number } == null
+                eitherIsValid && neitherIsInvalid
+            }
+            cardEmailEnabled -> cardEmailInput.value?.valid == true
+            cardPhoneNumberEnabled -> cardPhoneNumberInput.value?.valid == true
+            else -> true
+        }
+        return basicInputIsValid && tdsAttributesAreValid
+    }
 
     private fun retrieveError(input: CardComponentInput<*>?): Int? {
         return input?.errorMessage?.take(showErrorImmediately.value != true)
@@ -223,7 +286,7 @@ internal class CardFormViewModel(
         val i = transformer.transform(input)
         data.value = i
         if (i.valid && before != i && i !is CardHolderNameInput) {
-            currentPrimaryInput.value = getPrimaryInput()
+            currentPrimaryElement.value = getPrimaryInput()
         }
     }
 
@@ -239,21 +302,27 @@ internal class CardFormViewModel(
             cardNumberInput.value to CardFormElementType.Number,
             cardExpirationInput.value to CardFormElementType.Expiration,
             cardCvcInput.value to CardFormElementType.Cvc,
-            cardHolderNameInput.value to CardFormElementType.HolderName
+            cardHolderNameInput.value to CardFormElementType.HolderName,
+            cardEmailInput.value to CardFormElementType.EmailAndPhoneNumber,
+            cardPhoneNumberInput.value to CardFormElementType.EmailAndPhoneNumber,
         ).firstOrNull { it.first?.valid?.not() ?: true }?.second
 
     /**
      * Factory class for [CardFormViewModel]
      */
+    @Suppress("LongParameterList")
     internal class Factory(
         private val tokenService: PayjpTokenService,
         private val cardNumberInputTransformer: CardNumberInputTransformerService,
         private val cardExpirationInputTransformer: CardInputTransformer<CardExpirationInput>,
         private val cardCvcInputTransformer: CardCvcInputTransformerService,
         private val cardHolderNameInputTransformer: CardInputTransformer<CardHolderNameInput>,
+        private val cardEmailInputTransformer: CardInputTransformer<CardComponentInput.CardEmailInput>,
+        private val cardPhoneNumberInputTransformer: CardPhoneNumberInputTransformerService,
         private val tenantId: TenantId? = null,
-        private val holderNameEnabledDefault: Boolean = true,
-        private val acceptedBrands: List<CardBrand>? = null
+        private val acceptedBrands: List<CardBrand>?,
+        private val phoneNumberService: PhoneNumberService,
+        private val extraAttributes: List<ExtraAttribute<*>>,
     ) : ViewModelProvider.NewInstanceFactory() {
 
         @Suppress("UNCHECKED_CAST")
@@ -264,9 +333,12 @@ internal class CardFormViewModel(
                 cardExpirationInputTransformer = cardExpirationInputTransformer,
                 cardCvcInputTransformer = cardCvcInputTransformer,
                 cardHolderNameInputTransformer = cardHolderNameInputTransformer,
+                cardEmailInputTransformer = cardEmailInputTransformer,
+                cardPhoneNumberInputTransformer = cardPhoneNumberInputTransformer,
                 tenantId = tenantId,
-                holderNameEnabledDefault = holderNameEnabledDefault,
-                acceptedBrandsPreset = acceptedBrands
+                acceptedBrandsPreset = acceptedBrands,
+                phoneNumberService = phoneNumberService,
+                extraAttributes = extraAttributes,
             ) as T
         }
     }

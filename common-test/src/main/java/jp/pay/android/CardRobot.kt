@@ -27,11 +27,19 @@ sealed class CardRobot {
     abstract val exp: String
     abstract val cvc: String
     abstract val name: String
+    abstract val countryRegion: String
+    abstract val email: String
+    abstract val countryCode: Int
+    abstract val phoneNumber: String
 
-    object SandboxVisa : CardRobot() {
+    data object SandboxVisa : CardRobot() {
         override val number: String = "4242424242424242"
         override val exp: String = "12/30"
         override val cvc: String = "123"
         override val name: String = "TARO YAMADA"
+        override val email: String = "test@example.com"
+        override val countryRegion: String = "JP"
+        override val countryCode: Int = 81
+        override val phoneNumber: String = "09012345678"
     }
 }

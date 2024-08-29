@@ -28,6 +28,7 @@ import jp.pay.android.PayjpTokenBackgroundHandler
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.plugin.CardScannerPlugin
 import org.junit.rules.ExternalResource
+import java.util.Locale
 import java.util.concurrent.Executor
 
 /**
@@ -46,7 +47,8 @@ class PayjpCardFormTestRule(
             tokenService = tokenService,
             handler = handler,
             callbackExecutor = callbackExecutor,
-            cardScannerPlugin = cardScannerPlugin
+            cardScannerPlugin = cardScannerPlugin,
+            locale = Locale("en")
         )
     }
 }

@@ -24,11 +24,10 @@ package jp.pay.android.ui
 
 import android.view.View
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.distinctUntilChanged
@@ -52,7 +51,6 @@ import jp.pay.android.ui.extension.startWith
 import jp.pay.android.util.delegateLiveData
 import jp.pay.android.verifier.ui.PayjpThreeDSecureResult
 import java.io.IOException
-import java.lang.IllegalStateException
 
 internal class CardFormScreenViewModel(
     private val handle: SavedStateHandle,
@@ -60,7 +58,7 @@ internal class CardFormScreenViewModel(
     private val tenantId: TenantId?,
     private val errorTranslator: ErrorTranslator,
     private val tokenHandlerExecutor: TokenHandlerExecutor?
-) : ViewModel(), CardFormScreenContract.Input, CardFormScreenContract.Output, LifecycleObserver {
+) : ViewModel(), CardFormScreenContract.Input, CardFormScreenContract.Output, DefaultLifecycleObserver {
     private var tokenizeProcessing: MutableLiveData<Boolean> by handle.delegateLiveData(initialValue = false)
     private var tokenizeStatus: MutableLiveData<PayjpTokenOperationStatus> = MutableLiveData()
     override val contentViewVisibility: MutableLiveData<Int> by handle.delegateLiveData(initialValue = View.GONE)
@@ -163,7 +161,11 @@ internal class CardFormScreenViewModel(
         snackBarMessage.value = null
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    override fun onStart(owner: LifecycleOwner) {
+        super.onStart(owner)
+        fetchAcceptedBrands()
+    }
+
     fun fetchAcceptedBrands() {
         if (acceptedBrands.value == null && !fetchBrandsProcessing) {
             fetchBrandsProcessing = true

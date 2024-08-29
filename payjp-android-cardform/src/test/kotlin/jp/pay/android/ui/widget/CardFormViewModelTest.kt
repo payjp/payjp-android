@@ -22,27 +22,31 @@
  */
 package jp.pay.android.ui.widget
 
-import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.Observer
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.CardRobot
 import jp.pay.android.PayjpTokenService
 import jp.pay.android.TestStubs
 import jp.pay.android.anyNullable
+import jp.pay.android.data.PhoneNumberService
 import jp.pay.android.exception.PayjpInvalidCardFormException
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardBrandsAcceptedResponse
+import jp.pay.android.model.CardComponentInput
 import jp.pay.android.model.CardComponentInput.CardCvcInput
 import jp.pay.android.model.CardComponentInput.CardExpirationInput
 import jp.pay.android.model.CardComponentInput.CardHolderNameInput
 import jp.pay.android.model.CardComponentInput.CardNumberInput
 import jp.pay.android.model.CardExpiration
+import jp.pay.android.model.CountryCode
+import jp.pay.android.model.ExtraAttribute
 import jp.pay.android.model.FormInputError
 import jp.pay.android.model.TenantId
 import jp.pay.android.util.Tasks
 import jp.pay.android.validator.CardCvcInputTransformerService
 import jp.pay.android.validator.CardInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformerService
+import jp.pay.android.validator.CardPhoneNumberInputTransformerService
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.nullValue
@@ -64,6 +68,8 @@ internal class CardFormViewModelTest {
     @Mock
     private lateinit var mockTokenService: PayjpTokenService
     @Mock
+    private lateinit var mockPhoneNumberService: PhoneNumberService
+    @Mock
     private lateinit var cardNumberInputTransformer: CardNumberInputTransformerService
     @Mock
     private lateinit var cardExpirationInputTransformer: CardInputTransformer<CardExpirationInput>
@@ -73,6 +79,10 @@ internal class CardFormViewModelTest {
     private lateinit var cardHolderNameInputTransformer: CardInputTransformer<CardHolderNameInput>
     @Mock
     private lateinit var cardNumberErrorObserver: Observer<in Int?>
+    @Mock
+    private lateinit var cardEmailInputTransformer: CardInputTransformer<CardComponentInput.CardEmailInput>
+    @Mock
+    private lateinit var cardPhoneNumberInputTransformer: CardPhoneNumberInputTransformerService
 
     @Before
     fun setUp() {
@@ -81,24 +91,28 @@ internal class CardFormViewModelTest {
 
     private fun createViewModel(
         tenantId: TenantId? = null,
-        holderNameEnabled: Boolean = true,
-        acceptedBrandList: List<CardBrand>? = null
+        acceptedBrandList: List<CardBrand> = emptyList(),
+        extraAttributes: List<ExtraAttribute<*>> = listOf(
+            ExtraAttribute.Email(),
+            ExtraAttribute.Phone("JP"),
+        ),
     ) = CardFormViewModel(
         tokenService = mockTokenService,
         cardNumberInputTransformer = cardNumberInputTransformer,
         cardExpirationInputTransformer = cardExpirationInputTransformer,
         cardCvcInputTransformer = cardCvcInputTransformer,
         cardHolderNameInputTransformer = cardHolderNameInputTransformer,
+        cardEmailInputTransformer = cardEmailInputTransformer,
+        cardPhoneNumberInputTransformer = cardPhoneNumberInputTransformer,
         tenantId = tenantId,
-        holderNameEnabledDefault = holderNameEnabled,
-        acceptedBrandsPreset = acceptedBrandList
+        acceptedBrandsPreset = acceptedBrandList,
+        phoneNumberService = mockPhoneNumberService,
+        extraAttributes = extraAttributes,
     ).apply {
         cardNumberError.observeForever { }
         cardExpirationError.observeForever { }
         cardCvcError.observeForever { }
         cardHolderNameError.observeForever { }
-        cardHolderNameEnabled.observeForever { }
-        cvcImeOptions.observeForever { }
         cardNumberBrand.observeForever { }
         cardExpiration.observeForever { }
         isValid.observeForever { }
@@ -107,15 +121,21 @@ internal class CardFormViewModelTest {
         cardCvcValid.observeForever { }
         errorFetchAcceptedBrands.observeForever { }
         acceptedBrands.observeForever { }
+        cardEmailError.observeForever { }
+        cardPhoneNumberError.observeForever { }
+        cardPhoneNumberCountryCode.observeForever { }
 
         cardNumberError.observeForever(cardNumberErrorObserver)
     }
 
+    @Suppress("LongParameterList")
     private fun mockCorrectInput(
         number: String = "4242424242424242",
         expiration: CardExpiration = CardExpiration("12", "2030"),
         cvc: String = "123",
-        name: String = "JANE DOE"
+        name: String = "JANE DOE",
+        email: String = "test@example.com",
+        phoneNumber: String = "+819012345678",
     ) {
         `when`(cardNumberInputTransformer.transform(anyString()))
             .thenReturn(CardNumberInput("4242424242424242", number, null, CardBrand.VISA))
@@ -125,12 +145,16 @@ internal class CardFormViewModelTest {
             .thenReturn(CardCvcInput("123", cvc, null))
         `when`(cardHolderNameInputTransformer.transform(anyString()))
             .thenReturn(CardHolderNameInput("JANE DOE", name, null))
+        `when`(cardEmailInputTransformer.transform(anyString()))
+            .thenReturn(CardComponentInput.CardEmailInput("test@example.com", email, null))
+        `when`(cardPhoneNumberInputTransformer.transform(anyString()))
+            .thenReturn(CardComponentInput.CardPhoneNumberInput("09012345678", phoneNumber, null))
     }
 
     @Test
     fun acceptedBrands_injectAt_init() {
         val brands = listOf(CardBrand.VISA, CardBrand.MASTER_CARD)
-        val viewModel = createViewModel(acceptedBrandList = brands)
+        createViewModel(acceptedBrandList = brands)
         verify(cardNumberInputTransformer).acceptedBrands = brands
     }
 
@@ -207,6 +231,9 @@ internal class CardFormViewModelTest {
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
             inputCardHolderName(robot.name)
+            inputEmail(robot.email)
+            selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
+            inputPhoneNumber(robot.phoneNumber)
             assertThat(isValid.value, `is`(true))
         }
     }
@@ -223,31 +250,120 @@ internal class CardFormViewModelTest {
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
             inputCardHolderName(robot.name)
+            inputEmail(robot.email)
+            selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
+            inputPhoneNumber(robot.phoneNumber)
             assertThat(isValid.value, `is`(false))
         }
     }
 
     @Test
-    fun not_required_card_holder_name_if_not_enabled() {
+    fun isValid_if_email_is_not_enabled_allow_empty() {
         val robot = CardRobot.SandboxVisa
         mockCorrectInput()
-        createViewModel().run {
+        createViewModel(extraAttributes = listOf(ExtraAttribute.Phone("JP"))).run {
             inputCardNumber(robot.number)
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
-            assertThat(isValid.value, `is`(false))
-            updateCardHolderNameEnabled(false)
+            inputCardHolderName(robot.name)
+            selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
+            inputPhoneNumber(robot.phoneNumber)
             assertThat(isValid.value, `is`(true))
         }
     }
 
     @Test
-    fun cvcImeOptions() {
-        val viewModel = createViewModel()
-        viewModel.updateCardHolderNameEnabled(false)
-        assertThat(viewModel.cvcImeOptions.value, `is`(EditorInfo.IME_ACTION_DONE))
-        viewModel.updateCardHolderNameEnabled(true)
-        assertThat(viewModel.cvcImeOptions.value, `is`(EditorInfo.IME_ACTION_NEXT))
+    fun isValid_if_phone_is_not_enabled_allow_empty() {
+        val robot = CardRobot.SandboxVisa
+        mockCorrectInput()
+        createViewModel(extraAttributes = listOf(ExtraAttribute.Email())).run {
+            inputCardNumber(robot.number)
+            inputCardExpiration(robot.exp)
+            inputCardCvc(robot.cvc)
+            inputCardHolderName(robot.name)
+            inputEmail(robot.email)
+            assertThat(isValid.value, `is`(true))
+        }
+    }
+
+    @Test
+    fun isValid_if_phone_and_email_is_not_enabled_allow_empty() {
+        val robot = CardRobot.SandboxVisa
+        mockCorrectInput()
+        createViewModel(extraAttributes = emptyList()).run {
+            inputCardNumber(robot.number)
+            inputCardExpiration(robot.exp)
+            inputCardCvc(robot.cvc)
+            inputCardHolderName(robot.name)
+            assertThat(isValid.value, `is`(true))
+        }
+    }
+
+    @Test
+    fun isValid_if_both_phone_and_email_is_enabled_allow_phone_empty() {
+        val robot = CardRobot.SandboxVisa
+        mockCorrectInput()
+        createViewModel(extraAttributes = listOf(ExtraAttribute.Email(), ExtraAttribute.Phone("JP"))).run {
+            inputCardNumber(robot.number)
+            inputCardExpiration(robot.exp)
+            inputCardCvc(robot.cvc)
+            inputCardHolderName(robot.name)
+            inputEmail(robot.email)
+            assertThat(isValid.value, `is`(true))
+        }
+    }
+
+    @Test
+    fun isValid_if_both_phone_and_email_is_enabled_allow_email_empty() {
+        val robot = CardRobot.SandboxVisa
+        mockCorrectInput()
+        createViewModel(extraAttributes = listOf(ExtraAttribute.Email(), ExtraAttribute.Phone("JP"))).run {
+            inputCardNumber(robot.number)
+            inputCardExpiration(robot.exp)
+            inputCardCvc(robot.cvc)
+            inputCardHolderName(robot.name)
+            selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
+            inputPhoneNumber(robot.phoneNumber)
+            assertThat(isValid.value, `is`(true))
+        }
+    }
+
+    @Test
+    fun isValid_if_both_phone_and_email_is_enabled_not_allow_both_empty() {
+        val robot = CardRobot.SandboxVisa
+        mockCorrectInput()
+        createViewModel(extraAttributes = listOf(ExtraAttribute.Email(), ExtraAttribute.Phone("JP"))).run {
+            inputCardNumber(robot.number)
+            inputCardExpiration(robot.exp)
+            inputCardCvc(robot.cvc)
+            inputCardHolderName(robot.name)
+            assertThat(isValid.value, `is`(false))
+        }
+    }
+
+    @Test
+    fun isValid_if_both_phone_and_email_is_enabled_not_allow_phone_invalid() {
+        val robot = CardRobot.SandboxVisa
+        mockCorrectInput()
+        reset(cardPhoneNumberInputTransformer)
+        `when`(cardPhoneNumberInputTransformer.transform(anyString()))
+            .thenReturn(
+                CardComponentInput.CardPhoneNumberInput(
+                    "123",
+                    null,
+                    FormInputError(jp.pay.android.R.string.payjp_card_form_error_invalid_phone_number, false),
+                )
+            )
+        createViewModel(extraAttributes = listOf(ExtraAttribute.Email(), ExtraAttribute.Phone("JP"))).run {
+            inputCardNumber(robot.number)
+            inputCardExpiration(robot.exp)
+            inputCardCvc(robot.cvc)
+            inputCardHolderName(robot.name)
+            inputEmail(robot.email)
+            selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
+            inputPhoneNumber("123")
+            assertThat(isValid.value, `is`(false))
+        }
     }
 
     @Test
@@ -499,7 +615,9 @@ internal class CardFormViewModelTest {
                 expMonth = anyString(),
                 expYear = anyString(),
                 name = anyString(),
-                tenantId = anyNullable()
+                tenantId = anyNullable(),
+                email = anyString(),
+                phone = anyString(),
             )
         )
             .thenReturn(Tasks.success(TestStubs.newToken()))
@@ -515,6 +633,9 @@ internal class CardFormViewModelTest {
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
             inputCardHolderName(robot.name)
+            inputEmail(robot.email)
+            selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
+            inputPhoneNumber(robot.phoneNumber)
             createToken().run()
             verify(mockTokenService).createToken(
                 number = "4242424242424242",
@@ -522,7 +643,9 @@ internal class CardFormViewModelTest {
                 expYear = "2030",
                 cvc = "123",
                 name = "JANE DOE",
-                tenantId = null
+                tenantId = null,
+                email = "test@example.com",
+                phone = "+819012345678",
             )
         }
     }
@@ -536,7 +659,9 @@ internal class CardFormViewModelTest {
                 expMonth = anyString(),
                 expYear = anyString(),
                 name = anyString(),
-                tenantId = anyNullable()
+                tenantId = anyNullable(),
+                email = anyString(),
+                phone = anyString(),
             )
         )
             .thenReturn(Tasks.success(TestStubs.newToken()))
@@ -553,6 +678,9 @@ internal class CardFormViewModelTest {
             inputCardExpiration(robot.exp)
             inputCardCvc(robot.cvc)
             inputCardHolderName(robot.name)
+            inputEmail(robot.email)
+            selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
+            inputPhoneNumber(robot.phoneNumber)
             createToken().run()
             verify(mockTokenService).createToken(
                 number = "4242424242424242",
@@ -560,7 +688,9 @@ internal class CardFormViewModelTest {
                 expYear = "2030",
                 cvc = "123",
                 name = "JANE DOE",
-                tenantId = tenantId
+                tenantId = tenantId,
+                email = "test@example.com",
+                phone = "+819012345678",
             )
         }
     }

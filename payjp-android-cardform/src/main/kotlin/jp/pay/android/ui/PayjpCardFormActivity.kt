@@ -34,14 +34,15 @@ import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.IntentCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
 import com.google.android.material.snackbar.Snackbar
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
 import jp.pay.android.databinding.PayjpCardFormActivityBinding
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.ExtraAttribute
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.model.TokenId
@@ -66,14 +67,17 @@ internal class PayjpCardFormActivity :
         private const val FRAGMENT_CARD_FORM = "FRAGMENT_CARD_FORM"
         private const val EXTRA_KEY_TENANT = "EXTRA_KEY_TENANT"
         private const val EXTRA_KEY_FACE = "EXTRA_KEY_FACE"
+        private const val EXTRA_KEY_EXTRA_ATTRIBUTES = "EXTRA_KEY_EXTRA_ATTRIBUTES"
         private const val CARD_FORM_EXTRA_KEY_TOKEN = "DATA"
 
         fun createIntent(
             context: Context,
             tenant: TenantId?,
-            @PayjpCardForm.CardFormFace face: Int
+            @PayjpCardForm.CardFormFace face: Int,
+            extraAttributes: Array<ExtraAttribute<*>>,
         ): Intent = Intent(context, PayjpCardFormActivity::class.java)
             .putExtra(EXTRA_KEY_FACE, face)
+            .putExtra(EXTRA_KEY_EXTRA_ATTRIBUTES, extraAttributes)
             .apply {
                 if (tenant != null) {
                     putExtra(EXTRA_KEY_TENANT, tenant.id)
@@ -84,10 +88,11 @@ internal class PayjpCardFormActivity :
             activity: Activity,
             requestCode: Int?,
             tenant: TenantId?,
-            @PayjpCardForm.CardFormFace face: Int
+            @PayjpCardForm.CardFormFace face: Int,
+            extraAttributes: Array<ExtraAttribute<*>>,
         ) {
             activity.startActivityForResult(
-                createIntent(activity, tenant, face)
+                createIntent(activity, tenant, face, extraAttributes)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
             )
@@ -97,17 +102,20 @@ internal class PayjpCardFormActivity :
             fragment: Fragment,
             requestCode: Int?,
             tenant: TenantId?,
-            @PayjpCardForm.CardFormFace face: Int
+            @PayjpCardForm.CardFormFace face: Int,
+            extraAttributes: Array<ExtraAttribute<*>>,
         ) {
             fragment.startActivityForResult(
-                createIntent(fragment.requireActivity(), tenant, face)
+                createIntent(fragment.requireActivity(), tenant, face, extraAttributes)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
             )
         }
 
         fun onActivityResult(data: Intent?, callback: PayjpCardFormResultCallback) {
-            val token = data?.getParcelableExtra<Token>(CARD_FORM_EXTRA_KEY_TOKEN)
+            val token = data?.let {
+                IntentCompat.getParcelableExtra(it, CARD_FORM_EXTRA_KEY_TOKEN, Token::class.java)
+            }
             val result = if (token != null) {
                 PayjpCardFormResult.Success(token = token)
             } else {
@@ -124,6 +132,14 @@ internal class PayjpCardFormActivity :
     private val face: Int by lazy {
         intent?.getIntExtra(EXTRA_KEY_FACE, PayjpCardForm.FACE_MULTI_LINE)
             ?: PayjpCardForm.FACE_MULTI_LINE
+    }
+    private val extraAttributes: Array<ExtraAttribute<*>> by lazy {
+        intent?.let {
+            IntentCompat.getParcelableArrayExtra(it, EXTRA_KEY_EXTRA_ATTRIBUTES, ExtraAttribute::class.java)
+        }
+            ?.filterIsInstance<ExtraAttribute<*>>()
+            ?.toTypedArray()
+            ?: emptyArray()
     }
     private val inputMethodManager: InputMethodManager by lazy {
         getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -217,13 +233,13 @@ internal class PayjpCardFormActivity :
             }
     }
 
-    private fun addCardFormFragment(acceptedBrands: Array<CardBrand>): PayjpCardFormAbstractFragment? {
+    private fun addCardFormFragment(acceptedBrands: Array<CardBrand>): PayjpCardFormAbstractFragment {
         return supportFragmentManager.let { manager ->
             PayjpCardForm.newCardFormFragment(
-                holderNameEnabled = true,
                 tenantId = tenantId,
                 acceptedBrands = acceptedBrands,
-                face = face
+                face = face,
+                extraAttributes = extraAttributes,
             ).also { fragment ->
                 manager
                     .beginTransaction().apply {

@@ -30,13 +30,22 @@ internal enum class CardFormElementType {
     Expiration,
     Cvc,
     HolderName,
+    EmailAndPhoneNumber,
     ;
 
-    fun prev(): CardFormElementType? = values().let { values ->
+    fun prev(): CardFormElementType = entries.toTypedArray().let { values ->
         values[max(ordinal - 1, 0)]
     }
 
-    fun next(): CardFormElementType? = values().let { values ->
+    fun next(): CardFormElementType = entries.toTypedArray().let { values ->
         values[min(ordinal + 1, values.lastIndex)]
+    }
+
+    fun inputTypes(): List<CardFormInputType> = when (this) {
+        Number -> listOf(CardFormInputType.Number)
+        Expiration -> listOf(CardFormInputType.Expiration)
+        Cvc -> listOf(CardFormInputType.Cvc)
+        HolderName -> listOf(CardFormInputType.HolderName)
+        EmailAndPhoneNumber -> listOf(CardFormInputType.Email, CardFormInputType.PhoneNumber)
     }
 }

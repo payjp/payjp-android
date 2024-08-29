@@ -22,7 +22,7 @@
  */
 
 dependencies {
-    testImplementation libs.androidx.core.ktx
+    testImplementation libs.androidx.test.core.ktx
     testImplementation libs.androidx.junit.ktx
     testImplementation libs.androidx.espresso.contrib
     testImplementation libs.androidx.espresso.intents

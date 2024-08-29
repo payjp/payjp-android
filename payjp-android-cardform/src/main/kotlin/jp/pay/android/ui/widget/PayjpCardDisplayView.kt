@@ -158,6 +158,7 @@ internal class PayjpCardDisplayView @JvmOverloads constructor(
                 else -> binding.displayCvcDefault
             }
             CardFormElementType.HolderName -> binding.displayHolder
+            CardFormElementType.EmailAndPhoneNumber -> binding.displayHolder
         }
         view.background = highlightBackground.takeIf { highlighted }
     }

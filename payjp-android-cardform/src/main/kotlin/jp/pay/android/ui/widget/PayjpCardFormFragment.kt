@@ -27,13 +27,14 @@ import android.text.InputFilter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.BundleCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
-import androidx.transition.TransitionManager
 import com.google.android.material.textfield.TextInputLayout
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.databinding.PayjpCardFormViewBinding
 import jp.pay.android.model.CardBrand
+import jp.pay.android.model.ExtraAttribute
 import jp.pay.android.model.TenantId
 import jp.pay.android.ui.extension.addOnTextChanged
 import jp.pay.android.ui.extension.cvcIconResourceId
@@ -41,36 +42,38 @@ import jp.pay.android.ui.extension.logoResourceId
 import jp.pay.android.ui.extension.setErrorOrNull
 import jp.pay.android.util.autoCleared
 import jp.pay.android.validator.CardCvcInputTransformer
+import jp.pay.android.validator.CardEmailInputTransformer
 import jp.pay.android.validator.CardExpirationInputTransformer
 import jp.pay.android.validator.CardHolderNameInputTransformer
 import jp.pay.android.validator.CardNumberInputTransformer
+import jp.pay.android.validator.CardPhoneNumberInputTransformer
 
 class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
 
     companion object {
-        private const val ARGS_HOLDER_NAME_ENABLED = "ARGS_HOLDER_NAME_ENABLED"
         private const val ARGS_TENANT_ID = "ARGS_TENANT_ID"
         private const val ARGS_ACCEPTED_BRANDS = "ARGS_ACCEPTED_BRANDS"
+        private const val ARGS_TDS_ATTRIBUTES = "ARGS_TDS_ATTRIBUTES"
 
         /**
          * Create new fragment instance with args
          *
-         * @param holderNameEnabled a option it require card holder name or not.
          * @param tenantId a option for platform tenant.
          * @param acceptedBrands accepted brands. if it is null, the fragment try to get them.
+         * @param extraAttributes a option for 3D secure attributes.
          * @return fragment
          */
         @JvmStatic
         fun newInstance(
-            holderNameEnabled: Boolean = true,
             tenantId: TenantId? = null,
-            acceptedBrands: Array<CardBrand>? = null
+            acceptedBrands: Array<CardBrand>? = null,
+            extraAttributes: Array<ExtraAttribute<*>>,
         ): PayjpCardFormFragment =
             PayjpCardFormFragment().apply {
                 arguments = Bundle().apply {
-                    putBoolean(ARGS_HOLDER_NAME_ENABLED, holderNameEnabled)
                     putString(ARGS_TENANT_ID, tenantId?.id)
                     putParcelableArray(ARGS_ACCEPTED_BRANDS, acceptedBrands)
+                    putParcelableArray(ARGS_TDS_ATTRIBUTES, extraAttributes)
                 }
             }
     }
@@ -85,7 +88,7 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = PayjpCardFormViewBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -93,16 +96,6 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
     override fun onScanResult(cardNumber: String?) {
         cardNumber?.let(binding.layoutNumber.inputEditNumber::setText)
         binding.layoutExpiration.inputEditExpiration.requestFocusFromTouch()
-    }
-
-    override fun setCardHolderNameInputEnabled(enabled: Boolean) {
-        if (viewModel == null) {
-            arguments = Bundle(arguments).apply {
-                putBoolean(ARGS_HOLDER_NAME_ENABLED, enabled)
-            }
-        } else {
-            viewModel?.updateCardHolderNameEnabled(enabled)
-        }
     }
 
     override fun setUpUI(view: ViewGroup) {
@@ -120,26 +113,13 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
                 bridge.startScanActivity(this)
             }
         }
-        // editor
-        binding.layoutHolderName.inputEditHolderName.setOnEditorActionListener(this::onEditorAction)
-        binding.layoutCvc.inputEditCvc.setOnEditorActionListener { v, actionId, event ->
-            if (viewModel?.cardHolderNameEnabled?.value == false) {
-                onEditorAction(v, actionId, event)
-            } else {
-                false
-            }
+        binding.layoutPhoneNumber.inputLayoutCountryCode.setEndIconOnClickListener {
+            startSearchCountryCode()
         }
 
         viewModel?.apply {
-            cardHolderNameEnabled.observe(viewLifecycleOwner) {
-                binding.layoutHolderName.inputLayoutHolderName.visibility = if (it) {
-                    View.VISIBLE
-                } else {
-                    View.GONE
-                }
-                TransitionManager.beginDelayedTransition(view)
-            }
-            cvcImeOptions.observe(viewLifecycleOwner, binding.layoutCvc.inputEditCvc::setImeOptions)
+            binding.layoutEmail.root.isVisible = cardEmailEnabled
+            binding.layoutPhoneNumber.root.isVisible = cardPhoneNumberEnabled
             cardNumberBrand.observe(viewLifecycleOwner) {
                 cardNumberFormatter.brand = it
                 binding.layoutCvc.inputEditCvc.filters =
@@ -173,32 +153,75 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
                 }
             }
             cardCvcValid.observe(viewLifecycleOwner) { valid ->
-                if (valid && binding.layoutCvc.inputEditCvc.hasFocus() && binding.layoutHolderName.inputLayoutHolderName.visibility == View.VISIBLE) {
+                if (valid &&
+                    binding.layoutCvc.inputEditCvc.hasFocus() &&
+                    binding.layoutHolderName.inputLayoutHolderName.visibility == View.VISIBLE
+                ) {
                     binding.layoutHolderName.inputEditHolderName.requestFocusFromTouch()
                 }
             }
+
+            cardEmailError.observe(viewLifecycleOwner) { resId ->
+                binding.layoutEmail.inputLayoutEmail.setErrorOrNull(resId?.let { getString(it) })
+            }
+            cardPhoneNumberCountryCode.observe(viewLifecycleOwner) { countryCode ->
+                binding.layoutPhoneNumber.inputEditCountryCode.setText(countryCode.shortName)
+            }
+            cardPhoneNumberError.observe(viewLifecycleOwner) { resId ->
+                binding.layoutPhoneNumber.inputLayoutPhoneNumber.setErrorOrNull(resId?.let { getString(it) })
+            }
+            // preset
+            binding.layoutEmail.inputEditEmail.setText(cardEmailInput.value?.input)
+            binding.layoutPhoneNumber.inputEditCountryCode.setText(cardPhoneNumberCountryCode.value?.shortName)
+            binding.layoutPhoneNumber.inputEditPhoneNumber.setText(cardPhoneNumberInput.value?.input)
+            // onTextChanged
             binding.layoutNumber.inputEditNumber.addOnTextChanged { s, _, _, _ -> inputCardNumber(s.toString()) }
-            binding.layoutExpiration.inputEditExpiration.addOnTextChanged { s, _, _, _ -> inputCardExpiration(s.toString()) }
+            binding.layoutExpiration.inputEditExpiration.addOnTextChanged { s, _, _, _ ->
+                inputCardExpiration(s.toString())
+            }
             binding.layoutCvc.inputEditCvc.addOnTextChanged { s, _, _, _ -> inputCardCvc(s.toString()) }
-            binding.layoutHolderName.inputEditHolderName.addOnTextChanged { s, _, _, _ -> inputCardHolderName(s.toString()) }
+            binding.layoutHolderName.inputEditHolderName.addOnTextChanged { s, _, _, _ ->
+                inputCardHolderName(s.toString())
+            }
+            binding.layoutEmail.inputEditEmail.addOnTextChanged { s, _, _, _ -> inputEmail(s.toString()) }
+            binding.layoutPhoneNumber.inputEditPhoneNumber.addOnTextChanged { s, _, _, _ ->
+                inputPhoneNumber(s.toString())
+            }
+            binding.layoutHolderName.inputEditHolderName
+            when (lastInput) {
+                CardFormInputType.Email -> binding.layoutEmail.inputEditEmail
+                CardFormInputType.PhoneNumber -> binding.layoutPhoneNumber.inputEditPhoneNumber
+                else -> binding.layoutHolderName.inputEditHolderName
+            }.setOnEditorActionListener(this@PayjpCardFormFragment::onEditorAction)
+            // additional info
+            binding.additionalInfo.isVisible = cardEmailEnabled || cardPhoneNumberEnabled
+            binding.additionalInfoContent.requiredAtLeastOne.isVisible = cardEmailEnabled && cardPhoneNumberEnabled
         }
     }
 
     override fun createViewModel(): CardFormViewModel {
         val tenantId = arguments?.getString(ARGS_TENANT_ID)?.let { TenantId(it) }
-        val holderNameEnabled = arguments?.getBoolean(ARGS_HOLDER_NAME_ENABLED) ?: true
-        val acceptedBrandArray = arguments?.getParcelableArray(ARGS_ACCEPTED_BRANDS)
+        val acceptedBrandArray = arguments?.let {
+            BundleCompat.getParcelableArray(it, ARGS_ACCEPTED_BRANDS, CardBrand::class.java)
+        }
+        val extraAttributes = arguments?.let {
+            BundleCompat.getParcelableArray(it, ARGS_TDS_ATTRIBUTES, ExtraAttribute::class.java)
+        }
         val factory = CardFormViewModel.Factory(
-            tokenService = checkNotNull(PayjpCardForm.tokenService()) {
-                "You must initialize Payjp first"
-            },
+            tokenService = PayjpCardForm.tokenService(),
             cardNumberInputTransformer = CardNumberInputTransformer(),
             cardExpirationInputTransformer = CardExpirationInputTransformer(delimiter = delimiterExpiration),
             cardCvcInputTransformer = CardCvcInputTransformer(),
             cardHolderNameInputTransformer = CardHolderNameInputTransformer,
+            cardEmailInputTransformer = CardEmailInputTransformer(),
+            cardPhoneNumberInputTransformer = CardPhoneNumberInputTransformer(
+                context = requireContext(),
+                service = PayjpCardForm.phoneNumberService()
+            ),
             tenantId = tenantId,
-            holderNameEnabledDefault = holderNameEnabled,
-            acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>()
+            acceptedBrands = acceptedBrandArray?.filterIsInstance<CardBrand>(),
+            phoneNumberService = PayjpCardForm.phoneNumberService(),
+            extraAttributes = extraAttributes?.filterIsInstance<ExtraAttribute<*>>() ?: emptyList(),
         )
         return ViewModelProvider(requireActivity(), factory).get(CardFormViewModel::class.java)
     }

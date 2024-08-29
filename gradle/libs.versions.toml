@@ -3,46 +3,47 @@ agp = "8.5.1"
 ksp = "2.0.0-1.0.21"
 dokka = "1.9.20"
 spotless = "5.6.1"
-coreKtx = "1.3.0"
+testCoreKtx = "1.5.0"
 espressoContrib = "3.5.1"
 junitKtx = "1.1.5"
 kotlin = "2.0.0"
-browser = "1.2.0"
+browser = "1.6.0"
 leakcanaryAndroid = "2.14"
-okHttp3 = "3.12.12"
+okHttp3 = "3.12.13"
 moshi = "1.15.1"
-retrofit = "2.6.4"
-lifecycle = "2.2.0"
+retrofit = "2.11.0"
+lifecycle = "2.6.2"
 mockito = "5.12.0"
-coroutine = "1.3.7"
-appcompat = "1.2.0"
-fragment = "1.2.5"
-material = "1.2.1"
-constraint = "2.0.2"
-recyclerview = "1.1.0"
+coroutine = "1.8.1"
+appcompat = "1.6.0"
+fragment = "1.6.2"
+material = "1.11.0"
+constraint = "2.1.4"
+recyclerview = "1.3.2"
 cardio = "5.5.1"
-annotation = "1.1.0"
+androidxCore = "1.12.0"
+annotation = "1.8.1"
 robolectric = "4.12.2"
 swiperefreshlayout = "1.1.0"
 viewpager2 = "1.0.0"
-webkit = "1.2.0"
+webkit = "1.8.0"
 mavenpublish = "0.29.0"
 
 [libraries]
 
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
-androidx-core-ktx = { module = "androidx.test:core-ktx", version.ref = "coreKtx" }
+androidx-test-core-ktx = { module = "androidx.test:core-ktx", version.ref = "testCoreKtx" }
 androidx-espresso-contrib = { module = "androidx.test.espresso:espresso-contrib", version.ref = "espressoContrib" }
 androidx-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espressoContrib" }
 androidx-fragment = { group = "androidx.fragment", name = "fragment", version.ref = "fragment" }
 androidx-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "junitKtx" }
-androidx-lifecycle-common-java8 = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "lifecycle" }
-androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
-androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-common = { module = "androidx.lifecycle:lifecycle-common", version.ref = "lifecycle" }
+androidx-lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata-core", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "lifecycle" }
-androidx-lifecycle-extensions = { group = "androidx.lifecycle", name = "lifecycle-extensions", version.ref = "lifecycle" }
 androidx-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-constraint = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraint" }
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
@@ -63,6 +64,7 @@ retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.r
 retrofit-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+libphonenumber = { group = "io.michaelrocks", name = "libphonenumber-android", version = "8.13.35" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

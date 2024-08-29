@@ -54,6 +54,8 @@ data class Card(
     val country: String?,
     @Json(name = "address_zip") val addressZip: String?,
     @Json(name = "address_zip_check") val addressZipCheck: String,
+    val email: String?,
+    val phone: String?,
     val customer: String?,
     @Json(name = "cvc_check") val cvcCheck: String,
     val metadata: Bundle,
