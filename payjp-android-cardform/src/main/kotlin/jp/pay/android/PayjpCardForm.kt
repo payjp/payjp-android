@@ -127,6 +127,7 @@ object PayjpCardForm {
      * @param requestCode requestCode. The default is [PayjpCardFormActivity.DEFAULT_CARD_FORM_REQUEST_CODE]
      * @param tenant tenant (only for platformer)
      * @param face card form face. The default is [FACE_MULTI_LINE].
+     * @param extraAttributes additional attributes for 3-D Secure. The default is [ExtraAttribute.defaults].
      */
     @MainThread
     @JvmOverloads
