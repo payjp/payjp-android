@@ -51,7 +51,8 @@ internal object CardFormPage {
                 extraAttributes = arrayOf(
                     ExtraAttribute.Email(),
                     ExtraAttribute.Phone("JP"),
-                )
+                ),
+                useThreeDSecure = true,
             )
         )
     }
@@ -65,7 +66,8 @@ internal object CardFormPage {
                 extraAttributes = arrayOf(
                     ExtraAttribute.Email(),
                     ExtraAttribute.Phone("JP"),
-                )
+                ),
+                useThreeDSecure = true,
             )
         )
     }

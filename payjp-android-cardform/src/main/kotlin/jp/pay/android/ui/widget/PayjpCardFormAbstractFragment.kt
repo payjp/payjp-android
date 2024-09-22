@@ -166,7 +166,11 @@ abstract class PayjpCardFormAbstractFragment :
     }
 
     override fun createToken(): Task<Token> {
-        return viewModel?.createToken() ?: Tasks.failure(
+        return createToken(useThreeDSecure = false)
+    }
+
+    override fun createToken(useThreeDSecure: Boolean): Task<Token> {
+        return viewModel?.createToken(useThreeDSecure) ?: Tasks.failure(
             PayjpInvalidCardFormException("Card form is not ready.")
         )
     }

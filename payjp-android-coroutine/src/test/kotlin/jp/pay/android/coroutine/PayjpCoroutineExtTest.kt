@@ -70,10 +70,10 @@ class PayjpCoroutineExtTest {
     @Test
     fun createTokenSuspend_failure() {
         val error = RuntimeException("omg")
-        `when`(payjpCardFormView.createToken()).thenReturn(Tasks.failure(error))
+        `when`(payjpCardFormView.createToken(false)).thenReturn(Tasks.failure(error))
         runBlocking {
             try {
-                payjpCardFormView.createTokenSuspend()
+                payjpCardFormView.createTokenSuspend(false)
                 fail("unexpected statement")
             } catch (e: Throwable) {
                 assertThat(e.message, `is`(error.message))
@@ -84,9 +84,18 @@ class PayjpCoroutineExtTest {
     @Test
     fun createTokenSuspend_success() {
         val token = TestStubs.newToken(seed = 1)
-        `when`(payjpCardFormView.createToken()).thenReturn(Tasks.success(token))
+        `when`(payjpCardFormView.createToken(false)).thenReturn(Tasks.success(token))
         runBlocking {
             assertThat(payjpCardFormView.createTokenSuspend().id, `is`(token.id))
+        }
+    }
+
+    @Test
+    fun createTokenSuspend_useThreeDSecure_success() {
+        val token = TestStubs.newToken(seed = 1)
+        `when`(payjpCardFormView.createToken(true)).thenReturn(Tasks.success(token))
+        runBlocking {
+            assertThat(payjpCardFormView.createTokenSuspend(useThreeDSecure = true).id, `is`(token.id))
         }
     }
 

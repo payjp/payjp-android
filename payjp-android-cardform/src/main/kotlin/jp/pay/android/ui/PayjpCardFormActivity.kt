@@ -68,6 +68,7 @@ internal class PayjpCardFormActivity :
         private const val EXTRA_KEY_TENANT = "EXTRA_KEY_TENANT"
         private const val EXTRA_KEY_FACE = "EXTRA_KEY_FACE"
         private const val EXTRA_KEY_EXTRA_ATTRIBUTES = "EXTRA_KEY_EXTRA_ATTRIBUTES"
+        private const val EXTRA_KEY_USE_THREE_D_SECURE = "EXTRA_KEY_USE_THREE_D_SECURE"
         private const val CARD_FORM_EXTRA_KEY_TOKEN = "DATA"
 
         fun createIntent(
@@ -75,9 +76,11 @@ internal class PayjpCardFormActivity :
             tenant: TenantId?,
             @PayjpCardForm.CardFormFace face: Int,
             extraAttributes: Array<ExtraAttribute<*>>,
+            useThreeDSecure: Boolean,
         ): Intent = Intent(context, PayjpCardFormActivity::class.java)
             .putExtra(EXTRA_KEY_FACE, face)
             .putExtra(EXTRA_KEY_EXTRA_ATTRIBUTES, extraAttributes)
+            .putExtra(EXTRA_KEY_USE_THREE_D_SECURE, useThreeDSecure)
             .apply {
                 if (tenant != null) {
                     putExtra(EXTRA_KEY_TENANT, tenant.id)
@@ -90,9 +93,10 @@ internal class PayjpCardFormActivity :
             tenant: TenantId?,
             @PayjpCardForm.CardFormFace face: Int,
             extraAttributes: Array<ExtraAttribute<*>>,
+            useThreeDSecure: Boolean,
         ) {
             activity.startActivityForResult(
-                createIntent(activity, tenant, face, extraAttributes)
+                createIntent(activity, tenant, face, extraAttributes, useThreeDSecure)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
             )
@@ -104,9 +108,10 @@ internal class PayjpCardFormActivity :
             tenant: TenantId?,
             @PayjpCardForm.CardFormFace face: Int,
             extraAttributes: Array<ExtraAttribute<*>>,
+            useThreeDSecure: Boolean,
         ) {
             fragment.startActivityForResult(
-                createIntent(fragment.requireActivity(), tenant, face, extraAttributes)
+                createIntent(fragment.requireActivity(), tenant, face, extraAttributes, useThreeDSecure)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 requestCode ?: DEFAULT_CARD_FORM_REQUEST_CODE
             )
@@ -140,6 +145,9 @@ internal class PayjpCardFormActivity :
             ?.filterIsInstance<ExtraAttribute<*>>()
             ?.toTypedArray()
             ?: emptyArray()
+    }
+    private val useThreeDSecure: Boolean by lazy {
+        intent?.getBooleanExtra(EXTRA_KEY_USE_THREE_D_SECURE, false) ?: false
     }
     private val inputMethodManager: InputMethodManager by lazy {
         getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -268,7 +276,7 @@ internal class PayjpCardFormActivity :
         inputMethodManager.hideSoftInputFromWindow(windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
         cardFormFragment?.let { cardForm ->
             if (cardForm.isValid) {
-                viewModel?.onCreateToken(cardForm.createToken())
+                viewModel?.onCreateToken(cardForm.createToken(useThreeDSecure))
             }
         }
     }

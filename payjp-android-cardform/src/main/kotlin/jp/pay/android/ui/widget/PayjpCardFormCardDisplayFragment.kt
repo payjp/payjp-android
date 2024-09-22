@@ -62,6 +62,7 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
          *
          * @param tenantId a option for platform tenant.
          * @param acceptedBrands accepted brands. if it is null, the fragment try to get them.
+         * @param extraAttributes extra attributes for 3-D secure.
          * @return fragment
          */
         @JvmStatic

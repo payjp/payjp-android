@@ -128,21 +128,25 @@ object PayjpCardForm {
      * @param tenant tenant (only for platformer)
      * @param face card form face. The default is [FACE_MULTI_LINE].
      * @param extraAttributes additional attributes for 3-D Secure. The default is [ExtraAttribute.defaults].
+     * @param useThreeDSecure whether use 3-D secure or not. The default is `false`.
      */
     @MainThread
     @JvmOverloads
+    @Suppress("LongParameterList")
     fun start(
         activity: Activity,
         requestCode: Int? = null,
         tenant: TenantId? = null,
         @CardFormFace face: Int = FACE_MULTI_LINE,
         extraAttributes: Array<ExtraAttribute<*>> = ExtraAttribute.defaults(),
+        useThreeDSecure: Boolean = false,
     ) = PayjpCardFormActivity.start(
         activity = activity,
         requestCode = requestCode,
         tenant = tenant,
         face = face,
         extraAttributes = extraAttributes,
+        useThreeDSecure = useThreeDSecure,
     )
 
     /**
@@ -152,21 +156,25 @@ object PayjpCardForm {
      * @param requestCode requestCode. The default is [PayjpCardFormActivity.DEFAULT_CARD_FORM_REQUEST_CODE]
      * @param tenant tenant (only for platformer)
      * @param extraAttributes additional attributes for 3-D Secure. The default is [ExtraAttribute.defaults].
+     * @param useThreeDSecure whether use 3-D secure or not. The default is `false`.
      */
     @MainThread
     @JvmOverloads
+    @Suppress("LongParameterList")
     fun start(
         fragment: Fragment,
         requestCode: Int? = null,
         tenant: TenantId? = null,
         @CardFormFace face: Int = FACE_MULTI_LINE,
         extraAttributes: Array<ExtraAttribute<*>> = ExtraAttribute.defaults(),
+        useThreeDSecure: Boolean = false,
     ) = PayjpCardFormActivity.start(
         fragment = fragment,
         requestCode = requestCode,
         tenant = tenant,
         face = face,
         extraAttributes = extraAttributes,
+        useThreeDSecure = useThreeDSecure,
     )
 
     /**

@@ -44,5 +44,5 @@ internal interface CardFormViewModelInput {
 
     fun validate()
 
-    fun createToken(): Task<Token>
+    fun createToken(useThreeDSecure: Boolean = false): Task<Token>
 }
