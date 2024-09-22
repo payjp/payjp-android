@@ -59,6 +59,7 @@ class PayjpCoroutineExtTest {
         tenantId = null,
         email = null,
         phone = null,
+        threeDSecure = false,
     )
 
     @Before

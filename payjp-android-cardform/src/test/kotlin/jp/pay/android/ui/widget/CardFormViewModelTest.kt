@@ -55,6 +55,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
+import org.mockito.Mockito.anyBoolean
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.never
 import org.mockito.Mockito.reset
@@ -618,6 +619,7 @@ internal class CardFormViewModelTest {
                 tenantId = anyNullable(),
                 email = anyString(),
                 phone = anyString(),
+                threeDSecure = anyBoolean(),
             )
         )
             .thenReturn(Tasks.success(TestStubs.newToken()))
@@ -646,6 +648,7 @@ internal class CardFormViewModelTest {
                 tenantId = null,
                 email = "test@example.com",
                 phone = "+819012345678",
+                threeDSecure = false,
             )
         }
     }
@@ -662,6 +665,7 @@ internal class CardFormViewModelTest {
                 tenantId = anyNullable(),
                 email = anyString(),
                 phone = anyString(),
+                threeDSecure = anyBoolean(),
             )
         )
             .thenReturn(Tasks.success(TestStubs.newToken()))
@@ -691,6 +695,7 @@ internal class CardFormViewModelTest {
                 tenantId = tenantId,
                 email = "test@example.com",
                 phone = "+819012345678",
+                threeDSecure = false,
             )
         }
     }

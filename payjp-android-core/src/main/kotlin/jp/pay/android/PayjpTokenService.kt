@@ -45,8 +45,10 @@ interface PayjpTokenService {
      * @param tenantId tenant id (only for platform)
      * @param email email
      * @param phone phone
+     * @param threeDSecure whether use 3-D secure or not
      * @return task to create token.
      */
+    @Suppress("LongParameterList")
     fun createToken(
         number: String,
         cvc: String,
@@ -56,8 +58,9 @@ interface PayjpTokenService {
         tenantId: TenantId? = null,
         email: String? = null,
         phone: String? = null,
+        threeDSecure: Boolean = false,
     ): Task<Token> = createToken(
-        PayjpTokenParam(number, cvc, expMonth, expYear, name, tenantId, email, phone)
+        PayjpTokenParam(number, cvc, expMonth, expYear, name, tenantId, email, phone, threeDSecure)
     )
 
     /**

@@ -38,6 +38,7 @@ import retrofit2.http.Query
  *
  * see https://pay.jp/docs/api/#introduction
  */
+@Suppress("LongParameterList")
 internal interface PayjpApi {
 
     @POST("tokens")
@@ -52,6 +53,7 @@ internal interface PayjpApi {
         @Field("tenant") tenant: String?,
         @Field("card[email]") email: String?,
         @Field("card[phone]") phone: String?,
+        @Field("three_d_secure") threeDSecure: Boolean,
     ): ResultCall<Token>
 
     @POST("tokens/{id}/tds_finish")

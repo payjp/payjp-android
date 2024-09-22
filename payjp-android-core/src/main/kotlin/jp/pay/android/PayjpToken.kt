@@ -96,6 +96,7 @@ class PayjpToken internal constructor(
             tenant = param.tenantId?.id,
             email = param.email,
             phone = param.phone,
+            threeDSecure = param.threeDSecure
         ).let { this.wrapWithObserver(it) }
     }
 
