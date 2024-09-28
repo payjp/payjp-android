@@ -263,7 +263,8 @@ class CardFormViewSampleActivity :
 
     private fun updateButtonVisibility() {
         if (!tokenizeProcessing &&
-            Payjp.token().getTokenOperationObserver().status == PayjpTokenOperationStatus.ACCEPTABLE) {
+            Payjp.token().getTokenOperationObserver().status == PayjpTokenOperationStatus.ACCEPTABLE
+        ) {
             binding.layoutButtons.visibility = View.VISIBLE
             binding.progressBar.visibility = View.GONE
         } else {
