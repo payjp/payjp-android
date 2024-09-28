@@ -131,7 +131,7 @@ class CardFormViewSampleActivity :
 
     private fun createToken() {
         // create token
-        createToken = cardFormFragment.createToken()
+        createToken = cardFormFragment.createToken(useThreeDSecure = true)
         tokenizeProcessing = true
         updateButtonVisibility()
         binding.textTokenContent.text = "running..."
@@ -202,12 +202,12 @@ class CardFormViewSampleActivity :
     }
 
     private fun showThemeChooserDialog() {
-        val items = Theme.values().map { it.name }
-        val current = Theme.values().toList().indexOf(restoreTheme())
+        val items = Theme.entries.map { it.name }
+        val current = Theme.entries.indexOf(restoreTheme())
         AlertDialog.Builder(this)
             .setTitle("テーマを選択")
             .setSingleChoiceItems(items.toTypedArray(), current) { _, which ->
-                val theme = Theme.values()[which]
+                val theme = Theme.entries[which]
                 changeTheme(theme)
             }
             .create()
@@ -262,7 +262,8 @@ class CardFormViewSampleActivity :
     }
 
     private fun updateButtonVisibility() {
-        if (!tokenizeProcessing && Payjp.token().getTokenOperationObserver().status == PayjpTokenOperationStatus.ACCEPTABLE) {
+        if (!tokenizeProcessing &&
+            Payjp.token().getTokenOperationObserver().status == PayjpTokenOperationStatus.ACCEPTABLE) {
             binding.layoutButtons.visibility = View.VISIBLE
             binding.progressBar.visibility = View.GONE
         } else {

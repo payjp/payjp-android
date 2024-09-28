@@ -94,7 +94,7 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
         try {
             val token = withContext(Dispatchers.IO) {
                 if (tokenId == null) {
-                    cardFormFragment.createTokenSuspend()
+                    cardFormFragment.createTokenSuspend(useThreeDSecure = true)
                 } else {
                     Payjp.token().finishTokenTdsSuspend(tokenId = tokenId)
                 }

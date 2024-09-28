@@ -123,7 +123,8 @@ class TopActivity : AppCompatActivity() {
                 Payjp.cardForm().start(
                     activity = this,
                     face = face,
-                    extraAttributes = attributes
+                    extraAttributes = attributes,
+                    useThreeDSecure = true,
                 )
             }
             .setNegativeButton("Cancel", null)
