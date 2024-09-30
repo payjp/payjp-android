@@ -35,6 +35,7 @@ import jp.pay.android.model.TenantId
  * @param tenantId optional tenant id (only for platform)
  * @param email email
  * @param phone phone number formatted by E.164 (e.g. +819012345678)
+ * @param threeDSecure whether use 3-D secure or not
  */
 data class PayjpTokenParam(
     val number: String,
@@ -45,6 +46,7 @@ data class PayjpTokenParam(
     val tenantId: TenantId?,
     val email: String?,
     val phone: String?,
+    val threeDSecure: Boolean,
 ) {
 
     /**
@@ -66,6 +68,7 @@ data class PayjpTokenParam(
         private var tenantId: TenantId? = null
         private var email: String? = null
         private var phone: String? = null
+        private var threeDSecure: Boolean = false
 
         /**
          * Set card holder name
@@ -97,11 +100,18 @@ data class PayjpTokenParam(
         fun phone(phone: String?): Builder = apply { this.phone = phone }
 
         /**
+         * Set 3-D secure
+         *
+         * @param threeDSecure whether use 3-D secure or not
+         */
+        fun threeDSecure(threeDSecure: Boolean): Builder = apply { this.threeDSecure = threeDSecure }
+
+        /**
          * Build param
          *
          * @return param object.
          */
         fun build(): PayjpTokenParam =
-            PayjpTokenParam(number, cvc, expMonth, expYear, name, tenantId, email, phone)
+            PayjpTokenParam(number, cvc, expMonth, expYear, name, tenantId, email, phone, threeDSecure)
     }
 }

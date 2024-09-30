@@ -1,5 +1,5 @@
 [versions]
-agp = "8.5.1"
+agp = "8.6.1"
 ksp = "2.0.0-1.0.21"
 dokka = "1.9.20"
 spotless = "5.6.1"

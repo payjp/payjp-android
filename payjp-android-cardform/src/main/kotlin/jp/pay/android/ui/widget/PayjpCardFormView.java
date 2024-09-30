@@ -57,12 +57,21 @@ public interface PayjpCardFormView {
 
     /**
      * Create token.
-     *
      * @return task
      * @see [jp.pay.android.PayjpTokenService.createToken]
      */
     @NonNull
     Task<Token> createToken();
+
+    /**
+     * Create token with 3-D Secure.
+     *
+     * @param useThreeDSecure if true, use 3-D secure.
+     * @return task
+     * @see [jp.pay.android.PayjpTokenService.createToken]
+     */
+    @NonNull
+    Task<Token> createToken(boolean useThreeDSecure);
 
     /**
      * listener for every validation result.

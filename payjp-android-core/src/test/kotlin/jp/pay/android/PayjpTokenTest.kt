@@ -145,11 +145,14 @@ class PayjpTokenTest {
                 )
                 assertEquals("en", request.getHeader("Locale"))
                 assertEquals(
-                    "card%5Bnumber%5D=4242424242424242" +
-                        "&card%5Bcvc%5D=123" +
-                        "&card%5Bexp_month%5D=02" +
-                        "&card%5Bexp_year%5D=2020" +
-                        "&card%5Bname%5D=TARO%20YAMADA",
+                    """
+                        card%5Bnumber%5D=4242424242424242
+                        &card%5Bcvc%5D=123
+                        &card%5Bexp_month%5D=02
+                        &card%5Bexp_year%5D=2020
+                        &card%5Bname%5D=TARO%20YAMADA
+                        &three_d_secure=false
+                    """.trimIndent().replace("\n", ""),
                     request.body.readString(Charset.forName("utf-8"))
                 )
             }
@@ -169,10 +172,13 @@ class PayjpTokenTest {
             .run()
 
         assertEquals(
-            "card%5Bnumber%5D=4242424242424242" +
-                "&card%5Bcvc%5D=123" +
-                "&card%5Bexp_month%5D=02" +
-                "&card%5Bexp_year%5D=2020",
+            """
+                card%5Bnumber%5D=4242424242424242
+                &card%5Bcvc%5D=123
+                &card%5Bexp_month%5D=02
+                &card%5Bexp_year%5D=2020
+                &three_d_secure=false
+            """.trimIndent().replace("\n", ""),
             mockWebServer.takeRequest().body.readString(Charset.forName("utf-8"))
         )
     }
@@ -192,11 +198,14 @@ class PayjpTokenTest {
             .run()
 
         assertEquals(
-            "card%5Bnumber%5D=4242424242424242" +
-                "&card%5Bcvc%5D=123" +
-                "&card%5Bexp_month%5D=02" +
-                "&card%5Bexp_year%5D=2020" +
-                "&tenant=tenant_id",
+            """
+                card%5Bnumber%5D=4242424242424242
+                &card%5Bcvc%5D=123
+                &card%5Bexp_month%5D=02
+                &card%5Bexp_year%5D=2020
+                &tenant=tenant_id
+                &three_d_secure=false
+            """.trimIndent().replace("\n", ""),
             mockWebServer.takeRequest().body.readString(Charset.forName("utf-8"))
         )
     }
@@ -217,12 +226,43 @@ class PayjpTokenTest {
             .run()
 
         assertEquals(
-            "card%5Bnumber%5D=4242424242424242" +
-                "&card%5Bcvc%5D=123" +
-                "&card%5Bexp_month%5D=02" +
-                "&card%5Bexp_year%5D=2020" +
-                "&card%5Bemail%5D=test%40example.com" +
-                "&card%5Bphone%5D=%2B819012345678",
+            """
+                card%5Bnumber%5D=4242424242424242
+                &card%5Bcvc%5D=123
+                &card%5Bexp_month%5D=02
+                &card%5Bexp_year%5D=2020
+                &card%5Bemail%5D=test%40example.com
+                &card%5Bphone%5D=%2B819012345678
+                &three_d_secure=false
+            """.trimIndent().replace("\n", ""),
+            mockWebServer.takeRequest().body.readString(Charset.forName("utf-8"))
+        )
+    }
+
+    @Test
+    fun createToken_with_three_d_secure() {
+        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(TOKEN_OK))
+
+        createTokenService()
+            .createToken(
+                number = "4242424242424242",
+                cvc = "123",
+                expMonth = "02",
+                expYear = "2020",
+                name = "TARO YAMADA",
+                threeDSecure = true,
+            )
+            .run()
+
+        assertEquals(
+            """
+                card%5Bnumber%5D=4242424242424242
+                &card%5Bcvc%5D=123
+                &card%5Bexp_month%5D=02
+                &card%5Bexp_year%5D=2020
+                &card%5Bname%5D=TARO%20YAMADA
+                &three_d_secure=true
+            """.trimIndent().replace("\n", ""),
             mockWebServer.takeRequest().body.readString(Charset.forName("utf-8"))
         )
     }
@@ -295,7 +335,7 @@ class PayjpTokenTest {
         try {
             task.run()
             fail()
-        } catch (e: IOException) {
+        } catch (_: IOException) {
         }
     }
 
@@ -424,7 +464,7 @@ class PayjpTokenTest {
         try {
             task.run()
             fail()
-        } catch (e: IOException) {
+        } catch (_: IOException) {
         }
     }
 

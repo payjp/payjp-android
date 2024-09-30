@@ -209,7 +209,7 @@ internal class CardFormViewModel(
         forceValidate(cardPhoneNumberInput, cardPhoneNumberInputTransformer)
     }
 
-    override fun createToken(): Task<Token> {
+    override fun createToken(useThreeDSecure: Boolean): Task<Token> {
         return if (isValid.value == true) {
             tokenService.createToken(
                 number = checkNotNull(cardNumberInput.value?.value),
@@ -220,6 +220,7 @@ internal class CardFormViewModel(
                 tenantId = tenantId,
                 email = cardEmailInput.value?.value,
                 phone = cardPhoneNumberInput.value?.value,
+                threeDSecure = useThreeDSecure,
             )
         } else {
             Tasks.failure(

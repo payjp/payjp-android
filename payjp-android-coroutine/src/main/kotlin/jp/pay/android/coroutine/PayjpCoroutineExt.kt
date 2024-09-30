@@ -39,10 +39,12 @@ import kotlin.coroutines.suspendCoroutine
 /**
  * Create token by suspend function.
  *
+ * @param useThreeDSecure if true, use 3-D secure.
  * @return token
  * @see [PayjpCardFormView.createToken]
  */
-suspend fun PayjpCardFormView.createTokenSuspend(): Token = createToken().toSuspend()
+suspend fun PayjpCardFormView.createTokenSuspend(useThreeDSecure: Boolean = false): Token =
+    createToken(useThreeDSecure).toSuspend()
 
 /**
  * Create token with param by suspend function.

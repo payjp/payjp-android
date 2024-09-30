@@ -55,6 +55,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
+import org.mockito.Mockito.anyBoolean
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.never
 import org.mockito.Mockito.reset
@@ -618,6 +619,7 @@ internal class CardFormViewModelTest {
                 tenantId = anyNullable(),
                 email = anyString(),
                 phone = anyString(),
+                threeDSecure = anyBoolean(),
             )
         )
             .thenReturn(Tasks.success(TestStubs.newToken()))
@@ -636,7 +638,7 @@ internal class CardFormViewModelTest {
             inputEmail(robot.email)
             selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
             inputPhoneNumber(robot.phoneNumber)
-            createToken().run()
+            createToken(useThreeDSecure = true).run()
             verify(mockTokenService).createToken(
                 number = "4242424242424242",
                 expMonth = "12",
@@ -646,12 +648,13 @@ internal class CardFormViewModelTest {
                 tenantId = null,
                 email = "test@example.com",
                 phone = "+819012345678",
+                threeDSecure = true,
             )
         }
     }
 
     @Test
-    fun validateCardForm_true_with_correct_input_and_token() {
+    fun validateCardForm_true_with_correct_input_and_tenantId() {
         `when`(
             mockTokenService.createToken(
                 number = anyString(),
@@ -662,6 +665,7 @@ internal class CardFormViewModelTest {
                 tenantId = anyNullable(),
                 email = anyString(),
                 phone = anyString(),
+                threeDSecure = anyBoolean(),
             )
         )
             .thenReturn(Tasks.success(TestStubs.newToken()))
@@ -681,7 +685,7 @@ internal class CardFormViewModelTest {
             inputEmail(robot.email)
             selectCountryCode(CountryCode(robot.countryRegion, robot.countryCode))
             inputPhoneNumber(robot.phoneNumber)
-            createToken().run()
+            createToken(useThreeDSecure = true).run()
             verify(mockTokenService).createToken(
                 number = "4242424242424242",
                 expMonth = "12",
@@ -691,6 +695,7 @@ internal class CardFormViewModelTest {
                 tenantId = tenantId,
                 email = "test@example.com",
                 phone = "+819012345678",
+                threeDSecure = true,
             )
         }
     }
