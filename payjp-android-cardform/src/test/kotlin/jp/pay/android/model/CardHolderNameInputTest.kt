@@ -58,7 +58,12 @@ internal class CardHolderNameInputTest(
                     null,
                     FormInputError(R.string.payjp_card_form_error_no_holder_name, true)
                 ),
-                arrayOf("JANE DOE", "JANE DOE", null),
+                arrayOf(
+                    "山田太郎",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_holder_name, false)
+                ),
+                arrayOf("JANE-DOE.", "JANE-DOE.", null),
                 arrayOf(" JANE DOE ", "JANE DOE", null)
             )
         }
