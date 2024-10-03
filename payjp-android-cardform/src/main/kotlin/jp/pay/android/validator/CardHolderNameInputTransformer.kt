@@ -45,5 +45,5 @@ internal object CardHolderNameInputTransformer :
         return CardComponentInput.CardHolderNameInput(input, value, errorMessage)
     }
 
-    private val cardNameRegex by lazy { Regex("^[a-zA-Z\\d\\s-.]+$") }
+    private val cardNameRegex by lazy { Regex("^[a-zA-Z0-9 -.]+$") }
 }

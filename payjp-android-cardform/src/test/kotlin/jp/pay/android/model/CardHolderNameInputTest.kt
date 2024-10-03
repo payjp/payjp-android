@@ -63,6 +63,16 @@ internal class CardHolderNameInputTest(
                     null,
                     FormInputError(R.string.payjp_card_form_error_invalid_holder_name, false)
                 ),
+                // 全角スペース
+                arrayOf("JANE　DOE",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_holder_name, false)
+                ),
+                // 全角数字
+                arrayOf("１２３４５６７８９０",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_holder_name, false)
+                ),
                 arrayOf("JANE-DOE.", "JANE-DOE.", null),
                 arrayOf(" JANE DOE ", "JANE DOE", null)
             )
