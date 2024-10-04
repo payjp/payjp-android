@@ -35,9 +35,15 @@ internal object CardHolderNameInputTransformer :
                 R.string.payjp_card_form_error_no_holder_name,
                 true
             )
+            !trimmed.matches(cardNameRegex) -> FormInputError(
+                R.string.payjp_card_form_error_invalid_holder_name,
+                false
+            )
             else -> null
         }
         val value = trimmed.takeIf { errorMessage == null }
         return CardComponentInput.CardHolderNameInput(input, value, errorMessage)
     }
+
+    private val cardNameRegex by lazy { Regex("^[a-zA-Z0-9 -.]+$") }
 }
