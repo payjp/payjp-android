@@ -9,7 +9,7 @@ $dokka.location:jp.pay.android.cardio/PayjpCardScannerPlugin/startScanActivity/#
 $dokka.location:jp.pay.android.cardio/PayjpCardScannerPlugin/startScanActivity/#androidx.fragment.app.Fragment/PointingToDeclaration/payjp-android/jp.pay.android.cardio/-payjp-card-scanner-plugin/start-scan-activity.html
 $dokka.location:jp.pay.android.coroutine////PointingToDeclaration/payjp-android/jp.pay.android.coroutine/index.html
 $dokka.location:jp.pay.android.coroutine//createTokenSuspend/jp.pay.android.PayjpTokenService#jp.pay.android.PayjpTokenParam/PointingToDeclaration/payjp-android/jp.pay.android.coroutine/create-token-suspend.html
-$dokka.location:jp.pay.android.coroutine//createTokenSuspend/jp.pay.android.ui.widget.PayjpCardFormView#/PointingToDeclaration/payjp-android/jp.pay.android.coroutine/create-token-suspend.html
+$dokka.location:jp.pay.android.coroutine//createTokenSuspend/jp.pay.android.ui.widget.PayjpCardFormView#kotlin.Boolean/PointingToDeclaration/payjp-android/jp.pay.android.coroutine/create-token-suspend.html
 $dokka.location:jp.pay.android.coroutine//finishTokenTdsSuspend/jp.pay.android.PayjpTokenService#jp.pay.android.model.TokenId/PointingToDeclaration/payjp-android/jp.pay.android.coroutine/finish-token-tds-suspend.html
 $dokka.location:jp.pay.android.coroutine//getAcceptedBrandsSuspend/jp.pay.android.PayjpTokenService#jp.pay.android.model.TenantId?/PointingToDeclaration/payjp-android/jp.pay.android.coroutine/get-accepted-brands-suspend.html
 $dokka.location:jp.pay.android.coroutine//getTokenSuspend/jp.pay.android.PayjpTokenService#kotlin.String/PointingToDeclaration/payjp-android/jp.pay.android.coroutine/get-token-suspend.html
@@ -205,6 +205,7 @@ $dokka.location:jp.pay.android.ui.widget/PayjpAcceptedBrandsView/setAcceptedBran
 $dokka.location:jp.pay.android.ui.widget/PayjpCardFormAbstractFragment///PointingToDeclaration/payjp-android/jp.pay.android.ui.widget/-payjp-card-form-abstract-fragment/index.html
 $dokka.location:jp.pay.android.ui.widget/PayjpCardFormAbstractFragment/PayjpCardFormAbstractFragment/#/PointingToDeclaration/payjp-android/jp.pay.android.ui.widget/-payjp-card-form-abstract-fragment/-payjp-card-form-abstract-fragment.html
 $dokka.location:jp.pay.android.ui.widget/PayjpCardFormAbstractFragment/createToken/#/PointingToDeclaration/payjp-android/jp.pay.android.ui.widget/-payjp-card-form-abstract-fragment/create-token.html
+$dokka.location:jp.pay.android.ui.widget/PayjpCardFormAbstractFragment/createToken/#kotlin.Boolean/PointingToDeclaration/payjp-android/jp.pay.android.ui.widget/-payjp-card-form-abstract-fragment/create-token.html
 $dokka.location:jp.pay.android.ui.widget/PayjpCardFormAbstractFragment/isValid/#/PointingToDeclaration/payjp-android/jp.pay.android.ui.widget/-payjp-card-form-abstract-fragment/is-valid.html
 $dokka.location:jp.pay.android.ui.widget/PayjpCardFormAbstractFragment/onActivityResult/#kotlin.Int#kotlin.Int#android.content.Intent?/PointingToDeclaration/payjp-android/jp.pay.android.ui.widget/-payjp-card-form-abstract-fragment/on-activity-result.html
 $dokka.location:jp.pay.android.ui.widget/PayjpCardFormAbstractFragment/onAttach/#android.content.Context/PointingToDeclaration/payjp-android/jp.pay.android.ui.widget/-payjp-card-form-abstract-fragment/on-attach.html
@@ -238,6 +239,7 @@ $dokka.location:jp.pay.android.ui.widget/PayjpCardFormView.OnValidateInputListen
 $dokka.location:jp.pay.android.ui.widget/PayjpCardFormView.OnValidateInputListener/onValidateInput/#jp.pay.android.ui.widget.PayjpCardFormView#boolean/PointingToDeclaration/payjp-android/jp.pay.android.ui.widget/-payjp-card-form-view/-on-validate-input-listener/on-validate-input.html
 $dokka.location:jp.pay.android.ui.widget/PayjpCardFormView///PointingToDeclaration/payjp-android/jp.pay.android.ui.widget/-payjp-card-form-view/index.html
 $dokka.location:jp.pay.android.ui.widget/PayjpCardFormView/createToken/#/PointingToDeclaration/payjp-android/jp.pay.android.ui.widget/-payjp-card-form-view/create-token.html
+$dokka.location:jp.pay.android.ui.widget/PayjpCardFormView/createToken/#boolean/PointingToDeclaration/payjp-android/jp.pay.android.ui.widget/-payjp-card-form-view/create-token.html
 $dokka.location:jp.pay.android.ui.widget/PayjpCardFormView/isValid/#/PointingToDeclaration/payjp-android/jp.pay.android.ui.widget/-payjp-card-form-view/is-valid.html
 $dokka.location:jp.pay.android.ui.widget/PayjpCardFormView/validateCardForm/#/PointingToDeclaration/payjp-android/jp.pay.android.ui.widget/-payjp-card-form-view/validate-card-form.html
 $dokka.location:jp.pay.android.ui////PointingToDeclaration/payjp-android/jp.pay.android.ui/index.html
@@ -309,8 +311,8 @@ $dokka.location:jp.pay.android/PayjpCardForm/configure/#jp.pay.android.PayjpLogg
 $dokka.location:jp.pay.android/PayjpCardForm/handleResult/#android.content.Intent?#jp.pay.android.ui.PayjpCardFormResultCallback/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-card-form/handle-result.html
 $dokka.location:jp.pay.android/PayjpCardForm/newCardFormFragment/#jp.pay.android.model.TenantId?#kotlin.Array[jp.pay.android.model.CardBrand]?#kotlin.Int#kotlin.Array[jp.pay.android.model.ExtraAttribute[*]]/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-card-form/new-card-form-fragment.html
 $dokka.location:jp.pay.android/PayjpCardForm/newFragment/#jp.pay.android.model.TenantId?#kotlin.Array[jp.pay.android.model.CardBrand]?#kotlin.Array[jp.pay.android.model.ExtraAttribute[*]]/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-card-form/new-fragment.html
-$dokka.location:jp.pay.android/PayjpCardForm/start/#android.app.Activity#kotlin.Int?#jp.pay.android.model.TenantId?#kotlin.Int#kotlin.Array[jp.pay.android.model.ExtraAttribute[*]]/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-card-form/start.html
-$dokka.location:jp.pay.android/PayjpCardForm/start/#androidx.fragment.app.Fragment#kotlin.Int?#jp.pay.android.model.TenantId?#kotlin.Int#kotlin.Array[jp.pay.android.model.ExtraAttribute[*]]/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-card-form/start.html
+$dokka.location:jp.pay.android/PayjpCardForm/start/#android.app.Activity#kotlin.Int?#jp.pay.android.model.TenantId?#kotlin.Int#kotlin.Array[jp.pay.android.model.ExtraAttribute[*]]#kotlin.Boolean/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-card-form/start.html
+$dokka.location:jp.pay.android/PayjpCardForm/start/#androidx.fragment.app.Fragment#kotlin.Int?#jp.pay.android.model.TenantId?#kotlin.Int#kotlin.Array[jp.pay.android.model.ExtraAttribute[*]]#kotlin.Boolean/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-card-form/start.html
 $dokka.location:jp.pay.android/PayjpConfiguration.Builder///PointingToDeclaration/payjp-android/jp.pay.android/-payjp-configuration/-builder/index.html
 $dokka.location:jp.pay.android/PayjpConfiguration.Builder/Builder/#kotlin.String/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-configuration/-builder/-builder.html
 $dokka.location:jp.pay.android/PayjpConfiguration.Builder/build/#/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-configuration/-builder/build.html
@@ -397,8 +399,9 @@ $dokka.location:jp.pay.android/PayjpTokenParam.Builder/email/#kotlin.String?/Poi
 $dokka.location:jp.pay.android/PayjpTokenParam.Builder/name/#kotlin.String?/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-param/-builder/name.html
 $dokka.location:jp.pay.android/PayjpTokenParam.Builder/phone/#kotlin.String?/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-param/-builder/phone.html
 $dokka.location:jp.pay.android/PayjpTokenParam.Builder/tenantId/#jp.pay.android.model.TenantId?/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-param/-builder/tenant-id.html
+$dokka.location:jp.pay.android/PayjpTokenParam.Builder/threeDSecure/#kotlin.Boolean/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-param/-builder/three-d-secure.html
 $dokka.location:jp.pay.android/PayjpTokenParam///PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-param/index.html
-$dokka.location:jp.pay.android/PayjpTokenParam/PayjpTokenParam/#kotlin.String#kotlin.String#kotlin.String#kotlin.String#kotlin.String?#jp.pay.android.model.TenantId?#kotlin.String?#kotlin.String?/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-param/-payjp-token-param.html
+$dokka.location:jp.pay.android/PayjpTokenParam/PayjpTokenParam/#kotlin.String#kotlin.String#kotlin.String#kotlin.String#kotlin.String?#jp.pay.android.model.TenantId?#kotlin.String?#kotlin.String?#kotlin.Boolean/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-param/-payjp-token-param.html
 $dokka.location:jp.pay.android/PayjpTokenParam/cvc/#/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-param/cvc.html
 $dokka.location:jp.pay.android/PayjpTokenParam/email/#/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-param/email.html
 $dokka.location:jp.pay.android/PayjpTokenParam/expMonth/#/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-param/exp-month.html
@@ -407,9 +410,10 @@ $dokka.location:jp.pay.android/PayjpTokenParam/name/#/PointingToDeclaration/pay
 $dokka.location:jp.pay.android/PayjpTokenParam/number/#/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-param/number.html
 $dokka.location:jp.pay.android/PayjpTokenParam/phone/#/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-param/phone.html
 $dokka.location:jp.pay.android/PayjpTokenParam/tenantId/#/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-param/tenant-id.html
+$dokka.location:jp.pay.android/PayjpTokenParam/threeDSecure/#/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-param/three-d-secure.html
 $dokka.location:jp.pay.android/PayjpTokenService///PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-service/index.html
 $dokka.location:jp.pay.android/PayjpTokenService/createToken/#jp.pay.android.PayjpTokenParam/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-service/create-token.html
-$dokka.location:jp.pay.android/PayjpTokenService/createToken/#kotlin.String#kotlin.String#kotlin.String#kotlin.String#kotlin.String?#jp.pay.android.model.TenantId?#kotlin.String?#kotlin.String?/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-service/create-token.html
+$dokka.location:jp.pay.android/PayjpTokenService/createToken/#kotlin.String#kotlin.String#kotlin.String#kotlin.String#kotlin.String?#jp.pay.android.model.TenantId?#kotlin.String?#kotlin.String?#kotlin.Boolean/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-service/create-token.html
 $dokka.location:jp.pay.android/PayjpTokenService/finishTokenThreeDSecure/#jp.pay.android.model.TokenId/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-service/finish-token-three-d-secure.html
 $dokka.location:jp.pay.android/PayjpTokenService/getAcceptedBrands/#/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-service/get-accepted-brands.html
 $dokka.location:jp.pay.android/PayjpTokenService/getAcceptedBrands/#jp.pay.android.model.TenantId?/PointingToDeclaration/payjp-android/jp.pay.android/-payjp-token-service/get-accepted-brands.html
