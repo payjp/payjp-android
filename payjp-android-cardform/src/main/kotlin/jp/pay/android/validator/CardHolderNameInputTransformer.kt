@@ -35,6 +35,10 @@ internal object CardHolderNameInputTransformer :
                 R.string.payjp_card_form_error_no_holder_name,
                 true
             )
+            (MIN_LENGTH..MAX_LENGTH).contains(trimmed.length).not() -> FormInputError(
+                R.string.payjp_card_form_error_invalid_length_holder_name,
+                false
+            )
             !trimmed.matches(cardNameRegex) -> FormInputError(
                 R.string.payjp_card_form_error_invalid_holder_name,
                 false
@@ -45,5 +49,7 @@ internal object CardHolderNameInputTransformer :
         return CardComponentInput.CardHolderNameInput(input, value, errorMessage)
     }
 
-    private val cardNameRegex by lazy { Regex("^[a-zA-Z0-9 -.]+$") }
+    private val cardNameRegex by lazy { Regex("^[a-zA-Z0-9-. ]+$") }
+    private const val MAX_LENGTH = 45
+    private const val MIN_LENGTH = 2
 }

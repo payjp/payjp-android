@@ -75,6 +75,36 @@ internal class CardHolderNameInputTest(
                     null,
                     FormInputError(R.string.payjp_card_form_error_invalid_holder_name, false)
                 ),
+                // スペース・ピリオド・ハイフン以外の記号
+                arrayOf(
+                    "JANE@DOE",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_holder_name, false)
+                ),
+                // MAX_LENGTH + 1 (46)
+                arrayOf(
+                    "1234567890" + "1234567890" + "1234567890" + "1234567890" + "123456",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_length_holder_name, false)
+                ),
+                // MAX_LENGTH (45)
+                arrayOf(
+                    "1234567890" + "1234567890" + "1234567890" + "1234567890" + "12345",
+                    "1234567890" + "1234567890" + "1234567890" + "1234567890" + "12345",
+                    null
+                ),
+                // MIN_LENGTH - 1 (1)
+                arrayOf(
+                    "1",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_length_holder_name, false)
+                ),
+                // MIN_LENGTH (2)
+                arrayOf(
+                    "12",
+                    "12",
+                    null
+                ),
                 arrayOf("JANE-DOE.", "JANE-DOE.", null),
                 arrayOf(" JANE DOE ", "JANE DOE", null)
             )
