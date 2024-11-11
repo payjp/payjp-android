@@ -41,7 +41,7 @@
     <string name="payjp_card_form_error_no_cvc">Please enter a security code.</string>
     <string name="payjp_card_form_error_invalid_cvc">Please enter a valid security code.</string>
     <string name="payjp_card_form_error_no_holder_name">Please enter a card holder name.</string>
-    <string name="payjp_card_form_error_invalid_holder_name">There are invalid characters for card holder name.</string>
+    <string name="payjp_card_form_error_invalid_holder_name">Please enter a card holder name using only alphanumeric characters, spaces, periods, and hyphens.</string>
     <string name="payjp_card_form_error_invalid_length_holder_name">Please enter a card holder name between 2 and 45 characters.</string>
     <string name="payjp_card_form_error_no_email">Please enter an email address.</string>
     <string name="payjp_card_form_error_no_phone_number">Please enter a phone number.</string>

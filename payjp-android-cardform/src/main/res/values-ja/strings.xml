@@ -41,7 +41,7 @@
     <string name="payjp_card_form_error_no_cvc">セキュリティコードを入力してください</string>
     <string name="payjp_card_form_error_invalid_cvc">正しいセキュリティコードを入力してください</string>
     <string name="payjp_card_form_error_no_holder_name">カード名義を入力してください</string>
-    <string name="payjp_card_form_error_invalid_holder_name">カード名義に利用できない文字が含まれています</string>
+    <string name="payjp_card_form_error_invalid_holder_name">カード名義は半角英数字、スペース、ピリオド、ハイフンのみ利用できます</string>
     <string name="payjp_card_form_error_invalid_length_holder_name">カード名義は2文字以上45文字以内で入力してください</string>
     <string name="payjp_card_form_error_no_email">メールアドレスを入力してください</string>
     <string name="payjp_card_form_error_no_phone_number">電話番号を入力してください</string>

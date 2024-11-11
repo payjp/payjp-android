@@ -75,6 +75,12 @@ internal class CardHolderNameInputTest(
                     null,
                     FormInputError(R.string.payjp_card_form_error_invalid_holder_name, false)
                 ),
+                // スペース・ピリオド・ハイフン以外の記号
+                arrayOf(
+                    "JANE@DOE",
+                    null,
+                    FormInputError(R.string.payjp_card_form_error_invalid_holder_name, false)
+                ),
                 // MAX_LENGTH + 1 (46)
                 arrayOf(
                     "1234567890" + "1234567890" + "1234567890" + "1234567890" + "123456",
