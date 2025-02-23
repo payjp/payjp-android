@@ -49,9 +49,9 @@ class PayjpThreeDSecureStepActivity : AppCompatActivity() {
         internal const val EXTRA_KEY_TOKEN_ID = "EXTRA_KEY_TOKEN_ID"
         internal val intentHolder: IntentHolder = IntentHolder()
 
-        internal fun createLaunchIntent(context: Context, tokenId: TokenId): Intent {
+        internal fun createLaunchIntent(context: Context, resourceId: String): Intent {
             return Intent(context, PayjpThreeDSecureStepActivity::class.java)
-                .putExtra(EXTRA_KEY_TOKEN_ID, tokenId)
+                .putExtra(EXTRA_KEY_TOKEN_ID, resourceId)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
 
@@ -59,27 +59,27 @@ class PayjpThreeDSecureStepActivity : AppCompatActivity() {
             val intent = intentHolder.pop() ?: return PayjpThreeDSecureResult.Canceled
             PayjpVerifier.logger().d("getResult intent: $intent")
             val uri = intent.data
-            val resource = IntentCompat.getParcelableExtra(intent, EXTRA_KEY_TOKEN_ID, TokenId::class.java)
+            val resourceId = intent.getStringExtra(EXTRA_KEY_TOKEN_ID)
             return when {
                 uri == null -> PayjpThreeDSecureResult.Canceled
-                resource is TokenId -> PayjpThreeDSecureResult.SuccessTokenId(id = resource)
+                resourceId != null -> PayjpThreeDSecureResult.SuccessTokenId(id = TokenId(resourceId))
                 else -> PayjpThreeDSecureResult.Canceled
             }
         }
     }
 
-    private var currentTokenId: TokenId? = null
+    private var currentResourceId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState?.containsKey(EXTRA_KEY_TOKEN_ID) == true) {
-            currentTokenId = BundleCompat.getParcelable(savedInstanceState, EXTRA_KEY_TOKEN_ID, TokenId::class.java)
+            currentResourceId = savedInstanceState.getString(EXTRA_KEY_TOKEN_ID)
         } else {
             intent?.let { i ->
-                IntentCompat.getParcelableExtra(i, EXTRA_KEY_TOKEN_ID, TokenId::class.java)?.let { tokenId ->
-                    currentTokenId = tokenId
+                i.getStringExtra(EXTRA_KEY_TOKEN_ID)?.let { resourceId ->
+                    currentResourceId = resourceId
                     intentHolder.pop()
-                    PayjpVerifier.openThreeDSecure(tokenId, this)
+                    PayjpVerifier.openThreeDSecure(TokenId(resourceId), this)
                 }
             }
         }
@@ -98,8 +98,8 @@ class PayjpThreeDSecureStepActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        currentTokenId?.let { tokenId ->
-            outState.putParcelable(EXTRA_KEY_TOKEN_ID, tokenId)
+        currentResourceId?.let { resourceId ->
+            outState.putString(EXTRA_KEY_TOKEN_ID, resourceId)
         }
     }
 
@@ -108,7 +108,7 @@ class PayjpThreeDSecureStepActivity : AppCompatActivity() {
         PayjpVerifier.logger().d("onNewIntent uri ${intent?.data}")
         intent?.data?.let { uri ->
             intentHolder.intent = Intent().setData(uri)
-                .putExtra(EXTRA_KEY_TOKEN_ID, currentTokenId)
+                .putExtra(EXTRA_KEY_TOKEN_ID, currentResourceId)
             setResult(Activity.RESULT_OK)
             finish()
         }
