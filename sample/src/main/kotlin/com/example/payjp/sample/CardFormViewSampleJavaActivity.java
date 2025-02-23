@@ -39,10 +39,10 @@ import com.example.payjp.sample.databinding.ActivityCardFormViewSampleBinding;
 import jp.pay.android.Payjp;
 import jp.pay.android.Task;
 import jp.pay.android.model.Token;
+import jp.pay.android.model.ThreeDSecureStatus;
 import jp.pay.android.ui.widget.PayjpCardFormFragment;
 import jp.pay.android.ui.widget.PayjpCardFormView;
-import jp.pay.android.verifier.PayjpThreeDSecureResult;
-import jp.pay.android.verifier.ThreeDSecureStatus;
+import jp.pay.android.verifier.ui.PayjpThreeDSecureResult;
 
 public class CardFormViewSampleJavaActivity extends AppCompatActivity
         implements PayjpCardFormView.OnValidateInputListener {
@@ -112,7 +112,13 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Payjp.verifier().handleThreeDSecureResult(requestCode, result -> {
-            createTokenForTds(result);
+            if (result.isSuccess()) {
+                createTokenForTds(result);
+            } else if (result.isCanceled()) {
+                binding.textTokenContent.setText("3D Secure verification was canceled");
+                tokenizeProcessing = false;
+                updateButtonVisibility();
+            }
         });
     }
 
