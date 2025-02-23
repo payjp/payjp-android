@@ -41,7 +41,6 @@ object PayjpVerifier {
     private var threeDSecureRedirectName: String? = null
     private val webBrowserResolver = WebBrowserResolver(
         WebBrowser.ChromeTab,
-        // WebBrowser.AnyBrowsable,
         WebBrowser.InAppWeb
     )
 
@@ -62,15 +61,28 @@ object PayjpVerifier {
     }
 
     /**
+     * Start 3DS authorization flow with a resource ID.
+     *
+     * @param resourceId id of the resource (token/charge/customer) that needs 3DS verification
+     * @param activity current activity
+     */
+    @MainThread
+    fun startThreeDSecureFlow(resourceId: String, activity: Activity) {
+        val intent = PayjpThreeDSecureStepActivity.createLaunchIntent(activity, resourceId)
+        activity.startActivityForResult(intent, REQUEST_CODE_VERIFY_LAUNCHER)
+    }
+
+    /**
      * Start 3DS authorization flow with [Token].
      *
      * @param tokenId id of token which has 3DS-unverified card.
      * @param activity current activity.
+     * @deprecated Use [startThreeDSecureFlow] with resource ID instead.
      */
     @MainThread
+    @Deprecated("Use startThreeDSecureFlow with resource ID instead", ReplaceWith("startThreeDSecureFlow(tokenId.id, activity)"))
     fun startThreeDSecureFlow(tokenId: TokenId, activity: Activity) {
-        val intent = PayjpThreeDSecureStepActivity.createLaunchIntent(activity, tokenId)
-        activity.startActivityForResult(intent, REQUEST_CODE_VERIFY_LAUNCHER)
+        startThreeDSecureFlow(tokenId.id, activity)
     }
 
     @MainThread

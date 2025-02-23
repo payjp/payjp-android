@@ -23,6 +23,7 @@
 
 package com.example.payjp.sample;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -40,6 +41,8 @@ import jp.pay.android.Task;
 import jp.pay.android.model.Token;
 import jp.pay.android.ui.widget.PayjpCardFormFragment;
 import jp.pay.android.ui.widget.PayjpCardFormView;
+import jp.pay.android.verifier.PayjpThreeDSecureResult;
+import jp.pay.android.verifier.ThreeDSecureStatus;
 
 public class CardFormViewSampleJavaActivity extends AppCompatActivity
         implements PayjpCardFormView.OnValidateInputListener {
@@ -52,6 +55,7 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
     Task<Token> getToken;
     private PayjpCardFormFragment cardFormFragment;
     private ActivityCardFormViewSampleBinding binding;
+    private boolean tokenizeProcessing = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -104,29 +108,67 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Payjp.verifier().handleThreeDSecureResult(requestCode, result -> {
+            createTokenForTds(result);
+        });
+    }
+
     private void createToken() {
         binding.layoutButtons.setVisibility(View.INVISIBLE);
         binding.progressBar.setVisibility(View.VISIBLE);
         binding.textTokenContent.setVisibility(View.INVISIBLE);
-        createToken = cardFormFragment.createToken();
+        createToken = cardFormFragment.createToken(true);
         createToken.enqueue(new Task.Callback<Token>() {
             @Override
             public void onSuccess(Token data) {
-                Log.i("GenerateTokenSampleJava", "token => " + data);
-                binding.textTokenId.setText(data.getId());
-                binding.progressBar.setVisibility(View.GONE);
-                binding.layoutButtons.setVisibility(View.VISIBLE);
-                binding.textTokenContent.setText("The token has created.");
-                binding.textTokenContent.setVisibility(View.VISIBLE);
+                if (data.getCard().getThreeDSecureStatus() == ThreeDSecureStatus.UNVERIFIED) {
+                    // Start 3DS verification with new API
+                    Payjp.verifier()
+                        .startThreeDSecureFlow(data.getId(), CardFormViewSampleJavaActivity.this);
+                } else {
+                    tokenizeProcessing = false;
+                    binding.textTokenId.setText(data.getId());
+                    binding.textTokenContent.setText("The token has created.");
+                    updateButtonVisibility();
+                }
             }
 
             @Override
             public void onError(@NonNull Throwable throwable) {
-                Log.e("GenerateTokenSampleJava", "failure creating token", throwable);
-                binding.progressBar.setVisibility(View.GONE);
-                binding.layoutButtons.setVisibility(View.VISIBLE);
-                binding.textTokenContent.setVisibility(View.VISIBLE);
+                Log.e("CardFormViewSample", "failure creating token", throwable);
+                tokenizeProcessing = false;
                 binding.textTokenContent.setText(throwable.toString());
+                updateButtonVisibility();
+            }
+        });
+    }
+
+    private void createTokenForTds(PayjpThreeDSecureResult result) {
+        Task<Token> task = Payjp.verifier().completeTokenThreeDSecure(result);
+        if (task == null) return;
+        createToken = task;
+        tokenizeProcessing = true;
+        updateButtonVisibility();
+        binding.textTokenContent.setText("running...");
+        createToken.enqueue(new Task.Callback<Token>() {
+            @Override
+            public void onSuccess(Token data) {
+                Log.i("CardFormViewSample", "token => " + data);
+                tokenizeProcessing = false;
+                binding.textTokenId.setText(data.getId());
+                binding.textTokenContent.setText("The token has created.");
+                updateButtonVisibility();
+            }
+
+            @Override
+            public void onError(@NonNull Throwable throwable) {
+                Log.e("CardFormViewSample", "failure creating token", throwable);
+                tokenizeProcessing = false;
+                binding.textTokenContent.setText(throwable.toString());
+                updateButtonVisibility();
             }
         });
     }
@@ -155,5 +197,10 @@ public class CardFormViewSampleJavaActivity extends AppCompatActivity
                 binding.textTokenContent.setText(throwable.toString());
             }
         });
+    }
+
+    private void updateButtonVisibility() {
+        binding.progressBar.setVisibility(tokenizeProcessing ? View.VISIBLE : View.GONE);
+        binding.layoutButtons.setVisibility(tokenizeProcessing ? View.INVISIBLE : View.VISIBLE);
     }
 }

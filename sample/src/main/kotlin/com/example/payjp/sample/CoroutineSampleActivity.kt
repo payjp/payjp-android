@@ -78,10 +78,10 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Payjp.verifier().handleThreeDSecureResult(requestCode) {
-            if (it.isSuccess()) {
-                createToken(tokenId = it.retrieveTokenId())
-            } else {
+        Payjp.verifier().handleThreeDSecureResult(requestCode) { result ->
+            if (result.isSuccess()) {
+                createToken(result.retrieveTokenId())
+            } else if (result.isCanceled()) {
                 Toast.makeText(this, "3-D Secure canceled.", Toast.LENGTH_SHORT).show()
             }
         }
@@ -100,7 +100,8 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
                 }
             }
             if (token.card.threeDSecureStatus == ThreeDSecureStatus.UNVERIFIED) {
-                Payjp.verifier().startThreeDSecureFlow(token.retrieveId(), this@CoroutineSampleActivity)
+                // Start 3DS verification with new API
+                Payjp.verifier().startThreeDSecureFlow(token.id, this@CoroutineSampleActivity)
             } else {
                 updateSuccessUI(token)
             }

@@ -124,8 +124,8 @@ class CardFormViewSampleActivity :
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Payjp.verifier().handleThreeDSecureResult(requestCode) {
-            createTokenForTds(it)
+        Payjp.verifier().handleThreeDSecureResult(requestCode) { result ->
+            createTokenForTds(result)
         }
     }
 
@@ -140,10 +140,9 @@ class CardFormViewSampleActivity :
                 override fun onSuccess(data: Token) {
                     Log.i("CardFormViewSample", "token => $data")
                     if (data.card.threeDSecureStatus == ThreeDSecureStatus.UNVERIFIED) {
-                        // if support 3DSecure
-                        // NOTE: 3DSecure is a limited feature for now.
+                        // Start 3DS verification with new API
                         Payjp.verifier()
-                            .startThreeDSecureFlow(data.retrieveId(), this@CardFormViewSampleActivity)
+                            .startThreeDSecureFlow(data.id, this@CardFormViewSampleActivity)
                     } else {
                         tokenizeProcessing = false
                         binding.textTokenId.setText(data.id)
