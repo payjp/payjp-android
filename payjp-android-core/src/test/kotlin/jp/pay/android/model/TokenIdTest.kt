@@ -24,6 +24,8 @@ package jp.pay.android.model
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.PayjpConstants
+import jp.pay.android.verifier.threeDSecure.getVerificationEntryUri
+import jp.pay.android.verifier.threeDSecure.getVerificationFinishUri
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.Test
@@ -34,8 +36,8 @@ class TokenIdTest {
     @Test
     fun getTdsEntryUri() {
         val id = "tds_xxx"
-        val tokenId = TokenId(id = id)
-        val uri = tokenId.getVerificationEntryUri(
+        val uri = getVerificationEntryUri(
+            resourceId = id,
             publicKey = "pk_zzzz"
         )
         assertThat(
@@ -47,8 +49,8 @@ class TokenIdTest {
     @Test
     fun getTdsEntryUri_withRedirect() {
         val id = "tds_xxx"
-        val tokenId = TokenId(id = id)
-        val uri = tokenId.getVerificationEntryUri(
+        val uri = getVerificationEntryUri(
+            resourceId = id,
             publicKey = "pk_zzzz",
             redirectUrlName = "app"
         )
@@ -61,9 +63,8 @@ class TokenIdTest {
     @Test
     fun getTdsFinishUri() {
         val id = "tds_xxx"
-        val tokenId = TokenId(id = id)
         assertThat(
-            tokenId.getVerificationFinishUri().toString(),
+            getVerificationFinishUri(resourceId = id).toString(),
             `is`("${PayjpConstants.API_ENDPOINT}tds/$id/finish")
         )
     }

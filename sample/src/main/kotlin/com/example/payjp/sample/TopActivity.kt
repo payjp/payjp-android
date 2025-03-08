@@ -62,6 +62,11 @@ class TopActivity : AppCompatActivity() {
             Sample(
                 "CardFormView (Coroutine)",
                 Intent(this, CoroutineSampleActivity::class.java)
+            ),
+            Sample(
+                "ThreeDSecureExampleActivity",
+                Intent(this, ThreeDSecureExampleActivity::class.java),
+                headerText = "支払い時の3Dセキュア、または顧客カードの3Dセキュア"
             )
         )
     }
@@ -164,6 +169,13 @@ class TopActivity : AppCompatActivity() {
             set(value) {
                 field = value
                 binding.name.text = value?.name
+
+                if (value?.headerText != null) {
+                    binding.header.text = value.headerText
+                    binding.header.visibility = android.view.View.VISIBLE
+                } else {
+                    binding.header.visibility = android.view.View.GONE
+                }
             }
 
         init {
@@ -177,7 +189,12 @@ class TopActivity : AppCompatActivity() {
         }
     }
 
-    data class Sample(val name: String, val intent: Intent?, val startable: (() -> Unit)? = null) {
+    data class Sample(
+        val name: String,
+        val intent: Intent?,
+        val startable: (() -> Unit)? = null,
+        val headerText: String? = null
+    ) {
         fun start(activity: AppCompatActivity) {
             startable?.invoke() ?: intent?.let { activity.startActivity(it) }
         }

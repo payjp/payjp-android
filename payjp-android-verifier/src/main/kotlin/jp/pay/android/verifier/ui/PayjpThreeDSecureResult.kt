@@ -32,9 +32,9 @@ sealed class PayjpThreeDSecureResult {
     /**
      * Success
      *
-     * @param id token id
+     * @param id resource id
      */
-    data class SuccessTokenId(val id: TokenId) : PayjpThreeDSecureResult()
+    data class SuccessResourceId(val id: String) : PayjpThreeDSecureResult()
 
     /**
      * Canceled
@@ -44,7 +44,7 @@ sealed class PayjpThreeDSecureResult {
     /**
      * Return it is success.
      */
-    fun isSuccess(): Boolean = this is SuccessTokenId
+    fun isSuccess(): Boolean = this is SuccessResourceId
 
     /**
      * Return it is canceled.
@@ -56,8 +56,8 @@ sealed class PayjpThreeDSecureResult {
      *
      */
     fun retrieveTokenId(): TokenId {
-        val success = this as? SuccessTokenId
+        val success = this as? SuccessResourceId
             ?: throw IllegalStateException("Cannot call retrieveToken() when it is not success")
-        return success.id
+        return TokenId(success.id)
     }
 }

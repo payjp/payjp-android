@@ -136,7 +136,7 @@ internal class CardFormScreenViewModel(
         if (result.isSuccess()) {
             tokenizeProcessing.value = true
             when (result) {
-                is PayjpThreeDSecureResult.SuccessTokenId -> finishTokenTds(result.id)
+                is PayjpThreeDSecureResult.SuccessResourceId -> finishTokenTds(result.retrieveTokenId())
                 else -> throw IllegalStateException("illegal result: $result")
             }
         } else {

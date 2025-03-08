@@ -96,6 +96,7 @@ class CardFormScreenViewModelTest {
         errorViewText.observeForever { }
         success.observeForever { }
         snackBarMessage.observeForever { }
+        startVerifyCommand.observeForever { }
     }
 
     @Test
@@ -440,7 +441,7 @@ class CardFormScreenViewModelTest {
         val viewModel = createViewModel(tokenHandlerExecutor = handlerExecutor)
 
         viewModel.onCreateToken(Tasks.success(tokenUnverified))
-        viewModel.onCompleteCardVerify(PayjpThreeDSecureResult.SuccessTokenId(tokenId))
+        viewModel.onCompleteCardVerify(PayjpThreeDSecureResult.SuccessResourceId(tokenId.id))
         FakeTokenOperationObserver.status = PayjpTokenOperationStatus.THROTTLED
 
         viewModel.run {
@@ -471,7 +472,7 @@ class CardFormScreenViewModelTest {
         val viewModel = createViewModel(tokenHandlerExecutor = mockTokenHandlerExecutor)
 
         viewModel.onCreateToken(Tasks.success(tokenUnverified))
-        viewModel.onCompleteCardVerify(PayjpThreeDSecureResult.SuccessTokenId(tokenId))
+        viewModel.onCompleteCardVerify(PayjpThreeDSecureResult.SuccessResourceId(tokenId.id))
         FakeTokenOperationObserver.status = PayjpTokenOperationStatus.THROTTLED
 
         viewModel.run {

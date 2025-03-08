@@ -20,10 +20,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package jp.pay.android.model
+package jp.pay.android.verifier.threeDSecure
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import android.net.Uri
+import jp.pay.android.PayjpConstants
 
-@Parcelize
-data class TokenId(val id: String) : Parcelable
+/**
+ * Returns the entry URI for 3D Secure verification.
+ * Constructs a URL in the form: https://{API_HOST}/tds/{resourceId}/start
+ */
+fun getVerificationEntryUri(
+    resourceId: String,
+    publicKey: String,
+    redirectUrlName: String? = null
+): Uri {
+    val baseUrl = Uri.parse("${PayjpConstants.API_ENDPOINT}tds/$resourceId")
+    return baseUrl.buildUpon()
+        .appendPath("start")
+        .appendQueryParameter("publickey", publicKey)
+        .apply {
+            if (redirectUrlName != null) {
+                appendQueryParameter("back", redirectUrlName)
+            }
+        }
+        .build()
+}
+
+/**
+ * Returns the finish URI for 3D Secure verification.
+ * Constructs a URL in the form: https://{API_HOST}/tds/{resourceId}/finish
+ */
+fun getVerificationFinishUri(resourceId: String): Uri {
+    val baseUrl = Uri.parse("${PayjpConstants.API_ENDPOINT}tds/$resourceId")
+    return Uri.withAppendedPath(baseUrl, "finish")
+}
