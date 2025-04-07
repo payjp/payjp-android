@@ -29,6 +29,8 @@ import jp.pay.android.PayjpTokenService
 import jp.pay.android.Task
 import jp.pay.android.model.Token
 import jp.pay.android.model.TokenId
+import jp.pay.android.verifier.threeDSecure.getVerificationEntryUri
+import jp.pay.android.verifier.threeDSecure.getVerificationFinishUri
 import jp.pay.android.verifier.ui.PayjpThreeDSecureResult
 import jp.pay.android.verifier.ui.PayjpThreeDSecureResultCallback
 import jp.pay.android.verifier.ui.PayjpThreeDSecureStepActivity
@@ -41,7 +43,6 @@ object PayjpVerifier {
     private var threeDSecureRedirectName: String? = null
     private val webBrowserResolver = WebBrowserResolver(
         WebBrowser.ChromeTab,
-        // WebBrowser.AnyBrowsable,
         WebBrowser.InAppWeb
     )
 
@@ -62,26 +63,40 @@ object PayjpVerifier {
     }
 
     /**
+     * Start 3DS authorization flow with a resource ID.
+     *
+     * @param resourceId id of the resource (token/charge/customer) that needs 3DS verification
+     * @param activity current activity
+     */
+    @MainThread
+    fun startThreeDSecureFlow(resourceId: String, activity: Activity) {
+        val intent = PayjpThreeDSecureStepActivity.createLaunchIntent(activity, resourceId)
+        activity.startActivityForResult(intent, REQUEST_CODE_VERIFY_LAUNCHER)
+    }
+
+    /**
      * Start 3DS authorization flow with [Token].
      *
      * @param tokenId id of token which has 3DS-unverified card.
      * @param activity current activity.
+     * @deprecated Use [startThreeDSecureFlow] with resource ID instead.
      */
     @MainThread
+    @Deprecated("Use startThreeDSecureFlow with resource ID instead", ReplaceWith("startThreeDSecureFlow(tokenId.id, activity)"))
     fun startThreeDSecureFlow(tokenId: TokenId, activity: Activity) {
-        val intent = PayjpThreeDSecureStepActivity.createLaunchIntent(activity, tokenId)
-        activity.startActivityForResult(intent, REQUEST_CODE_VERIFY_LAUNCHER)
+        startThreeDSecureFlow(resourceId = tokenId.id, activity)
     }
 
     @MainThread
-    internal fun openThreeDSecure(tokenId: TokenId, activity: Activity) {
+    internal fun openThreeDSecure(resourceId: String, activity: Activity) {
         val intent = webBrowserResolver.resolve(
             context = activity,
-            uri = tokenId.getVerificationEntryUri(
+            uri = getVerificationEntryUri(
+                resourceId = resourceId,
                 publicKey = tokenService().getPublicKey(),
                 redirectUrlName = threeDSecureRedirectName
             ),
-            callbackUri = tokenId.getVerificationFinishUri()
+            callbackUri = getVerificationFinishUri(resourceId)
         )
         if (intent == null) {
             logger.w("Any activity which open Web not found.")
@@ -91,7 +106,6 @@ object PayjpVerifier {
             activity.startActivityForResult(intent, REQUEST_CODE_VERIFY)
         }
     }
-
     @MainThread
     fun handleThreeDSecureResult(
         requestCode: Int,
@@ -103,7 +117,7 @@ object PayjpVerifier {
     }
 
     fun completeTokenThreeDSecure(result: PayjpThreeDSecureResult): Task<Token>? = when (result) {
-        is PayjpThreeDSecureResult.SuccessTokenId -> tokenService().finishTokenThreeDSecure(result.id)
+        is PayjpThreeDSecureResult.SuccessResourceId -> tokenService().finishTokenThreeDSecure(result.retrieveTokenId())
         else -> null
     }
 }

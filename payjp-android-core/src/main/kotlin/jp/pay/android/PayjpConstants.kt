@@ -22,7 +22,7 @@
  */
 package jp.pay.android
 
-internal object PayjpConstants {
+object PayjpConstants {
     const val API_HOST = "api.pay.jp"
     const val API_ENDPOINT = "https://$API_HOST/v1/"
 }

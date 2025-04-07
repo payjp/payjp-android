@@ -54,6 +54,8 @@
             android:exported="false" />
         <activity android:name="com.example.payjp.sample.CoroutineSampleActivity"
             android:exported="false" />
+        <activity android:name="com.example.payjp.sample.ThreeDSecureExampleActivity"
+            android:exported="false" />
 
         <activity android:name="jp.pay.android.verifier.ui.PayjpThreeDSecureStepActivity"
                 android:enabled="true"

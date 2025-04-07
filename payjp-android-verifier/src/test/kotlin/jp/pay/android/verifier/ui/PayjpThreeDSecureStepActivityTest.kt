@@ -48,6 +48,8 @@ import jp.pay.android.verifier.PayjpVerifier
 import jp.pay.android.verifier.R
 import jp.pay.android.verifier.testing.PayjpVerifierTestRule
 import jp.pay.android.verifier.testing.TestEntryActivity
+import jp.pay.android.verifier.threeDSecure.getVerificationEntryUri
+import jp.pay.android.verifier.threeDSecure.getVerificationFinishUri
 import org.hamcrest.Matchers.`is`
 import org.junit.After
 import org.junit.Before
@@ -119,24 +121,25 @@ class PayjpThreeDSecureStepActivityTest {
             )
 
             intended(hasComponent(PayjpThreeDSecureStepActivity::class.java.name))
-            intended(hasExtra(PayjpThreeDSecureStepActivity.EXTRA_KEY_TOKEN_ID, tokenId))
+            intended(hasExtra(PayjpThreeDSecureStepActivity.EXTRA_KEY_RESOURCE_ID, tokenId.id))
         }
     }
 
     @Test
     fun open_tds_intent_with_token_id() {
         val tokenId = TokenId(id = "tok_123")
-        val expectedStartUri = tokenId.getVerificationEntryUri(
+        val expectedStartUri = getVerificationEntryUri(
+            resourceId = tokenId.id,
             publicKey = TEST_PUBLIC_KEY,
             redirectUrlName = TEST_TDS_REDIRECT_NAME
         )
-        val expectedCallbackUri = tokenId.getVerificationFinishUri()
+        val expectedCallbackUri = getVerificationFinishUri(tokenId.id)
         val expectedTitle = ApplicationProvider.getApplicationContext<Application>()
             .getString(R.string.payjp_verifier_card_verify_title)
 
         val intent = PayjpThreeDSecureStepActivity.createLaunchIntent(
             context = ApplicationProvider.getApplicationContext(),
-            tokenId = tokenId
+            resourceId = tokenId.id
         )
         val scenario = launchActivity<PayjpThreeDSecureStepActivity>(intent)
         scenario.onActivity {
@@ -157,7 +160,7 @@ class PayjpThreeDSecureStepActivityTest {
 
         val intent = PayjpThreeDSecureStepActivity.createLaunchIntent(
             context = ApplicationProvider.getApplicationContext(),
-            tokenId = tokenId
+            resourceId = tokenId.id
         )
         val scenario = launchActivityForResult<PayjpThreeDSecureStepActivity>(intent)
         assertThat(scenario.result.resultCode, `is`(Activity.RESULT_CANCELED))
@@ -170,12 +173,12 @@ class PayjpThreeDSecureStepActivityTest {
 
         val intent = PayjpThreeDSecureStepActivity.createLaunchIntent(
             context = ApplicationProvider.getApplicationContext(),
-            tokenId = tokenId
+            resourceId = tokenId.id
         )
         val callbackIntent = Intent(
             ApplicationProvider.getApplicationContext(),
             PayjpThreeDSecureStepActivity::class.java
-        ).setData(tokenId.getVerificationFinishUri())
+        ).setData(getVerificationFinishUri(tokenId.id))
 
         val scenario = launchActivityForResult<PayjpThreeDSecureStepActivity>(intent)
         scenario.onActivity {
@@ -184,6 +187,31 @@ class PayjpThreeDSecureStepActivityTest {
             val result = PayjpThreeDSecureStepActivity.getResult()
             assertThat(result.isSuccess(), `is`(true))
             assertThat(result.retrieveTokenId(), `is`(tokenId))
+            assertThat(scenario.result.resultCode, `is`(Activity.RESULT_OK))
+        }
+    }
+
+    @Test
+    fun finish_with_successResourceId_result_from_received_intent() {
+        val resourceId = "car_789"
+
+        val intent = PayjpThreeDSecureStepActivity.createLaunchIntent(
+            context = ApplicationProvider.getApplicationContext(),
+            resourceId = resourceId
+        )
+        val callbackIntent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            PayjpThreeDSecureStepActivity::class.java
+        ).setData(getVerificationFinishUri(resourceId))
+
+        val scenario = launchActivityForResult<PayjpThreeDSecureStepActivity>(intent)
+        scenario.onActivity {
+            it.onNewIntentInternal(callbackIntent)
+
+            val result = PayjpThreeDSecureStepActivity.getResult()
+            assertThat(result.isSuccess(), `is`(true))
+            assertThat(result is PayjpThreeDSecureResult.SuccessResourceId, `is`(true))
+            assertThat((result as PayjpThreeDSecureResult.SuccessResourceId).id, `is`(resourceId))
             assertThat(scenario.result.resultCode, `is`(Activity.RESULT_OK))
         }
     }

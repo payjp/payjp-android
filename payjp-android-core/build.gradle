@@ -50,6 +50,7 @@ dependencies {
     implementation libs.okHttp3.core
     implementation libs.okHttp3.loggingInterceptor
     implementation libs.moshi.core
+    
     ksp libs.moshi.codegen
     implementation libs.retrofit.core
     implementation libs.retrofit.moshi
@@ -57,6 +58,7 @@ dependencies {
 
     testImplementation libs.okHttp3.mockServer
     testImplementation project(":common-test")
+    testImplementation project(':payjp-android-verifier')
 }
 
 mavenPublishing {

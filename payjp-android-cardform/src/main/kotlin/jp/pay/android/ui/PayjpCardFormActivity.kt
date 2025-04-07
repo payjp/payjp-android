@@ -306,7 +306,7 @@ internal class PayjpCardFormActivity :
     }
 
     private fun startVerify(tokenId: TokenId) {
-        PayjpVerifier.startThreeDSecureFlow(tokenId, this)
+        PayjpVerifier.startThreeDSecureFlow(tokenId.id, this)
         viewModel?.onStartedVerify()
     }
 }
