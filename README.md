@@ -18,6 +18,8 @@ Androidでの利用 | PAY.JP https://pay.jp/docs/mobileapp-android
 
 `sample` モジュールを実行するとサンプルアプリを動かすことができます。
 
+※Emulator環境で3Dセキュア機能を動作させる場合、Chromeアプリが初期画面になっていると3Dセキュアの認証画面が立ち上がらない場合がありますのでご注意ください。 ref: https://github.com/payjp/payjp-android/pull/61
+
 ## 動作環境
 
 - Android Studio 3.0以上
