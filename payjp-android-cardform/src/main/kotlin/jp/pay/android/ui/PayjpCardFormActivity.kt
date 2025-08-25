@@ -35,6 +35,8 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
@@ -159,6 +161,7 @@ internal class PayjpCardFormActivity :
         super.onCreate(savedInstanceState)
         binding = PayjpCardFormActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.payjpCardFormToolbar)
         setTitle(R.string.payjp_card_form_screen_title)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setUpUI()
@@ -166,6 +169,20 @@ internal class PayjpCardFormActivity :
 
         PayjpCardForm.clientInfoInterceptorProvider()?.getClientInfoInterceptor()?.applyClientInfoExtra {
             setCardFormType(PayjpCardForm.getCardFormFaceString(face))
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, windowInsets ->
+            val insets = arrayOf(
+                windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()),
+                windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout()),
+                windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            )
+            v.setPadding(
+                insets.maxOf { it.left },
+                insets.maxOf { it.top },
+                insets.maxOf { it.right },
+                insets.maxOf { it.bottom }
+            )
+            WindowInsetsCompat.CONSUMED
         }
     }
 

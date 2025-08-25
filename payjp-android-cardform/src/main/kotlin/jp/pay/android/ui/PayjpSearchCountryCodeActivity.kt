@@ -32,6 +32,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import jp.pay.android.PayjpCardForm
@@ -66,6 +68,21 @@ internal class PayjpSearchCountryCodeActivity : AppCompatActivity() {
         binding.payjpCountryCodeRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.payjpCountryCodeRecyclerView.adapter = adapter
         adapter.setCountryCodes(PayjpCardForm.phoneNumberService().getAllCountryCodes(this))
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, windowInsets ->
+            val insets = arrayOf(
+                windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()),
+                windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout()),
+                windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            )
+            v.setPadding(
+                insets.maxOf { it.left },
+                insets.maxOf { it.top },
+                insets.maxOf { it.right },
+                insets.maxOf { it.bottom }
+            )
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
