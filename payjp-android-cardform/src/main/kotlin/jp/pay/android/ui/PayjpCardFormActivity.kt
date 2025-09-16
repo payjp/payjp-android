@@ -37,6 +37,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
@@ -48,6 +49,7 @@ import jp.pay.android.model.ExtraAttribute
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.model.TokenId
+import jp.pay.android.ui.extension.applyWindowInsets
 import jp.pay.android.ui.extension.showWith
 import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
@@ -170,20 +172,7 @@ internal class PayjpCardFormActivity :
         PayjpCardForm.clientInfoInterceptorProvider()?.getClientInfoInterceptor()?.applyClientInfoExtra {
             setCardFormType(PayjpCardForm.getCardFormFaceString(face))
         }
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, windowInsets ->
-            val insets = arrayOf(
-                windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()),
-                windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout()),
-                windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            )
-            v.setPadding(
-                insets.maxOf { it.left },
-                insets.maxOf { it.top },
-                insets.maxOf { it.right },
-                insets.maxOf { it.bottom }
-            )
-            WindowInsetsCompat.CONSUMED
-        }
+        binding.root.applyWindowInsets()
     }
 
     override fun onDestroy() {

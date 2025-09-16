@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2021 PAY, Inc.
+ * Copyright (c) 2025 PAY, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,52 +20,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-@file:JvmName("ViewExtension")
 
-package jp.pay.android.ui.extension
+package com.example.payjp.sample.extension
 
-import android.app.Dialog
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
-import android.widget.TextView
-import androidx.activity.ComponentActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import com.google.android.material.textfield.TextInputLayout
-import jp.pay.android.ui.widget.DialogHolder
-
-internal typealias TextViewOnTextChanged = ((s: CharSequence, start: Int, before: Int, count: Int) -> Unit)
-
-internal fun TextInputLayout.setErrorOrNull(error: CharSequence?) {
-    this.isErrorEnabled = error.isNullOrEmpty().not()
-    this.error = error
-}
-
-internal fun TextView.addOnTextChanged(
-    onTextChanged: TextViewOnTextChanged?
-) {
-    addTextChangedListener(
-        object : TextWatcher {
-            override fun afterTextChanged(s: Editable) = Unit
-
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) =
-                onTextChanged?.invoke(s, start, before, count) ?: Unit
-        }
-    )
-}
-
-/**
- * Show with lifecycle awareness of activity using [jp.pay.android.ui.widget.DialogHolder].
- *
- * @param activity host activity
- */
-internal fun Dialog.showWith(activity: ComponentActivity) {
-    DialogHolder(this).show(activity)
-}
 
 /**
  * Apply insets padding to activity root view for Edge to Edge

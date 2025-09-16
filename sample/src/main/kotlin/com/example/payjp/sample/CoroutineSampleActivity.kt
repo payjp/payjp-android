@@ -29,6 +29,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.payjp.sample.databinding.ActivityCardFormViewSampleBinding
+import com.example.payjp.sample.extension.applyWindowInsets
 import jp.pay.android.Payjp
 import jp.pay.android.coroutine.createTokenSuspend
 import jp.pay.android.coroutine.finishTokenTdsSuspend
@@ -56,6 +57,7 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
         super.onCreate(savedInstanceState)
         binding = ActivityCardFormViewSampleBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.cardFormSampleToolbar)
         findCardFormFragment()
         binding.buttonCreateToken.setOnClickListener {
             createToken()
@@ -69,6 +71,8 @@ class CoroutineSampleActivity : AppCompatActivity(), CoroutineScope by MainScope
         binding.buttonGetToken.setOnClickListener {
             getToken(binding.textTokenId.text.toString())
         }
+
+        binding.root.applyWindowInsets()
     }
 
     override fun onDestroy() {

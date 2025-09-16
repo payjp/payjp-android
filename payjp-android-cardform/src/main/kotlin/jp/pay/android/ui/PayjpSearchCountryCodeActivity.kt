@@ -40,6 +40,7 @@ import jp.pay.android.PayjpCardForm
 import jp.pay.android.R
 import jp.pay.android.databinding.PayjpSearchCountryCodeActivityBinding
 import jp.pay.android.model.CountryCode
+import jp.pay.android.ui.extension.applyWindowInsets
 
 internal class PayjpSearchCountryCodeActivity : AppCompatActivity() {
     internal companion object {
@@ -69,20 +70,7 @@ internal class PayjpSearchCountryCodeActivity : AppCompatActivity() {
         binding.payjpCountryCodeRecyclerView.adapter = adapter
         adapter.setCountryCodes(PayjpCardForm.phoneNumberService().getAllCountryCodes(this))
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, windowInsets ->
-            val insets = arrayOf(
-                windowInsets.getInsets(WindowInsetsCompat.Type.statusBars()),
-                windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout()),
-                windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            )
-            v.setPadding(
-                insets.maxOf { it.left },
-                insets.maxOf { it.top },
-                insets.maxOf { it.right },
-                insets.maxOf { it.bottom }
-            )
-            WindowInsetsCompat.CONSUMED
-        }
+        binding.root.applyWindowInsets()
     }
 
     override fun onSupportNavigateUp(): Boolean {
