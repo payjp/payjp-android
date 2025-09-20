@@ -76,6 +76,7 @@ internal fun View.applyWindowInsets() {
             androidx.core.view.WindowInsetsCompat.Type.systemBars()
                     or androidx.core.view.WindowInsetsCompat.Type.displayCutout()
                     or androidx.core.view.WindowInsetsCompat.Type.navigationBars()
+                    or WindowInsetsCompat.Type.ime()
         )
         v.updatePadding(
             left = insets.left,
