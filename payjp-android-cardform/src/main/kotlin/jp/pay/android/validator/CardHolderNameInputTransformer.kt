@@ -35,7 +35,12 @@ internal object CardHolderNameInputTransformer :
                 R.string.payjp_card_form_error_no_holder_name,
                 true
             )
-            (MIN_LENGTH..MAX_LENGTH).contains(trimmed.length).not() -> FormInputError(
+            (trimmed.length >= MIN_LENGTH).not() -> FormInputError(
+                R.string.payjp_card_form_error_invalid_length_holder_name,
+                lazy = false,
+                isMaintainFocus = true
+            )
+            (trimmed.length > MAX_LENGTH) -> FormInputError(
                 R.string.payjp_card_form_error_invalid_length_holder_name,
                 false
             )
