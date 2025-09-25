@@ -35,9 +35,9 @@ internal fun View.applyWindowInsets() {
     ViewCompat.setOnApplyWindowInsetsListener(this) { v, windowInsets ->
         val insets = windowInsets.getInsets(
             androidx.core.view.WindowInsetsCompat.Type.systemBars()
-                    or androidx.core.view.WindowInsetsCompat.Type.displayCutout()
-                    or androidx.core.view.WindowInsetsCompat.Type.navigationBars()
-                    or WindowInsetsCompat.Type.ime()
+                or androidx.core.view.WindowInsetsCompat.Type.displayCutout()
+                or androidx.core.view.WindowInsetsCompat.Type.navigationBars()
+                or WindowInsetsCompat.Type.ime()
         )
         v.updatePadding(
             left = insets.left,
