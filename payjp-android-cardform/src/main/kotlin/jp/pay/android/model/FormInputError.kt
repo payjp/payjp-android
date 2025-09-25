@@ -30,6 +30,6 @@ import androidx.annotation.StringRes
  * @param messageId res id.
  * @param lazy represent no need to show error immediately (it maybe better to continue input for experience).
  */
-internal data class FormInputError(@StringRes val messageId: Int, val lazy: Boolean) {
+internal data class FormInputError(@StringRes val messageId: Int, val lazy: Boolean, val isMaintainFocus: Boolean = false) {
     fun take(lazy: Boolean): Int? = messageId.takeIf { !lazy || !this.lazy }
 }

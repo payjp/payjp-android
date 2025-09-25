@@ -124,6 +124,11 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
                 itemView.resources.getString(it)
             }
         )
+        if (input?.errorMessage?.isMaintainFocus == true) {
+            editText.post {
+                editText.requestFocus()
+            }
+        }
     }
 
     class CardFormNumberElement(
