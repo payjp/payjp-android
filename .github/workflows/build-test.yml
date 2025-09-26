@@ -26,7 +26,7 @@ jobs:
         with:
           java-version: ${{ env.USER_JAVA_VERSION }}
           distribution: "zulu"
-      - uses: gradle/actions/setup-gradle@v3
+      - uses: gradle/actions/setup-gradle@v4
       - name: Cache Gems
         uses: actions/cache@v4
         with:
@@ -50,33 +50,3 @@ jobs:
           bundle install --jobs 4 --retry 3
       - name: Run all checks
         run: bundle exec fastlane android check
-
-  deploy-snapshot:
-    # only run on master branch
-    if: github.ref == 'refs/heads/master'
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.USER_JAVA_VERSION }}
-          distribution: "zulu"
-      - uses: gradle/actions/setup-gradle@v3
-      - name: publish to sonatype
-        # look up version name from gradle.properties, and only snapshot version can be deployed
-        # if non-snapshot version, skip the next steps
-        run: |
-          VERSION_NAME=$(grep "VERSION_NAME" gradle.properties | cut -d'=' -f2)
-          if [[ $VERSION_NAME == *"SNAPSHOT"* ]]; then
-            echo "Deploying snapshot version $VERSION_NAME"
-            ./gradlew publish
-          else
-            echo "Not deploying non-snapshot version $VERSION_NAME"
-          fi
-        env:
-          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_KEY }}
-          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.GPG_KEY_ID }}
-          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_KEY_PASSWORD }}

@@ -16,7 +16,7 @@ jobs:
         with:
           java-version: ${{ env.USER_JAVA_VERSION }}
           distribution: "zulu"
-      - uses: gradle/actions/setup-gradle@v3
+      - uses: gradle/actions/setup-gradle@v4
       - name: publish to sonatype
         run: |
           ./gradlew publish
