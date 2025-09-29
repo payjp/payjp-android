@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.payjp.sample.databinding.ActivityTopBinding
 import com.example.payjp.sample.databinding.CardSampleBinding
+import com.example.payjp.sample.extension.applyWindowInsets
 import jp.pay.android.Payjp
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.model.ExtraAttribute
@@ -96,12 +97,14 @@ class TopActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityTopBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.topToolbar)
         binding.recyclerView.let {
             it.layoutManager = LinearLayoutManager(this)
             it.adapter = TopAdapter(this, samples) { sample ->
                 sample.start(this)
             }
         }
+        binding.root.applyWindowInsets()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

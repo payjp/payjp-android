@@ -24,7 +24,7 @@
 
 <resources>
 
-    <style name="Payjp.Theme.BaseCardForm" parent="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Payjp.Theme.BaseCardForm" parent="@style/Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="buttonStyle">@style/Widget.MaterialComponents.Button</item>
         <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense</item>
         <item name="colorPrimary">@color/payjp_primaryColor</item>

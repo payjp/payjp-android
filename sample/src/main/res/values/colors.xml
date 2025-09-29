@@ -36,4 +36,8 @@
     <color name="secondaryDarkColor">#c79400</color>
     <color name="primaryTextColor">#424242</color>
     <color name="secondaryTextColor">#37474f</color>
+    
+    <!-- Menu colors for theme switching -->
+    <color name="menu_popup_background_color">#ffffff</color>
+    <color name="menu_item_text_color">#000000</color>
 </resources>

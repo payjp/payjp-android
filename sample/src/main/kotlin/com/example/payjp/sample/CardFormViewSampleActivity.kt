@@ -34,6 +34,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.payjp.sample.databinding.ActivityCardFormViewSampleBinding
+import com.example.payjp.sample.extension.applyWindowInsets
 import jp.pay.android.Payjp
 import jp.pay.android.PayjpTokenOperationStatus
 import jp.pay.android.Task
@@ -76,6 +77,7 @@ class CardFormViewSampleActivity :
         setTheme(restoreTheme().id)
         binding = ActivityCardFormViewSampleBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.cardFormSampleToolbar)
         findCardFormFragment()
         binding.buttonCreateToken.setOnClickListener {
             if (!cardFormFragment.isValid) {
@@ -92,6 +94,8 @@ class CardFormViewSampleActivity :
         binding.buttonGetToken.setOnClickListener {
             getToken(binding.textTokenId.text.toString())
         }
+
+        binding.root.applyWindowInsets()
 
         Payjp.token().getTokenOperationObserver().addListener { updateButtonVisibility() }
     }
