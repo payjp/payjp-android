@@ -118,14 +118,6 @@ abstract class PayjpCardFormAbstractFragment :
         }
     }
 
-//    override fun onRequestPermissionsResult(
-//        requestCode: Int,
-//        permissions: Array<out String>,
-//        grantResults: IntArray
-//    ) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//    }
-
     override fun isValid(): Boolean = viewModel?.isValid?.value ?: false
 
     override fun validateCardForm(): Boolean {
