@@ -41,7 +41,6 @@ import jp.pay.android.databinding.PayjpCardFormElementHolderNameLayoutBinding
 import jp.pay.android.databinding.PayjpCardFormElementNumberLayoutBinding
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput
-import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.ui.extension.addOnTextChanged
 import jp.pay.android.ui.extension.setErrorOrNull
 
@@ -129,8 +128,6 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
     class CardFormNumberElement(
         binding: PayjpCardFormElementNumberLayoutBinding,
         cardNumberFormatter: CardNumberFormatTextWatcher,
-        scannerPlugin: CardScannerPlugin?,
-        onClickScannerIcon: View.OnClickListener?,
         onTextChanged: OnCardFormElementTextChanged,
         onEditorAction: OnCardFormElementEditorAction,
         onFocusChanged: OnCardFormElementFocusChanged,
@@ -156,12 +153,6 @@ internal sealed class CardFormElementViewHolder<V : ViewBinding>(
             editText.addTextChangedListener(cardNumberFormatter)
             editText.addOnTextChanged { s, _, _, _ ->
                 onNumberInputChanged(s)
-            }
-            scannerPlugin?.run {
-                inputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
-                onClickScannerIcon?.let {
-                    inputLayout.setEndIconOnClickListener(it)
-                }
             }
         }
 

@@ -57,7 +57,6 @@ object Payjp {
         PayjpCardForm.configure(
             logger = logger,
             tokenService = payjpToken,
-            cardScannerPlugin = configuration.cardScannerPlugin,
             handler = configuration.tokenBackgroundHandler,
             callbackExecutor = configuration.callbackExecutor,
             locale = configuration.locale

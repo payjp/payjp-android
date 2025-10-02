@@ -97,12 +97,6 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
         return binding.root
     }
 
-    override fun onScanResult(cardNumber: String?) {
-        cardNumber?.let { number ->
-            viewModel?.inputCardNumber(number)
-        }
-    }
-
     override fun setUpUI(view: ViewGroup) {
         binding.formElementPager.run {
             isFocusableInTouchMode = false
@@ -121,10 +115,6 @@ class PayjpCardFormCardDisplayFragment : PayjpCardFormAbstractFragment() {
             ),
             cardNumberFormatter = cardNumberFormatter,
             cardExpirationFormatter = CardExpirationFormatTextWatcher(delimiterExpiration),
-            scannerPlugin = PayjpCardForm.cardScannerPlugin(),
-            onClickScannerIcon = {
-                PayjpCardForm.cardScannerPlugin()?.startScanActivity(this)
-            },
             onElementTextChanged = { type, s, _, _, _ ->
                 viewModel?.run {
                     when (type) {

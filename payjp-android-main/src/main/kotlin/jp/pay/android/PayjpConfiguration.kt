@@ -23,7 +23,6 @@
 package jp.pay.android
 
 import jp.pay.android.model.ClientInfo
-import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.util.MainThreadExecutor
 import java.util.Locale
 import java.util.concurrent.Executor
@@ -37,7 +36,6 @@ import java.util.concurrent.Executor
  * @param debugEnabled is debug enabled or not
  * @param callbackExecutor executor to run callback.
  * @param locale locale of request header
- * @param cardScannerPlugin optional scanner plugin.
  * @param tokenBackgroundHandler handler for send token to app's server
  * @param threeDSecureRedirectName 3DS redirect name registered on PAY.JP dashboard.
  */
@@ -47,7 +45,6 @@ class PayjpConfiguration private constructor(
     val locale: Locale,
     val callbackExecutor: Executor,
     val clientInfo: ClientInfo,
-    val cardScannerPlugin: CardScannerPlugin?,
     val tokenBackgroundHandler: PayjpTokenBackgroundHandler?,
     val threeDSecureRedirectName: String?
 ) {
@@ -75,8 +72,6 @@ class PayjpConfiguration private constructor(
 
         private var locale: Locale = Locale.getDefault()
 
-        private var cardScannerPlugin: CardScannerPlugin? = null
-
         private var tokenBackgroundHandler: PayjpTokenBackgroundHandler? = null
 
         private var executor: Executor = MainThreadExecutor
@@ -99,14 +94,6 @@ class PayjpConfiguration private constructor(
          * @param locale Locale
          */
         fun setLocale(locale: Locale) = apply { this.locale = locale }
-
-        /**
-         * set card scanner plugin
-         * you also need to add `payjp-android-cardio`.
-         *
-         * @param plugin plugin
-         */
-        fun setCardScannerPlugin(plugin: CardScannerPlugin?) = apply { cardScannerPlugin = plugin }
 
         fun setTokenBackgroundHandler(handler: PayjpTokenBackgroundHandler?) = apply {
             tokenBackgroundHandler = handler
@@ -140,7 +127,6 @@ class PayjpConfiguration private constructor(
             locale = locale,
             callbackExecutor = executor,
             clientInfo = clientInfo,
-            cardScannerPlugin = cardScannerPlugin,
             tokenBackgroundHandler = tokenBackgroundHandler,
             threeDSecureRedirectName = threeDSecureRedirectName
         )

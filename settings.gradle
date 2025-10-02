@@ -49,7 +49,6 @@ include ':payjp-android-core',
         ':payjp-android-cardform',
         ':payjp-android-verifier',
         ':payjp-android-main',
-        ':payjp-android-cardio',
         ':payjp-android-coroutine',
         ':common-test',
         ':sample'

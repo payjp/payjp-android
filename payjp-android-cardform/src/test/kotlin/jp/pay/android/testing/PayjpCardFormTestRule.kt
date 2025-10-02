@@ -26,7 +26,6 @@ import jp.pay.android.PayjpCardForm
 import jp.pay.android.PayjpLogger
 import jp.pay.android.PayjpTokenBackgroundHandler
 import jp.pay.android.PayjpTokenService
-import jp.pay.android.plugin.CardScannerPlugin
 import org.junit.rules.ExternalResource
 import java.util.Locale
 import java.util.concurrent.Executor
@@ -38,7 +37,6 @@ class PayjpCardFormTestRule(
     private val tokenService: PayjpTokenService,
     private val handler: PayjpTokenBackgroundHandler? = null,
     private val callbackExecutor: Executor? = null,
-    private val cardScannerPlugin: CardScannerPlugin? = null
 ) : ExternalResource() {
 
     override fun before() {
@@ -47,7 +45,6 @@ class PayjpCardFormTestRule(
             tokenService = tokenService,
             handler = handler,
             callbackExecutor = callbackExecutor,
-            cardScannerPlugin = cardScannerPlugin,
             locale = Locale("en")
         )
     }

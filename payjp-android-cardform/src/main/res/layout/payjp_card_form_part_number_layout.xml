@@ -29,7 +29,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/payjp_card_form_number_label"
-        app:endIconDrawable="@drawable/ic_camera"
         app:endIconMode="none"
         app:startIconTint="@null"
         tools:endIconMode="custom">

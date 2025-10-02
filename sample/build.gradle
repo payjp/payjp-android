@@ -71,10 +71,8 @@ android {
 dependencies {
 
     implementation project(':payjp-android-main')
-    implementation project(':payjp-android-cardio')
     implementation project(':payjp-android-coroutine')
 //    implementation "jp.pay:payjp-android:$VERSION_NAME"
-//    implementation "jp.pay:payjp-android-cardio:$VERSION_NAME"
 //    implementation "jp.pay:payjp-android-coroutine:$VERSION_NAME"
 
     implementation libs.kotlin.stdlib
@@ -84,9 +82,6 @@ dependencies {
     implementation libs.androidx.appcompat
     implementation libs.androidx.recyclerview
     implementation libs.androidx.material
-
-    // card scan
-    implementation libs.cardio
 
     // api
     implementation libs.okHttp3.core

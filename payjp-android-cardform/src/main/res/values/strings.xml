@@ -46,13 +46,6 @@
     <string name="payjp_card_form_error_no_email">Please enter an email address.</string>
     <string name="payjp_card_form_error_no_phone_number">Please enter a phone number.</string>
     <string name="payjp_card_form_error_invalid_phone_number">Please enter a valid phone number.</string>
-    <string name="payjp_card_scanner_permission_denied_title">Scan card</string>
-    <string name="payjp_card_scanner_permission_denied_message"><![CDATA[
-The app is not allowed to use the camera.
-Please make sure that the app permission in Settings app.
-]]></string>
-    <string name="payjp_card_scanner_permission_denied_setting">Settings</string>
-    <string name="payjp_card_scanner_permission_denied_cancel">Cancel</string>
     <string name="payjp_card_form_submit">Submit</string>
     <string name="payjp_card_form_reload">Reload</string>
     <string name="payjp_card_form_screen_title">Add Credit Card</string>

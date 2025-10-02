@@ -30,7 +30,6 @@ import android.view.ViewGroup
 import androidx.core.os.BundleCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.textfield.TextInputLayout
 import jp.pay.android.PayjpCardForm
 import jp.pay.android.databinding.PayjpCardFormViewBinding
 import jp.pay.android.model.CardBrand
@@ -93,11 +92,6 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
         return binding.root
     }
 
-    override fun onScanResult(cardNumber: String?) {
-        cardNumber?.let(binding.layoutNumber.inputEditNumber::setText)
-        binding.layoutExpiration.inputEditExpiration.requestFocusFromTouch()
-    }
-
     override fun setUpUI(view: ViewGroup) {
         // add formatter
         binding.layoutNumber.inputEditNumber.addTextChangedListener(cardNumberFormatter)
@@ -107,12 +101,6 @@ class PayjpCardFormFragment : PayjpCardFormAbstractFragment() {
         // default cvc length
         binding.layoutCvc.inputEditCvc.filters =
             arrayOf<InputFilter>(InputFilter.LengthFilter(CardBrand.UNKNOWN.cvcLength))
-        PayjpCardForm.cardScannerPlugin()?.let { bridge ->
-            binding.layoutNumber.inputLayoutNumber.endIconMode = TextInputLayout.END_ICON_CUSTOM
-            binding.layoutNumber.inputLayoutNumber.setEndIconOnClickListener {
-                bridge.startScanActivity(this)
-            }
-        }
         binding.layoutPhoneNumber.inputLayoutCountryCode.setEndIconOnClickListener {
             startSearchCountryCode()
         }

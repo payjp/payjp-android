@@ -39,7 +39,6 @@ import jp.pay.android.databinding.PayjpCardFormElementNumberLayoutBinding
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput
 import jp.pay.android.model.CountryCode
-import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.ui.widget.CardFormElementViewHolder.CardFormCvcElement
 import jp.pay.android.ui.widget.CardFormElementViewHolder.CardFormExpirationElement
 import jp.pay.android.ui.widget.CardFormElementViewHolder.CardFormHolderNameElement
@@ -49,8 +48,6 @@ internal class CardFormElementAdapter(
     private val inputTypes: List<CardFormInputType>,
     private val cardNumberFormatter: CardNumberFormatTextWatcher,
     private val cardExpirationFormatter: TextWatcher,
-    private val scannerPlugin: CardScannerPlugin?,
-    private val onClickScannerIcon: View.OnClickListener?,
     private val onElementTextChanged: OnCardFormElementTextChanged,
     private val onElementEditorAction: OnCardFormElementEditorAction,
     private val onElementFocusChanged: OnCardFormElementFocusChanged,
@@ -105,8 +102,6 @@ internal class CardFormElementAdapter(
             CardFormElementType.Number -> CardFormNumberElement(
                 PayjpCardFormElementNumberLayoutBinding.inflate(inflater, parent, false),
                 cardNumberFormatter,
-                scannerPlugin,
-                onClickScannerIcon,
                 onElementTextChanged,
                 onElementEditorAction,
                 onElementFocusChanged,

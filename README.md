@@ -32,8 +32,6 @@ Androidでの利用 | PAY.JP https://pay.jp/docs/mobileapp-android
 
 ```build.gradle
 implementation 'jp.pay:payjp-android:$latest_version'
-// Optional: Card.IO Extension
-implementation 'jp.pay:payjp-android-cardio:$latest_version'
 // Optional: Kotlin Coroutine Extension
 implementation 'jp.pay:payjp-android-coroutine:$latest_version'
 ```

@@ -33,7 +33,6 @@ import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ExtraAttribute
 import jp.pay.android.model.TenantId
 import jp.pay.android.network.ClientInfoInterceptorProvider
-import jp.pay.android.plugin.CardScannerPlugin
 import jp.pay.android.ui.PayjpCardFormActivity
 import jp.pay.android.ui.PayjpCardFormResultCallback
 import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
@@ -70,7 +69,6 @@ object PayjpCardForm {
     internal const val CARD_FORM_DELIMITER_NUMBER_DISPLAY = ' '
     internal const val CARD_FORM_DELIMITER_EXPIRATION = '/'
 
-    private var cardScannerPlugin: CardScannerPlugin? = null
     private var tokenService: PayjpTokenService? = null
     private var tokenHandlerExecutor: TokenHandlerExecutor? = null
     private var phoneNumberService: PhoneNumberService? = null
@@ -79,13 +77,11 @@ object PayjpCardForm {
     fun configure(
         logger: PayjpLogger,
         tokenService: PayjpTokenService,
-        cardScannerPlugin: CardScannerPlugin?,
         handler: PayjpTokenBackgroundHandler?,
         callbackExecutor: Executor?,
         locale: Locale
     ) {
         this.tokenService = tokenService
-        this.cardScannerPlugin = cardScannerPlugin
         tokenHandlerExecutor = if (handler != null && callbackExecutor != null) {
             TokenHandlerExecutorImpl(
                 handler = handler,
@@ -109,8 +105,6 @@ object PayjpCardForm {
     }
 
     internal fun tokenHandlerExecutor(): TokenHandlerExecutor? = tokenHandlerExecutor
-
-    internal fun cardScannerPlugin(): CardScannerPlugin? = cardScannerPlugin
 
     internal fun clientInfoInterceptorProvider(): ClientInfoInterceptorProvider? {
         return tokenService() as? ClientInfoInterceptorProvider
