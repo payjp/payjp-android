@@ -97,7 +97,7 @@ internal class CardHolderNameInputTest(
                 arrayOf(
                     "1",
                     null,
-                    FormInputError(R.string.payjp_card_form_error_invalid_length_holder_name, false)
+                    FormInputError(R.string.payjp_card_form_error_invalid_length_holder_name, false, true)
                 ),
                 // MIN_LENGTH (2)
                 arrayOf(
