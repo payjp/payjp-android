@@ -21,41 +21,62 @@
   ~ SOFTWARE.
   -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/PayjpToolbar">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/card_form_sample_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/MenuItemStyle" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp"
             tools:ignore="HardcodedText">
 
-        <FrameLayout
+            <FrameLayout
                 android:id="@+id/card_form_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-        <FrameLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-            <LinearLayout
+                <LinearLayout
                     android:id="@+id/layout_buttons"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                <LinearLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:baselineAligned="false"
                         android:orientation="horizontal">
 
-                    <Button
+                        <Button
                             android:id="@+id/button_create_token"
                             style="?android:buttonStyle"
                             android:layout_width="0dp"
@@ -65,7 +86,7 @@
                             android:text="create token"
                             tools:ignore="RtlCompat" />
 
-                    <Button
+                        <Button
                             android:id="@+id/button_create_token_with_validate"
                             style="?android:buttonStyle"
                             android:layout_width="0dp"
@@ -75,9 +96,9 @@
                             android:text="validate form and create token"
                             tools:ignore="RtlCompat" />
 
-                </LinearLayout>
+                    </LinearLayout>
 
-                <Button
+                    <Button
                         android:id="@+id/button_get_token"
                         style="?android:buttonStyle"
                         android:layout_width="match_parent"
@@ -85,9 +106,9 @@
                         android:layout_marginTop="8dp"
                         android:text="get token by id" />
 
-            </LinearLayout>
+                </LinearLayout>
 
-            <ProgressBar
+                <ProgressBar
                     android:id="@+id/progress_bar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -95,9 +116,9 @@
                     android:layout_margin="16dp"
                     android:visibility="gone" />
 
-        </FrameLayout>
+            </FrameLayout>
 
-        <EditText
+            <EditText
                 android:id="@+id/text_token_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -110,7 +131,7 @@
                 android:longClickable="false"
                 android:textSize="14sp" />
 
-        <TextView
+            <TextView
                 android:id="@+id/text_token_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -120,7 +141,7 @@
                 android:layout_marginBottom="8dp"
                 android:text="The token will be shown here." />
 
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
-
-</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -32,6 +32,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.toColorInt
+import com.example.payjp.sample.extension.applyWindowInsets
 import jp.pay.android.verifier.PayjpVerifier
 
 class ThreeDSecureExampleActivity : AppCompatActivity() {
@@ -41,6 +42,7 @@ class ThreeDSecureExampleActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_three_d_secure_example)
+        setSupportActionBar(findViewById(R.id.three_d_secure_sample_toolbar))
 
         val resourceIdInput = findViewById<EditText>(R.id.resource_id_input)
         val start3DSecureButton = findViewById<Button>(R.id.start_3d_secure_button)
@@ -61,6 +63,8 @@ class ThreeDSecureExampleActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please enter a resource ID", Toast.LENGTH_SHORT).show()
             }
         }
+
+        window.decorView.rootView.applyWindowInsets()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

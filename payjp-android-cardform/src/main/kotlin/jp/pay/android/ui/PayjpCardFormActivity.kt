@@ -46,6 +46,7 @@ import jp.pay.android.model.ExtraAttribute
 import jp.pay.android.model.TenantId
 import jp.pay.android.model.Token
 import jp.pay.android.model.TokenId
+import jp.pay.android.ui.extension.applyWindowInsets
 import jp.pay.android.ui.extension.showWith
 import jp.pay.android.ui.widget.PayjpCardFormAbstractFragment
 import jp.pay.android.ui.widget.PayjpCardFormView
@@ -159,6 +160,7 @@ internal class PayjpCardFormActivity :
         super.onCreate(savedInstanceState)
         binding = PayjpCardFormActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.payjpCardFormToolbar)
         setTitle(R.string.payjp_card_form_screen_title)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setUpUI()
@@ -167,6 +169,7 @@ internal class PayjpCardFormActivity :
         PayjpCardForm.clientInfoInterceptorProvider()?.getClientInfoInterceptor()?.applyClientInfoExtra {
             setCardFormType(PayjpCardForm.getCardFormFaceString(face))
         }
+        binding.root.applyWindowInsets()
     }
 
     override fun onDestroy() {
