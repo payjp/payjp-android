@@ -23,7 +23,7 @@
 package jp.pay.android.ui
 
 import android.content.Context
-import jp.pay.android.R
+import jp.pay.android.cardform.R
 import jp.pay.android.exception.PayjpApiException
 import jp.pay.android.exception.PayjpCardException
 import jp.pay.android.exception.PayjpRateLimitException

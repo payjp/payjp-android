@@ -36,7 +36,7 @@ android {
     buildFeatures {
         viewBinding = true
     }
-    namespace 'jp.pay.android'
+    namespace 'jp.pay.android.cardform'
 }
 
 dependencies {

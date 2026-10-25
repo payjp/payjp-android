@@ -22,7 +22,7 @@
  */
 package jp.pay.android.model
 
-import jp.pay.android.R
+import jp.pay.android.cardform.R
 import jp.pay.android.model.CardBrand.AMEX
 import jp.pay.android.model.CardBrand.DINERS_CLUB
 import jp.pay.android.model.CardBrand.DISCOVER

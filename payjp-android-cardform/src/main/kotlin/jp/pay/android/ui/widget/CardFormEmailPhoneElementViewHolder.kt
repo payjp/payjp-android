@@ -32,7 +32,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputLayout
-import jp.pay.android.databinding.PayjpCardFormElementEmailPhoneLayoutBinding
+import jp.pay.android.cardform.databinding.PayjpCardFormElementEmailPhoneLayoutBinding
 import jp.pay.android.model.CardComponentInput
 import jp.pay.android.model.CountryCode
 import jp.pay.android.ui.extension.setErrorOrNull

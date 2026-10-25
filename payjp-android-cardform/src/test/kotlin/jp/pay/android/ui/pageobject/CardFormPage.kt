@@ -35,7 +35,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import jp.pay.android.CardRobot
 import jp.pay.android.PayjpCardForm
-import jp.pay.android.R
+import jp.pay.android.cardform.R
 import jp.pay.android.model.ExtraAttribute
 import jp.pay.android.ui.PayjpCardFormActivity
 import org.hamcrest.Matcher

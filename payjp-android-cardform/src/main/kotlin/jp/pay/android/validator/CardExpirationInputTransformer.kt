@@ -22,7 +22,7 @@
  */
 package jp.pay.android.validator
 
-import jp.pay.android.R
+import jp.pay.android.cardform.R
 import jp.pay.android.model.CardComponentInput
 import jp.pay.android.model.FormInputError
 

@@ -23,7 +23,7 @@
 package jp.pay.android.validator
 
 import android.content.Context
-import jp.pay.android.R
+import jp.pay.android.cardform.R
 import jp.pay.android.data.PhoneNumberService
 import jp.pay.android.model.CardComponentInput
 import jp.pay.android.model.CountryCode

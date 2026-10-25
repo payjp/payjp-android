@@ -352,7 +352,7 @@ internal class CardFormViewModelTest {
                 CardComponentInput.CardPhoneNumberInput(
                     "123",
                     null,
-                    FormInputError(jp.pay.android.R.string.payjp_card_form_error_invalid_phone_number, false),
+                    FormInputError(jp.pay.android.cardform.R.string.payjp_card_form_error_invalid_phone_number, false),
                 )
             )
         createViewModel(extraAttributes = listOf(ExtraAttribute.Email(), ExtraAttribute.Phone("JP"))).run {

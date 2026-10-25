@@ -41,7 +41,7 @@ android {
     buildFeatures {
         buildConfig = true
     }
-    namespace 'jp.pay.android'
+    namespace 'jp.pay.android.core'
 }
 
 dependencies {

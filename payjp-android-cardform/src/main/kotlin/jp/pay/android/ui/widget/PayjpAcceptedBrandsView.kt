@@ -30,7 +30,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import jp.pay.android.R
+import jp.pay.android.cardform.R
 import jp.pay.android.model.CardBrand
 import jp.pay.android.ui.extension.logoResourceId
 

@@ -36,8 +36,8 @@ import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.textfield.TextInputEditText
 import jp.pay.android.PayjpCardForm
-import jp.pay.android.R
-import jp.pay.android.databinding.PayjpCardFormViewCardDisplayBinding
+import jp.pay.android.cardform.R
+import jp.pay.android.cardform.databinding.PayjpCardFormViewCardDisplayBinding
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ExtraAttribute
 import jp.pay.android.model.TenantId
