@@ -25,7 +25,7 @@
 package jp.pay.android.ui.extension
 
 import androidx.annotation.DrawableRes
-import jp.pay.android.R
+import jp.pay.android.cardform.R
 import jp.pay.android.model.CardBrand
 
 /**

@@ -36,9 +36,9 @@ import androidx.savedstate.SavedStateRegistryOwner
 import jp.pay.android.PayjpTokenBackgroundHandler
 import jp.pay.android.PayjpTokenOperationStatus
 import jp.pay.android.PayjpTokenService
-import jp.pay.android.R
 import jp.pay.android.Task
 import jp.pay.android.TokenHandlerExecutor
+import jp.pay.android.cardform.R
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId

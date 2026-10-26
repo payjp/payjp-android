@@ -35,10 +35,10 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import jp.pay.android.databinding.PayjpCardFormElementCvcLayoutBinding
-import jp.pay.android.databinding.PayjpCardFormElementExpirationLayoutBinding
-import jp.pay.android.databinding.PayjpCardFormElementHolderNameLayoutBinding
-import jp.pay.android.databinding.PayjpCardFormElementNumberLayoutBinding
+import jp.pay.android.cardform.databinding.PayjpCardFormElementCvcLayoutBinding
+import jp.pay.android.cardform.databinding.PayjpCardFormElementExpirationLayoutBinding
+import jp.pay.android.cardform.databinding.PayjpCardFormElementHolderNameLayoutBinding
+import jp.pay.android.cardform.databinding.PayjpCardFormElementNumberLayoutBinding
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardComponentInput
 import jp.pay.android.plugin.CardScannerPlugin

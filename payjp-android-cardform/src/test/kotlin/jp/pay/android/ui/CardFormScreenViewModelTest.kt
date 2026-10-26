@@ -28,10 +28,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.PayjpTokenBackgroundHandler
 import jp.pay.android.PayjpTokenOperationStatus
 import jp.pay.android.PayjpTokenService
-import jp.pay.android.R
 import jp.pay.android.TestStubs
 import jp.pay.android.TokenHandlerExecutor
 import jp.pay.android.anyNullable
+import jp.pay.android.cardform.R
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.CardBrandsAcceptedResponse
 import jp.pay.android.model.TenantId

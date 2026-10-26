@@ -35,8 +35,8 @@ import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import jp.pay.android.PayjpCardForm
-import jp.pay.android.R
-import jp.pay.android.databinding.PayjpSearchCountryCodeActivityBinding
+import jp.pay.android.cardform.R
+import jp.pay.android.cardform.databinding.PayjpSearchCountryCodeActivityBinding
 import jp.pay.android.model.CountryCode
 import jp.pay.android.ui.extension.applyWindowInsets
 

@@ -33,8 +33,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
 import jp.pay.android.PayjpTokenService
-import jp.pay.android.R
 import jp.pay.android.Task
+import jp.pay.android.cardform.R
 import jp.pay.android.data.PhoneNumberService
 import jp.pay.android.exception.PayjpInvalidCardFormException
 import jp.pay.android.model.CardBrand

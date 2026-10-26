@@ -32,7 +32,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputLayout
 import jp.pay.android.PayjpCardForm
-import jp.pay.android.databinding.PayjpCardFormViewBinding
+import jp.pay.android.cardform.databinding.PayjpCardFormViewBinding
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ExtraAttribute
 import jp.pay.android.model.TenantId

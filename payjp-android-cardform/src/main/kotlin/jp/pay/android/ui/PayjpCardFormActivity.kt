@@ -39,8 +39,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import jp.pay.android.PayjpCardForm
-import jp.pay.android.R
-import jp.pay.android.databinding.PayjpCardFormActivityBinding
+import jp.pay.android.cardform.R
+import jp.pay.android.cardform.databinding.PayjpCardFormActivityBinding
 import jp.pay.android.model.CardBrand
 import jp.pay.android.model.ExtraAttribute
 import jp.pay.android.model.TenantId

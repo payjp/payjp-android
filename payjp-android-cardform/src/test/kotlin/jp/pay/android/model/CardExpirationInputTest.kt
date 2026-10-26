@@ -22,8 +22,8 @@
  */
 package jp.pay.android.model
 
-import jp.pay.android.R
 import jp.pay.android.anyNullable
+import jp.pay.android.cardform.R
 import jp.pay.android.validator.CardExpirationInputTransformer
 import jp.pay.android.validator.CardExpirationProcessorService
 import org.hamcrest.MatcherAssert.assertThat

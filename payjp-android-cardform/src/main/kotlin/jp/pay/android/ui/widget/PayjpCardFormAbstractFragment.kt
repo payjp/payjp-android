@@ -37,8 +37,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import androidx.fragment.app.Fragment
 import jp.pay.android.PayjpCardForm
-import jp.pay.android.R
 import jp.pay.android.Task
+import jp.pay.android.cardform.R
 import jp.pay.android.exception.PayjpInvalidCardFormException
 import jp.pay.android.model.Token
 import jp.pay.android.plugin.CardScannerPlugin

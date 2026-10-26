@@ -24,8 +24,8 @@ package jp.pay.android.validator
 
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import jp.pay.android.R
 import jp.pay.android.anyNullable
+import jp.pay.android.cardform.R
 import jp.pay.android.data.PhoneNumberService
 import jp.pay.android.model.CountryCode
 import jp.pay.android.model.FormInputError

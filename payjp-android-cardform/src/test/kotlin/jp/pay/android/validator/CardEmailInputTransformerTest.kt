@@ -24,7 +24,7 @@ package jp.pay.android.validator
 
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import jp.pay.android.R
+import jp.pay.android.cardform.R
 import jp.pay.android.model.FormInputError
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.nullValue

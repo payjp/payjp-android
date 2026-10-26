@@ -40,8 +40,8 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.shape.AbsoluteCornerSize
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
-import jp.pay.android.R
-import jp.pay.android.databinding.PayjpCardDisplayViewBinding
+import jp.pay.android.cardform.R
+import jp.pay.android.cardform.databinding.PayjpCardDisplayViewBinding
 import jp.pay.android.model.CardBrand
 import jp.pay.android.ui.extension.displayLogoResourceId
 import jp.pay.android.ui.extension.fullMaskedPan
