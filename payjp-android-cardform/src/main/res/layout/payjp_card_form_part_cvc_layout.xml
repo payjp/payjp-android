@@ -32,7 +32,7 @@
         app:endIconMode="custom"
         app:endIconTint="@null">
 
-    <com.google.android.material.textfield.TextInputEditText
+    <jp.pay.android.ui.widget.CardCvcEditText
             android:id="@+id/input_edit_cvc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
