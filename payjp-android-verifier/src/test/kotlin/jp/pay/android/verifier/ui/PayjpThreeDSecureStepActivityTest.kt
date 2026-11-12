@@ -26,6 +26,8 @@ import android.app.Activity
 import android.app.Application
 import android.app.Instrumentation
 import android.content.Intent
+import android.net.Uri
+import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario.launchActivityForResult
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.launchActivity
@@ -33,7 +35,9 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasFlags
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import jp.pay.android.PayjpTokenOperationObserverService
@@ -51,6 +55,7 @@ import jp.pay.android.verifier.testing.TestEntryActivity
 import jp.pay.android.verifier.threeDSecure.getVerificationEntryUri
 import jp.pay.android.verifier.threeDSecure.getVerificationFinishUri
 import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.allOf
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -68,6 +73,7 @@ class PayjpThreeDSecureStepActivityTest {
     private companion object {
         const val TEST_TDS_REDIRECT_NAME = "test"
         const val TEST_PUBLIC_KEY = "pk_test_123"
+        val TEST_REDIRECT_URI: Uri = Uri.parse("jp.pay.example://tds/finish")
     }
 
     @Mock
@@ -214,5 +220,59 @@ class PayjpThreeDSecureStepActivityTest {
             assertThat((result as PayjpThreeDSecureResult.SuccessResourceId).id, `is`(resourceId))
             assertThat(scenario.result.resultCode, `is`(Activity.RESULT_OK))
         }
+    }
+
+    @Test
+    fun forward_redirect_received_in_new_instance_to_waiting_instance() {
+        // Custom Tab が閉じられず、トークン ID を持たない新規インスタンスに deep link が届いたケース
+        val redirectIntent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            PayjpThreeDSecureStepActivity::class.java
+        ).setData(TEST_REDIRECT_URI)
+
+        val scenario = launchActivity<PayjpThreeDSecureStepActivity>(redirectIntent)
+
+        intended(
+            allOf(
+                hasComponent(PayjpThreeDSecureStepActivity::class.java.name),
+                hasData(TEST_REDIRECT_URI),
+                hasExtra(PayjpThreeDSecureStepActivity.EXTRA_KEY_FORWARDED, true),
+                hasFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            )
+        )
+        assertThat(scenario.state, `is`(Lifecycle.State.DESTROYED))
+        // 転送元は結果を書き込まない（待機中のインスタンスが onNewIntent で書き込む）
+        assertThat(PayjpThreeDSecureStepActivity.getResult().isCanceled(), `is`(true))
+    }
+
+    @Test
+    fun finish_without_forwarding_again_if_forwarded_intent_reaches_new_instance() {
+        // 待機中のインスタンスが無く、転送 Intent がまた新規インスタンスに届いたケース（無限ループ防止）
+        val forwardedIntent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            PayjpThreeDSecureStepActivity::class.java
+        ).setData(TEST_REDIRECT_URI)
+            .putExtra(PayjpThreeDSecureStepActivity.EXTRA_KEY_FORWARDED, true)
+
+        val scenario = launchActivity<PayjpThreeDSecureStepActivity>(forwardedIntent)
+
+        assertThat(scenario.state, `is`(Lifecycle.State.DESTROYED))
+        val forwardedAgain = Intents.getIntents().count {
+            it.flags and Intent.FLAG_ACTIVITY_CLEAR_TOP != 0 &&
+                it.getBooleanExtra(PayjpThreeDSecureStepActivity.EXTRA_KEY_FORWARDED, false)
+        }
+        assertThat(forwardedAgain, `is`(0))
+    }
+
+    @Test
+    fun finish_if_launched_without_resource_id_and_uri() {
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            PayjpThreeDSecureStepActivity::class.java
+        )
+
+        val scenario = launchActivity<PayjpThreeDSecureStepActivity>(intent)
+
+        assertThat(scenario.state, `is`(Lifecycle.State.DESTROYED))
     }
 }
