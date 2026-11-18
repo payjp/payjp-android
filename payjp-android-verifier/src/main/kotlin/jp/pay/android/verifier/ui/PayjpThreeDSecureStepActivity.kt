@@ -25,6 +25,8 @@ package jp.pay.android.verifier.ui
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
@@ -46,6 +48,7 @@ class PayjpThreeDSecureStepActivity : AppCompatActivity() {
     companion object {
         internal const val EXTRA_KEY_TOKEN_ID = "EXTRA_KEY_TOKEN_ID" // Kept for backward compatibility with older versions
         internal const val EXTRA_KEY_RESOURCE_ID = "EXTRA_KEY_RESOURCE_ID"
+        internal const val EXTRA_KEY_FORWARDED = "EXTRA_KEY_FORWARDED"
         internal val intentHolder: IntentHolder = IntentHolder()
 
         internal fun createLaunchIntent(context: Context, resourceId: String): Intent {
@@ -88,14 +91,48 @@ class PayjpThreeDSecureStepActivity : AppCompatActivity() {
                 }
             }
         } else {
-            intent?.let { i ->
-                val resourceId = i.getStringExtra(EXTRA_KEY_RESOURCE_ID) ?: i.getStringExtra(EXTRA_KEY_TOKEN_ID)
-                resourceId?.let { resourceId ->
+            val i = intent
+            val resourceId = i?.getStringExtra(EXTRA_KEY_RESOURCE_ID) ?: i?.getStringExtra(EXTRA_KEY_TOKEN_ID)
+            val uri = i?.data
+            when {
+                resourceId != null -> {
                     currentResourceId = resourceId
                     intentHolder.pop()
                     PayjpVerifier.openThreeDSecure(resourceId, this)
                 }
+                uri != null && !i.getBooleanExtra(EXTRA_KEY_FORWARDED, false) -> {
+                    forwardRedirect(uri)
+                }
+                else -> {
+                    PayjpVerifier.logger().d("No 3DS flow to continue. finish.")
+                    finish()
+                }
             }
+        }
+    }
+
+    /**
+     * Some browsers (other than Chrome) do not close their Custom Tab when they launch the redirect URI.
+     * In that case the redirect is delivered to a new instance on top of the Custom Tab,
+     * because `singleTop` does not apply. Forward it to the waiting instance with `CLEAR_TOP`,
+     * which also removes the Custom Tab above the waiting instance.
+     */
+    private fun forwardRedirect(uri: Uri) {
+        PayjpVerifier.logger().d("Redirect received in a new instance. forward to the waiting instance. uri $uri")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0)
+        }
+        // finish first so that this instance is not chosen as the target of CLEAR_TOP.
+        finish()
+        startActivity(
+            Intent(this, PayjpThreeDSecureStepActivity::class.java)
+                .setData(uri)
+                .putExtra(EXTRA_KEY_FORWARDED, true)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        )
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(0, 0)
         }
     }
 
